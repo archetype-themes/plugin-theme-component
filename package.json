@@ -1,0 +1,36 @@
+{
+  "name": "section-builder",
+  "version": "1.0.0",
+  "description": "Builds a Shopify Theme Section by assembling its content in a minimal number of files.",
+  "main": "bin/build-section.mjs",
+  "bin": {
+    "build-section": "bin/build-section.mjs"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=11.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Shopify",
+    "Theme",
+    "Section",
+    "Builder"
+  ],
+  "author": "Archetype Themes LLC",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "esm": "^3.2.25"
+  },
+  "devDependencies": {
+    "standard": "^17.0.0"
+  },
+  "standard": {
+    "ignore": [
+      "packages/**"
+    ]
+  }
+}
