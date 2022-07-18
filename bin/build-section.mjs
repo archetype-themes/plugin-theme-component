@@ -1,86 +1,61 @@
 #! /usr/bin/env node
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { cwd, env, exit } from 'node:process'
+import { env, exit } from 'node:process'
 import { basename, extname } from 'path'
 import { getFolderFilesRecursively, copyFilesInList } from '../utils/FileUtils.mjs'
+import createSection from '../Factory/SectionFactory.js'
 
-// Constants
-const packageName = env.npm_package_name
+const section = createSection(env.npm_package_name)
 
-console.log(`\nBuilding "${packageName}" section\n`)
+console.log(`\nBuilding "${section.name}" section\n`)
 
-// Determine package root folder name
-let packageFolder
-if (env.npm_config_local_prefixw)
-  packageFolder = env.npm_config_local_prefix
-else {
-  packageFolder = cwd()
-
-  if (packageFolder.includes(packageName)) {
-    packageFolder = packageFolder.substring(0, packageFolder.lastIndexOf(packageName) + packageName.length)
-  } else {
-    packageFolder = cwd()
-  }
-}
-
-const buildFolder = packageFolder + '/build'
-const assetsBuildFolder = buildFolder + '/assets'
-
-// Package Files containers
-const jsFiles = []
-const jsModules = []
-const cssFiles = []
-const liquidFiles = []
-let settingsFile = null
-
+// Package components
 // Clean build folder
 try {
-  await rm(buildFolder, { force: true, recursive: true })
-  await mkdir(assetsBuildFolder, { recursive: true })
-
-} catch (err) {
-  console.error(err)
+  await rm(section.buildFolder, { force: true, recursive: true })
+  await mkdir(section.assetsBuildFolder, { recursive: true })
+} catch (error) {
+  console.error(error)
   exit(1)
 }
 
 // Scan package folder
-let packageFiles
+let sectionFiles
 try {
-  packageFiles = await getFolderFilesRecursively(packageFolder)
-} catch (err) {
-  console.error(err)
+  sectionFiles = await getFolderFilesRecursively(section.rootFolder)
+} catch (error) {
+  console.error(error)
   exit(1)
 }
 
-// Categorize found files for the build steps
-for (const packageFile of packageFiles) {
-  const extension = extname(packageFile)
+// Categorize files for the build steps
+for (const sectionFile of sectionFiles) {
+  const extension = extname(sectionFile)
 
   switch (extension) {
     case '.css':
-      cssFiles.push(packageFile)
+      section.cssFiles.push(sectionFile)
       break
     case '.js':
-      jsFiles.push(packageFile)
+      section.jsFiles.push(sectionFile)
       break
     case '.mjs':
-      jsModules.push(packageFile)
+      section.jsModules.push(sectionFile)
       break
     case '.liquid':
-      liquidFiles.push(packageFile)
+      section.liquidFiles.push(sectionFile)
       break
     case '.json':
-      if (basename(packageFile) === 'schema.json')
-        settingsFile = packageFile
+      if (basename(sectionFile) === 'schema.json') section.settingsFile = sectionFile
       break
     default:
-      console.warn('Ignoring ' + packageFile)
+      console.warn('Ignoring ' + sectionFile)
       break
   }
 }
 
 // Abort if we have no liquid file
-if (liquidFiles.length === 0) {
+if (section.liquidFiles.length === 0) {
   console.error('ERR: No liquid file found - aborting build')
   exit(1)
 }
@@ -88,19 +63,17 @@ if (liquidFiles.length === 0) {
 // Collate liquid content from all liquid files with the default folder/alphabetical order
 let liquidCode = ''
 
-for (const liquidFile of liquidFiles) {
+for (const liquidFile of section.liquidFiles) {
   liquidCode += await readFile(liquidFile, { encoding: 'UTF-8' })
 }
 
-// TODO: Filter out liquid comments & HTML comments from liquidCode -> it could break the next regex for search or <script> src attribute if a commented out <script> tag is taken into account
-
 // Process javascript files
-if (jsFiles.length > 0) {
+if (section.jsFiles.length > 0) {
 
   // search for script file references
   const scriptTagsSrc = []
   let match
-  // TODO: avoid searching in HTML comments (see previous TODO item)
+
   const regex = /<script.*?src="(.*?)"/gmi
 
   while (match = regex.exec(liquidCode)) {
@@ -109,7 +82,7 @@ if (jsFiles.length > 0) {
 
   let excludedFiles
   try {
-    excludedFiles = await copyFilesInList(jsFiles, assetsBuildFolder, scriptTagsSrc)
+    excludedFiles = await copyFilesInList(section.jsFiles, section.assetsBuildFolder, scriptTagsSrc)
   } catch (err) {
     console.error(err.message)
     exit(1)
@@ -127,9 +100,9 @@ if (jsFiles.length > 0) {
         exit(1)
       }
     }
-    const buildJsFileBasename = packageName + '.js'
+    const buildJsFileBasename = section.name + '.js'
     try {
-      await writeFile(assetsBuildFolder + '/' + buildJsFileBasename, jsCode)
+      await writeFile(section.assetsBuildFolder + '/' + buildJsFileBasename, jsCode)
     } catch (err) {
       console.error(err.message)
       exit(1)
@@ -138,40 +111,39 @@ if (jsFiles.length > 0) {
   }
 }
 
-// Process javascript files
-if (cssFiles.length > 0) {
+// Process CSS files
+if (section.cssFiles.length > 0) {
 
   // search for script file references
   const linkTagsHref = []
   let match
-  // TODO: avoid searching in HTML comments (see previous TODO item)
+
   const regex = /<link.*?href="(.*?)"/gmi
 
   while (match = regex.exec(liquidCode)) {
     linkTagsHref.push(basename(match[1]))
   }
 
-  const excludedFiles = await copyFilesInList(cssFiles, assetsBuildFolder, linkTagsHref)
+  const excludedFiles = await copyFilesInList(section.cssFiles, section.assetsBuildFolder, linkTagsHref)
 
   // Merge excluded js files and write build package JS file
   if (excludedFiles.length > 0) {
     let jsCode = ''
 
-    for (const jsFileToProcess of excludedFiles) {
-      jsCode += await readFile(jsFileToProcess, { encoding: 'UTF-8' })
+    for (const cssFileToProcess of excludedFiles) {
+      jsCode += await readFile(cssFileToProcess, { encoding: 'UTF-8' })
     }
-    const buildJsFileBasename = packageName + '.js'
-    await writeFile(assetsBuildFolder + '/' + buildJsFileBasename, jsCode)
-    liquidCode += `\n<script src="{{ '${buildJsFileBasename}' | asset_url }}" async></script>`
+    const buildCssFileBasename = section.name + '.css'
+    await writeFile(section.assetsBuildFolder + '/' + buildCssFileBasename, jsCode)
+    liquidCode += `\n<script src="{{ '${buildCssFileBasename}' | asset_url }}" async></script>`
   }
 }
 
 // append section json
 
-
-
 // create section liquid file
-const liquidBuildFile = buildFolder + '/' + packageName + '.liquid'
+const liquidBuildFile = section.buildFolder + '/' + section.name + '.liquid'
 await writeFile(liquidBuildFile, liquidCode)
 
+console.log(section)
 console.log('\nTHE END\n')
