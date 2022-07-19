@@ -15,12 +15,6 @@ function createSection (name) {
   section.buildFolder = section.rootFolder + '/build'
   section.assetsBuildFolder = section.buildFolder + '/assets'
 
-  // Initialize file array
-  section.cssFiles = []
-  section.jsFiles = []
-  section.jsModules = []
-  section.liquidFiles = []
-
   return section
 }
 

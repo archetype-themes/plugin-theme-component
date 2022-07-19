@@ -1,4 +1,11 @@
 class Section {
+  constructor () {
+    this.cssFiles = []
+    this.jsFiles = []
+    this.jsModules = []
+    this.liquidFiles = []
+  }
+
   get name () {
     return this._name
   }
