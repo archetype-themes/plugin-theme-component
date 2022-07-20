@@ -20,8 +20,16 @@ function traceCaller (pinoInstance) {
   return new Proxy(pinoInstance, { get })
 }
 
+let loglevel = 'info'
+
+if (process.argv.includes('--quiet')) {
+  loglevel = 'error'
+} else if (process.argv.includes('--verbose') || process.argv.includes('--debug')) {
+  loglevel = 'debug'
+}
+
 const logger = traceCaller(pino({
-  level: 'debug',
+  level: loglevel,
   transport: {
     target: 'pino-pretty',
     options: {
