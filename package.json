@@ -23,7 +23,9 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "esm": "^3.2.25"
+    "esm": "^3.2.25",
+    "pino": "^8.2.0",
+    "pino-pretty": "^8.1.0"
   },
   "devDependencies": {
     "standard": "^17.0.0"

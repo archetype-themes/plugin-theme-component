@@ -70,12 +70,12 @@ class Section {
     this._liquidFiles = liquidFiles
   }
 
-  get settingsFile () {
-    return this._settingsFile
+  get schemaFile () {
+    return this._schemaFile
   }
 
-  set settingsFile (settingsFile) {
-    this._settingsFile = settingsFile
+  set schemaFile (schemaFile) {
+    this._schemaFile = schemaFile
   }
 
 }
