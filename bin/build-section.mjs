@@ -149,7 +149,7 @@ if (section.cssFiles.length > 0) {
     const buildCssFileBasename = section.name + '.css'
     await writeFileOrDie(section.assetsBuildFolder + '/' + buildCssFileBasename, cssCode)
     // Inject Section CSS asset file reference to the liquid code
-    liquidCode += `\n<script src="{{ '${buildCssFileBasename}' | asset_url }}" async></script>`
+    liquidCode += `\n{{ '${buildCssFileBasename}' | global_asset_url | stylesheet_tag }}`
   }
 } else {
   logger.debug(`No CSS files found for ${section.name}`)

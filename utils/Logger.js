@@ -5,6 +5,12 @@ const STACKTRACE_OFFSET = 2
 const LINE_OFFSET = 7
 const { symbols: { asJsonSym } } = pino
 
+/**
+ * Traces Where the Log Event happened in the source code and forwards the information to the Pino Logger
+ * @param pinoInstance
+ * @returns {*}
+ * @link https://gist.github.com/miguelmota/4df504cff4bfebcff982dd06bde7a34a
+ */
 function traceCaller (pinoInstance) {
   const get = (target, name) => name === asJsonSym ? asJson : target[name]
 
