@@ -68,7 +68,7 @@ async function getFolderFilesRecursively (dir) {
  * @returns {string}
  */
 function getRootFolderName () {
-  return dirname(dirname(import.meta.url))
+  return dirname(dirname(import.meta.url)).substring(7)
 }
 
 /**

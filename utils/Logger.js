@@ -18,7 +18,7 @@ function traceCaller (pinoInstance) {
     args[0] = args[0] || Object.create(null)
     args[0].caller = Error().stack.split('\n')
       .filter(s => !s.includes('node_modules/pino') && !s.includes('node_modules\\pino'))[STACKTRACE_OFFSET]
-      .substring(LINE_OFFSET).replace(getRootFolderName()+ '/', '')
+      .substring(LINE_OFFSET).replace(`file://${getRootFolderName()}`, '')
 
     return pinoInstance[asJsonSym].apply(this, args)
   }
