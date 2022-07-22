@@ -11,7 +11,7 @@ import {
   readFileOrDie,
   writeFileOrDie
 } from '../utils/FileUtils.mjs'
-import createSection from '../Factory/SectionFactory.js'
+import createSection from '../factory/SectionFactory.js'
 import logger from '../utils/Logger.js'
 
 const section = createSection(env.npm_package_name)

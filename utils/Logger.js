@@ -1,5 +1,5 @@
 import { pino } from 'pino'
-import { dirname } from 'path'
+import { getRootFolderName } from './FileUtils.mjs'
 
 const STACKTRACE_OFFSET = 2
 const LINE_OFFSET = 7
@@ -18,7 +18,7 @@ function traceCaller (pinoInstance) {
     args[0] = args[0] || Object.create(null)
     args[0].caller = Error().stack.split('\n')
       .filter(s => !s.includes('node_modules/pino') && !s.includes('node_modules\\pino'))[STACKTRACE_OFFSET]
-      .substring(LINE_OFFSET).replace(dirname(dirname(import.meta.url)) + '/', '')
+      .substring(LINE_OFFSET).replace(getRootFolderName()+ '/', '')
 
     return pinoInstance[asJsonSym].apply(this, args)
   }

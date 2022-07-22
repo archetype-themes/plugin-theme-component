@@ -1,5 +1,5 @@
 import { copyFile, readdir, readFile, writeFile } from 'node:fs/promises'
-import { basename, resolve } from 'path'
+import { basename, dirname, resolve } from 'path'
 import { exit } from 'node:process'
 import logger from '../utils/Logger.js'
 
@@ -64,6 +64,14 @@ async function getFolderFilesRecursively (dir) {
 }
 
 /**
+ * Shortcut to a method to get root folder username of this builder package
+ * @returns {string}
+ */
+function getRootFolderName () {
+  return dirname(dirname(import.meta.url))
+}
+
+/**
  *
  * @param {Array} files
  * @returns {Promise<string>}
@@ -106,6 +114,7 @@ export {
   copyFileOrDie,
   copyFilesWithFilter,
   getFolderFilesRecursively,
+  getRootFolderName,
   mergeFileContents,
   readFileOrDie,
   writeFileOrDie
