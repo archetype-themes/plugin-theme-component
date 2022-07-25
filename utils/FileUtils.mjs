@@ -80,7 +80,7 @@ async function mergeFileContents (files) {
   let content = ''
 
   for (const file of files) {
-    content += readFileOrDie(file)
+    content += `${await readFileOrDie(file)}\n`
   }
   return content
 }
