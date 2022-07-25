@@ -156,8 +156,10 @@ if (section.cssFiles.length > 0) {
 }
 
 // append section schema
-logger.debug('Processing Schema file')
-liquidCode += `\n{% schema %}\n${await readFileOrDie(section.schemaFile)}\n{% endschema %}`
+if (section.schemaFile) {
+  logger.debug('Processing Schema file')
+  liquidCode += `\n{% schema %}\n${await readFileOrDie(section.schemaFile)}\n{% endschema %}`
+}
 
 // create section liquid file
 logger.debug('Finalizing Liquid file')
