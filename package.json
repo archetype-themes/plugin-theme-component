@@ -21,7 +21,6 @@
   ],
   "author": "Archetype Themes LLC",
   "license": "UNLICENSED",
-  "private": true,
   "dependencies": {
     "esm": "^3.2.25",
     "pino": "^8.2.0",
