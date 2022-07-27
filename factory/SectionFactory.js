@@ -14,6 +14,7 @@ function createSection (name) {
   section.rootFolder = detectSectionFolder(section.name)
   section.buildFolder = section.rootFolder + '/build'
   section.assetsBuildFolder = section.buildFolder + '/assets'
+  section.localesBuildFolder = section.buildFolder + '/locales'
 
   return section
 }

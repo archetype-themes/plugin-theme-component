@@ -4,6 +4,7 @@ class Section {
     this.jsFiles = []
     this.jsModules = []
     this.liquidFiles = []
+    this.localeFiles = []
   }
 
   get name () {
@@ -36,6 +37,14 @@ class Section {
 
   set assetsBuildFolder (assetsBuildFolder) {
     this._assetsBuildFolder = assetsBuildFolder
+  }
+
+  get localesBuildFolder () {
+    return this._localesBuildFolder
+  }
+
+  set localesBuildFolder (localesBuildFolder) {
+    this._localesBuildFolder = localesBuildFolder
   }
 
   get cssFiles () {
@@ -78,6 +87,13 @@ class Section {
     this._schemaFile = schemaFile
   }
 
+  get localeFiles () {
+    return this._localeFiles
+  }
+
+  set localeFiles (localeFiles) {
+    this._localeFiles = localeFiles
+  }
 }
 
 export default Section

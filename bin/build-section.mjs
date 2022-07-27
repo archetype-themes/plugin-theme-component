@@ -3,7 +3,8 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { env, exit } from 'node:process'
 import { basename, extname } from 'path'
 import {
-  copyFilesWithFilter,
+  copyFileOrDie,
+  copyFiles,
   FILE_ENCODING_OPTION,
   getFolderFilesRecursively,
   mergeFileContents,
@@ -51,6 +52,8 @@ for (const sectionFile of sectionFiles) {
       break
     case '.json':
       if (basename(sectionFile) === 'schema.json') section.schemaFile = sectionFile
+      else if (basename(sectionFile).match(/^([a-z]{2})(-[a-z]{2})?(\.\w+)*\.json/i))
+        section.localeFiles.push(sectionFile)
       break
     default:
       logger.debug(`Ignoring ${sectionFile}`)
@@ -70,6 +73,11 @@ let liquidCode = ''
 logger.debug(`${section.liquidFiles.length} liquid file${section.liquidFiles.length > 1 ? 's' : ''} found`)
 for (const liquidFile of section.liquidFiles) {
   liquidCode += `\n${await readFile(liquidFile, FILE_ENCODING_OPTION)}`
+}
+
+// Create build/assets folder if we have any assets
+if (section.jsFiles.length > 0 || section.jsModules.length > 0 || section.cssFiles.length > 0) {
+  await mkdir(section.assetsBuildFolder, { recursive: true })
 }
 
 // Process JavaScript files
@@ -125,7 +133,7 @@ if (section.cssFiles.length > 0) {
     linkTagsHref.push(basename(match[1]))
   }
 
-  const cssFilesToMerge = await copyFilesWithFilter(section.cssFiles, section.assetsBuildFolder, linkTagsHref)
+  const cssFilesToMerge = await copyFiles(section.cssFiles, section.assetsBuildFolder, linkTagsHref)
 
   // Merge excluded CSS files and write build package CSS file
   if (cssFilesToMerge.length > 0) {
@@ -139,6 +147,18 @@ if (section.cssFiles.length > 0) {
   }
 } else {
   logger.debug(`No CSS files found for ${section.name}`)
+}
+
+// Process Locale Files
+if (section.localeFiles.length > 0) {
+  await mkdir(section.localesBuildFolder, { recursive: true })
+  logger.debug('Processing Locale files')
+  logger.debug(`${section.localeFiles.length} Locale file${section.localeFiles.length > 1 ? 's' : ''} found`)
+
+  section.localeFiles.forEach(file => copyFileOrDie(file, `${section.localesBuildFolder}/${basename(file)}`))
+
+} else {
+  logger.debug(`No Locale files found for ${section.name}`)
 }
 
 // append section schema

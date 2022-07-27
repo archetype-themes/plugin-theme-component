@@ -7,22 +7,26 @@ const FILE_ENCODING_OPTION = { encoding: 'UTF-8' }
 
 /**
  * Writes Asset files references in liquid code as is and returns a list of asset files not references in liquid file
- * @param {Array} fileCandidates Files to filter
+ * @param {Array} sourceFiles Files to filter
  * @param {string} outputFolder Folder where to output the copied files
- * @param {Array} filesToCopy Basename filter of files to copy
+ * @param {Array} inclusiveFilter Basename filter of files to copy
  * @returns {Promise<string[]>}
  */
-async function copyFilesWithFilter (fileCandidates, outputFolder, filesToCopy = null) {
+async function copyFiles (sourceFiles, outputFolder, inclusiveFilter = null) {
   const excludedFiles = []
 
   // Filter out JS Files already referenced in the liquid code
-  for (const file of fileCandidates) {
+  for (const file of sourceFiles) {
     const fileBasename = basename(file)
     // When already referenced, copy as is in the assets folder
-    if (filesToCopy && filesToCopy.includes(fileBasename)) {
-      await copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
+    if (inclusiveFilter) {
+      if (inclusiveFilter.includes(fileBasename)) {
+        await copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
+      } else {
+        excludedFiles.push(file)
+      }
     } else {
-      excludedFiles.push(file)
+      await copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
     }
   }
   return excludedFiles
@@ -114,7 +118,7 @@ async function writeFileOrDie (filename, fileContents) {
 export {
   FILE_ENCODING_OPTION,
   copyFileOrDie,
-  copyFilesWithFilter,
+  copyFiles,
   getFolderFilesRecursively,
   getRootFolderName,
   mergeFileContents,
