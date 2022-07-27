@@ -86,6 +86,11 @@ A reference to this JavaScript file will be inserted at the end of the liquid fi
 It is possible to avoid merging a JavaScript file by manually including an HTML `<script>` tag inside a liquid file.
 The file will be copied as is in the `build/assets` folder and will retain its original name.
 
+#### Babel
+
+Babel will process all the javascript code (including JS Modules) to dumb it down for older browsers. The default
+settings used are in the [babel.config.json](babel.config.json).
+
 #### Caveat
 
 JS file manual inclusions inside the liquid code without the html `<script>` tag, such as with only liquid code
@@ -93,6 +98,15 @@ JS file manual inclusions inside the liquid code without the html `<script>` tag
 inclusion.
 
 ### JS Modules
+
+Any JavaScript module file detected in the section folders will be copied as is in the assets' subfolder.
+The detection pattern works by extension, your module file must end with the **.mjs** extension.
+
+#### Important Note
+
+The file will be included at the end of the liquid code with an HTML script tag of type **module** and will be set for
+**async** load. The script will search for manual inclusion before adding the script tag, this allows you to remove
+async and potentially replace it with defer or use any other customization as needed.
 
 ### CSS Files
 
@@ -120,6 +134,12 @@ a double inclusion.
 
 The schema file must be names `schema.json` in order to be processed correctly. Its content will be added at the end of
 the section's liquid file.
+
+## Locale files
+
+The locale files must follow the naming patterns enforced by Shopify. This looks like `en-US.json`, `en.default.json`
+or `en.schema.json`. You can put them in any folder you want. When the build runs, they will be copied to the
+`build/locales` folder.
 
 ## Liquid files
 
