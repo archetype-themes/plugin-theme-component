@@ -85,9 +85,10 @@ async function mergeFileContents (files) {
   return content
 }
 
-async function readFileOrDie (file) {
+async function readFileOrDie (filename) {
   try {
-    return await readFile(file, FILE_ENCODING_OPTION)
+    logger.debug(`Reading from disk: ${filename}`)
+    return await readFile(filename, FILE_ENCODING_OPTION)
   } catch (error) {
     logger.error(error.message)
     exit(1)
@@ -102,6 +103,7 @@ async function readFileOrDie (file) {
  */
 async function writeFileOrDie (filename, fileContents) {
   try {
+    logger.debug(`Writing to disk: ${filename}`)
     await writeFile(filename, fileContents)
   } catch (error) {
     logger.error(error.message)

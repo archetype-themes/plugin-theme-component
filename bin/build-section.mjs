@@ -3,7 +3,6 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { env, exit } from 'node:process'
 import { basename, extname } from 'path'
 import {
-  copyFileOrDie,
   copyFilesWithFilter,
   FILE_ENCODING_OPTION,
   getFolderFilesRecursively,
@@ -13,6 +12,8 @@ import {
 } from '../utils/FileUtils.mjs'
 import createSection from '../factory/SectionFactory.js'
 import logger from '../utils/Logger.js'
+import JavaScriptProcessor from '../processors/JavaScriptProcessor.mjs'
+import { getScriptFiles } from '../utils/HtmlUtils.js'
 
 const section = createSection(env.npm_package_name)
 
@@ -71,58 +72,43 @@ for (const liquidFile of section.liquidFiles) {
   liquidCode += `\n${await readFile(liquidFile, FILE_ENCODING_OPTION)}`
 }
 
-// search for manual script file references in liquid code
-const jsFilesIncludedManually = []
-if (section.jsFiles.length > 0 || section.jsModules.length > 0) {
-  let match
-  const regex = /<script.*?src="(.*?)"/gmi
-
-  while (match = regex.exec(liquidCode)) {
-    jsFilesIncludedManually.push(basename(match[1]))
-  }
-}
-
 // Process JavaScript files
+if (section.jsFiles.length > 0 || section.jsModules.length > 0) {
+  logger.debug('Processing JavaScript')
 
-if (section.jsFiles.length > 0) {
-  logger.debug('Processing JavaScript files')
-  logger.debug(`${section.jsFiles.length} JavaScript file${section.jsFiles.length > 1 ? 's' : ''} found`)
+  const javaScriptProcessor = new JavaScriptProcessor()
+  await javaScriptProcessor.loadDefaultOptions()
+  const jsFilesFullPathInLiquid = getScriptFiles(liquidCode)
+  const jsFilesInLiquid = jsFilesFullPathInLiquid.map(file => basename(file))
 
-  // Copy manually referenced files as is, get left out files as a results
-  const jsFilesToMerge = await copyFilesWithFilter(section.jsFiles, section.assetsBuildFolder, jsFilesIncludedManually)
-
-  // Merge jsCode and write build package JS file
-  if (jsFilesToMerge.length > 0) {
-    // Consolidate JS Code
-    const jsCode = await mergeFileContents(jsFilesToMerge)
-    // Write Section JS asset file
+  // Process JavaScript Files
+  if (section.jsFiles.length > 0) {
+    logger.debug(`Processing ${section.jsFiles.length} JavaScript file${section.jsFiles.length > 1 ? 's' : ''}`)
     const buildJsFileBasename = section.name + '.js'
-    await writeFileOrDie(`${section.assetsBuildFolder}/${buildJsFileBasename}`, jsCode)
-    // Inject Section JS asset file reference to the liquid code
-    liquidCode += `\n<script src="{{ '${buildJsFileBasename}' | asset_url }}" async></script>`
+    const jsFiles = await javaScriptProcessor.processJsFiles(section.jsFiles, buildJsFileBasename, jsFilesInLiquid)
+    // Write JS files to disk
+    for (const filename in jsFiles) {
+      await writeFileOrDie(`${section.assetsBuildFolder}/${filename}`, jsFiles[filename])
+      if (!jsFilesInLiquid.includes(filename)) {
+        liquidCode += `\n<script src="{{ '${filename}' | asset_url }}" async></script>`
+      }
+    }
+  }
+  // Process JavaScript Modules
+  if (section.jsModules.length > 0) {
+    logger.debug(`Processing ${section.jsModules.length} JavaScript module${section.jsFiles.length > 1 ? 's' : ''}`)
+    const jsModules = await javaScriptProcessor.processJsModules(section.jsModules)
+
+    for (const filename in jsModules) {
+      await writeFileOrDie(`${section.assetsBuildFolder}/${filename}`, jsModules[filename])
+      if (!jsFilesInLiquid.includes(filename)) {
+        liquidCode += `\n<script type="module" src="{{ '${filename}' | asset_url }}" async></script>`
+      }
+
+    }
   }
 } else {
   logger.debug(`No JavaScript files found for ${section.name}`)
-}
-
-// Process JavaScript Modules
-if (section.jsModules.length > 0) {
-  logger.debug('Processing JavaScript Modules')
-  logger.debug(`${section.jsModules.length} JavaScript Module${section.jsModules.length > 1 ? 's' : ''} found`)
-
-  // Copy all files manually
-  for (const jsModule of section.jsModules) {
-    await copyFileOrDie(jsModule, `${section.assetsBuildFolder}/${basename(jsModule)}`)
-  }
-
-  // Filter out files that are already included within the liquid code
-  const jsModulesToInject = section.jsModules.filter((jsModule) => {!jsFilesIncludedManually.includes(basename(jsModule))})
-
-  for (const jsModule of jsModulesToInject) {
-    liquidCode += `\n<script type="module" src="{{ '${basename(jsModule)}' | asset_url }}" async></script>`
-  }
-} else {
-  logger.debug(`No JavaScript Modules found for ${section.name}`)
 }
 
 // Process CSS files

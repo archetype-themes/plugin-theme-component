@@ -3394,7 +3394,6 @@ __metadata:
     pino-pretty: ^8.1.0
     standard: ^17.0.0
   bin:
-    build-js: processors/javaScriptProcessor.mjs
     build-section: bin/build-section.mjs
   languageName: unknown
   linkType: soft
