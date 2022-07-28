@@ -51,8 +51,9 @@ for (const sectionFile of sectionFiles) {
       section.liquidFiles.push(sectionFile)
       break
     case '.json':
-      if (basename(sectionFile) === 'schema.json') section.schemaFile = sectionFile
-      else if (basename(sectionFile).match(/^([a-z]{2})(-[a-z]{2})?(\.\w+)*\.json/i))
+      if (basename(sectionFile) === 'schema.json')
+        section.schemaFile = sectionFile
+      else if (basename(sectionFile).match(/^([a-z]{2})(-[a-z]{2})?(\.(default|schema)){0,2}\.json$/i))
         section.localeFiles.push(sectionFile)
       break
     default:
