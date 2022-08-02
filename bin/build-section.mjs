@@ -69,6 +69,8 @@ for (const liquidFile of section.liquidFiles) {
   liquidCode += `\n${await readFile(liquidFile, FILE_ENCODING_OPTION)}`
 }
 
+const renders = LiquidUtils.findRenders(liquidCode)
+
 // Create build/assets folder if we have any assets
 if (section.jsFiles.length > 0 || section.jsModules.length > 0 || section.cssFiles.length > 0) {
   await mkdir(section.assetsBuildFolder, { recursive: true })
