@@ -1,5 +1,5 @@
 {
-  "name": "section-builder",
+  "name": "archie",
   "version": "1.0.0",
   "description": "Builds a Shopify Theme Section by assembling its content in a minimal number of files.",
   "main": "bin/build-section.mjs",

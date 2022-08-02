@@ -1,34 +1,30 @@
-# Shopify Section-Builder
+# Archie
 
-The section-builder takes care of assembling your section according to Shopify's standards while allowing you to set up
-your section files as you wish.
+Archie, short for Archetype, is our internal builder. Archie takes care of assembling your sections and snippets
+according to Shopify's standards while allowing you to separate and organise your section contents as you see fit.
 
 ## Install
 
 This package is meant for use within the Archetype Themes Components Monorepo. When creating a new section package
-inside the appropriate folder, simply use yarn or npm to add this module as a development dependency through its GitHub
+inside the appropriate folder, use yarn to add this module as a development dependency through its GitHub
 address.
 
 ```shell
-npm i https://github.com/archetype-themes/section-builder --save-dev
+yarn add https://github.com/archetype-themes/archie --dev
 ```
 
-```shell
-yarn add https://github.com/archetype-themes/section-builder --dev
-```
-
-## Usage
+## Section Builder: How to use it
 
 To build your section, just use the following command
 
 ```shell
-npx section-builder
+yarn  build-section
 ```
 
 ### Log Level
 
-Section builder three levels log system, using the standard `info`, `debug`, `error`. By default, `info` is used. To use
-a different log level, use the following flags when running the section-builder command:
+Archie has a three levels log system, using the standard `info`, `debug`, `error` categories. `info` is the default
+level. To use a different log level, use the following flags when running the builder command:
 
 * `--verbose` will activate `debug` log level and a great number of details on internal processes will be
   displayed.
@@ -36,12 +32,12 @@ a different log level, use the following flags when running the section-builder 
 
 ```shell
 # Show Error, Info and Debug messages
-npx section-builder --verbose
+yarn build-section --verbose
 ```
 
 ```shell
 # Show only Error messages
-npx section-builder --quiet
+yarn build-section --quiet
 ```
 
 ## Aaaand ACTION!
@@ -54,10 +50,16 @@ it proceeds according to the file type detected.
 #### Accepted input
 
 ```ignorelang
+# Liquid files
 **/*.liquid
+# Javascript files
 **/*.js
+**/*.mjs
+# CSS files
 **/*.css
-schema.json
+# Locale files
+**/en(-US)?(.(default|schema)){0,2}.json
+**/schema.json
 
 # Ignored entries
 !/build
@@ -70,6 +72,7 @@ schema.json
 build/section-name.liquid
 build/assets/section-name.js
 build/assets/section-name.css
+build/locales/en-US.default.json
 ```
 
 ### JS Files

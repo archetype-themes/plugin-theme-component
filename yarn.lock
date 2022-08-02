@@ -1403,6 +1403,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"archie@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "archie@workspace:."
+  dependencies:
+    "@babel/core": ^7.18.9
+    "@babel/preset-env": ^7.18.9
+    core-js: ^3.23.5
+    esbuild: ^0.14.51
+    esm: ^3.2.25
+    pino: ^8.2.0
+    pino-pretty: ^8.1.0
+    standard: ^17.0.0
+  bin:
+    build-section: bin/build-section.mjs
+  languageName: unknown
+  linkType: soft
+
 "argparse@npm:^2.0.1":
   version: 2.0.1
   resolution: "argparse@npm:2.0.1"
@@ -3381,22 +3398,6 @@ __metadata:
   checksum: a0a0bad0294c3e2a9d1bf3cf2b1096dfb83c162d09a5e4891e488cce082120bd69161d2a92aae7fc48255290f17700decae9c89a07fe139794e61b5c8b411377
   languageName: node
   linkType: hard
-
-"section-builder@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "section-builder@workspace:."
-  dependencies:
-    "@babel/core": ^7.18.9
-    "@babel/preset-env": ^7.18.9
-    core-js: ^3.23.5
-    esm: ^3.2.25
-    pino: ^8.2.0
-    pino-pretty: ^8.1.0
-    standard: ^17.0.0
-  bin:
-    build-section: bin/build-section.mjs
-  languageName: unknown
-  linkType: soft
 
 "secure-json-parse@npm:^2.4.0":
   version: 2.4.0
