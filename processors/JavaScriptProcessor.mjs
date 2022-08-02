@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-import { getRootFolderName, readFileOrDie } from '../utils/FileUtils.mjs'
+import FileUtils from '../utils/FileUtils.mjs'
 import { loadOptions, transformFileAsync } from '@babel/core'
 import logger from '../utils/Logger.js'
 import { basename } from 'path'
@@ -19,7 +19,7 @@ class JavaScriptProcessor {
 
   async loadDefaultOptions () {
     logger.debug('JSP - Loading Default Options')
-    const babelConfig = await readFileOrDie(`${getRootFolderName()}/babel.config.json`)
+    const babelConfig = await FileUtils.readFileOrDie(`${FileUtils.getRootFolderName()}/babel.config.json`)
     const parsedBabelConfig = JSON.parse(babelConfig)
 
     this.options = await loadOptions(parsedBabelConfig)

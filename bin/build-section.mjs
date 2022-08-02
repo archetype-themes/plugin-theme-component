@@ -2,19 +2,12 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { env, exit } from 'node:process'
 import { basename, extname } from 'path'
-import {
-  copyFileOrDie,
-  copyFiles,
-  FILE_ENCODING_OPTION,
-  getFolderFilesRecursively,
-  mergeFileContents,
-  readFileOrDie,
-  writeFileOrDie
-} from '../utils/FileUtils.mjs'
+import FileUtils, { FILE_ENCODING_OPTION } from '../utils/FileUtils.mjs'
 import createSection from '../factory/SectionFactory.js'
 import logger from '../utils/Logger.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.mjs'
 import { getScriptFiles } from '../utils/HtmlUtils.js'
+import LiquidUtils from '../utils/LiquidUtils.js'
 
 const section = createSection(env.npm_package_name)
 
@@ -31,7 +24,7 @@ try {
 }
 
 // Scan package folder
-const sectionFiles = await getFolderFilesRecursively(section.rootFolder)
+const sectionFiles = await FileUtils.getFolderFilesRecursively(section.rootFolder)
 
 // Categorize files for the build steps
 for (const sectionFile of sectionFiles) {
@@ -97,7 +90,7 @@ if (section.jsFiles.length > 0 || section.jsModules.length > 0) {
     const jsFiles = await javaScriptProcessor.processJsFiles(section.jsFiles, buildJsFileBasename, jsFilesInLiquid)
     // Write JS files to disk
     for (const filename in jsFiles) {
-      await writeFileOrDie(`${section.assetsBuildFolder}/${filename}`, jsFiles[filename])
+      await FileUtils.writeFileOrDie(`${section.assetsBuildFolder}/${filename}`, jsFiles[filename])
       if (!jsFilesInLiquid.includes(filename)) {
         liquidCode += `\n<script src="{{ '${filename}' | asset_url }}" async></script>`
       }
@@ -109,7 +102,7 @@ if (section.jsFiles.length > 0 || section.jsModules.length > 0) {
     const jsModules = await javaScriptProcessor.processJsModules(section.jsModules)
 
     for (const filename in jsModules) {
-      await writeFileOrDie(`${section.assetsBuildFolder}/${filename}`, jsModules[filename])
+      await FileUtils.writeFileOrDie(`${section.assetsBuildFolder}/${filename}`, jsModules[filename])
       if (!jsFilesInLiquid.includes(filename)) {
         liquidCode += `\n<script type="module" src="{{ '${filename}' | asset_url }}" async></script>`
       }
@@ -134,15 +127,15 @@ if (section.cssFiles.length > 0) {
     linkTagsHref.push(basename(match[1]))
   }
 
-  const cssFilesToMerge = await copyFiles(section.cssFiles, section.assetsBuildFolder, linkTagsHref)
+  const cssFilesToMerge = await FileUtils.copyFiles(section.cssFiles, section.assetsBuildFolder, linkTagsHref)
 
   // Merge excluded CSS files and write build package CSS file
   if (cssFilesToMerge.length > 0) {
     // Consolidate CSS Code
-    const cssCode = await mergeFileContents(cssFilesToMerge)
+    const cssCode = await FileUtils.mergeFileContents(cssFilesToMerge)
     // Write Section CSS asset file
     const buildCssFileBasename = section.name + '.css'
-    await writeFileOrDie(section.assetsBuildFolder + '/' + buildCssFileBasename, cssCode)
+    await FileUtils.writeFileOrDie(section.assetsBuildFolder + '/' + buildCssFileBasename, cssCode)
     // Inject Section CSS asset file reference to the liquid code
     liquidCode += `\n{{ '${buildCssFileBasename}' | global_asset_url | stylesheet_tag }}`
   }
@@ -156,7 +149,7 @@ if (section.localeFiles.length > 0) {
   logger.debug('Processing Locale files')
   logger.debug(`${section.localeFiles.length} Locale file${section.localeFiles.length > 1 ? 's' : ''} found`)
 
-  section.localeFiles.forEach(file => copyFileOrDie(file, `${section.localesBuildFolder}/${basename(file)}`))
+  section.localeFiles.forEach(file => FileUtils.copyFileOrDie(file, `${section.localesBuildFolder}/${basename(file)}`))
 
 } else {
   logger.debug(`No Locale files found for ${section.name}`)
@@ -165,7 +158,7 @@ if (section.localeFiles.length > 0) {
 // append section schema
 if (section.schemaFile) {
   logger.debug('Processing Schema file')
-  liquidCode += `\n{% schema %}\n${await readFileOrDie(section.schemaFile)}\n{% endschema %}`
+  liquidCode += `\n{% schema %}\n${await FileUtils.readFileOrDie(section.schemaFile)}\n{% endschema %}`
 }
 
 // create section liquid file

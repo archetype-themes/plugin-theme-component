@@ -4,124 +4,120 @@ import { exit } from 'node:process'
 import logger from '../utils/Logger.js'
 
 const FILE_ENCODING_OPTION = { encoding: 'UTF-8' }
+const EXCLUDED_FOLDERS = ['node_modules', '.yarn', '.idea', '.git', 'build']
 
-/**
- * Writes Asset files references in liquid code as is and returns a list of asset files not references in liquid file
- * @param {Array} sourceFiles Files to filter
- * @param {string} outputFolder Folder where to output the copied files
- * @param {Array} inclusiveFilter Basename filter of files to copy
- * @returns {Promise<string[]>}
- */
-async function copyFiles (sourceFiles, outputFolder, inclusiveFilter = null) {
-  const excludedFiles = []
+class FileUtils {
+  /**
+   * Writes Asset files references in liquid code as is and returns a list of asset files not references in liquid file
+   * @param {Array} sourceFiles Files to filter
+   * @param {string} outputFolder Folder where to output the copied files
+   * @param {Array} inclusiveFilter Basename filter of files to copy
+   * @returns {Promise<string[]>}
+   */
+  static async copyFiles (sourceFiles, outputFolder, inclusiveFilter = null) {
+    const excludedFiles = []
 
-  // Filter out JS Files already referenced in the liquid code
-  for (const file of sourceFiles) {
-    const fileBasename = basename(file)
-    // When already referenced, copy as is in the assets folder
-    if (inclusiveFilter) {
-      if (inclusiveFilter.includes(fileBasename)) {
-        await copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
+    // Filter out JS Files already referenced in the liquid code
+    for (const file of sourceFiles) {
+      const fileBasename = basename(file)
+      // When already referenced, copy as is in the assets folder
+      if (inclusiveFilter) {
+        if (inclusiveFilter.includes(fileBasename)) {
+          await this.copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
+        } else {
+          excludedFiles.push(file)
+        }
       } else {
-        excludedFiles.push(file)
+        await this.copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
       }
-    } else {
-      await copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
+    }
+    return excludedFiles
+  }
+
+  /**
+   *
+   * @param {string} sourceFile
+   * @param {string} destinationFile
+   * @returns {Promise<void>}
+   */
+  static async copyFileOrDie (sourceFile, destinationFile) {
+    try {
+      await copyFile(sourceFile, destinationFile)
+    } catch (error) {
+      logger.error(error.message)
+      exit(1)
     }
   }
-  return excludedFiles
-}
 
-/**
- *
- * @param {string} sourceFile
- * @param {string} destinationFile
- * @returns {Promise<void>}
- */
-async function copyFileOrDie (sourceFile, destinationFile) {
-  try {
-    await copyFile(sourceFile, destinationFile)
-  } catch (error) {
-    logger.error(error.message)
-    exit(1)
+  /**
+   * Gets directory file listing recursively
+   * @param dir
+   * @returns {Promise<FlatArray[] | string>}
+   * @link https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
+   */
+  static async getFolderFilesRecursively (dir) {
+    try {
+      const entries = await readdir(dir, { withFileTypes: true })
+      const files = await Promise.all(entries.map((entry) => {
+        const absolutePath = resolve(dir, entry.name)
+        return entry.isDirectory() && !EXCLUDED_FOLDERS.includes(entry.name) ? this.getFolderFilesRecursively(absolutePath) : absolutePath
+      }))
+      return files.flat()
+    } catch (error) {
+      logger.error(error.message)
+      exit(1)
+    }
   }
-}
 
-/**
- * Gets directory file listing recursively
- * @param dir
- * @returns {Promise<FlatArray[] | string>}
- * @link https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
- */
-async function getFolderFilesRecursively (dir) {
-  try {
-    const entries = await readdir(dir, { withFileTypes: true })
-    const files = await Promise.all(entries.map((entry) => {
-      const absolutePath = resolve(dir, entry.name)
-      return entry.isDirectory() && entry.name !== 'node_modules' ? getFolderFilesRecursively(absolutePath) : absolutePath
-    }))
-    return files.flat()
-  } catch (error) {
-    logger.error(error.message)
-    exit(1)
+  /**
+   * Shortcut to a method to get root folder username of this builder package
+   * @returns {string}
+   */
+  static getRootFolderName () {
+    return dirname(dirname(import.meta.url)).substring(7)
   }
-}
 
-/**
- * Shortcut to a method to get root folder username of this builder package
- * @returns {string}
- */
-function getRootFolderName () {
-  return dirname(dirname(import.meta.url)).substring(7)
-}
+  /**
+   *
+   * @param {Array} files
+   * @returns {Promise<string>}
+   */
+  static async mergeFileContents (files) {
+    let content = ''
 
-/**
- *
- * @param {Array} files
- * @returns {Promise<string>}
- */
-async function mergeFileContents (files) {
-  let content = ''
-
-  for (const file of files) {
-    content += `${await readFileOrDie(file)}\n`
+    for (const file of files) {
+      content += `${await this.readFileOrDie(file)}\n`
+    }
+    return content
   }
-  return content
-}
 
-async function readFileOrDie (filename) {
-  try {
-    logger.debug(`Reading from disk: ${filename}`)
-    return await readFile(filename, FILE_ENCODING_OPTION)
-  } catch (error) {
-    logger.error(error.message)
-    exit(1)
+  static async readFileOrDie (filename) {
+    try {
+      logger.debug(`Reading from disk: ${filename}`)
+      return await readFile(filename, FILE_ENCODING_OPTION)
+    } catch (error) {
+      logger.error(error.message)
+      exit(1)
+    }
   }
-}
 
-/**
- *
- * @param {string} filename
- * @param {string} fileContents
- * @returns {Promise<void>}
- */
-async function writeFileOrDie (filename, fileContents) {
-  try {
-    logger.debug(`Writing to disk: ${filename}`)
-    await writeFile(filename, fileContents)
-  } catch (error) {
-    logger.error(error.message)
-    exit(1)
+  /**
+   *
+   * @param {string} filename
+   * @param {string} fileContents
+   * @returns {Promise<void>}
+   */
+  static async writeFileOrDie (filename, fileContents) {
+    try {
+      logger.debug(`Writing to disk: ${filename}`)
+      await writeFile(filename, fileContents)
+    } catch (error) {
+      logger.error(error.message)
+      exit(1)
+    }
   }
+
 }
 
-export {
-  FILE_ENCODING_OPTION,
-  copyFileOrDie,
-  copyFiles,
-  getFolderFilesRecursively,
-  getRootFolderName,
-  mergeFileContents,
-  readFileOrDie,
-  writeFileOrDie
-}
+export default FileUtils
+export { FILE_ENCODING_OPTION }
