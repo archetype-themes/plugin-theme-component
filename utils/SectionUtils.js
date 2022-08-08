@@ -14,8 +14,6 @@ function detectSectionFolder (packageName) {
 
     if (packageFolder.includes(packageName)) {
       packageFolder = packageFolder.substring(0, packageFolder.lastIndexOf(packageName) + packageName.length)
-    } else {
-      packageFolder = cwd()
     }
   }
   return packageFolder
