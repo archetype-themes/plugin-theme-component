@@ -1,6 +1,6 @@
 class Section {
   constructor () {
-    this.cssFiles = []
+    this.styleSheets = []
     this.jsFiles = []
     this.jsModules = []
     this.liquidFiles = []
@@ -47,12 +47,12 @@ class Section {
     this._localesBuildFolder = localesBuildFolder
   }
 
-  get cssFiles () {
-    return this._cssFiles
+  get styleSheets () {
+    return this._styleSheets
   }
 
-  set cssFiles (cssFiles) {
-    this._cssFiles = cssFiles
+  set styleSheets (styleSheets) {
+    this._styleSheets = styleSheets
   }
 
   get jsFiles () {
@@ -61,14 +61,6 @@ class Section {
 
   set jsFiles (jsFiles) {
     this._jsFiles = jsFiles
-  }
-
-  get jsModules () {
-    return this._jsModules
-  }
-
-  set jsModules (jsModules) {
-    this._jsModules = jsModules
   }
 
   get liquidFiles () {
