@@ -1,17 +1,27 @@
 import { copyFile, readdir, readFile, writeFile } from 'node:fs/promises'
 import { basename, dirname, resolve } from 'path'
-import { exit } from 'node:process'
+import { cwd, exit } from 'node:process'
 import logger from '../utils/Logger.js'
 
 const FILE_ENCODING_OPTION = { encoding: 'UTF-8' }
 const EXCLUDED_FOLDERS = ['node_modules', '.yarn', '.idea', '.git', 'build']
 
 class FileUtils {
+
+  /**
+   * Convert Component (Section/Snippet) Absolute Path to a Relative one
+   * @param {string} absolutePath
+   * @returns {string}
+   */
+  static convertToComponentRelativePath (absolutePath) {
+    return absolutePath.replace(cwd(), '.')
+  }
+
   /**
    * Writes Asset files references in liquid code as is and returns a list of asset files not references in liquid file
-   * @param {Array} sourceFiles Files to filter
+   * @param {string[]} sourceFiles Files to filter
    * @param {string} outputFolder Folder where to output the copied files
-   * @param {Array} inclusiveFilter Basename filter of files to copy
+   * @param {string[]} inclusiveFilter Basename filter of files to copy
    * @returns {Promise<string[]>}
    */
   static async copyFiles (sourceFiles, outputFolder, inclusiveFilter = null) {
@@ -73,7 +83,7 @@ class FileUtils {
    * Shortcut to a method to get root folder username of this builder package
    * @returns {string}
    */
-  static getRootFolderName () {
+  static getBuilderRootFolderName () {
     return dirname(dirname(import.meta.url)).substring(7)
   }
 
