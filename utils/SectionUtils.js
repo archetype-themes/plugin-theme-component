@@ -7,7 +7,7 @@ import { cwd, env } from 'node:process'
  */
 function detectSectionFolder (packageName) {
   let packageFolder
-  if (env.npm_config_local_prefixw)
+  if (env.npm_config_local_prefix)
     packageFolder = env.npm_config_local_prefix
   else {
     packageFolder = cwd()
