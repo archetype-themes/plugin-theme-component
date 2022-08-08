@@ -6,7 +6,7 @@ class RenderFactory {
 
   static fromMatch (matchText, matchGroups) {
     const render = new Render()
-    console.log(matchGroups)
+
     if (!matchGroups.snippet) {
       logger.error('Expected name of snippet is empty')
       exit(1)
@@ -31,9 +31,8 @@ class RenderFactory {
         }
       }
       render.variables = variables
-      console.log(variables)
     }
-    console.log(render)
+
     return render
   }
 }
