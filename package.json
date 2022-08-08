@@ -25,6 +25,9 @@
     "@babel/core": "^7.18.9",
     "@babel/preset-env": "^7.18.9",
     "core-js": "^3.23.5",
+    "esbuild": "^0.14.51",
+    "esbuild-plugin-less": "^1.1.8",
+    "esbuild-sass-plugin": "^2.3.1",
     "esm": "^3.2.25",
     "pino": "^8.2.0",
     "pino-pretty": "^8.1.0"
