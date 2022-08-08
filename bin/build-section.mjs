@@ -3,13 +3,13 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { env, exit } from 'node:process'
 import { basename, extname } from 'path'
 import FileUtils, { FILE_ENCODING_OPTION } from '../utils/FileUtils.js'
-import createSection from '../factory/SectionFactory.js'
+import SectionFactory from '../factory/SectionFactory.js'
 import logger from '../utils/Logger.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 
-const section = createSection(env.npm_package_name)
+const section = SectionFactory.createSection(env.npm_package_name)
 
 logger.info(`Building "${section.name}" section`)
 
@@ -71,6 +71,7 @@ for (const liquidFile of section.liquidFiles) {
 }
 
 const renders = LiquidUtils.findRenders(liquidCode)
+console.log(renders)
 
 // Create build/assets folder if we have any assets
 if (section.jsFiles.length > 0 || section.styleSheets.length > 0) {
