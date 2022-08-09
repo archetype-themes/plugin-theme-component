@@ -27,7 +27,7 @@ class ComponentUtils {
           break
         case '.liquid':
           if (component instanceof Section && dirname(file).endsWith('/snippets')) {
-            component.snippetFiles.push(file)
+            component.snippetFiles[basename(file, '.liquid')] = file
           } else {
             component.liquidFiles.push(file)
           }
