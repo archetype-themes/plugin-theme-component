@@ -2,6 +2,11 @@ import RenderFactory from '../factory/RenderFactory.js'
 
 class LiquidUtils {
 
+  /**
+   * Finds render tags in liquid code and create Render models
+   * @param {string} liquidCode
+   * @returns {Render[]}
+   */
   static findRenders (liquidCode) {
     const regex = /\{%\s+render\s+'(?<snippet>[\p{L}_. -]+)'(?:\s*(?<clause>for|with)\s+(?<clauseSourceVariable>\w+[.\w]+)\s+as\s+(?<clauseTargetVariable>\w+))?(?<variables>(?:\s*,\s*\w+:\s*'?\w+'?)*)\s+%\}/giu
     const matches = [...liquidCode.matchAll(regex)]
@@ -12,21 +17,7 @@ class LiquidUtils {
     }
     return renders
   }
-
-  /**
-   *
-   * @param {string} html
-   * @returns {string[]}
-   */
-  static findSections (html) {
-    let match
-    const regex = /<script.*?src="(.*?)"/gmi
-    const sections = []
-    while (match = regex.exec(html)) {
-      sections.push(match[1])
-    }
-    return sections
-  }
+  
 }
 
 export default LiquidUtils
