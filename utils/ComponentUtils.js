@@ -5,7 +5,6 @@ import { cwd, env } from 'node:process'
 import FileUtils from './FileUtils.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import logger from './Logger.js'
-import Section from '../models/Section.js'
 import SectionFiles from '../models/SectionFiles.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 
@@ -69,13 +68,13 @@ class ComponentUtils {
 
           break
         case '.json':
-          if (componentFiles instanceof Section && basename(file) === 'schema.json')
+          if (basename(file).toLowerCase() === 'schema.json')
             componentFiles.schemaFile = file
           else if (basename(file).match(/^([a-z]{2})(-[a-z]{2})?(\.(default|schema)){0,2}\.json$/i))
             componentFiles.localeFiles.push(file)
           break
         default:
-          logger.debug(`Ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
+          logger.debug(`Filter Files: Unrecognised JSON file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
           break
       }
     }

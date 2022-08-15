@@ -4,6 +4,7 @@ class ComponentFiles {
   #liquidFiles
   #localeFiles
   #mainStylesheet
+  #schemaFile
   #stylesheets
 
   constructor () {
@@ -95,6 +96,22 @@ class ComponentFiles {
    */
   set mainStylesheet (value) {
     this.#mainStylesheet = value
+  }
+
+  /**
+   *  Get Schema File
+   * @returns {string}
+   */
+  get schemaFile () {
+    return this.#schemaFile
+  }
+
+  /**
+   * Set Schema File
+   * @param {string} value
+   */
+  set schemaFile (value) {
+    this.#schemaFile = value
   }
 
   /**
