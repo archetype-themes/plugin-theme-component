@@ -2,14 +2,17 @@ import { basename, dirname, extname } from 'path'
 import logger from './Logger.js'
 import FileUtils from './FileUtils.js'
 import Section from '../models/Section.js'
+import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import SectionFiles from '../models/SectionFiles.js'
+import StylesProcessor from '../processors/StylesProcessor.js'
 
 class ComponentUtils {
   /**
    *
    * @param {string[]} files
-   * @param {Section|Snippet} component
+   * @param {SectionFiles|SnippetFiles} componentFiles
    */
-  static filterFiles (files, component) {
+  static filterFiles (files, componentFiles) {
     // Categorize files for the build steps
     for (const file of files) {
       const extension = extname(file)
@@ -19,31 +22,40 @@ class ComponentUtils {
         case '.less':
         case '.sass':
         case '.scss':
-          component.styleSheets.push(file)
+          componentFiles.stylesheets.push(file)
           break
         case '.js':
         case '.mjs':
-          component.jsFiles.push(file)
+          componentFiles.javascriptFiles.push(file)
           break
         case '.liquid':
-          if (component instanceof Section && dirname(file).endsWith('/snippets')) {
-            component.snippetFiles[basename(file, '.liquid')] = file
+          if (componentFiles instanceof SectionFiles && dirname(file).endsWith('/snippets')) {
+            componentFiles.snippetFiles[basename(file, '.liquidFiles')] = file
           } else {
-            component.liquidFiles.push(file)
+            componentFiles.liquidFiles.push(file)
           }
 
           break
         case '.json':
-          if (component instanceof Section && basename(file) === 'schema.json')
-            component.schemaFile = file
+          if (componentFiles instanceof Section && basename(file) === 'schema.json')
+            componentFiles.schemaFile = file
           else if (basename(file).match(/^([a-z]{2})(-[a-z]{2})?(\.(default|schema)){0,2}\.json$/i))
-            component.localeFiles.push(file)
+            componentFiles.localeFiles.push(file)
           break
         default:
           logger.debug(`Ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
           break
       }
     }
+
+    if (componentFiles.javascriptFiles) {
+      componentFiles.javascriptIndex = JavaScriptProcessor.getMainJavascriptFile(componentFiles.javascriptFiles)
+    }
+
+    if (componentFiles.stylesheets) {
+      componentFiles.mainStylesheet = StylesProcessor.getMainStyleSheet(componentFiles.stylesheets)
+    }
+
   }
 }
 
