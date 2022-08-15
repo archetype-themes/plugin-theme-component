@@ -131,14 +131,6 @@ class Render {
   hasWithClause () {
     return this._clause && this._clause === 'with'
   }
-
-  /**
-   * Boolean helper to check if there are variables
-   * @returns {boolean}
-   */
-  hasVariables () {
-    return this.variables.length > 0
-  }
 }
 
 export default Render
