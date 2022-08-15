@@ -1,5 +1,4 @@
 import logger from '../utils/Logger.js'
-import { exit } from 'node:process'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import { writeFile } from 'node:fs/promises'
@@ -31,12 +30,7 @@ class ComponentBuilder {
    * @param {Section|Snippet} component
    */
   static async buildStylesheets (component) {
-    try {
-      await StylesProcessor.buildStyles(`${component.build.assetsFolder}/${component.name}.css`, component.files.mainStylesheet)
-    } catch (error) {
-      logger.error(error)
-      exit(1)
-    }
+    await StylesProcessor.buildStyles(component.build.stylesheet, component.files.mainStylesheet)
   }
 }
 

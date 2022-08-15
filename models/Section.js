@@ -2,12 +2,29 @@ import Component from './abstract/Component.js'
 import SectionFiles from './SectionFiles.js'
 
 class Section extends Component {
+  #build
   #files
   #renders
 
   constructor () {
     super()
     this.files = new SectionFiles()
+  }
+
+  /**
+   *  Get Build
+   * @returns {SectionBuild}
+   */
+  get build () {
+    return this.#build
+  }
+
+  /**
+   * Set Build
+   * @param {SectionBuild} value
+   */
+  set build (value) {
+    this.#build = value
   }
 
   /**

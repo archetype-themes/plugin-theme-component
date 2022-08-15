@@ -1,9 +1,9 @@
-import Build from '../models/Build.js'
 import FilesFactory from './FilesFactory.js'
 import Snippet from '../models/Snippet.js'
 import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
+import BuildFactory from './BuildFactory.js'
 
 class SnippetFactory {
   /**
@@ -25,7 +25,7 @@ class SnippetFactory {
 
       // Set snippet folders
       snippet.rootFolder = await ComponentUtils.detectRootFolder(snippet.name)
-      snippet.build = new Build(snippet.rootFolder + '/build')
+      snippet.build = BuildFactory.fromSnippet(snippet)
       snippet.files = await FilesFactory.fromSnippetFolder(snippet.rootFolder)
 
       // Collate liquid content from all liquid files with the default folder/alphabetical order

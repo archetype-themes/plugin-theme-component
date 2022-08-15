@@ -28,7 +28,7 @@ class SnippetBuilder extends ComponentBuilder {
    * @returns {Promise<BuildResult>}
    */
   static async buildJavascript (snippet) {
-    return JavaScriptProcessor.buildJavaScript(`${snippet.build.assetsFolder}/${snippet.name}.js`, snippet.files.javascriptIndex)
+    return JavaScriptProcessor.buildJavaScript(snippet.build.javascriptFile, snippet.files.javascriptIndex)
   }
 
   /**

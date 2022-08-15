@@ -1,6 +1,4 @@
 class Component {
-  #build
-  #files
   #liquidCode
   #name
   #rootFolder
@@ -9,38 +7,6 @@ class Component {
     if (new.target === Component) {
       throw new TypeError('Cannot construct Component instances directly')
     }
-  }
-
-  /**
-   *  Get Build
-   * @returns {Build}
-   */
-  get build () {
-    return this.#build
-  }
-
-  /**
-   * Set Build
-   * @param {Build} value
-   */
-  set build (value) {
-    this.#build = value
-  }
-
-  /**
-   * Get Files Model Reference
-   * @returns {SnippetFiles|SectionFiles}
-   */
-  get files () {
-    return this.#files
-  }
-
-  /**
-   * Set Files Model Reference
-   * @param {SnippetFiles|SectionFiles} value
-   */
-  set files (value) {
-    this.#files = value
   }
 
   /**

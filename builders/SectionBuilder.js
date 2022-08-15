@@ -48,9 +48,9 @@ class SectionBuilder extends ComponentBuilder {
     }
 
     if (injectedFiles.length > 0) {
-      return JavaScriptProcessor.buildJavaScript(`${section.build.assetsFolder}/${section.name}.js`, section.files.javascriptIndex, injectedFiles)
+      return JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex, injectedFiles)
     }
-    return JavaScriptProcessor.buildJavaScript(`${section.build.assetsFolder}/${section.name}.js`, section.files.javascriptIndex)
+    return JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex)
 
   }
 

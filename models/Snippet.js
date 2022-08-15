@@ -2,11 +2,28 @@ import Component from './abstract/Component.js'
 import SnippetFiles from './SnippetFiles.js'
 
 class Snippet extends Component {
+  #build
   #files
 
   constructor () {
     super()
     this.files = new SnippetFiles()
+  }
+
+  /**
+   *  Get Build
+   * @returns {SnippetBuild}
+   */
+  get build () {
+    return this.#build
+  }
+
+  /**
+   * Set Build
+   * @param {SnippetBuild} value
+   */
+  set build (value) {
+    this.#build = value
   }
 
   /**
