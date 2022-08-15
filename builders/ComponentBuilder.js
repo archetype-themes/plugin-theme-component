@@ -33,7 +33,7 @@ class ComponentBuilder {
     }
 
     // Write section liquidFiles file
-    const liquidBuildFile = `${section.build.rootFolder}/${section.name}.liquidFiles`
+    const liquidBuildFile = `${section.build.rootFolder}/${section.name}.liquid`
     await writeFile(liquidBuildFile, section.liquidCode)
   }
 
