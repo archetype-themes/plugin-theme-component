@@ -1,12 +1,9 @@
-import { readFile } from 'node:fs/promises'
-
 import Section from '../models/Section.js'
-
-import ComponentUtils from '../utils/ComponentUtils.js'
-import FileUtils, { FILE_ENCODING_OPTION } from '../utils/FileUtils.js'
-import LiquidUtils from '../utils/LiquidUtils.js'
+import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
-import { detectSectionFolder } from '../utils/SectionUtils.js'
+import SectionUtils from '../utils/SectionUtils.js'
+import Build from '../models/Build.js'
+import FilesFactory from './FilesFactory.js'
 
 class SectionFactory {
   /**
@@ -14,28 +11,18 @@ class SectionFactory {
    * @param {string} name
    * @returns {Promise<Section>}
    */
-  static async createSection (name) {
+  static async fromName (name) {
     const section = new Section()
     section.name = name
 
     // Set section folders
-    section.rootFolder = detectSectionFolder(section.name)
-    section.buildFolder = section.rootFolder + '/build'
-    section.assetsBuildFolder = section.buildFolder + '/assets'
-    section.localesBuildFolder = section.buildFolder + '/locales'
-
-    // Scan package folder & categorize files
-    const sectionFiles = await FileUtils.getFolderFilesRecursively(section.rootFolder)
-    ComponentUtils.filterFiles(sectionFiles, section)
+    section.rootFolder = SectionUtils.detectSectionFolder(section.name)
+    section.build = new Build(section.rootFolder + '/build')
+    section.files = await FilesFactory.fromSectionFolder(section.rootFolder)
 
     // Collate liquid content from all liquid files with the default folder/alphabetical order
-    logger.debug(`${section.liquidFiles.length} liquid file${section.liquidFiles.length > 1 ? 's' : ''} found`)
-    for (const liquidFile of section.liquidFiles) {
-      section.liquidCode += `\n${await readFile(liquidFile, FILE_ENCODING_OPTION)}`
-    }
-
-    section.renders = LiquidUtils.findRenders(section.liquidCode)
-    logger.debug(`${section.renders.length} render tag${section.renders.length > 1 ? 's' : ''} found`)
+    logger.debug(`${section.name}: ${section.files.liquidFiles.length} liquid file${section.files.liquidFiles.length > 1 ? 's' : ''} found`)
+    section.liquidCode = await FileUtils.mergeFileContents(section.files.liquidFiles)
 
     return section
   }
