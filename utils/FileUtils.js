@@ -88,8 +88,8 @@ class FileUtils {
   }
 
   /**
-   *
-   * @param {Array} files
+   * Merge File Contents
+   * @param {string[]} files
    * @returns {Promise<string>}
    */
   static async mergeFileContents (files) {
@@ -101,6 +101,11 @@ class FileUtils {
     return content
   }
 
+  /**
+   * Read File Or Die
+   * @param {string} filename
+   * @returns {Promise<Buffer>}
+   */
   static async readFileOrDie (filename) {
     try {
       logger.debug(`Reading from disk: ${filename}`)

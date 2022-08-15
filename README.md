@@ -154,4 +154,3 @@ the name of the section and put at the root of the `build` folder. Files are pro
 ## Snippets
 
 Coming Soon
-
