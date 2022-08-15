@@ -48,6 +48,7 @@ class SectionBuilder extends ComponentBuilder {
     for (const render of section.renders) {
       // Create snippet from render and put into cache
       if (!snippetCache[render.snippetName]) {
+        logger.debug(`${section.name}: Building "${render.snippetName}" Snippet`)
         let snippet = new Snippet()
 
         // Look within the section's local snippets first
