@@ -73,7 +73,7 @@ class SectionBuilder extends ComponentBuilder {
 
         let snippetLiquidCode = await LiquidUtils.getRenderSnippetInlineLiquidCode(render)
 
-        section.liquidCode.replace(render.liquidTag, snippetLiquidCode)
+        section.liquidCode = section.liquidCode.replace(render.liquidTag, snippetLiquidCode)
       } else {
         // Copy snippet liquid files since we can't inline a for loop
         console.log(render.snippet.name)
