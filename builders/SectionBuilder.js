@@ -1,10 +1,14 @@
-import logger from '../utils/Logger.js'
-import Snippet from '../models/Snippet.js'
+import esbuild from 'esbuild'
 import path, { basename } from 'path'
-import SnippetFactory from '../factory/SnippetFactory.js'
-import LiquidUtils from '../utils/LiquidUtils.js'
-import FileUtils from '../utils/FileUtils.js'
 import ComponentBuilder from './ComponentBuilder.js'
+import SnippetFactory from '../factory/SnippetFactory.js'
+import Snippet from '../models/Snippet.js'
+import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import FileUtils from '../utils/FileUtils.js'
+import LiquidUtils from '../utils/LiquidUtils.js'
+import logger from '../utils/Logger.js'
+
+const { BuildResult } = esbuild
 
 class SectionBuilder extends ComponentBuilder {
 
@@ -22,6 +26,31 @@ class SectionBuilder extends ComponentBuilder {
     this.buildLocales(section)
 
     await this.buildLiquid(section)
+
+  }
+
+  /**
+   * Build Section Javascript with snippet's JS as well
+   * @param {Section} section
+   * @returns {Promise<BuildResult>}
+   */
+  static async buildJavascript (section) {
+    const includedSnippets = []
+    const injectedFiles = []
+
+    if (section.renders) {
+      for (const render of section.renders) {
+        if (!includedSnippets.includes(render.snippetName) && render.snippet.files.javascriptIndex) {
+          injectedFiles.push(render.snippet.files.javascriptIndex)
+          includedSnippets.push(render.snippetName)
+        }
+      }
+    }
+
+    if (injectedFiles.length > 0) {
+      return JavaScriptProcessor.buildJavaScript(`${section.build.assetsFolder}/${section.name}.js`, section.files.javascriptIndex, injectedFiles)
+    }
+    return JavaScriptProcessor.buildJavaScript(`${section.build.assetsFolder}/${section.name}.js`, section.files.javascriptIndex)
 
   }
 

@@ -51,7 +51,7 @@ if (section.files.javascriptFiles.length > 0 || section.files.stylesheets.length
 }
 
 // Process JavaScript files
-if (section.files.javascriptFiles.length > 0) {
+if (section.files.javascriptIndex) {
   logger.debug(`${section.name}: Processing JavaScript`)
   await SectionBuilder.buildJavascript(section)
   logger.debug(`${section.name}: Javascript build complete`)
@@ -60,7 +60,7 @@ if (section.files.javascriptFiles.length > 0) {
 }
 
 // Process CSS files
-if (section.files.stylesheets.length > 0) {
+if (section.files.mainStylesheet) {
   logger.debug(`${section.name}: Processing CSS files`)
 
   await SectionBuilder.buildStylesheets(section)

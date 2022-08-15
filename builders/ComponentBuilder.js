@@ -1,4 +1,3 @@
-import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import logger from '../utils/Logger.js'
 import { exit } from 'node:process'
 import StylesProcessor from '../processors/StylesProcessor.js'
@@ -7,44 +6,33 @@ import { writeFile } from 'node:fs/promises'
 
 class ComponentBuilder {
   /**
-   * Build Javascript
+   *
    * @param {Section|Snippet} component
    * @returns {Promise<void>}
    */
-  static async buildJavascript (component) {
-    try {
-      const mainJavaScriptFile = JavaScriptProcessor.getMainJavascriptFile(component.files.javascriptFiles)
-      await JavaScriptProcessor.buildJavaScript(`${component.build.assetsFolder}/${component.name}.js`, mainJavaScriptFile)
-    } catch (error) {
-      logger.error(error)
-      exit(1)
-    }
-  }
+  static async buildLiquid (component) {
 
-  static async buildLiquid (section) {
+    // append component schema
+    if (component.files.schemaFile) {
+      logger.debug(`${component.name}: Processing Schema file`)
 
-    // append section schema
-    if (section.files.schemaFile) {
-      logger.debug(`${section.name}: Processing Schema file`)
+      component.liquidCode += `\n{% schema %}\n${await FileUtils.readFileOrDie(component.files.schemaFile)}\n{% endschema %}`
 
-      section.liquidCode += `\n{% schema %}\n${await FileUtils.readFileOrDie(section.files.schemaFile)}\n{% endschema %}`
-
-      logger.debug(`${section.name}: Schema file build complete`)
+      logger.debug(`${component.name}: Schema file build complete`)
     }
 
-    // Write section liquidFiles file
-    const liquidBuildFile = `${section.build.rootFolder}/${section.name}.liquid`
-    await writeFile(liquidBuildFile, section.liquidCode)
+    // Write component liquidFiles file
+    const liquidBuildFile = `${component.build.rootFolder}/${component.name}.liquid`
+    await writeFile(liquidBuildFile, component.liquidCode)
   }
 
   /**
    *
-   * @param {Section|Snippet}component
+   * @param {Section|Snippet} component
    */
   static async buildStylesheets (component) {
     try {
-      const mainStyleSheet = StylesProcessor.getMainStyleSheet(component.files.stylesheets)
-      await StylesProcessor.buildStyles(`${component.build.assetsFolder}/${component.name}.css`, mainStyleSheet)
+      await StylesProcessor.buildStyles(`${component.build.assetsFolder}/${component.name}.css`, component.files.mainStylesheet)
     } catch (error) {
       logger.error(error)
       exit(1)

@@ -13,7 +13,6 @@ class JavaScriptProcessor {
    * @param {string} mainJavaScriptFile
    * @param {string[]} injectedFiles
    * @returns {Promise<BuildResult>}
-   * @throws
    */
   static async buildJavaScript (outputFile, mainJavaScriptFile, injectedFiles = []) {
     return esbuildProcessor.buildJavaScript(outputFile, mainJavaScriptFile, injectedFiles)

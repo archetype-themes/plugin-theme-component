@@ -1,6 +1,10 @@
-import FileUtils from '../utils/FileUtils.js'
+import esbuild from 'esbuild'
 import { basename } from 'path'
 import ComponentBuilder from './ComponentBuilder.js'
+import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import FileUtils from '../utils/FileUtils.js'
+
+const { BuildResult } = esbuild
 
 class SnippetBuilder extends ComponentBuilder {
 
@@ -16,6 +20,15 @@ class SnippetBuilder extends ComponentBuilder {
 
     await this.buildLiquid()
 
+  }
+
+  /**
+   * Build Snippet Javascript
+   * @param {Snippet} snippet
+   * @returns {Promise<BuildResult>}
+   */
+  static async buildJavascript (snippet) {
+    return JavaScriptProcessor.buildJavaScript(`${snippet.build.assetsFolder}/${snippet.name}.js`, snippet.files.javascriptIndex)
   }
 
   /**

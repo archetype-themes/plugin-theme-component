@@ -26,7 +26,7 @@ class esbuildProcessor {
       outfile: outputFile,
       platform: 'browser',
       sourcemap: true,
-      target: ['chrome58', 'firefox57', 'safari11', 'edge16'],
+      target: ['chrome58', 'firefox57', 'safari11', 'edge18'],
     }
 
     if (injectedFiles) {
