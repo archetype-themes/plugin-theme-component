@@ -54,10 +54,10 @@ class StylesProcessor {
       logger.debug(`Main StyleSheet Found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
       return matches[0]
     } else if (matches.length === 0) {
-      throw 'An index or main StyleSheet file could not be found.'
+      throw new Error('An index or main StyleSheet file could not be found.')
     }
     logger.debug(matches)
-    throw 'Only one index or main StyleSheet file is allowed but multiple matches were found.'
+    throw new Error('Only one index or main StyleSheet file is allowed but multiple matches were found.')
   }
 }
 

@@ -1,9 +1,9 @@
 import Section from '../models/Section.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
-import SectionUtils from '../utils/SectionUtils.js'
 import Build from '../models/Build.js'
 import FilesFactory from './FilesFactory.js'
+import ComponentUtils from '../utils/ComponentUtils.js'
 
 class SectionFactory {
   /**
@@ -16,8 +16,8 @@ class SectionFactory {
     section.name = name
 
     // Set section folders
-    section.rootFolder = SectionUtils.detectSectionFolder(section.name)
-    section.build = new Build(section.rootFolder + '/build')
+    section.rootFolder = await ComponentUtils.detectRootFolder(section.name)
+    section.build = new Build(`${section.rootFolder}/build`)
     section.files = await FilesFactory.fromSectionFolder(section.rootFolder)
 
     // Collate liquid content from all liquid files with the default folder/alphabetical order

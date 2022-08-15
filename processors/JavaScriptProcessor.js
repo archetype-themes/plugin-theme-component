@@ -39,10 +39,10 @@ class JavaScriptProcessor {
       logger.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
       return matches[0]
     } else if (matches.length === 0) {
-      throw 'An index or main JavaScript file could not be found.'
+      throw new Error('An index or main JavaScript file could not be found.')
     }
     logger.debug(matches)
-    throw 'Only one index or main JavaScript file is allowed but multiple matches were found.'
+    throw new Error('Only one index or main JavaScript file is allowed but multiple matches were found.')
   }
 
   /**

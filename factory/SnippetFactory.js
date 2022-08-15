@@ -1,25 +1,41 @@
-import { cwd } from 'node:process'
-import { dirname } from 'path'
+import Build from '../models/Build.js'
+import FilesFactory from './FilesFactory.js'
 import Snippet from '../models/Snippet.js'
+import logger from '../utils/Logger.js'
+import FileUtils from '../utils/FileUtils.js'
+import ComponentUtils from '../utils/ComponentUtils.js'
 
 class SnippetFactory {
+  /**
+   *
+   * @type {Snippet[]}
+   */
+  static snippetCache = []
 
   /**
    *
-   * @param {Render} render
+   * @param {string} snippetName
    * @returns {Promise<Snippet>}
    */
-  static async fromRender (render) {
-    const snippet = new Snippet()
-    snippet.name = render.snippetName
+  static async fromName (snippetName) {
 
-    // Set snippet folders
-    snippet.rootFolder = `${dirname(cwd())}/${snippet.name}`
-    snippet.buildFolder = snippet.rootFolder + '/build'
-    snippet.assetsBuildFolder = snippet.buildFolder + '/assets'
-    snippet.localesBuildFolder = snippet.buildFolder + '/locales'
+    if (!this.snippetCache[snippetName]) {
+      const snippet = new Snippet()
+      snippet.name = snippetName
 
-    return snippet
+      // Set snippet folders
+      snippet.rootFolder = await ComponentUtils.detectRootFolder(snippet.name)
+      snippet.build = new Build(snippet.rootFolder + '/build')
+      snippet.files = await FilesFactory.fromSnippetFolder(snippet.rootFolder)
+
+      // Collate liquid content from all liquid files with the default folder/alphabetical order
+      logger.debug(`${snippet.name}: ${snippet.files.liquidFiles.length} liquid file${snippet.files.liquidFiles.length > 1 ? 's' : ''} found`)
+      snippet.liquidCode = await FileUtils.mergeFileContents(snippet.files.liquidFiles)
+
+      this.snippetCache[snippetName] = snippet
+    }
+
+    return this.snippetCache[snippetName]
   }
 }
 

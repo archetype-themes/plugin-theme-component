@@ -1,12 +1,44 @@
-import { basename, dirname, extname } from 'path'
-import logger from './Logger.js'
+import { constants } from 'node:fs'
+import { access } from 'node:fs/promises'
+import { basename, dirname, extname } from 'node:path'
+import { cwd, env } from 'node:process'
 import FileUtils from './FileUtils.js'
-import Section from '../models/Section.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import logger from './Logger.js'
+import Section from '../models/Section.js'
 import SectionFiles from '../models/SectionFiles.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 
 class ComponentUtils {
+
+  /**
+   * Detects the package Folder Name
+   * @param {string} componentName
+   * @returns {Promise<string>}
+   */
+  static async detectRootFolder (componentName) {
+    let packageFolder
+    if (env.npm_config_local_prefix)
+      packageFolder = env.npm_config_local_prefix
+    else {
+      packageFolder = cwd()
+
+      if (packageFolder.includes(componentName)) {
+        packageFolder = packageFolder.substring(0, packageFolder.lastIndexOf(componentName) + componentName.length)
+      } else {
+        packageFolder = `${dirname(cwd())}/${componentName}`
+      }
+    }
+
+    try {
+      await access(packageFolder, constants.X_OK)
+    } catch (error) {
+      throw new Error(`${componentName}: Can't access root folder at "${packageFolder}"`)
+    }
+
+    return packageFolder
+  }
+
   /**
    *
    * @param {string[]} files
@@ -48,11 +80,11 @@ class ComponentUtils {
       }
     }
 
-    if (componentFiles.javascriptFiles) {
+    if (componentFiles.javascriptFiles.length > 0) {
       componentFiles.javascriptIndex = JavaScriptProcessor.getMainJavascriptFile(componentFiles.javascriptFiles)
     }
 
-    if (componentFiles.stylesheets) {
+    if (componentFiles.stylesheets.length > 0) {
       componentFiles.mainStylesheet = StylesProcessor.getMainStyleSheet(componentFiles.stylesheets)
     }
 
