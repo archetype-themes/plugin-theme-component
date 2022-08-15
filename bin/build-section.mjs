@@ -1,110 +1,90 @@
 #! /usr/bin/env node
-import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, rm } from 'node:fs/promises'
 import { env, exit } from 'node:process'
-import { basename } from 'path'
-import FileUtils from '../utils/FileUtils.js'
 import SectionFactory from '../factory/SectionFactory.js'
 import logger from '../utils/Logger.js'
-import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
-import StylesProcessor from '../processors/StylesProcessor.js'
-import SnippetFactory from '../factory/SnippetFactory.js'
-import ComponentUtils from '../utils/ComponentUtils.js'
+import LiquidUtils from '../utils/LiquidUtils.js'
+import SectionBuilder from '../builders/SectionBuilder.js'
 
-const section = await SectionFactory.createSection(env.npm_package_name)
+logger.info(`Building "${env.npm_package_name}" section`)
 
-logger.info(`Building "${section.name}" section`)
+const section = await SectionFactory.fromName(env.npm_package_name)
 
 // Clean build folder
 try {
-  await rm(section.buildFolder, { force: true, recursive: true })
-  await mkdir(section.assetsBuildFolder, { recursive: true })
+  await rm(section.build.rootFolder, { force: true, recursive: true })
+  await mkdir(section.build.rootFolder, { recursive: true })
+
+  if (section.files.localeFiles.length > 0) {
+    await mkdir(section.build.localesFolder, { recursive: true })
+  }
+  if (section.files.snippetFiles.length > 0) {
+    // TODO : Could be triggered only if we have a snippet with a "for" loop because we can't inline it
+    await mkdir(section.build.snippetsFolder, { recursive: true })
+  }
+
 } catch (error) {
   logger.error(error)
   exit(1)
 }
 
-// Abort if we have no liquid file
-if (section.liquidFiles.length === 0) {
-  logger.error('No liquid file found - aborting build')
+// Abort if we have no liquidFiles file
+if (section.files.liquidFiles.length === 0) {
+  logger.error(`${section.name}: No liquidFiles file found - aborting build`)
   exit(1)
 }
 
-for (const render of section.renders) {
-  const snippet = await SnippetFactory.fromRender(render)
+section.renders = LiquidUtils.findRenders(section.liquidCode)
+logger.debug(`${section.name}: ${section.renders.length} render tag${section.renders.length > 1 ? 's' : ''} found`)
 
-  for (const snippetFile in section.snippetFiles) {
-
-    if (snippetFile === snippet.name) {
-      snippet.liquidFiles = [snippetFile]
-      break
-    }
-  }
-  if (snippet.liquidFiles.length === 0) {
-    const snippetFiles = await FileUtils.getFolderFilesRecursively(snippet.rootFolder)
-    ComponentUtils.filterFiles(snippetFiles, snippet)
-  }
-
-  render.snippet = snippet
+//  Fill renders with the proper snippet object
+if (section.renders.length > 0) {
+  await mkdir(section.build.snippetsFolder, { recursive: true })
+  await SectionBuilder.buildSnippets(section)
+} else {
+  logger.debug(`${section.name}: No "Render" tags found`)
 }
 
 // Create build/assets folder if we have any assets
-if (section.jsFiles.length > 0 || section.styleSheets.length > 0) {
-  await mkdir(section.assetsBuildFolder, { recursive: true })
+if (section.files.javascriptFiles.length > 0 || section.files.stylesheets.length > 0) {
+  await mkdir(section.build.assetsFolder, { recursive: true })
 }
 
 // Process JavaScript files
-if (section.jsFiles.length > 0) {
-  logger.debug('Processing JavaScript')
-
-  try {
-    const mainJavaScriptFile = JavaScriptProcessor.getMainJavascriptFile(section.jsFiles)
-    await JavaScriptProcessor.buildJavaScript(`${section.assetsBuildFolder}/${section.name}.js`, mainJavaScriptFile)
-  } catch (error) {
-    logger.error(error)
-    exit(1)
-  }
+if (section.files.javascriptFiles.length > 0) {
+  logger.debug(`${section.name}: Processing JavaScript`)
+  await SectionBuilder.buildJavascript(section)
+  logger.debug(`${section.name}: Javascript build complete`)
 } else {
-  logger.debug(`No JavaScript files found for ${section.name}`)
+  logger.debug(`${section.name}: No external javaScript found`)
 }
 
 // Process CSS files
-if (section.styleSheets.length > 0) {
-  logger.debug('Processing CSS files')
-  logger.debug(`${section.styleSheets.length} CSS file${section.styleSheets.length > 1 ? 's' : ''} found`)
+if (section.files.stylesheets.length > 0) {
+  logger.debug(`${section.name}: Processing CSS files`)
 
-  try {
-    const mainStyleSheet = StylesProcessor.getMainStyleSheet(section.styleSheets)
-    await StylesProcessor.buildStyles(`${section.assetsBuildFolder}/${section.name}.css`, mainStyleSheet)
-  } catch (error) {
-    logger.error(error)
-    exit(1)
-  }
+  await SectionBuilder.buildStylesheets(section)
 
+  logger.debug(`${section.name}: CSS build complete`)
 } else {
-  logger.debug(`No CSS files found for ${section.name}`)
+  logger.debug(`${section.name}: No external CSS`)
 }
 
 // Process Locale Files
-if (section.localeFiles.length > 0) {
-  await mkdir(section.localesBuildFolder, { recursive: true })
-  logger.debug('Processing Locale files')
-  logger.debug(`${section.localeFiles.length} Locale file${section.localeFiles.length > 1 ? 's' : ''} found`)
+if (section.files.localeFiles.length > 0) {
+  await mkdir(section.build.localesFolder, { recursive: true })
 
-  section.localeFiles.forEach(file => FileUtils.copyFileOrDie(file, `${section.localesBuildFolder}/${basename(file)}`))
+  logger.debug(`${section.name}: ${section.files.localeFiles.length} Locale file${section.files.localeFiles.length > 1 ? 's' : ''} found`)
+  logger.debug(`${section.name}: Processing Locale files`)
 
+  SectionBuilder.buildLocales(section)
+
+  logger.debug(`${section.name}: Locales build complete`)
 } else {
-  logger.debug(`No Locale files found for ${section.name}`)
+  logger.debug(`${section.name}: No Locale files found`)
 }
 
-// append section schema
-if (section.schemaFile) {
-  logger.debug('Processing Schema file')
-  section.liquidCode += `\n{% schema %}\n${await FileUtils.readFileOrDie(section.schemaFile)}\n{% endschema %}`
-}
+logger.debug(`${section.name}: Finalizing Liquid file`)
+await SectionBuilder.buildLiquid(section)
 
-// create section liquid file
-logger.debug('Finalizing Liquid file')
-const liquidBuildFile = section.buildFolder + '/' + section.name + '.liquid'
-await writeFile(liquidBuildFile, section.liquidCode)
-
-logger.info('Work Complete')
+logger.info(`${section.name}: Work Complete`)
