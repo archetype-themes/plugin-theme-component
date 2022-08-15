@@ -1,43 +1,29 @@
-import Snippet from './Snippet.js'
+import Component from './abstract/Component.js'
+import SectionFiles from './SectionFiles.js'
 
-class Section extends Snippet {
+class Section extends Component {
+  #files
+  #renders
+
   constructor () {
     super()
-    this.liquidCode = ''
-    this.renders = []
-    this.snippetFiles = []
+    this.files = new SectionFiles()
   }
 
   /**
-   * Get Schema File
-   * @returns {string}
+   * Get Files Model Reference
+   * @returns {SectionFiles}
    */
-  get schemaFile () {
-    return this._schemaFile
+  get files () {
+    return this.#files
   }
 
   /**
-   * Set Schema File
-   * @param {string} schemaFile
+   * Set Files Model Reference
+   * @param {SectionFiles} value
    */
-  set schemaFile (schemaFile) {
-    this._schemaFile = schemaFile
-  }
-
-  /**
-   * Get SnippetFiles
-   * @returns {string[][]}
-   */
-  get snippetFiles () {
-    return this._snippetFiles
-  }
-
-  /**
-   * Set Snippet Files
-   * @param {string[][]} snippetFiles
-   */
-  set snippetFiles (snippetFiles) {
-    this._snippetFiles = snippetFiles
+  set files (value) {
+    this.#files = value
   }
 
   /**
@@ -45,15 +31,15 @@ class Section extends Snippet {
    * @returns {Render[]}
    */
   get renders () {
-    return this._renders
+    return this.#renders
   }
 
   /**
    * Set Renders
-   * @param {Render[]} renders
+   * @param {Render[]} value
    */
-  set renders (renders) {
-    this._renders = renders
+  set renders (value) {
+    this.#renders = value
   }
 
 }
