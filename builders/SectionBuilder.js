@@ -77,7 +77,7 @@ class SectionBuilder extends ComponentBuilder {
       } else {
         // Copy snippet liquid files since we can't inline a for loop
         console.log(render.snippet.name)
-        await FileUtils.copyFiles(render.snippet.files.liquidFiles, section.build.snippetsFolder)
+        await FileUtils.writeFileOrDie(`${section.build.snippetsFolder}/${render.snippet.name}.liquid`, render.snippet.liquidCode)
       }
 
     }
