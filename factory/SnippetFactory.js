@@ -24,8 +24,8 @@ class SnippetFactory {
     logger.debug(`${snippet.name}: ${snippet.files.liquidFiles.length} liquid file${snippet.files.liquidFiles.length > 1 ? 's' : ''} found`)
     snippet.liquidCode = await FileUtils.getMergedFilesContent(snippet.files.liquidFiles)
 
-    if (snippet.files.javascriptFiles) {
-      //snippet.javascript = JavaScriptProcessor.buildJavaScript()
+    if (snippet.files.schemaFile) {
+      snippet.schema = JSON.parse(await FileUtils.getFileContents(snippet.files.schemaFile))
     }
 
     return snippet

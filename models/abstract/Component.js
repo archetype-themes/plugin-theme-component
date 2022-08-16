@@ -2,6 +2,7 @@ class Component {
   #liquidCode
   #name
   #rootFolder
+  #schema
 
   constructor () {
     if (new.target === Component) {
@@ -55,6 +56,22 @@ class Component {
    */
   set rootFolder (value) {
     this.#rootFolder = value
+  }
+
+  /**
+   * Get Schema Object Representation
+   * @returns {object}
+   */
+  get schema () {
+    return this.#schema
+  }
+
+  /**
+   * Get Schema Object Representation
+   * @param {object} value
+   */
+  set schema (value) {
+    this.#schema = value
   }
 }
 
