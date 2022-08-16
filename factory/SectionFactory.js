@@ -22,7 +22,7 @@ class SectionFactory {
 
     // Collate liquid content from all liquid files with the default folder/alphabetical order
     logger.debug(`${section.name}: ${section.files.liquidFiles.length} liquid file${section.files.liquidFiles.length > 1 ? 's' : ''} found`)
-    section.liquidCode = await FileUtils.mergeFileContents(section.files.liquidFiles)
+    section.liquidCode = await FileUtils.getMergedFilesContent(section.files.liquidFiles)
 
     return section
   }

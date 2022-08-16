@@ -1,9 +1,9 @@
 import { copyFile, readdir, readFile, writeFile } from 'node:fs/promises'
 import { basename, dirname, resolve } from 'path'
-import { cwd, exit } from 'node:process'
+import { cwd } from 'node:process'
 import logger from '../utils/Logger.js'
 
-const FILE_ENCODING_OPTION = { encoding: 'UTF-8' }
+const FILE_ENCODING_OPTION = { encoding: 'utf8' }
 const EXCLUDED_FOLDERS = ['node_modules', '.yarn', '.idea', '.git', 'build']
 
 class FileUtils {
@@ -33,30 +33,15 @@ class FileUtils {
       // When already referenced, copy as is in the assets folder
       if (inclusiveFilter) {
         if (inclusiveFilter.includes(fileBasename)) {
-          await this.copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
+          await copyFile(file, `${outputFolder}/${fileBasename}`)
         } else {
           excludedFiles.push(file)
         }
       } else {
-        await this.copyFileOrDie(file, `${outputFolder}/${fileBasename}`)
+        await copyFile(file, `${outputFolder}/${fileBasename}`)
       }
     }
     return excludedFiles
-  }
-
-  /**
-   *
-   * @param {string} sourceFile
-   * @param {string} destinationFile
-   * @returns {Promise<void>}
-   */
-  static async copyFileOrDie (sourceFile, destinationFile) {
-    try {
-      await copyFile(sourceFile, destinationFile)
-    } catch (error) {
-      logger.error(error.message)
-      exit(1)
-    }
   }
 
   /**
@@ -66,17 +51,13 @@ class FileUtils {
    * @link https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
    */
   static async getFolderFilesRecursively (dir) {
-    try {
-      const entries = await readdir(dir, { withFileTypes: true })
-      const files = await Promise.all(entries.map((entry) => {
-        const absolutePath = resolve(dir, entry.name)
-        return entry.isDirectory() && !EXCLUDED_FOLDERS.includes(entry.name) ? this.getFolderFilesRecursively(absolutePath) : absolutePath
-      }))
-      return files.flat()
-    } catch (error) {
-      logger.error(error.message)
-      exit(1)
-    }
+    const entries = await readdir(dir, { withFileTypes: true })
+    const files = await Promise.all(entries.map((entry) => {
+      const absolutePath = resolve(dir, entry.name)
+      return entry.isDirectory() && !EXCLUDED_FOLDERS.includes(entry.name) ? this.getFolderFilesRecursively(absolutePath) : absolutePath
+    }))
+
+    return files.flat()
   }
 
   /**
@@ -88,50 +69,39 @@ class FileUtils {
   }
 
   /**
-   * Merge File Contents
+   * Merge Files contents and return it
    * @param {string[]} files
    * @returns {Promise<string>}
    */
-  static async mergeFileContents (files) {
+  static async getMergedFilesContent (files) {
     let content = ''
 
     for (const file of files) {
-      content += `${await this.readFileOrDie(file)}\n`
+      content += `${await this.getFileContents(file)}\n`
     }
     return content
   }
 
   /**
-   * Read File Or Die
-   * @param {string} filename
-   * @returns {Promise<Buffer>}
+   * Get File Contents
+   * @param {string} file
+   * @returns {Promise<string>}
    */
-  static async readFileOrDie (filename) {
-    try {
-      logger.debug(`Reading from disk: ${filename}`)
-      return await readFile(filename, FILE_ENCODING_OPTION)
-    } catch (error) {
-      logger.error(error.message)
-      exit(1)
-    }
+  static async getFileContents (file) {
+    logger.debug(`Reading from disk: ${file}`)
+    return readFile(file, FILE_ENCODING_OPTION)
   }
 
   /**
    *
-   * @param {string} filename
+   * @param {string} file
    * @param {string} fileContents
    * @returns {Promise<void>}
    */
-  static async writeFileOrDie (filename, fileContents) {
-    try {
-      logger.debug(`Writing to disk: ${filename}`)
-      await writeFile(filename, fileContents)
-    } catch (error) {
-      logger.error(error.message)
-      exit(1)
-    }
+  static async writeFile (file, fileContents) {
+    logger.debug(`Writing to disk: ${file}`)
+    return writeFile(file, fileContents, FILE_ENCODING_OPTION)
   }
-
 }
 
 export default FileUtils

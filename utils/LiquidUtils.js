@@ -29,7 +29,7 @@ class LiquidUtils {
     if (render.snippet.liquidCode) {
       snippetLiquidCode = render.snippet.liquidCode
     } else {
-      snippetLiquidCode = await FileUtils.mergeFileContents(render.snippet.files.liquidFiles)
+      snippetLiquidCode = await FileUtils.getMergedFilesContent(render.snippet.files.liquidFiles)
     }
 
     // Process "With" clause variable

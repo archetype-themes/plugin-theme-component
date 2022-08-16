@@ -1,8 +1,9 @@
+import { copyFile } from 'node:fs/promises'
 import esbuild from 'esbuild'
 import { basename } from 'path'
 import ComponentBuilder from './ComponentBuilder.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
-import FileUtils from '../utils/FileUtils.js'
+import StylesProcessor from '../processors/StylesProcessor.js'
 
 const { BuildResult } = esbuild
 
@@ -32,13 +33,20 @@ class SnippetBuilder extends ComponentBuilder {
   }
 
   /**
+   *
+   * @param {Snippet} snippet
+   */
+  static async buildStylesheets (snippet) {
+    await StylesProcessor.buildStyles(snippet.build.stylesheet, snippet.files.mainStylesheet)
+  }
+
+  /**
    *Copy Snippet Locales
    * @param {Snippet} snippet
    */
   static copyLocales (snippet) {
-    snippet.files.localeFiles.forEach(file => FileUtils.copyFileOrDie(file, `${snippet.build.localesFolder}/${basename(file)}`))
+    snippet.files.localeFiles.forEach(file => copyFile(file, `${snippet.build.localesFolder}/${basename(file)}`))
   }
-
 }
 
 export default SnippetBuilder

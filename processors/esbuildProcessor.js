@@ -21,7 +21,7 @@ class esbuildProcessor {
       charset: 'utf8',
       //drop: ['console'], // TODO: Check with Team to see if we want to use this feature for bundled code or not.
       entryPoints: [mainJavaScriptFile],
-      //metafile: true,
+      // metafile: true,  // result = build(options); logger.debug(result.metafile);return result
       //minify: true,  // TODO: Check with Team to see if we want to use this feature for bundled code or not.
       outfile: outputFile,
       platform: 'browser',
