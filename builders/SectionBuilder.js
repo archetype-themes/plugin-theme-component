@@ -1,13 +1,14 @@
+import { copyFile } from 'node:fs/promises'
 import path, { basename } from 'path'
+import merge from 'deepmerge'
 import ComponentBuilder from './ComponentBuilder.js'
+import SnippetBuilder from './SnippetBuilder.js'
 import SnippetFactory from '../factory/SnippetFactory.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
-import StylesProcessor from '../processors/StylesProcessor.js'
-import SnippetBuilder from './SnippetBuilder.js'
-import { copyFile } from 'node:fs/promises'
 
 class SectionBuilder extends ComponentBuilder {
 
@@ -89,14 +90,19 @@ class SectionBuilder extends ComponentBuilder {
 
         // Generate from the packages folder if it wasn't found locally
         if (!snippetCache[render.snippetName]) {
-          snippetCache[render.snippetName] = await SnippetFactory.fromName(render.snippetName)
+          const snippet = await SnippetFactory.fromName(render.snippetName)
+          if (snippet.schema && section.schema) {
+            section.schema = merge(section.schema, snippet.schema)
+          }
+          snippetCache[render.snippetName] = snippet
         }
+
       }
 
       render.snippet = snippetCache[render.snippetName]
 
       if (!render.hasForClause()) {
-
+        // Prepends variables creation to accompany liquid code injection
         let snippetLiquidCode = await LiquidUtils.getRenderSnippetInlineLiquidCode(render)
 
         section.liquidCode = section.liquidCode.replace(render.liquidTag, snippetLiquidCode)

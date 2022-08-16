@@ -11,21 +11,15 @@ logger.info(`Building "${env.npm_package_name}" section`)
 const section = await SectionFactory.fromName(env.npm_package_name)
 
 // Clean build folder
-try {
-  await rm(section.build.rootFolder, { force: true, recursive: true })
-  await mkdir(section.build.rootFolder, { recursive: true })
+await rm(section.build.rootFolder, { force: true, recursive: true })
+await mkdir(section.build.rootFolder, { recursive: true })
 
-  if (section.files.localeFiles.length > 0) {
-    await mkdir(section.build.localesFolder, { recursive: true })
-  }
-  if (section.files.snippetFiles.length > 0) {
-    // TODO : Could be triggered only if we have a snippet with a "for" loop because we can't inline it
-    await mkdir(section.build.snippetsFolder, { recursive: true })
-  }
-
-} catch (error) {
-  logger.error(error)
-  exit(1)
+if (section.files.localeFiles.length > 0) {
+  await mkdir(section.build.localesFolder, { recursive: true })
+}
+if (section.files.snippetFiles.length > 0) {
+  // TODO : Could be triggered only if we have a snippet with a "for" loop because we can't inline it
+  await mkdir(section.build.snippetsFolder, { recursive: true })
 }
 
 // Abort if we have no liquidFiles file

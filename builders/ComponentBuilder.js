@@ -21,7 +21,6 @@ class ComponentBuilder {
     // Write component liquidFiles file
     return writeFile(component.build.liquidFile, component.liquidCode)
   }
-
 }
 
 export default ComponentBuilder
