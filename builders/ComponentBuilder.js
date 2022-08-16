@@ -4,11 +4,12 @@ import { writeFile } from 'node:fs/promises'
 
 class ComponentBuilder {
   /**
-   *
+   * Build Component Liquid File
    * @param {Section|Snippet} component
    * @returns {Promise<void>}
    */
   static async buildLiquid (component) {
+    logger.debug(`${component.name}: Building Liquid file`)
 
     // append component schema
     if (component.files.schemaFile) {
@@ -18,7 +19,7 @@ class ComponentBuilder {
     }
 
     // Write component liquidFiles file
-    await writeFile(component.build.liquidFile, component.liquidCode)
+    return writeFile(component.build.liquidFile, component.liquidCode)
   }
 
 }

@@ -1,4 +1,3 @@
-import esbuild from 'esbuild'
 import path, { basename } from 'path'
 import ComponentBuilder from './ComponentBuilder.js'
 import SnippetFactory from '../factory/SnippetFactory.js'
@@ -9,8 +8,6 @@ import logger from '../utils/Logger.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import SnippetBuilder from './SnippetBuilder.js'
 import { copyFile } from 'node:fs/promises'
-
-const { BuildResult } = esbuild
 
 class SectionBuilder extends ComponentBuilder {
 
@@ -34,7 +31,7 @@ class SectionBuilder extends ComponentBuilder {
   /**
    * Build Section Javascript with snippet's JS as well
    * @param {Section} section
-   * @returns {Promise<BuildResult>}
+   * @returns {Promise<void>}
    */
   static async buildJavascript (section) {
     const includedSnippets = []
@@ -50,10 +47,11 @@ class SectionBuilder extends ComponentBuilder {
     }
 
     if (injectedFiles.length > 0) {
-      return JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex, injectedFiles)
+      await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex, injectedFiles)
+    } else {
+      await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex)
     }
-    return JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex)
-
+    section.liquidCode = `<script src="{{ ${basename(section.build.javascriptFile)} | asset_url }}" async></script>\n${section.liquidCode}`
   }
 
   /**
@@ -111,8 +109,9 @@ class SectionBuilder extends ComponentBuilder {
   }
 
   /**
-   *
+   * Build Main Stylesheet
    * @param {Section} section
+   * @returns {Promise<void>}
    */
   static async buildStylesheets (section) {
     await StylesProcessor.buildStyles(section.build.stylesheet, section.files.mainStylesheet)
@@ -134,6 +133,7 @@ class SectionBuilder extends ComponentBuilder {
     stylesheets.unshift(section.build.stylesheet)
     const styles = await FileUtils.getMergedFilesContent(stylesheets)
     await FileUtils.writeFile(section.build.stylesheet, styles)
+    section.liquidCode = `<link type="text/css" href="{{ ${basename(section.build.stylesheet)} | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
 
   }
 }

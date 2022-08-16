@@ -1,11 +1,8 @@
 import { copyFile } from 'node:fs/promises'
-import esbuild from 'esbuild'
 import { basename } from 'path'
 import ComponentBuilder from './ComponentBuilder.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
-
-const { BuildResult } = esbuild
 
 class SnippetBuilder extends ComponentBuilder {
 
@@ -19,25 +16,28 @@ class SnippetBuilder extends ComponentBuilder {
     await this.buildStylesheets(snippet)
     this.copyLocales(snippet)
 
-    await this.buildLiquid()
+    await this.buildLiquid(snippet)
 
   }
 
   /**
-   * Build Snippet Javascript
+   * Build Snippet Javascript Index File
    * @param {Snippet} snippet
-   * @returns {Promise<BuildResult>}
+   * @returns {Promise<void>}
    */
   static async buildJavascript (snippet) {
-    return JavaScriptProcessor.buildJavaScript(snippet.build.javascriptFile, snippet.files.javascriptIndex)
+    await JavaScriptProcessor.buildJavaScript(snippet.build.javascriptFile, snippet.files.javascriptIndex)
+    snippet.liquidCode = `<script src="{{ ${basename(snippet.build.javascriptFile)} | asset_url }}" async></script>\n${snippet.liquidCode}`
   }
 
   /**
-   *
+   * Build Snippet Main Stylesheet
    * @param {Snippet} snippet
+   * @returns {Promise<void>}
    */
   static async buildStylesheets (snippet) {
     await StylesProcessor.buildStyles(snippet.build.stylesheet, snippet.files.mainStylesheet)
+    snippet.liquidCode = `<link type="text/css" href="{{ ${basename(snippet.build.stylesheet)} | asset_url }}" rel="stylesheet">\n${snippet.liquidCode}`
   }
 
   /**
