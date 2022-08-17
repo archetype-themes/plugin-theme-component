@@ -4,6 +4,7 @@ import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import BuildFactory from './BuildFactory.js'
+import SnippetFiles from '../models/SnippetFiles.js'
 
 class SnippetFactory {
   /**
@@ -46,6 +47,7 @@ class SnippetFactory {
   static async fromSingleFile (snippetName, snippetFile) {
     const snippet = new Snippet()
     snippet.name = snippetName
+    snippet.files = new SnippetFiles()
     snippet.files.liquidFiles = [snippetFile]
     snippet.liquidCode = await FileUtils.getMergedFilesContent(snippet.files.liquidFiles)
 

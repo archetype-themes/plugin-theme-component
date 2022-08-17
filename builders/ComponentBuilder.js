@@ -1,6 +1,6 @@
 import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
-import { writeFile } from 'node:fs/promises'
+import { mkdir, rm, writeFile } from 'node:fs/promises'
 
 class ComponentBuilder {
   /**
@@ -20,6 +20,27 @@ class ComponentBuilder {
 
     // Write component liquidFiles file
     return writeFile(component.build.liquidFile, component.liquidCode)
+  }
+
+  /**
+   *
+   * @param {Section|Snippet} component
+   */
+  static async resetBuildFolders (component) {
+    await rm(component.build.rootFolder, { force: true, recursive: true })
+    await mkdir(component.build.rootFolder, { recursive: true })
+
+    if (component.files.localeFiles.length > 0) {
+      await mkdir(component.build.localesFolder, { recursive: true })
+    }
+
+    if (component.files.snippetFiles.length > 0) {
+      await mkdir(component.build.snippetsFolder, { recursive: true })
+    }
+
+    if (component.files.javascriptFiles.length > 0 || component.files.stylesheets.length > 0) {
+      await mkdir(component.build.assetsFolder, { recursive: true })
+    }
   }
 }
 

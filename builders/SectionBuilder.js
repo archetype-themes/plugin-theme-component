@@ -1,4 +1,4 @@
-import { copyFile, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, writeFile } from 'node:fs/promises'
 import path, { basename } from 'path'
 import merge from 'deepmerge'
 import ComponentBuilder from './ComponentBuilder.js'
@@ -19,13 +19,50 @@ class SectionBuilder extends ComponentBuilder {
    */
   static async build (section) {
 
-    await this.buildSnippets(section)
+    await this.resetBuildFolders(section)
 
-    await this.buildJavascript(section)
-    await this.buildStylesheets(section)
-    await this.buildLocales(section)
+    //  Fill renders with the proper snippet object
+    if (section.renders.length > 0) {
+      await mkdir(section.build.snippetsFolder, { recursive: true })
+      await this.buildSnippets(section)
+    } else {
+      logger.debug(`${section.name}: No "Render" tags found`)
+    }
 
-    await this.buildLiquid(section)
+    // Process JavaScript files
+    if (section.files.javascriptIndex) {
+      logger.debug(`${section.name}: Processing JavaScript`)
+      await SectionBuilder.buildJavascript(section)
+      logger.debug(`${section.name}: Javascript build complete`)
+    } else {
+      logger.debug(`${section.name}: No external javaScript found`)
+    }
+
+    // Process CSS files
+    if (section.files.mainStylesheet) {
+      logger.debug(`${section.name}: Processing CSS files`)
+      await this.buildStylesheets(section)
+      logger.debug(`${section.name}: CSS build complete`)
+    } else {
+      logger.debug(`${section.name}: No external CSS`)
+    }
+
+    // Process Locale Files
+    if (section.files.localeFiles.length > 0) {
+      await mkdir(section.build.localesFolder, { recursive: true })
+
+      logger.debug(`${section.name}: ${section.files.localeFiles.length} Locale file${section.files.localeFiles.length > 1 ? 's' : ''} found`)
+      logger.debug(`${section.name}: Processing Locale files`)
+
+      await SectionBuilder.buildLocales(section)
+
+      logger.debug(`${section.name}: Locales build complete`)
+    } else {
+      logger.debug(`${section.name}: No Locale files found`)
+    }
+
+    logger.debug(`${section.name}: Finalizing Liquid file`)
+    await SectionBuilder.buildLiquid(section)
 
   }
 
@@ -86,9 +123,9 @@ class SectionBuilder extends ComponentBuilder {
         logger.debug(`${section.name}: Building "${render.snippetName}" Snippet`)
 
         // Look within the section's local snippets first
-        for (const snippetFile in section.files.snippetFiles) {
+        for (const snippetFile of section.files.snippetFiles) {
           if (render.snippetName === path.parse(snippetFile).name) {
-            snippetCache[render.snippetName] = await SnippetFactory.fromSingleFile(render.snippetName, section.files.snippetFiles[snippetFile])
+            snippetCache[render.snippetName] = await SnippetFactory.fromSingleFile(render.snippetName, snippetFile)
             break
           }
         }
