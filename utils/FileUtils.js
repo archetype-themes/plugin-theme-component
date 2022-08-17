@@ -3,10 +3,11 @@ import { basename, dirname, resolve } from 'path'
 import { cwd } from 'node:process'
 import logger from '../utils/Logger.js'
 
-const FILE_ENCODING_OPTION = { encoding: 'utf8' }
-const EXCLUDED_FOLDERS = ['node_modules', '.yarn', '.idea', '.git', 'build']
-
 class FileUtils {
+  /** @property {string[]} **/
+  static #EXCLUDED_FOLDERS = ['node_modules', '.yarn', '.idea', '.git', 'build']
+  /** @property {Object} **/
+  static #FILE_ENCODING_OPTION = { encoding: 'utf8' }
 
   /**
    * Convert Component (Section/Snippet) Absolute Path to a Relative one
@@ -54,7 +55,7 @@ class FileUtils {
     const entries = await readdir(dir, { withFileTypes: true })
     const files = await Promise.all(entries.map((entry) => {
       const absolutePath = resolve(dir, entry.name)
-      return entry.isDirectory() && !EXCLUDED_FOLDERS.includes(entry.name) ? this.getFolderFilesRecursively(absolutePath) : absolutePath
+      return entry.isDirectory() && !this.#EXCLUDED_FOLDERS.includes(entry.name) ? this.getFolderFilesRecursively(absolutePath) : absolutePath
     }))
 
     return files.flat()
@@ -89,7 +90,7 @@ class FileUtils {
    */
   static async getFileContents (file) {
     logger.debug(`Reading from disk: ${file}`)
-    return readFile(file, FILE_ENCODING_OPTION)
+    return readFile(file, this.#FILE_ENCODING_OPTION)
   }
 
   /**
@@ -100,9 +101,8 @@ class FileUtils {
    */
   static async writeFile (file, fileContents) {
     logger.debug(`Writing to disk: ${file}`)
-    return writeFile(file, fileContents, FILE_ENCODING_OPTION)
+    return writeFile(file, fileContents, this.#FILE_ENCODING_OPTION)
   }
 }
 
 export default FileUtils
-export { FILE_ENCODING_OPTION }
