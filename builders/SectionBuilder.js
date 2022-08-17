@@ -1,4 +1,4 @@
-import { copyFile } from 'node:fs/promises'
+import { copyFile, writeFile } from 'node:fs/promises'
 import path, { basename } from 'path'
 import merge from 'deepmerge'
 import ComponentBuilder from './ComponentBuilder.js'
@@ -23,7 +23,7 @@ class SectionBuilder extends ComponentBuilder {
 
     await this.buildJavascript(section)
     await this.buildStylesheets(section)
-    this.buildLocales(section)
+    await this.buildLocales(section)
 
     await this.buildLiquid(section)
 
@@ -59,9 +59,14 @@ class SectionBuilder extends ComponentBuilder {
    * Build Section Locales
    * @param {Section} section
    */
-  static buildLocales (section) {
+  static async buildLocales (section) {
     // TODO: Locale Files from Snippets should be merged
     section.files.localeFiles.forEach(file => copyFile(file, `${section.build.localesFolder}/${basename(file)}`))
+
+    for (const locale in section.locales) {
+      await writeFile(section.build.localesFolder + '/' + locale + '.json', JSON.stringify(section.locales[locale], null, 2))
+    }
+
   }
 
   /**
@@ -94,6 +99,11 @@ class SectionBuilder extends ComponentBuilder {
           if (snippet.schema && section.schema) {
             section.schema = merge(section.schema, snippet.schema)
           }
+
+          if (snippet.locales && section.locales) {
+            section.locales = merge(section.locales, snippet.locales)
+          }
+
           snippetCache[render.snippetName] = snippet
         }
 

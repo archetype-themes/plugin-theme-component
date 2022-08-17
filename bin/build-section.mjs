@@ -71,7 +71,7 @@ if (section.files.localeFiles.length > 0) {
   logger.debug(`${section.name}: ${section.files.localeFiles.length} Locale file${section.files.localeFiles.length > 1 ? 's' : ''} found`)
   logger.debug(`${section.name}: Processing Locale files`)
 
-  SectionBuilder.buildLocales(section)
+  await SectionBuilder.buildLocales(section)
 
   logger.debug(`${section.name}: Locales build complete`)
 } else {
