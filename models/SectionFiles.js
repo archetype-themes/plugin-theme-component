@@ -5,22 +5,22 @@ class SectionFiles extends ComponentFiles {
 
   constructor () {
     super()
-    this.snippetFiles = []
+    this.snippetFiles = {}
   }
 
   /**
-   * Get Snippet Files Associative Array
-   * #snippetFiles[snippetName][snippetFile]
-   * @returns {string[]}
+   * Get Snippet Files Object
+   * #snippetFiles{snippetName: snippetFile}
+   * @returns {Object}
    */
   get snippetFiles () {
     return this.#snippetFiles
   }
 
   /**
-   * Set Snippet Files
-   * #snippetFiles[snippetName][snippetFile]
-   * @param {string[]} value
+   * Set Snippet Files Object
+   * #snippetFiles{snippetName: snippetFile}
+   * @param {Object} value
    */
   set snippetFiles (value) {
     this.#snippetFiles = value

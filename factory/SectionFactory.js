@@ -15,17 +15,23 @@ class SectionFactory {
     const section = new Section()
     section.name = name
 
-    // Set section folders
+    // Set Section folders
     section.rootFolder = await ComponentUtils.detectRootFolder(section.name)
     section.build = BuildFactory.fromSection(section)
     section.files = await FilesFactory.fromSectionFolder(section.rootFolder)
 
-    // Collate liquid content from all liquid files with the default folder/alphabetical order
+    // Prepare Section liquid code
     logger.debug(`${section.name}: ${section.files.liquidFiles.length} liquid file${section.files.liquidFiles.length > 1 ? 's' : ''} found`)
     section.liquidCode = await FileUtils.getMergedFilesContent(section.files.liquidFiles)
 
+    // Prepare Section Schema
     if (section.files.schemaFile) {
       section.schema = JSON.parse(await FileUtils.getFileContents(section.files.schemaFile))
+    }
+
+    // Prepare Section Locales
+    if (section.files.localeFiles && section.files.localeFiles.length > 0) {
+      section.locales = await ComponentUtils.parseLocaleFilesContent(section.files.localeFiles)
     }
 
     return section

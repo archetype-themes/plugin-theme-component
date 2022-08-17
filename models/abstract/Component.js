@@ -1,5 +1,6 @@
 class Component {
   #liquidCode
+  #locales
   #name
   #rootFolder
   #schema
@@ -24,6 +25,22 @@ class Component {
    */
   set liquidCode (value) {
     this.#liquidCode = value
+  }
+
+  /**
+   * Get Locales Object {locale: json object}
+   * @returns {Object}
+   */
+  get locales () {
+    return this.#locales
+  }
+
+  /**
+   * Set Locales Object {locale: json object}
+   * @param {Object} value
+   */
+  set locales (value) {
+    this.#locales = value
   }
 
   /**

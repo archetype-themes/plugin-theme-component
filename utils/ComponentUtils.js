@@ -88,6 +88,20 @@ class ComponentUtils {
     }
 
   }
+
+  /**
+   * Parse Locale Files and store their contents in an associative array in the component
+   * @param {string[]} localeFiles
+   * @return {Promise<object>}
+   */
+  static async parseLocaleFilesContent (localeFiles) {
+    const locales = {}
+    for (const localeFile of localeFiles) {
+      locales[basename(localeFile, '.json')] = JSON.parse(await FileUtils.getFileContents(localeFile))
+    }
+
+    return locales
+  }
 }
 
 export default ComponentUtils

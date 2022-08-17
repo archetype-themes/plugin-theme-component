@@ -15,17 +15,23 @@ class SnippetFactory {
     const snippet = new Snippet()
     snippet.name = snippetName
 
-    // Set snippet folders
+    // Set Snippet folders
     snippet.rootFolder = await ComponentUtils.detectRootFolder(snippet.name)
     snippet.build = BuildFactory.fromSnippet(snippet)
     snippet.files = await FilesFactory.fromSnippetFolder(snippet.rootFolder)
 
-    // Collate liquid content from all liquid files with the default folder/alphabetical order
+    // Prepare Snippet liquid code
     logger.debug(`${snippet.name}: ${snippet.files.liquidFiles.length} liquid file${snippet.files.liquidFiles.length > 1 ? 's' : ''} found`)
     snippet.liquidCode = await FileUtils.getMergedFilesContent(snippet.files.liquidFiles)
 
+    // Prepare Snippet Schema
     if (snippet.files.schemaFile) {
       snippet.schema = JSON.parse(await FileUtils.getFileContents(snippet.files.schemaFile))
+    }
+
+    // Prepare Snippet Locales
+    if (snippet.files.localeFiles && snippet.files.localeFiles.length > 0) {
+      snippet.locales = await ComponentUtils.parseLocaleFilesContent(snippet.files.localeFiles)
     }
 
     return snippet
