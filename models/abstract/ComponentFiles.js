@@ -1,21 +1,24 @@
 class ComponentFiles {
-  #javascriptFiles
+  /** @type {string[]}
+   * @default **/
+  #javascriptFiles = []
+  /** @type {string} **/
   #javascriptIndex
-  #liquidFiles
-  #localeFiles
+  /** @type {string[]} **/
+  #liquidFiles = []
+  /** @type {string[]} **/
+  #localeFiles = []
+  /** @type {string} **/
   #mainStylesheet
+  /** @type {string} **/
   #schemaFile
-  #stylesheets
+  /** @type {string[]} **/
+  #stylesheets = []
 
   constructor () {
     if (new.target === ComponentFiles) {
       throw new TypeError('Cannot construct ComponentFiles instances directly')
     }
-
-    this.javascriptFiles = []
-    this.liquidFiles = []
-    this.localeFiles = []
-    this.stylesheets = []
   }
 
   /**

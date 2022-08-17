@@ -1,14 +1,10 @@
 import Component from './abstract/Component.js'
-import SnippetFiles from './SnippetFiles.js'
 
 class Snippet extends Component {
+  /** @type {SnippetBuild} **/
   #build
+  /** @type {SnippetFiles} **/
   #files
-
-  constructor () {
-    super()
-    this.files = new SnippetFiles()
-  }
 
   /**
    *  Get Build

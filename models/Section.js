@@ -1,15 +1,12 @@
 import Component from './abstract/Component.js'
-import SectionFiles from './SectionFiles.js'
 
 class Section extends Component {
+  /** @type {SectionBuild} **/
   #build
+  /** @type {SectionFiles} **/
   #files
-  #renders
-
-  constructor () {
-    super()
-    this.files = new SectionFiles()
-  }
+  /** @type {Render[]} **/
+  #renders = []
 
   /**
    *  Get Build

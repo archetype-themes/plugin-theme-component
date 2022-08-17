@@ -13,7 +13,7 @@ class SectionBuild extends ComponentBuild {
 
   /**
    * Set Build Snippets Folder
-   * @param value
+   * @param {string} value
    */
   set snippetsFolder (value) {
     this.#snippetsFolder = value

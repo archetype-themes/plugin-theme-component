@@ -1,17 +1,13 @@
 import ComponentFiles from './abstract/ComponentFiles.js'
 
 class SectionFiles extends ComponentFiles {
-  #snippetFiles
-
-  constructor () {
-    super()
-    this.snippetFiles = {}
-  }
+  /** @type {string[][]} **/
+  #snippetFiles = []
 
   /**
    * Get Snippet Files Object
    * #snippetFiles{snippetName: snippetFile}
-   * @returns {Object}
+   * @returns {string[][]}
    */
   get snippetFiles () {
     return this.#snippetFiles
@@ -20,7 +16,7 @@ class SectionFiles extends ComponentFiles {
   /**
    * Set Snippet Files Object
    * #snippetFiles{snippetName: snippetFile}
-   * @param {Object} value
+   * @param {string[][]} value
    */
   set snippetFiles (value) {
     this.#snippetFiles = value

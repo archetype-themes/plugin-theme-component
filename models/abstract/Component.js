@@ -1,8 +1,13 @@
 class Component {
+  /** @type {string} **/
   #liquidCode
-  #locales
+  /** @type {Object[][]} **/
+  #locales = []
+  /** @type {string} **/
   #name
+  /** @type {string} **/
   #rootFolder
+  /** @type {object} **/
   #schema
 
   constructor () {
@@ -28,16 +33,16 @@ class Component {
   }
 
   /**
-   * Get Locales Object {locale: json object}
-   * @returns {Object}
+   * Get Locales Multidimensional Array => locales[locale] = {}
+   * @returns {Object[][]}
    */
   get locales () {
     return this.#locales
   }
 
   /**
-   * Set Locales Object {locale: json object}
-   * @param {Object} value
+   * Set Locales Multidimensional Array => locales[locale] = {}
+   * @param {Object[][]} value
    */
   set locales (value) {
     this.#locales = value
