@@ -1,15 +1,25 @@
 class Render {
-
-  constructor () {
-    this.variables = []
-  }
+  /** @type {string} **/
+  #clause
+  /** @type {string} **/
+  #clauseSourceVariable
+  /** @type {string} **/
+  #clauseTargetVariable
+  /** @type {string} **/
+  #liquidTag
+  /** @type {Snippet} **/
+  #snippet
+  /** @type {string} **/
+  #snippetName
+  /** @type {string[][]} **/
+  #variables = []
 
   /**
    * Get Snippet
    * @returns {Snippet}
    */
   get snippet () {
-    return this._snippet
+    return this.#snippet
   }
 
   /**
@@ -17,7 +27,7 @@ class Render {
    * @param {Snippet} snippet
    */
   set snippet (snippet) {
-    this._snippet = snippet
+    this.#snippet = snippet
   }
 
   /**
@@ -25,7 +35,7 @@ class Render {
    * @returns {string}
    */
   get snippetName () {
-    return this._snippetName
+    return this.#snippetName
   }
 
   /**
@@ -33,7 +43,7 @@ class Render {
    * @param {string} snippetName
    */
   set snippetName (snippetName) {
-    this._snippetName = snippetName
+    this.#snippetName = snippetName
   }
 
   /**
@@ -41,7 +51,7 @@ class Render {
    * @returns {string}
    */
   get liquidTag () {
-    return this._liquidTag
+    return this.#liquidTag
   }
 
   /**
@@ -49,7 +59,7 @@ class Render {
    * @param {string} liquidTag
    */
   set liquidTag (liquidTag) {
-    this._liquidTag = liquidTag
+    this.#liquidTag = liquidTag
   }
 
   /**
@@ -57,7 +67,7 @@ class Render {
    * @returns {string}
    */
   get clause () {
-    return this._clause
+    return this.#clause
   }
 
   /**
@@ -65,7 +75,7 @@ class Render {
    * @param {string} clause
    */
   set clause (clause) {
-    this._clause = clause
+    this.#clause = clause
   }
 
   /**
@@ -73,7 +83,7 @@ class Render {
    * @returns {string}
    */
   get clauseSourceVariable () {
-    return this._clauseSourceVariable
+    return this.#clauseSourceVariable
   }
 
   /**
@@ -81,7 +91,7 @@ class Render {
    * @param {string} clauseSourceVariable
    */
   set clauseSourceVariable (clauseSourceVariable) {
-    this._clauseSourceVariable = clauseSourceVariable
+    this.#clauseSourceVariable = clauseSourceVariable
   }
 
   /**
@@ -89,7 +99,7 @@ class Render {
    * @returns {string}
    */
   get clauseTargetVariable () {
-    return this._clauseTargetVariable
+    return this.#clauseTargetVariable
   }
 
   /**
@@ -97,23 +107,23 @@ class Render {
    * @param {string} clauseTargetVariable
    */
   set clauseTargetVariable (clauseTargetVariable) {
-    this._clauseTargetVariable = clauseTargetVariable
+    this.#clauseTargetVariable = clauseTargetVariable
   }
 
   /**
    * Get Variable Names
-   * @returns {string[]}
+   * @returns {string[][]}
    */
   get variables () {
-    return this._variables
+    return this.#variables
   }
 
   /**
    *  Set Variable Names
-   * @param {string[]} variables
+   * @param {string[][]} variables
    */
   set variables (variables) {
-    this._variables = variables
+    this.#variables = variables
   }
 
   /**
@@ -121,7 +131,7 @@ class Render {
    * @returns {boolean}
    */
   hasForClause () {
-    return this._clause && this._clause === 'for'
+    return this.#clause && this.#clause === 'for'
   }
 
   /**
@@ -129,7 +139,7 @@ class Render {
    * @returns {boolean}
    */
   hasWithClause () {
-    return this._clause && this._clause === 'with'
+    return this.#clause && this.#clause === 'with'
   }
 }
 
