@@ -89,11 +89,6 @@ A reference to this JavaScript file will be inserted at the end of the liquid fi
 It is possible to avoid merging a JavaScript file by manually including an HTML `<script>` tag inside a liquid file.
 The file will be copied as is in the `build/assets` folder and will retain its original name.
 
-#### Babel
-
-Babel will process all the javascript code (including JS Modules) to dumb it down for older browsers. The default
-settings used are in the [babel.config.json](babel.config.json).
-
 #### Caveat
 
 JS file manual inclusions inside the liquid code without the html `<script>` tag, such as with only liquid code

@@ -23,9 +23,6 @@
   "author": "Archetype Themes LLC",
   "license": "UNLICENSED",
   "dependencies": {
-    "@babel/core": "^7.18.9",
-    "@babel/preset-env": "^7.18.9",
-    "core-js": "^3.24.1",
     "deepmerge": "^4.2.2",
     "esbuild": "^0.14.51",
     "esbuild-plugin-less": "^1.1.8",
