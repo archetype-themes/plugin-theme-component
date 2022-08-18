@@ -2,9 +2,10 @@
   "name": "archie",
   "version": "1.0.0",
   "description": "Builds a Shopify Theme Section by assembling its content in a minimal number of files.",
-  "main": "bin/build-section.mjs",
+  "main": "bin/build-section.js",
   "bin": {
-    "build-section": "bin/build-section.mjs"
+    "build-section": "bin/build-section.js",
+    "watch-section": "bin/watch-section.js"
   },
   "type": "module",
   "engines": {

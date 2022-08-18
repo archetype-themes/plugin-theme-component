@@ -1,4 +1,5 @@
-import { pino } from 'pino'
+import pino from 'pino'
+import pretty from 'pino-pretty'
 import FileUtils from './FileUtils.js'
 
 const STACKTRACE_OFFSET = 2
@@ -34,14 +35,10 @@ if (process.argv.includes('--quiet')) {
   loglevel = 'debug'
 }
 
-const logger = traceCaller(pino({
-  level: loglevel,
-  transport: {
-    target: 'pino-pretty',
-    options: {
-      ignore: 'time,pid,hostname'
-    }
-  }
-}))
+const stream = pretty({
+  colorize: true,
+  ignore: 'time,pid,hostname'
+})
+const logger = traceCaller(pino({ level: loglevel }, stream))
 
 export default logger
