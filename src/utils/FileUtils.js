@@ -1,7 +1,7 @@
 import { copyFile, readdir, readFile, writeFile } from 'node:fs/promises'
 import { basename, dirname, resolve } from 'path'
 import { cwd } from 'node:process'
-import logger from '../utils/Logger.js'
+import logger from './Logger.js'
 
 class FileUtils {
   /** @property {string[]} **/

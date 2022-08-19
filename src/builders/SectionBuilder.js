@@ -9,15 +9,21 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
+import SectionFactory from '../factory/SectionFactory.js'
+import { env } from 'node:process'
 
 class SectionBuilder extends ComponentBuilder {
 
   /**
    * Build Section
-   * @param {Section} section
-   * @returns {Promise<void>}
+   * @param {string} sectionName
+   * @returns {Promise<Section>}
    */
-  static async build (section) {
+  static async build (sectionName) {
+    logger.info(`Building "${sectionName}" section`)
+    console.time(`Building "${sectionName}" section`)
+
+    const section = await SectionFactory.fromName(sectionName)
 
     await this.resetBuildFolders(section)
 
@@ -64,6 +70,11 @@ class SectionBuilder extends ComponentBuilder {
     logger.debug(`${section.name}: Finalizing Liquid file`)
     await SectionBuilder.buildLiquid(section)
 
+    logger.info(`${section.name}: Build Complete`)
+    console.timeEnd(`Building "${env.npm_package_name}" section`)
+    console.log('\n')
+
+    return section
   }
 
   /**
