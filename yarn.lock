@@ -216,8 +216,10 @@ __metadata:
     pino-pretty: ^8.1.0
     standard: ^17.0.0
   bin:
-    build-section: bin/build-section.js
-    watch-section: bin/watch-section.js
+    build-section: src/bin/build-section.js
+    create-section: src/bin/create-section.js
+    create-snippet: src/bin/create-snippet.js
+    watch-section: src/bin/watch-section.js
   languageName: unknown
   linkType: soft
 

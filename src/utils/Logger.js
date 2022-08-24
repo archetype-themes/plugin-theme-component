@@ -35,10 +35,15 @@ if (process.argv.includes('--quiet')) {
   loglevel = 'debug'
 }
 
-const stream = pretty({
+const prettyPluginStream = pretty({
   colorize: true,
   ignore: 'time,pid,hostname'
 })
-const logger = traceCaller(pino({ level: loglevel }, stream))
+
+let logger = pino({ level: loglevel }, prettyPluginStream)
+
+if (loglevel === 'debug') {
+  logger = traceCaller(logger)
+}
 
 export default logger

@@ -1,27 +1,22 @@
 {
-  "name": "archie",
-  "version": "1.0.0",
+  "author": "Archetype Themes LLC",
   "description": "Archie is Archetype Developer Tools bundle.",
-  "main": "src/bin/build-section.js",
+  "keywords": [
+    "Archie",
+    "Archetype Themes",
+    "Shopify",
+    "Themes"
+  ],
+  "license": "UNLICENSED",
+  "name": "archie",
+  "type": "module",
+  "version": "1.0.0",
   "bin": {
     "build-section": "src/bin/build-section.js",
+    "create-section": "src/bin/create-section.js",
+    "create-snippet": "src/bin/create-snippet.js",
     "watch-section": "src/bin/watch-section.js"
   },
-  "type": "module",
-  "engines": {
-    "node": ">=11.0.0"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "Shopify",
-    "Theme",
-    "Section",
-    "Builder"
-  ],
-  "author": "Archetype Themes LLC",
-  "license": "UNLICENSED",
   "dependencies": {
     "deepmerge": "^4.2.2",
     "esbuild": "^0.14.51",
@@ -33,10 +28,21 @@
   "devDependencies": {
     "standard": "^17.0.0"
   },
+  "engines": {
+    "node": ">=11.0.0"
+  },
+  "packageManager": "yarn@3.2.2",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "standard": {
     "ignore": [
-      "packages/**"
+      "sections/**",
+      "snippets/**"
     ]
   },
-  "packageManager": "yarn@3.2.2"
+  "workspaces": [
+    "sections/*",
+    "snippets/*"
+  ]
 }
