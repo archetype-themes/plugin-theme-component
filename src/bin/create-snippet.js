@@ -1,29 +1,26 @@
 #! /usr/bin/env node
 import logger from '../utils/Logger.js'
-import { env, exit } from 'node:process'
+import { env } from 'node:process'
 import FileUtils from '../utils/FileUtils.js'
-import { access, mkdir } from 'node:fs/promises'
+import { access } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import Snippet from '../models/Snippet.js'
 import { exec } from 'child_process'
+import BinUtils from '../utils/BinUtils.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import ComponentUtils from '../utils/ComponentUtils.js'
 
-const args = process.argv.slice(2)
-
-if (!env.PROJECT_CWD) {
-  logger.error(`Environment variable "PROJECT_CWD" is not available. Please prefix this command with yarn. ie: "yarn create-snippet".`)
-  exit(1)
+// Make sure we are within the Archie Monorepo
+try {
+  await BinUtils.validatePackageIsArchie()
+} catch (error) {
+  BinUtils.exitWithError(error)
 }
 
-const packageJson = JSON.parse(await FileUtils.getFileContents(`${env.PROJECT_CWD}/package.json`))
-
-if (packageJson.name !== 'archie') {
-  logger.error(`Package name "${packageJson.name}" detected.This script is intended for use within the "archie" monorepo.`)
-  exit(1)
-}
-
-if (!args[0] || args[0].match(/^--(verbose|quiet|debug)$/i)) {
-  logger.error('Please specify a snippet name. ie: yarn create-snippet some-smart-snippet-name')
-  exit(1)
+// Make sure we have a snippet name
+const args = NodeUtils.getArgs()
+if (args.length === 0) {
+  BinUtils.exitWithError('Please specify a snippet name. ie: yarn create-snippet some-smart-snippet-name')
 }
 
 const snippet = new Snippet()
@@ -33,16 +30,24 @@ logger.info(`Creating ${snippet.name} Snippet`)
 
 snippet.rootFolder = `${env.PROJECT_CWD}/snippets/${snippet.name}`
 
+// Exit if the folder already exists
 try {
   await access(snippet.rootFolder, constants.X_OK)
-  logger.error('Snippet folder already exists. Please remove it or rename your snippet')
-  exit(1)
+  BinUtils.exitWithError('Snippet folder already exists. Please remove it or rename your snippet')
 } catch (error) {
-
+  // Error is expected, the folder shouldn't exist
 }
 
-await mkdir(`${snippet.rootFolder}`, { recursive: true })
-const defaultPackageJson = `{
+// Create the folder structure
+try {
+  await ComponentUtils.createFolderStructure(snippet)
+} catch (error) {
+  BinUtils.exitWithError(error)
+}
+
+const defaultFiles = []
+
+defaultFiles['package.json'] = `{
   "author": "Archetype Themes LLC",
   "description": "Shopify Theme ${snippet.name} Snippet",
   "license": "UNLICENSED",
@@ -61,49 +66,42 @@ const defaultPackageJson = `{
 }
 `
 
-const defaultREADME = `# Archie's ${snippet.name} Snippet
+defaultFiles['/README.md'] = `# Archie's ${snippet.name} Snippet
 This snippet is intended to be bundled in a theme through the Archie monorepo.
 `
-await FileUtils.writeFile(`${snippet.rootFolder}/package.json`, defaultPackageJson)
-await FileUtils.writeFile(`${snippet.rootFolder}/README.md`, defaultREADME)
 
 // Snippet Liquid file
-await mkdir(`${snippet.rootFolder}/src`, { recursive: true })
-await FileUtils.writeFile(`${snippet.rootFolder}/src/${snippet.name}.liquid`, '')
+defaultFiles[`/src/${snippet.name}.liquid`] = ``
 
 // Schema
-const defaultSchema = `{
+defaultFiles['/src/schema.json'] = `{
 
 }
 `
-await FileUtils.writeFile(`${snippet.rootFolder}/src/schema.json`, defaultSchema)
 
 // Locales
-const defaultLocaleFile = `{
+defaultFiles['/src/locales/en-US.json'] = `{
   "snippets": {
     "${snippet.name}": {
     }
   }
 }
 `
-await mkdir(`${snippet.rootFolder}/src/locales`, { recursive: true })
-await FileUtils.writeFile(`${snippet.rootFolder}/src/locales/en-US.json`, defaultLocaleFile)
 
 // Javascript
-const defaultJavascript = `// This is the javascript entrypoint for the ${snippet.name} snippet. 
+defaultFiles['/src/scripts/index.js'] = `// This is the javascript entrypoint for the ${snippet.name} snippet. 
 // This file and all its inclusions will be processed through esbuild
 `
-await mkdir(`${snippet.rootFolder}/src/scripts`, { recursive: true })
-await FileUtils.writeFile(`${snippet.rootFolder}/src/scripts/index.js`, defaultJavascript)
 
 // Styles
-const defaultStyles = `// This is the stylesheet entrypoint for the ${snippet.name} snippet. 
+defaultFiles['/src/styles/main.scss'] = `// This is the stylesheet entrypoint for the ${snippet.name} snippet. 
 // This file and all its inclusions will be processed through esbuild
 `
-await mkdir(`${snippet.rootFolder}/src/styles`, { recursive: true })
-await FileUtils.writeFile(`${snippet.rootFolder}/src/styles/main.scss`, defaultStyles)
 
-// Embedded Snippets
-await mkdir(`${snippet.rootFolder}/src/snippets`, { recursive: true })
+// Write files to disk
+for (const filename in defaultFiles) {
+  await FileUtils.writeFile(`${snippet.rootFolder}${filename}`, defaultFiles[filename])
+}
 
+// Run yarn install; this must be done or yarn will send error messages relating to monorepo integrity
 exec('yarn install', { cwd: snippet.rootFolder })

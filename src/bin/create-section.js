@@ -1,28 +1,26 @@
 #! /usr/bin/env node
 import logger from '../utils/Logger.js'
-import { env, exit } from 'node:process'
+import { env } from 'node:process'
 import FileUtils from '../utils/FileUtils.js'
 import Section from '../models/Section.js'
-import { access, mkdir } from 'node:fs/promises'
+import { access } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { exec } from 'node:child_process'
+import NodeUtils from '../utils/NodeUtils.js'
+import BinUtils from '../utils/BinUtils.js'
+import ComponentUtils from '../utils/ComponentUtils.js'
 
-const args = process.argv.slice(2)
-
-if (!env.PROJECT_CWD) {
-  logger.error(`Environment variable "PROJECT_CWD" is not available. Please prefix this command with yarn. ie: "yarn create-section".`)
-  exit(1)
-}
-const packageJson = JSON.parse(await FileUtils.getFileContents(`${env.PROJECT_CWD}/package.json`))
-
-if (packageJson.name !== 'archie') {
-  logger.error(`Package name "${packageJson.name}" detected.This script is intended for use within the "archie" monorepo.`)
-  exit(1)
+// Make sure we are within the Archie Monorepo
+try {
+  await BinUtils.validatePackageIsArchie()
+} catch (error) {
+  BinUtils.exitWithError(error)
 }
 
-if (!args[0] || args[0].match(/^--(verbose|quiet|debug)$/i)) {
-  logger.error('Please specify a section name. ie: yarn create-section some-smart-section-name')
-  exit(1)
+// Make sure we have a section name
+const args = NodeUtils.getArgs()
+if (args.length === 0) {
+  BinUtils.exitWithError('Please specify a section name. ie: yarn create-section some-smart-section-name')
 }
 
 const section = new Section()
@@ -32,16 +30,24 @@ logger.info(`Creating ${section.name} Section`)
 
 section.rootFolder = `${env.PROJECT_CWD}/sections/${section.name}`
 
+// Exit if the folder already exists
 try {
   await access(section.rootFolder, constants.X_OK)
-  logger.error('Section folder already exists. Please remove it or rename your section')
-  exit(1)
+  BinUtils.exitWithError('Section folder already exists. Please remove it or rename your section')
 } catch (error) {
-
+  // Error is expected, the folder shouldn't exist
 }
 
-await mkdir(`${section.rootFolder}`, { recursive: true })
-const defaultPackageJson = `{
+// Create the folder structure
+try {
+  await ComponentUtils.createFolderStructure(section)
+} catch (error) {
+  BinUtils.exitWithError(error)
+}
+
+const defaultFiles = []
+
+defaultFiles['package.json'] = `{
   "author": "Archetype Themes LLC",
   "description": "Shopify Theme ${section.name} Section",
   "license": "UNLICENSED",
@@ -60,50 +66,43 @@ const defaultPackageJson = `{
 }
 `
 
-const defaultREADME = `# Archie's ${section.name} Section
+defaultFiles['/README.md'] = `# Archie's ${section.name} Section
 This section is intended to be bundled in a theme through the Archie monorepo.
 `
-await FileUtils.writeFile(`${section.rootFolder}/package.json`, defaultPackageJson)
-await FileUtils.writeFile(`${section.rootFolder}/README.md`, defaultREADME)
 
 // Section Liquid file
-await mkdir(`${section.rootFolder}/src`, { recursive: true })
-await FileUtils.writeFile(`${section.rootFolder}/src/${section.name}.liquid`, '')
+defaultFiles[`/src/${section.name}.liquid`] = ``
 
 // Schema
-const defaultSchema = `{
+defaultFiles['/src/schema.json'] = `{
   "name": "${section.name}",
-  "tag": "section",
+  "tag": "section"
 }
 `
-await FileUtils.writeFile(`${section.rootFolder}/src/schema.json`, defaultSchema)
 
 // Locales
-const defaultLocaleFile = `{
+defaultFiles['/src/locales/en-US.json'] = `{
   "sections": {
     "${section.name}": {
     }
   }
 }
 `
-await mkdir(`${section.rootFolder}/src/locales`, { recursive: true })
-await FileUtils.writeFile(`${section.rootFolder}/src/locales/en-US.json`, defaultLocaleFile)
 
 // Javascript
-const defaultJavascript = `// This is the javascript entrypoint for the ${section.name} section. 
+defaultFiles['/src/scripts/index.js'] = `// This is the javascript entrypoint for the ${section.name} section. 
 // This file and all its inclusions will be processed through esbuild
 `
-await mkdir(`${section.rootFolder}/src/scripts`, { recursive: true })
-await FileUtils.writeFile(`${section.rootFolder}/src/scripts/index.js`, defaultJavascript)
 
 // Styles
-const defaultStyles = `// This is the stylesheet entrypoint for the ${section.name} section. 
+defaultFiles['/src/styles/main.scss'] = `// This is the stylesheet entrypoint for the ${section.name} section. 
 // This file and all its inclusions will be processed through esbuild
 `
-await mkdir(`${section.rootFolder}/src/styles`, { recursive: true })
-await FileUtils.writeFile(`${section.rootFolder}/src/styles/main.scss`, defaultStyles)
 
-// Embedded Snippets
-await mkdir(`${section.rootFolder}/src/snippets`, { recursive: true })
+// Write files to disk
+for (const filename in defaultFiles) {
+  await FileUtils.writeFile(`${section.rootFolder}${filename}`, defaultFiles[filename])
+}
 
+// Run yarn install; this must be done or yarn will send error messages relating to monorepo integrity
 exec('yarn install', { cwd: section.rootFolder })

@@ -1,14 +1,28 @@
 import { constants } from 'node:fs'
-import { access } from 'node:fs/promises'
+import { access, mkdir } from 'node:fs/promises'
 import { basename, dirname, extname } from 'node:path'
-import { cwd, env } from 'node:process'
+import { env } from 'node:process'
 import FileUtils from './FileUtils.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import logger from './Logger.js'
 import SectionFiles from '../models/SectionFiles.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
+import Section from '../models/Section.js'
+import Snippet from '../models/Snippet.js'
 
 class ComponentUtils {
+
+  /**
+   *
+   * @param {Section|Snippet} component
+   * @return {Promise<void>}
+   */
+  static async createFolderStructure (component) {
+    await mkdir(`${component.rootFolder}/src/locales`, { recursive: true })
+    await mkdir(`${component.rootFolder}/src/scripts`, { recursive: true })
+    await mkdir(`${component.rootFolder}/src/styles`, { recursive: true })
+    await mkdir(`${component.rootFolder}/src/snippets`, { recursive: true })
+  }
 
   /**
    * Detects the package Folder Name
