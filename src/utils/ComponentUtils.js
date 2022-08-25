@@ -26,30 +26,33 @@ class ComponentUtils {
 
   /**
    * Detects the package Folder Name
-   * @param {string} componentName
+   * @param {Section|Snippet} component
    * @returns {Promise<string>}
    */
-  static async detectRootFolder (componentName) {
-    let packageFolder
-    if (env.npm_config_local_prefix)
-      packageFolder = env.npm_config_local_prefix
-    else {
-      packageFolder = cwd()
-
-      if (packageFolder.includes(componentName)) {
-        packageFolder = packageFolder.substring(0, packageFolder.lastIndexOf(componentName) + componentName.length)
-      } else {
-        packageFolder = `${dirname(cwd())}/${componentName}`
-      }
+  static async getValidRootFolder (component) {
+    if (!env.PROJECT_CWD) {
+      throw new Error(`Environment variable "PROJECT_CWD" is not available. Please make sure to use this command with a recent version of yarn.`)
     }
+
+    let componentTypeFolder
+
+    if (component instanceof Section) {
+      componentTypeFolder = 'sections'
+    } else if (component instanceof Snippet) {
+      componentTypeFolder = 'snippets'
+    } else {
+      throw new Error('ComponentUtils.getValidRootFolder: argument provided must be an instance of the Section or Snippet models')
+    }
+
+    const componentFolder = `${env.PROJECT_CWD}/${componentTypeFolder}/${component.name}`
 
     try {
-      await access(packageFolder, constants.X_OK)
+      await access(componentFolder, constants.X_OK)
     } catch (error) {
-      throw new Error(`${componentName}: Can't access root folder at "${packageFolder}"`)
+      throw new Error(`${component}: Can't access component root folder at expected location "${componentFolder}" - Verify that the folder exists and has access execute permissions (ie: 755)`)
     }
 
-    return packageFolder
+    return componentFolder
   }
 
   /**

@@ -18,7 +18,7 @@ class SectionFactory {
     section.name = name
 
     // Set Section folders
-    section.rootFolder = await ComponentUtils.detectRootFolder(section.name)
+    section.rootFolder = await ComponentUtils.getValidRootFolder(section)
     section.build = BuildFactory.fromSection(section)
     section.files = await FilesFactory.fromSectionFolder(section.rootFolder)
 

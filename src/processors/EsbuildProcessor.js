@@ -6,7 +6,7 @@ import { dirname } from 'path'
 
 const { build, BuildResult } = esbuild
 
-class esbuildProcessor {
+class EsbuildProcessor {
 
   /**
    * Build JavaScript files for a section or snippet
@@ -47,7 +47,6 @@ class esbuildProcessor {
     const options = {
       bundle: true,
       charset: 'utf8',
-      entryPoints: [mainStyleSheet],
       //metafile: true,
       //minify: true, // TODO: Check with Team to see if we want to use this feature for bundled code or not.
       platform: 'browser',
@@ -70,4 +69,4 @@ class esbuildProcessor {
 
 }
 
-export default esbuildProcessor
+export default EsbuildProcessor

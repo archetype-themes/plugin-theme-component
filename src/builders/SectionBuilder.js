@@ -10,7 +10,6 @@ import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
 import SectionFactory from '../factory/SectionFactory.js'
-import { env } from 'node:process'
 
 class SectionBuilder extends ComponentBuilder {
 
@@ -71,7 +70,7 @@ class SectionBuilder extends ComponentBuilder {
     await SectionBuilder.buildLiquid(section)
 
     logger.info(`${section.name}: Build Complete`)
-    console.timeEnd(`Building "${env.npm_package_name}" section`)
+    console.timeEnd(`Building "${sectionName}" section`)
     console.log('\n')
 
     return section

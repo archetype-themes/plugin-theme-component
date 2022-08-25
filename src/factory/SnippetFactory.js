@@ -17,7 +17,7 @@ class SnippetFactory {
     snippet.name = snippetName
 
     // Set Snippet folders
-    snippet.rootFolder = await ComponentUtils.detectRootFolder(snippet.name)
+    snippet.rootFolder = await ComponentUtils.getValidRootFolder(snippet)
     snippet.build = BuildFactory.fromSnippet(snippet)
     snippet.files = await FilesFactory.fromSnippetFolder(snippet.rootFolder)
 

@@ -47,7 +47,7 @@ try {
 
 const defaultFiles = []
 
-defaultFiles['package.json'] = `{
+defaultFiles['/package.json'] = `{
   "author": "Archetype Themes LLC",
   "description": "Shopify Theme ${snippet.name} Snippet",
   "license": "UNLICENSED",

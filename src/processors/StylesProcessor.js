@@ -1,6 +1,6 @@
 import esbuild from 'esbuild'
 import logger from '../utils/Logger.js'
-import esbuildProcessor from './esbuildProcessor.js'
+import EsbuildProcessor from './EsbuildProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 
 const { BuildResult } = esbuild
@@ -8,14 +8,14 @@ const { BuildResult } = esbuild
 class StylesProcessor {
 
   /**
-   * This is simply a wrapper for the esbuildProcessor for now
+   * This is simply a wrapper for the EsbuildProcessor for now
    * @param {string} outputFile
    * @param {string} mainStyleSheet
    * @param {string[]} additionalFiles
    * @returns {Promise<BuildResult>}
    */
   static buildStyles (outputFile, mainStyleSheet, additionalFiles = []) {
-    return esbuildProcessor.buildStyleSheets(outputFile, mainStyleSheet, additionalFiles)
+    return EsbuildProcessor.buildStyleSheets(outputFile, mainStyleSheet, additionalFiles)
   }
 
   /**

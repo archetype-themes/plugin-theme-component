@@ -131,3 +131,7 @@ dist
 
 # IDE files
 .idea
+
+# Components build folders
+sections/*/build
+snippets/*/build
