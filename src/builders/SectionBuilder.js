@@ -193,7 +193,6 @@ class SectionBuilder extends ComponentBuilder {
       }
     }
 
-    stylesheets.unshift(section.build.stylesheet)
     const styles = await FileUtils.getMergedFilesContent(stylesheets)
     await FileUtils.writeFile(section.build.stylesheet, styles)
     section.liquidCode = `<link type="text/css" href="{{ ${basename(section.build.stylesheet)} | asset_url }}" rel="stylesheet">\n${section.liquidCode}`

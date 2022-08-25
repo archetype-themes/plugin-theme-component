@@ -19,11 +19,11 @@
   },
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "esbuild": "^0.14.51",
-    "esbuild-plugin-less": "^1.1.8",
-    "esbuild-sass-plugin": "^2.3.1",
-    "pino": "^8.2.0",
-    "pino-pretty": "^8.1.0"
+    "esbuild": "^0.15.5",
+    "esbuild-plugin-less": "^1.1.9",
+    "esbuild-sass-plugin": "^2.3.2",
+    "pino": "^8.4.2",
+    "pino-pretty": "^9.1.0"
   },
   "devDependencies": {
     "standard": "^17.0.0"
