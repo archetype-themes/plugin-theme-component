@@ -1,12 +1,6 @@
 {
   "author": "Archetype Themes LLC",
-  "description": "Archie is Archetype Developer Tools bundle.",
-  "keywords": [
-    "Archie",
-    "Archetype Themes",
-    "Shopify",
-    "Themes"
-  ],
+  "description": "Archie is Archetype Theme's Development Toolset bundle.",
   "license": "UNLICENSED",
   "name": "archie",
   "type": "module",
@@ -31,18 +25,5 @@
   "engines": {
     "node": ">=11.0.0"
   },
-  "packageManager": "yarn@3.2.2",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "standard": {
-    "ignore": [
-      "sections/**",
-      "snippets/**"
-    ]
-  },
-  "workspaces": [
-    "sections/*",
-    "snippets/*"
-  ]
+  "packageManager": "yarn@3.2.2"
 }
