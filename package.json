@@ -2,7 +2,7 @@
   "author": "Archetype Themes LLC",
   "description": "Archie is Archetype Theme's Development Toolset bundle.",
   "license": "UNLICENSED",
-  "name": "archie",
+  "name": "@archetype-themes/archie",
   "type": "module",
   "version": "1.0.0",
   "bin": {
