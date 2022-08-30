@@ -18,12 +18,12 @@ class NodeUtils {
   }
 
   static async getPackageJson () {
-    if (!env.PROJECT_CWD) {
-      throw new Error(`Environment variable "PROJECT_CWD" is not available. Please make sure to use this command with a recent version of yarn.`)
+    if (!env.npm_package_json) {
+      throw new Error(`Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of yarn.`)
     }
 
     if (!this.#packageJson) {
-      this.#packageJson = JSON.parse(await FileUtils.getFileContents(`${env.PROJECT_CWD}/package.json`))
+      this.#packageJson = JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
     }
     return this.#packageJson
   }

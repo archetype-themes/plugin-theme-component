@@ -10,11 +10,16 @@ import NodeUtils from '../utils/NodeUtils.js'
 import BinUtils from '../utils/BinUtils.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 
-// Make sure we are within the Archie Monorepo
+// Make sure we are within a theme or collection architecture
+let shopifyComponentType
 try {
-  await BinUtils.validatePackageIsArchie()
+  shopifyComponentType = await BinUtils.getShopifyComponentType()
 } catch (error) {
   BinUtils.exitWithError(error)
+}
+
+if (![BinUtils.THEME_SHOPIFY_COMPONENT_TYPE, BinUtils.COLLECTION_SHOPIFY_COMPONENT_TYPE].includes(shopifyComponentType)) {
+  BinUtils.exitWithError(`INVALID SHOPIFY COMPONENT TYPE: "${shopifyComponentType}". This script can only be run from a "theme" or "collection" Shopify Component.`)
 }
 
 // Make sure we have a section name
@@ -26,7 +31,7 @@ if (args.length === 0) {
 const section = new Section()
 section.name = args[0].replace(/[^a-z0-9_-]/gi, '-')
 
-logger.info(`Creating ${section.name} Section`)
+logger.info(`Creating "${section.name}" Section`)
 
 section.rootFolder = `${env.PROJECT_CWD}/sections/${section.name}`
 
@@ -55,7 +60,11 @@ defaultFiles['/package.json'] = `{
   "name": "${section.name}-section",
   "packageManager": "yarn@3.2.2",
   "version": "1.0.0",
+   "config": {
+    "shopifyComponentType": "section"
+  },
   "devDependencies": {
+    "@archetype-themes/archie": "portal:/Users/archetype/Projects/archetype-themes/archie",
     "standard": "^17.0.0"
   },
   "standard": {
