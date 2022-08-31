@@ -16,7 +16,7 @@ class BinUtils {
   static async getShopifyComponentType () {
     const packageJson = await NodeUtils.getPackageJson()
 
-    if (!packageJson.config.shopifyComponentType) {
+    if (!packageJson.config || !packageJson.config.shopifyComponentType) {
       throw new Error(`Couldn't find config.shopifyComponentType value in package.json. Please create the variable and set it to either one of these: theme/collection/section/snippet`)
     }
 
