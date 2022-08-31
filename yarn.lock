@@ -5,6 +5,25 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@archetype-themes/archie@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@archetype-themes/archie@workspace:."
+  dependencies:
+    deepmerge: ^4.2.2
+    esbuild: ^0.15.5
+    esbuild-plugin-less: ^1.1.9
+    esbuild-sass-plugin: ^2.3.2
+    pino: ^8.4.2
+    pino-pretty: ^9.1.0
+    standard: ^17.0.0
+  bin:
+    build-section: src/bin/build-section.js
+    create-section: src/bin/create-section.js
+    create-snippet: src/bin/create-snippet.js
+    watch-section: src/bin/watch-section.js
+  languageName: unknown
+  linkType: soft
+
 "@esbuild/linux-loong64@npm:0.14.53":
   version: 0.14.53
   resolution: "@esbuild/linux-loong64@npm:0.14.53"
@@ -210,25 +229,6 @@ __metadata:
   checksum: 5615cadcfb45289eea63f8afd064ab656006361020e1735112e346593856f87435e02d8dcc7ff0d11928bc7d425f27bc7c2a84f6c0b35ab0ff659c814c138a24
   languageName: node
   linkType: hard
-
-"archie@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "archie@workspace:."
-  dependencies:
-    deepmerge: ^4.2.2
-    esbuild: ^0.15.5
-    esbuild-plugin-less: ^1.1.9
-    esbuild-sass-plugin: ^2.3.2
-    pino: ^8.4.2
-    pino-pretty: ^9.1.0
-    standard: ^17.0.0
-  bin:
-    build-section: src/bin/build-section.js
-    create-section: src/bin/create-section.js
-    create-snippet: src/bin/create-snippet.js
-    watch-section: src/bin/watch-section.js
-  languageName: unknown
-  linkType: soft
 
 "are-we-there-yet@npm:^3.0.0":
   version: 3.0.1
