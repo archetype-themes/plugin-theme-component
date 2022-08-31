@@ -57,7 +57,7 @@ defaultFiles['/package.json'] = `{
   "description": "Shopify Theme ${snippet.name} Snippet",
   "license": "UNLICENSED",
   "main": "src/${snippet.name}.liquid",
-  "name": "${snippet.name}-snippet",
+  "name": "${snippet.name}",
   "packageManager": "yarn@3.2.2",
   "version": "1.0.0",
    "config": {
