@@ -7,25 +7,25 @@ import { access } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { exec } from 'node:child_process'
 import NodeUtils from '../utils/NodeUtils.js'
-import BinUtils from '../utils/BinUtils.js'
+import Config from '../Config.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 
 // Make sure we are within a theme or collection architecture
-let shopifyComponentType
+let componentType
 try {
-  shopifyComponentType = await BinUtils.getShopifyComponentType()
+  componentType = await Config.getComponentType()
 } catch (error) {
-  BinUtils.exitWithError(error)
+  NodeUtils.exitWithError(error)
 }
 
-if (![BinUtils.THEME_SHOPIFY_COMPONENT_TYPE, BinUtils.COLLECTION_SHOPIFY_COMPONENT_TYPE].includes(shopifyComponentType)) {
-  BinUtils.exitWithError(`INVALID SHOPIFY COMPONENT TYPE: "${shopifyComponentType}". This script can only be run from a "theme" or "collection" Shopify Component.`)
+if (![Config.THEME_COMPONENT_TYPE, Config.COLLECTION_COMPONENT_TYPE].includes(componentType)) {
+  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${componentType}". This script can only be run from a "theme" or "collection" Component.`)
 }
 
 // Make sure we have a section name
 const args = NodeUtils.getArgs()
 if (args.length === 0) {
-  BinUtils.exitWithError('Please specify a section name. ie: yarn create-section some-smart-section-name')
+  NodeUtils.exitWithError('Please specify a section name. ie: yarn create-section some-smart-section-name')
 }
 
 const section = new Section()
@@ -38,7 +38,7 @@ section.rootFolder = `${env.PROJECT_CWD}/sections/${section.name}`
 // Exit if the folder already exists
 try {
   await access(section.rootFolder, constants.X_OK)
-  BinUtils.exitWithError('Section folder already exists. Please remove it or rename your section')
+  NodeUtils.exitWithError('Section folder already exists. Please remove it or rename your section')
 } catch (error) {
   // Error is expected, the folder shouldn't exist
 }
@@ -47,21 +47,21 @@ try {
 try {
   await ComponentUtils.createFolderStructure(section)
 } catch (error) {
-  BinUtils.exitWithError(error)
+  NodeUtils.exitWithError(error)
 }
 
 const defaultFiles = []
 
 defaultFiles['/package.json'] = `{
-  "author": "Archetype Themes LLC",
-  "description": "Shopify Theme ${section.name} Section",
+  "author": "Archetype Themes Limited Partnership",
+  "description": "Shopify Themes ${section.name} Section",
   "license": "UNLICENSED",
   "main": "src/${section.name}.liquid",
   "name": "${section.name}",
   "packageManager": "yarn@3.2.2",
   "version": "1.0.0",
-   "config": {
-    "shopifyComponentType": "section"
+  "archie": {
+    "componentType": "section"
   },
   "devDependencies": {
     "@archetype-themes/archie": "portal:/Users/archetype/Projects/archetype-themes/archie",

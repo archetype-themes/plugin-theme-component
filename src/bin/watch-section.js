@@ -3,30 +3,30 @@ import { env, exit } from 'node:process'
 import { watch } from 'node:fs/promises'
 import logger from '../utils/Logger.js'
 import SectionBuilder from '../builders/SectionBuilder.js'
-import BinUtils from '../utils/BinUtils.js'
+import Config from '../Config.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
 // Make sure we are within a theme or collection architecture
-let shopifyComponentType
+let componentType
 try {
-  shopifyComponentType = await BinUtils.getShopifyComponentType()
+  componentType = await Config.getComponentType()
 } catch (error) {
-  BinUtils.exitWithError(error)
+  NodeUtils.exitWithError(error)
 }
 
-if (shopifyComponentType === BinUtils.SNIPPET_SHOPIFY_COMPONENT_TYPE) {
-  BinUtils.exitWithError(`INVALID SHOPIFY COMPONENT TYPE: "${shopifyComponentType}". This script can only be run from a "theme", "collection" or "section" Shopify Component.`)
+if (componentType === Config.SNIPPET_COMPONENT_TYPE) {
+  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${componentType}". This script can only be run from a "theme", "collection" or "section" Component.`)
 }
 
 let sectionName
 
-if ([BinUtils.COLLECTION_SHOPIFY_COMPONENT_TYPE, BinUtils.THEME_SHOPIFY_COMPONENT_TYPE].includes(shopifyComponentType)) {
+if ([Config.COLLECTION_COMPONENT_TYPE, Config.THEME_COMPONENT_TYPE].includes(componentType)) {
   const args = NodeUtils.getArgs()
   if (!args[0]) {
-    BinUtils.exitWithError('Please specify a section name. ie: yarn build-section some-smart-section-name')
+    NodeUtils.exitWithError('Please specify a section name. ie: yarn build-section some-smart-section-name')
   }
   sectionName = args[0]
-} else if (shopifyComponentType === BinUtils.SECTION_SHOPIFY_COMPONENT_TYPE) {
+} else if (componentType === Config.SECTION_COMPONENT_TYPE) {
   sectionName = env.npm_package_name
 }
 

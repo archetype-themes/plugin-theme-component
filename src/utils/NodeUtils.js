@@ -1,5 +1,6 @@
-import { env } from 'node:process'
+import { env, exit } from 'node:process'
 import FileUtils from './FileUtils.js'
+import logger from './Logger.js'
 
 class NodeUtils {
   static #packageJson
@@ -26,6 +27,20 @@ class NodeUtils {
       this.#packageJson = JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
     }
     return this.#packageJson
+  }
+
+  /**
+   *
+   * @param {Error|string} error
+   */
+  static exitWithError (error) {
+    if (error.message) {
+      logger.error(error.message)
+    } else {
+      logger.error(error)
+    }
+
+    exit(1)
   }
 }
 

@@ -6,26 +6,26 @@ import { access } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import Snippet from '../models/Snippet.js'
 import { exec } from 'child_process'
-import BinUtils from '../utils/BinUtils.js'
+import Config from '../Config.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 
 // Make sure we are within a theme or collection architecture
-let shopifyComponentType
+let componentType
 try {
-  shopifyComponentType = await BinUtils.getShopifyComponentType()
+  componentType = await Config.getComponentType()
 } catch (error) {
-  BinUtils.exitWithError(error)
+  NodeUtils.exitWithError(error)
 }
 
-if (![BinUtils.THEME_SHOPIFY_COMPONENT_TYPE, BinUtils.COLLECTION_SHOPIFY_COMPONENT_TYPE].includes(shopifyComponentType)) {
-  BinUtils.exitWithError(`INVALID SHOPIFY COMPONENT TYPE: "${shopifyComponentType}". This script can only be run from a "theme" or "collection" Shopify Component.`)
+if (![Config.THEME_COMPONENT_TYPE, Config.COLLECTION_COMPONENT_TYPE].includes(componentType)) {
+  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${componentType}". This script can only be run from a "theme" or "collection" Component.`)
 }
 
 // Make sure we have a snippet name
 const args = NodeUtils.getArgs()
 if (args.length === 0) {
-  BinUtils.exitWithError('Please specify a snippet name. ie: yarn create-snippet some-smart-snippet-name')
+  NodeUtils.exitWithError('Please specify a snippet name. ie: yarn create-snippet some-smart-snippet-name')
 }
 
 const snippet = new Snippet()
@@ -38,7 +38,7 @@ snippet.rootFolder = `${env.PROJECT_CWD}/snippets/${snippet.name}`
 // Exit if the folder already exists
 try {
   await access(snippet.rootFolder, constants.X_OK)
-  BinUtils.exitWithError('Snippet folder already exists. Please remove it or rename your snippet')
+  NodeUtils.exitWithError('Snippet folder already exists. Please remove it or rename your snippet')
 } catch (error) {
   // Error is expected, the folder shouldn't exist
 }
@@ -47,21 +47,21 @@ try {
 try {
   await ComponentUtils.createFolderStructure(snippet)
 } catch (error) {
-  BinUtils.exitWithError(error)
+  NodeUtils.exitWithError(error)
 }
 
 const defaultFiles = []
 
 defaultFiles['/package.json'] = `{
-  "author": "Archetype Themes LLC",
-  "description": "Shopify Theme ${snippet.name} Snippet",
+  "author": "Archetype Themes Limited Partnership",
+  "description": "Shopify Themes ${snippet.name} Snippet",
   "license": "UNLICENSED",
   "main": "src/${snippet.name}.liquid",
   "name": "${snippet.name}",
   "packageManager": "yarn@3.2.2",
   "version": "1.0.0",
-   "config": {
-    "shopifyComponentType": "snippet"
+  "archie": {
+    "componentType": "snippet"
   },
   "devDependencies": {
     "standard": "^17.0.0"
