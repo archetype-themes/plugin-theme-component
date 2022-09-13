@@ -1,6 +1,8 @@
 import { copyFile, mkdir, writeFile } from 'node:fs/promises'
 import path, { basename } from 'path'
 import merge from 'deepmerge'
+
+// Archie Components
 import ComponentBuilder from './ComponentBuilder.js'
 import SnippetBuilder from './SnippetBuilder.js'
 import SnippetFactory from '../factory/SnippetFactory.js'
@@ -9,20 +11,17 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
-import SectionFactory from '../factory/SectionFactory.js'
 
 class SectionBuilder extends ComponentBuilder {
 
   /**
    * Build Section
-   * @param {string} sectionName
+   * @param {Section} section
    * @returns {Promise<Section>}
    */
-  static async build (sectionName) {
-    logger.info(`Building "${sectionName}" section`)
-    console.time(`Building "${sectionName}" section`)
-
-    const section = await SectionFactory.fromName(sectionName)
+  static async build (section) {
+    logger.info(`Building "${section.name}" section`)
+    console.time(`Building "${section.name}" section`)
 
     await this.resetBuildFolders(section)
 
@@ -70,7 +69,7 @@ class SectionBuilder extends ComponentBuilder {
     await SectionBuilder.buildLiquid(section)
 
     logger.info(`${section.name}: Build Complete`)
-    console.timeEnd(`Building "${sectionName}" section`)
+    console.timeEnd(`Building "${section.name}" section`)
     console.log('\n')
 
     return section

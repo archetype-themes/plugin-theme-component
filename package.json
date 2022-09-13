@@ -7,18 +7,18 @@
   "type": "module",
   "version": "1.0.0",
   "bin": {
-    "build-section": "src/bin/build-section.js",
     "build-collection": "src/bin/build-collection.js",
+    "build-section": "src/bin/build-section.js",
     "create-section": "src/bin/create-section.js",
     "create-snippet": "src/bin/create-snippet.js",
     "watch-section": "src/bin/watch-section.js"
   },
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "esbuild": "^0.15.5",
+    "esbuild": "^0.15.7",
     "esbuild-plugin-less": "^1.1.9",
     "esbuild-sass-plugin": "^2.3.2",
-    "pino": "^8.4.2",
+    "pino": "^8.5.0",
     "pino-pretty": "^9.1.0"
   },
   "devDependencies": {

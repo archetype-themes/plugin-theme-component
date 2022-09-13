@@ -1,25 +1,29 @@
 #! /usr/bin/env node
-import logger from '../utils/Logger.js'
-import { env } from 'node:process'
-import FileUtils from '../utils/FileUtils.js'
-import { access } from 'node:fs/promises'
-import { constants } from 'node:fs'
-import Snippet from '../models/Snippet.js'
 import { exec } from 'child_process'
+import { constants } from 'node:fs'
+import { access } from 'node:fs/promises'
+import { env } from 'node:process'
+import path from 'path'
+// Archie Config & Components
 import Config from '../Config.js'
-import NodeUtils from '../utils/NodeUtils.js'
+import Snippet from '../models/Snippet.js'
+// Archie Utils
 import ComponentUtils from '../utils/ComponentUtils.js'
+import ConfigUtils from '../utils/ConfigUtils.js'
+import FileUtils from '../utils/FileUtils.js'
+import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
-// Make sure we are within a theme or collection architecture
-let componentType
+//Init Config
 try {
-  componentType = await Config.getComponentType()
+  await ConfigUtils.initConfig()
 } catch (error) {
   NodeUtils.exitWithError(error)
 }
 
-if (![Config.THEME_COMPONENT_TYPE, Config.COLLECTION_COMPONENT_TYPE].includes(componentType)) {
-  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${componentType}". This script can only be run from a "theme" or "collection" Component.`)
+// Make sure we are within a collection component
+if (!Config.isCollection()) {
+  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from a "collection" Component.`)
 }
 
 // Make sure we have a snippet name
@@ -33,7 +37,7 @@ snippet.name = args[0].replace(/[^a-z0-9_-]/gi, '-')
 
 logger.info(`Creating ${snippet.name} Snippet`)
 
-snippet.rootFolder = `${env.PROJECT_CWD}/snippets/${snippet.name}`
+snippet.rootFolder = path.join(env.PROJECT_CWD, Config.COLLECTION_SNIPPETS_SUBFOLDER, snippet.name)
 
 // Exit if the folder already exists
 try {
@@ -57,8 +61,8 @@ defaultFiles['/package.json'] = `{
   "description": "Shopify Themes ${snippet.name} Snippet",
   "license": "UNLICENSED",
   "main": "src/${snippet.name}.liquid",
-  "name": "${snippet.name}",
-  "packageManager": "yarn@3.2.2",
+  "name": "${Config.PACKAGES_SCOPE}/${snippet.name}",
+  "packageManager": "yarn@${Config.YARN_VERSION}",
   "version": "1.0.0",
   "archie": {
     "componentType": "snippet"
@@ -75,7 +79,7 @@ defaultFiles['/package.json'] = `{
 `
 
 defaultFiles['/README.md'] = `# Archie's ${snippet.name} Snippet
-This snippet is intended to be bundled in a theme through the Archie monorepo.
+This snippet is intended to be bundled in a theme through an Archetype components' collection monorepo.
 `
 
 // Snippet Liquid file

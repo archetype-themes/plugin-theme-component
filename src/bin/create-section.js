@@ -1,25 +1,29 @@
 #! /usr/bin/env node
-import logger from '../utils/Logger.js'
-import { env } from 'node:process'
-import FileUtils from '../utils/FileUtils.js'
-import Section from '../models/Section.js'
-import { access } from 'node:fs/promises'
-import { constants } from 'node:fs'
 import { exec } from 'node:child_process'
-import NodeUtils from '../utils/NodeUtils.js'
+import { constants } from 'node:fs'
+import { access } from 'node:fs/promises'
+import { env } from 'node:process'
+import path from 'path'
+// Archie Config & Components
 import Config from '../Config.js'
+import Section from '../models/Section.js'
+// Archie Utils
 import ComponentUtils from '../utils/ComponentUtils.js'
+import ConfigUtils from '../utils/ConfigUtils.js'
+import FileUtils from '../utils/FileUtils.js'
+import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
-// Make sure we are within a theme or collection architecture
-let componentType
+//Init Config
 try {
-  componentType = await Config.getComponentType()
+  await ConfigUtils.initConfig()
 } catch (error) {
   NodeUtils.exitWithError(error)
 }
 
-if (![Config.THEME_COMPONENT_TYPE, Config.COLLECTION_COMPONENT_TYPE].includes(componentType)) {
-  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${componentType}". This script can only be run from a "theme" or "collection" Component.`)
+// Make sure we are within a collection component
+if (!Config.isCollection()) {
+  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from a "collection" Component.`)
 }
 
 // Make sure we have a section name
@@ -33,7 +37,7 @@ section.name = args[0].replace(/[^a-z0-9_-]/gi, '-')
 
 logger.info(`Creating "${section.name}" Section`)
 
-section.rootFolder = `${env.PROJECT_CWD}/sections/${section.name}`
+section.rootFolder = path.join(env.PROJECT_CWD, Config.COLLECTION_SECTIONS_SUBFOLDER, section.name)
 
 // Exit if the folder already exists
 try {
@@ -57,8 +61,8 @@ defaultFiles['/package.json'] = `{
   "description": "Shopify Themes ${section.name} Section",
   "license": "UNLICENSED",
   "main": "src/${section.name}.liquid",
-  "name": "${section.name}",
-  "packageManager": "yarn@3.2.2",
+  "name": "${Config.PACKAGES_SCOPE}/${section.name}",
+  "packageManager": "yarn@${Config.YARN_VERSION}",
   "version": "1.0.0",
   "archie": {
     "componentType": "section"
@@ -76,7 +80,7 @@ defaultFiles['/package.json'] = `{
 `
 
 defaultFiles['/README.md'] = `# Archie's ${section.name} Section
-This section is intended to be bundled in a theme through the Archie monorepo.
+This section is intended to be bundled in a theme through an Archetype components' collection monorepo
 `
 
 // Section Liquid file

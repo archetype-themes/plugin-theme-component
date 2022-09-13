@@ -3,29 +3,34 @@ import SectionBuilder from '../builders/SectionBuilder.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Config from '../Config.js'
 import { env } from 'node:process'
+import ConfigUtils from '../utils/ConfigUtils.js'
+import SectionFactory from '../factory/SectionFactory.js'
 
-// Make sure we are within a theme or collection architecture
-let componentType
+//Init Config
 try {
-  componentType = await Config.getComponentType()
+  await ConfigUtils.initConfig()
 } catch (error) {
+
   NodeUtils.exitWithError(error)
 }
 
-if (componentType === Config.SNIPPET_COMPONENT_TYPE) {
-  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${componentType}". This script can only be run from a "theme", "collection" or "section" Component.`)
+// Make sure we are within a theme or collection architecture
+if (Config.isSnippet() || Config.isTheme()) {
+  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from a "collection" or "section" Component.`)
 }
 
 let sectionName
 
-if ([Config.COLLECTION_COMPONENT_TYPE, Config.THEME_COMPONENT_TYPE].includes(componentType)) {
+if (Config.isCollection()) {
   const args = NodeUtils.getArgs()
   if (!args[0]) {
     NodeUtils.exitWithError('Please specify a section name. ie: yarn build-section some-smart-section-name')
   }
   sectionName = args[0]
-} else if (componentType === Config.SECTION_COMPONENT_TYPE) {
-  sectionName = env.npm_package_name
+} else if (Config.isSection()) {
+  sectionName = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
 }
 
-await SectionBuilder.build(sectionName)
+const section = await SectionFactory.fromName(sectionName)
+
+await SectionBuilder.build(section)
