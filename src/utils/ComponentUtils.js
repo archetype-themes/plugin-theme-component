@@ -9,6 +9,8 @@ import SectionFiles from '../models/SectionFiles.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import Section from '../models/Section.js'
 import Snippet from '../models/Snippet.js'
+import Config from '../Config.js'
+import path from 'path'
 
 class ComponentUtils {
 
@@ -30,21 +32,8 @@ class ComponentUtils {
    * @returns {Promise<string>}
    */
   static async getValidRootFolder (component) {
-    if (!env.PROJECT_CWD) {
-      throw new Error(`Environment variable "PROJECT_CWD" is not available. Please make sure to use this command with a recent version of yarn.`)
-    }
 
-    let componentTypeFolder
-
-    if (component instanceof Section) {
-      componentTypeFolder = 'sections'
-    } else if (component instanceof Snippet) {
-      componentTypeFolder = 'snippets'
-    } else {
-      throw new Error('ComponentUtils.getValidRootFolder: argument provided must be an instance of the Section or Snippet models')
-    }
-
-    const componentFolder = `${env.PROJECT_CWD}/${componentTypeFolder}/${component.name}`
+    let componentFolder = this.getRootFolder(component)
 
     try {
       await access(componentFolder, constants.X_OK)
@@ -53,6 +42,31 @@ class ComponentUtils {
     }
 
     return componentFolder
+  }
+
+  /**
+   * Detects the package Folder Name
+   * @param {Section|Snippet} component
+   * @returns {string}
+   */
+  static getRootFolder (component) {
+    if (Config.isSection() || Config.isSnippet()) {
+
+      if (env.npm_package_name && env.npm_package_name.includes(component.name)) {
+        return dirname(env.npm_package_json)
+      }
+    } else if (Config.isCollection()) {
+      if (component instanceof Section) {
+        return path.join(dirname(env.npm_package_json), Config.COLLECTION_SECTIONS_SUBFOLDER, component.name)
+      } else if (component instanceof Snippet) {
+        return path.join(dirname(env.npm_package_json), Config.COLLECTION_SNIPPETS_SUBFOLDER, component.name)
+      }
+    } else if (Config.isTheme()) {
+      // TODO: FIX THAT componentFolder = `${dirname(env.npm_package_json)}/node_modules/@archetype-themes/${Config.collectionFolder}`
+      throw new Error('Config.getRootFolder: NOT IMPLEMENTED YET FOR THEMES')
+    }
+
+    throw new Error(`Unable to determine Component Root Folder for ${component.name}`)
   }
 
   /**
