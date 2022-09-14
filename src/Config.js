@@ -41,7 +41,7 @@ class Config {
    * @param collectionName
    * @return {Promise<string[]>}
    */
-  static async getCollectionSectionsList (collectionName) {
+  static async getSectionsList (collectionName) {
     const packageJson = await NodeUtils.getPackageJson()
 
     if (!packageJson.archie || !packageJson.archie[collectionName]) {
