@@ -1,4 +1,7 @@
 class Collection {
+  /** @type {CollectionBuild} **/
+  #build
+
   /** @type {string} **/
   #name
 
@@ -17,6 +20,22 @@ class Collection {
   constructor () {
     this.sectionNames = []
     this.sections = []
+  }
+
+  /**
+   * Get Collection Build
+   * @return {CollectionBuild}
+   */
+  get build () {
+    return this.#build
+  }
+
+  /**
+   * Set Collection Build
+   * @param {CollectionBuild} value
+   */
+  set build (value) {
+    this.#build = value
   }
 
   /**

@@ -2,6 +2,7 @@ import Collection from '../models/Collection.js'
 import { env } from 'node:process'
 import { dirname, join } from 'path'
 import Config from '../Config.js'
+import BuildFactory from './BuildFactory.js'
 
 class CollectionFactory {
   /**
@@ -18,6 +19,8 @@ class CollectionFactory {
     collection.sectionsFolder = join(collection.rootFolder, Config.COLLECTION_SECTIONS_SUBFOLDER)
 
     collection.sectionNames = await Config.getSectionsList(collection.name)
+
+    collection.build = BuildFactory.fromCollection(collection)
 
     return collection
   }

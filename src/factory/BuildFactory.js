@@ -1,7 +1,19 @@
 import SectionBuild from '../models/SectionBuild.js'
 import SnippetBuild from '../models/SnippetBuild.js'
+import CollectionBuild from '../models/CollectionBuild.js'
 
 class BuildFactory {
+
+  static fromCollection (collection) {
+    const build = new CollectionBuild()
+    build.rootFolder = `${collection.rootFolder}/build`
+    build.assetsFolder = `${build.rootFolder}/assets`
+    build.localesFolder = `${build.rootFolder}/locales`
+    build.snippetsFolder = `${build.rootFolder}/sections`
+    build.snippetsFolder = `${build.rootFolder}/snippets`
+    return build
+  }
+
   /**
    *
    * @param section

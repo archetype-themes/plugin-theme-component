@@ -1,10 +1,20 @@
 class ComponentBuild {
+  /** @type {string} **/
   #assetsFolder
+
+  /** @type {string} **/
   #javascriptFile
+
+  /** @type {string} **/
   #liquidFile
+
+  /** @type {string} **/
   #localesFolder
+
+  /** @type {string} **/
   #rootFolder
 
+  /** @type {string} **/
   #stylesheet
 
   constructor () {

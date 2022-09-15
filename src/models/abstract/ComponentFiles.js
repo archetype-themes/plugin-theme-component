@@ -2,16 +2,22 @@ class ComponentFiles {
   /** @type {string[]}
    * @default **/
   #javascriptFiles = []
+
   /** @type {string} **/
   #javascriptIndex
+
   /** @type {string[]} **/
   #liquidFiles = []
+
   /** @type {string[]} **/
   #localeFiles = []
+
   /** @type {string} **/
   #mainStylesheet
+
   /** @type {string} **/
   #schemaFile
+
   /** @type {string[]} **/
   #stylesheets = []
 

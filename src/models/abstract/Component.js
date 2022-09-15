@@ -1,12 +1,16 @@
 class Component {
   /** @type {string} **/
   #liquidCode
+
   /** @type {Object[][]} **/
   #locales = []
+
   /** @type {string} **/
   #name
+
   /** @type {string} **/
   #rootFolder
+
   /** @type {object} **/
   #schema
 
