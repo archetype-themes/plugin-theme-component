@@ -99,9 +99,12 @@ class ComponentUtils {
 
           break
         case '.json':
-          if (basename(file).toLowerCase() === 'schema.json')
+          const filename = basename(file).toLowerCase()
+          if (filename === 'schema.json')
             componentFiles.schemaFile = file
-          else if (basename(file).match(/^([a-z]{2})(-[a-z]{2})?(\.(default|schema)){0,2}\.json$/i))
+          else if (
+            filename.match(/^([a-z]{2})(-[a-z]{2})?(\.(default|schema)){0,2}\.json$/) ||
+            filename.match(/^locales?\.json$/))
             componentFiles.localeFiles.push(file)
           break
         default:

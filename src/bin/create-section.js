@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 import { exec } from 'node:child_process'
 import { constants } from 'node:fs'
 import { access } from 'node:fs/promises'

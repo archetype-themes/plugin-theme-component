@@ -9,7 +9,7 @@ class BuildFactory {
     build.rootFolder = `${collection.rootFolder}/build`
     build.assetsFolder = `${build.rootFolder}/assets`
     build.localesFolder = `${build.rootFolder}/locales`
-    build.snippetsFolder = `${build.rootFolder}/sections`
+    build.sectionsFolder = `${build.rootFolder}/sections`
     build.snippetsFolder = `${build.rootFolder}/snippets`
     return build
   }

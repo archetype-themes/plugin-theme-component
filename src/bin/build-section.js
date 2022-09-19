@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 import SectionBuilder from '../builders/SectionBuilder.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Config from '../Config.js'

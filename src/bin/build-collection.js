@@ -1,33 +1,22 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 import Config from '../Config.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import { env } from 'node:process'
 import CollectionBuilder from '../builders/CollectionBuilder.js'
+import ConfigUtils from '../utils/ConfigUtils.js'
+import CollectionFactory from '../factory/CollectionFactory.js'
 
-// Make sure we are within a theme or collection architecture
-let componentType
+//Init Config
 try {
-  componentType = await Config.getComponentType()
+  await ConfigUtils.initConfig()
 } catch (error) {
   NodeUtils.exitWithError(error)
 }
 
-if (![Config.THEME_COMPONENT_TYPE, Config.COLLECTION_COMPONENT_TYPE].includes(componentType)) {
-  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${componentType}". This script can only be run from a "theme" or "collection" Component.`)
+// Make sure we are within a collection architecture
+if (!Config.isCollection()) {
+  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from a "collection" Component.`)
 }
 
-let collectionName
+const collection = await CollectionFactory.fromBuildScript()
 
-if (Config.THEME_COMPONENT_TYPE === componentType) {
-  const args = NodeUtils.getArgs()
-  if (!args[0]) {
-    NodeUtils.exitWithError('Please specify a collection name. ie: yarn build-collection some-sagacious-collection-name')
-  }
-  collectionName = args[0]
-} else if (componentType === Config.COLLECTION_COMPONENT_TYPE) {
-  collectionName = env.npm_package_name
-}
-
-console.log('Collection Name', collectionName)
-
-await CollectionBuilder.build(collectionName)
+await CollectionBuilder.build(collection)

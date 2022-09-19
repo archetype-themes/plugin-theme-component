@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 import { env, exit } from 'node:process'
 import { watch } from 'node:fs/promises'
 import logger from '../utils/Logger.js'

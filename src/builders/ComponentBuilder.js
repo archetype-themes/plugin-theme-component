@@ -1,5 +1,4 @@
 import logger from '../utils/Logger.js'
-import FileUtils from '../utils/FileUtils.js'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 
 class ComponentBuilder {
@@ -12,9 +11,9 @@ class ComponentBuilder {
     logger.debug(`${component.name}: Building Liquid file`)
 
     // append component schema
-    if (component.files.schemaFile) {
-      logger.debug(`${component.name}: Processing Schema file`)
-      component.liquidCode += `\n{% schema %}\n${await FileUtils.getFileContents(component.files.schemaFile)}\n{% endschema %}`
+    if (component.schema) {
+      logger.debug(`${component.name}: Processing Schema`)
+      component.liquidCode += `\n{% schema %}\n${JSON.stringify(component.schema)}\n{% endschema %}`
       logger.debug(`${component.name}: Schema file build complete`)
     }
 
