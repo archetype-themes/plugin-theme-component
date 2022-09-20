@@ -11,6 +11,7 @@ import Section from '../models/Section.js'
 import Snippet from '../models/Snippet.js'
 import Config from '../Config.js'
 import path from 'path'
+import merge from 'deepmerge'
 
 class ComponentUtils {
 
@@ -124,14 +125,51 @@ class ComponentUtils {
   }
 
   /**
-   * Parse Locale Files and store their contents in an associative array in the component
+   * Parse Locale Files into an object
    * @param {string[]} localeFiles
+   * @param {boolean} [schemaLocales=false]
    * @return {Promise<string[][]>}
    */
-  static async parseLocaleFilesContent (localeFiles) {
-    const locales = []
-    for (const localeFile of localeFiles) {
-      locales[basename(localeFile, '.json')] = JSON.parse(await FileUtils.getFileContents(localeFile))
+  static async parseLocaleFilesContent (localeFiles, schemaLocales = false) {
+    let locales = [], singleLocaleRegex, localesCollectionRegex
+
+    if (schemaLocales) {
+      singleLocaleRegex = /^(?<locale>([a-z]{2})(-[a-z]{2}))?\.schema\.json$/
+      localesCollectionRegex = /^locales?\.schema\.json$/
+
+    } else {
+      singleLocaleRegex = /^(?<locale>([a-z]{2})(-[a-z]{2}))?(\.default)?\.json$/
+      localesCollectionRegex = /^locales?\.json$/
+    }
+
+    for (const localeFileWithPath of localeFiles) {
+      const localeFileName = basename(localeFileWithPath).toLowerCase()
+
+      const singleLocaleMatch = localeFileName.match(singleLocaleRegex)
+
+      // We have a single locale in a distinctly named file
+      if (singleLocaleMatch) {
+        // Get locale from filename
+        const locale = singleLocaleMatch.groups.locale
+
+        // Merge with matching locale
+        const localeData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+
+        if (locales[locale]) {
+          locales[locale] = merge(locales[locale], localeData)
+        } else {
+          locales[locale] = localeData
+        }
+
+      }
+      // We have a single file with multiple locales
+      else if (localeFileWithPath.match(localesCollectionRegex)) {
+        // Load locales.json file
+        const localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+
+        // merge locales
+        locales = merge(locales, localesData)
+      }
     }
 
     return locales
