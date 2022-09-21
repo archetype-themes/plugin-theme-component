@@ -94,7 +94,7 @@ defaultFiles['/src/schema.json'] = `{
 `
 
 // Locales
-defaultFiles['/src/locales.json'] = `{
+defaultFiles['/src/locales/locales.json'] = `{
   "en": {
     "section_name": "${section.name}"
   },
@@ -107,7 +107,7 @@ defaultFiles['/src/locales.json'] = `{
 }
 `
 
-defaultFiles['/src/locales.schema.json'] = `{
+defaultFiles['/src/locales/locales.schema.json'] = `{
   "en": {
     "section_name": "${section.name}"
   },

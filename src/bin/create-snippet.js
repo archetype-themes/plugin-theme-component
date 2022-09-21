@@ -92,7 +92,7 @@ defaultFiles['/src/schema.json'] = `{
 `
 
 // Locales
-defaultFiles['/src/locales.json'] = `{
+defaultFiles['/src/locales/locales.json'] = `{
   "en": {
     "snippet_name": "${snippet.name}"
   },
@@ -105,7 +105,7 @@ defaultFiles['/src/locales.json'] = `{
 }
 `
 
-defaultFiles['/src/locales.schema.json'] = `{
+defaultFiles['/src/locales/locales.schema.json'] = `{
   "en": {
     "snippet_name": "${snippet.name}"
   },

@@ -26,7 +26,7 @@ class ComponentBuilder {
 
       }
 
-      component.liquidCode += `\n{% schema %}\n${JSON.stringify(component.schema)}\n{% endschema %}`
+      component.liquidCode += `\n{% schema %}\n${JSON.stringify(component.schema, null, 2)}\n{% endschema %}`
       logger.debug(`${component.name}: Schema file build complete`)
     }
 
