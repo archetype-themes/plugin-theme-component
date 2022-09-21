@@ -21,7 +21,6 @@ class ComponentUtils {
    * @return {Promise<void>}
    */
   static async createFolderStructure (component) {
-    await mkdir(`${component.rootFolder}/src/locales`, { recursive: true })
     await mkdir(`${component.rootFolder}/src/scripts`, { recursive: true })
     await mkdir(`${component.rootFolder}/src/styles`, { recursive: true })
     await mkdir(`${component.rootFolder}/src/snippets`, { recursive: true })

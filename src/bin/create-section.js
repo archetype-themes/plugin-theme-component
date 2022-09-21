@@ -107,6 +107,19 @@ defaultFiles['/src/locales.json'] = `{
 }
 `
 
+defaultFiles['/src/locales.schema.json'] = `{
+  "en": {
+    "section_name": "${section.name}"
+  },
+  "es": {
+    "section_name": "${section.name}"
+  },
+  "fr": {
+    "section_name": "${section.name}"
+  }
+}
+`
+
 // Javascript
 defaultFiles['/src/scripts/index.js'] = `// This is the javascript entrypoint for the ${section.name} section. 
 // This file and all its inclusions will be processed through esbuild

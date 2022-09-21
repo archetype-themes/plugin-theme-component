@@ -105,6 +105,19 @@ defaultFiles['/src/locales.json'] = `{
 }
 `
 
+defaultFiles['/src/locales.schema.json'] = `{
+  "en": {
+    "snippet_name": "${snippet.name}"
+  },
+  "es": {
+    "snippet_name": "${snippet.name}"
+  },
+  "fr": {
+    "snippet_name": "${snippet.name}"
+  }
+}
+`
+
 // Javascript
 defaultFiles['/src/scripts/index.js'] = `// This is the javascript entrypoint for the ${snippet.name} snippet. 
 // This file and all its inclusions will be processed through esbuild
