@@ -58,7 +58,7 @@ const defaultFiles = []
 
 defaultFiles['/package.json'] = `{
   "author": "Archetype Themes Limited Partnership",
-  "description": "Shopify Themes ${snippet.name} Snippet",
+  "description": "${env.npm_package_name}'s ${snippet.name} Snippet",
   "license": "UNLICENSED",
   "main": "src/${snippet.name}.liquid",
   "name": "${Config.PACKAGES_SCOPE}/${snippet.name}",
@@ -78,7 +78,7 @@ defaultFiles['/package.json'] = `{
 }
 `
 
-defaultFiles['/README.md'] = `# Archie's ${snippet.name} Snippet
+defaultFiles['/README.md'] = `# ${env.npm_package_name}'s ${snippet.name} Snippet
 This snippet is intended to be bundled in a theme through an Archetype components' collection monorepo.
 `
 

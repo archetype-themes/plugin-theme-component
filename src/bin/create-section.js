@@ -58,7 +58,7 @@ const defaultFiles = []
 
 defaultFiles['/package.json'] = `{
   "author": "Archetype Themes Limited Partnership",
-  "description": "Shopify Themes ${section.name} Section",
+  "description": "${env.npm_package_name}'s ${section.name} Section",
   "license": "UNLICENSED",
   "main": "src/${section.name}.liquid",
   "name": "${Config.PACKAGES_SCOPE}/${section.name}",
@@ -79,7 +79,7 @@ defaultFiles['/package.json'] = `{
 }
 `
 
-defaultFiles['/README.md'] = `# Archie's ${section.name} Section
+defaultFiles['/README.md'] = `# ${env.npm_package_name}'s ${section.name} Section
 This section is intended to be bundled in a theme through an Archetype components' collection monorepo
 `
 
