@@ -46,7 +46,7 @@ class SectionFactory {
     // Load locale files content
     if (section.files.localeFiles && section.files.localeFiles.length > 0) {
       section.locales = merge(section.locales, await ComponentUtils.parseLocaleFilesContent(section.files.localeFiles))
-      section.schemaLocales = await ComponentUtils.parseLocaleFilesContent(section.files.localeFiles, true)
+      section.schemaLocales = await ComponentUtils.parseLocaleFilesContent(section.files.schemaLocaleFiles)
     }
 
     // Parse and prepare Render models from liquid code

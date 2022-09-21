@@ -135,6 +135,8 @@ class SectionBuilder extends ComponentBuilder {
     for (const schemaLocale in section.schemaLocales) {
       const schemaLocaleFileName = join(section.build.localesFolder, `${schemaLocale}.schema.json`)
       const localeJson = {}
+      localeJson['sections'] = {}
+      localeJson['sections'][section.name] = {}
       localeJson['sections'][section.name][schemaLocale] = section.schemaLocales[schemaLocale]
       const localeJsonString = JSON.stringify(localeJson, null, 2)
       await writeFile(schemaLocaleFileName, localeJsonString)

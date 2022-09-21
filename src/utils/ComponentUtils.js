@@ -133,25 +133,24 @@ class ComponentUtils {
   /**
    * Parse Locale Files into an object
    * @param {string[]} localeFiles
-   * @param {boolean} [schemaLocales=false]
    * @return {Promise<string[][]>}
    */
-  static async parseLocaleFilesContent (localeFiles, schemaLocales = false) {
-    let locales = [], singleLocaleRegex, localesCollectionRegex
-
-    if (schemaLocales) {
-      singleLocaleRegex = /^(?<locale>([a-z]{2})(-[a-z]{2}))?\.schema\.json$/
-      localesCollectionRegex = /^locales?\.schema\.json$/
-
-    } else {
-      singleLocaleRegex = /^(?<locale>([a-z]{2})(-[a-z]{2}))?(\.default)?\.json$/
-      localesCollectionRegex = /^locales?\.json$/
+  static async parseLocaleFilesContent (localeFiles) {
+    let locales
+    if (localeFiles.length > 0) {
+      if (localeFiles[0].endsWith('.schema.json')) {
+        locales = []
+      } else {
+        locales = {}
+      }
     }
+
+    const singleLocaleFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2}))?(\.default)?(\.schema)?\.json$/
 
     for (const localeFileWithPath of localeFiles) {
       const localeFileName = basename(localeFileWithPath).toLowerCase()
 
-      const singleLocaleMatch = localeFileName.match(singleLocaleRegex)
+      const singleLocaleMatch = localeFileName.match(singleLocaleFileRegex)
 
       // We have a single locale in a distinctly named file
       if (singleLocaleMatch) {
@@ -169,7 +168,7 @@ class ComponentUtils {
 
       }
       // We have a single file with multiple locales
-      else if (localeFileName.match(localesCollectionRegex)) {
+      else if (localeFileName.match(/^locales?(\.schema)?\.json$/)) {
         // Load locales.json file
         const localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
 
