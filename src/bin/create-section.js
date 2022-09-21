@@ -54,11 +54,13 @@ try {
   NodeUtils.exitWithError(error)
 }
 
+const collectionName = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
+
 const defaultFiles = []
 
 defaultFiles['/package.json'] = `{
   "author": "Archetype Themes Limited Partnership",
-  "description": "${env.npm_package_name}'s ${section.name} Section",
+  "description": "${collectionName}'s ${section.name} Section",
   "license": "UNLICENSED",
   "main": "src/${section.name}.liquid",
   "name": "${Config.PACKAGES_SCOPE}/${section.name}",
@@ -79,7 +81,7 @@ defaultFiles['/package.json'] = `{
 }
 `
 
-defaultFiles['/README.md'] = `# ${env.npm_package_name}'s ${section.name} Section
+defaultFiles['/README.md'] = `# ${collectionName}'s ${section.name} Section
 This section is intended to be bundled in a theme through an Archetype components' collection monorepo
 `
 

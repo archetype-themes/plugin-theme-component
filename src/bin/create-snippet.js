@@ -54,11 +54,13 @@ try {
   NodeUtils.exitWithError(error)
 }
 
+const collectionName = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
+
 const defaultFiles = []
 
 defaultFiles['/package.json'] = `{
   "author": "Archetype Themes Limited Partnership",
-  "description": "${env.npm_package_name}'s ${snippet.name} Snippet",
+  "description": "${collectionName}'s ${snippet.name} Snippet",
   "license": "UNLICENSED",
   "main": "src/${snippet.name}.liquid",
   "name": "${Config.PACKAGES_SCOPE}/${snippet.name}",
@@ -78,7 +80,7 @@ defaultFiles['/package.json'] = `{
 }
 `
 
-defaultFiles['/README.md'] = `# ${env.npm_package_name}'s ${snippet.name} Snippet
+defaultFiles['/README.md'] = `# ${collectionName}'s ${snippet.name} Snippet
 This snippet is intended to be bundled in a theme through an Archetype components' collection monorepo.
 `
 
