@@ -1,14 +1,21 @@
 class Component {
   /** @type {string} **/
   #liquidCode
+
   /** @type {Object[][]} **/
   #locales = []
+
   /** @type {string} **/
   #name
+
   /** @type {string} **/
   #rootFolder
+
   /** @type {object} **/
   #schema
+
+  /** @type {Object[][]} **/
+  #schemaLocales = []
 
   constructor () {
     if (new.target === Component) {
@@ -94,6 +101,22 @@ class Component {
    */
   set schema (value) {
     this.#schema = value
+  }
+
+  /**
+   * Get Schema Locales
+   * @return {Object[][]}
+   */
+  get schemaLocales () {
+    return this.#schemaLocales
+  }
+
+  /**
+   * Set Schema Locales
+   * @param {Object[][]} value
+   */
+  set schemaLocales (value) {
+    this.#schemaLocales = value
   }
 }
 

@@ -1,42 +1,31 @@
 {
-  "name": "archie",
+  "author": "Archetype Themes Limited Partnership",
+  "description": "Archie is Archetype Theme's Development Toolset bundle.",
+  "license": "UNLICENSED",
+  "main": "src/main.js",
+  "name": "@archetype-themes/archie",
+  "type": "module",
   "version": "1.0.0",
-  "description": "Archie is Archetype Developer Tools bundle.",
-  "main": "src/bin/build-section.js",
   "bin": {
+    "build-collection": "src/bin/build-collection.js",
     "build-section": "src/bin/build-section.js",
+    "create-section": "src/bin/create-section.js",
+    "create-snippet": "src/bin/create-snippet.js",
     "watch-section": "src/bin/watch-section.js"
   },
-  "type": "module",
-  "engines": {
-    "node": ">=11.0.0"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "Shopify",
-    "Theme",
-    "Section",
-    "Builder"
-  ],
-  "author": "Archetype Themes LLC",
-  "license": "UNLICENSED",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "esbuild": "^0.14.51",
-    "esbuild-plugin-less": "^1.1.8",
-    "esbuild-sass-plugin": "^2.3.1",
-    "pino": "^8.2.0",
-    "pino-pretty": "^8.1.0"
+    "esbuild": "^0.15.7",
+    "esbuild-plugin-less": "^1.1.9",
+    "esbuild-sass-plugin": "^2.3.2",
+    "pino": "^8.5.0",
+    "pino-pretty": "^9.1.0"
   },
   "devDependencies": {
     "standard": "^17.0.0"
   },
-  "standard": {
-    "ignore": [
-      "packages/**"
-    ]
+  "engines": {
+    "node": ">=11.0.0"
   },
   "packageManager": "yarn@3.2.2"
 }

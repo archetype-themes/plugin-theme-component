@@ -1,6 +1,7 @@
 import ComponentBuild from './abstract/ComponentBuild.js'
 
 class SectionBuild extends ComponentBuild {
+  /** @type {string} **/
   #snippetsFolder
 
   /**

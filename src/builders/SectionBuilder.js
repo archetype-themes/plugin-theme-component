@@ -1,6 +1,8 @@
-import { copyFile, mkdir, writeFile } from 'node:fs/promises'
-import path, { basename } from 'path'
+import { mkdir, writeFile } from 'node:fs/promises'
+import path, { basename, join } from 'path'
 import merge from 'deepmerge'
+
+// Archie Components
 import ComponentBuilder from './ComponentBuilder.js'
 import SnippetBuilder from './SnippetBuilder.js'
 import SnippetFactory from '../factory/SnippetFactory.js'
@@ -9,21 +11,17 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
-import SectionFactory from '../factory/SectionFactory.js'
-import { env } from 'node:process'
 
 class SectionBuilder extends ComponentBuilder {
 
   /**
    * Build Section
-   * @param {string} sectionName
+   * @param {Section} section
    * @returns {Promise<Section>}
    */
-  static async build (sectionName) {
-    logger.info(`Building "${sectionName}" section`)
-    console.time(`Building "${sectionName}" section`)
-
-    const section = await SectionFactory.fromName(sectionName)
+  static async build (section) {
+    logger.info(`Building "${section.name}" section`)
+    console.time(`Building "${section.name}" section`)
 
     await this.resetBuildFolders(section)
 
@@ -53,25 +51,19 @@ class SectionBuilder extends ComponentBuilder {
       logger.debug(`${section.name}: No external CSS`)
     }
 
-    // Process Locale Files
-    if (section.files.localeFiles.length > 0) {
-      await mkdir(section.build.localesFolder, { recursive: true })
-
-      logger.debug(`${section.name}: ${section.files.localeFiles.length} Locale file${section.files.localeFiles.length > 1 ? 's' : ''} found`)
-      logger.debug(`${section.name}: Processing Locale files`)
-
-      await SectionBuilder.buildLocales(section)
-
-      logger.debug(`${section.name}: Locales build complete`)
-    } else {
-      logger.debug(`${section.name}: No Locale files found`)
-    }
-
     logger.debug(`${section.name}: Finalizing Liquid file`)
+    await SectionBuilder.buildLocales(section)
     await SectionBuilder.buildLiquid(section)
 
+    // Process Schema Locale Files
+    if (section.schemaLocales) {
+      logger.debug(`${section.name}: Processing Schema Locale files`)
+      await mkdir(section.build.localesFolder, { recursive: true })
+      await SectionBuilder.writeSchemaLocales(section)
+    }
+
     logger.info(`${section.name}: Build Complete`)
-    console.timeEnd(`Building "${env.npm_package_name}" section`)
+    console.timeEnd(`Building "${section.name}" section`)
     console.log('\n')
 
     return section
@@ -108,13 +100,45 @@ class SectionBuilder extends ComponentBuilder {
    * @param {Section} section
    */
   static async buildLocales (section) {
-    // TODO: Locale Files from Snippets should be merged
-    section.files.localeFiles.forEach(file => copyFile(file, `${section.build.localesFolder}/${basename(file)}`))
-
-    for (const locale in section.locales) {
-      await writeFile(section.build.localesFolder + '/' + locale + '.json', JSON.stringify(section.locales[locale], null, 2))
+    const rendersProcessed = []
+    for (const render of section.renders) {
+      if (render.snippet && render.snippet.locales && !rendersProcessed.includes(render.snippet.name)) {
+        section.locales = merge(section.locales, render.snippet.locales)
+        rendersProcessed.push(render.snippet.name)
+      }
     }
 
+    if (section.locales) {
+      if (section.schema.locales) {
+        section.schema.locales = merge(section.schema.locales, section.locales)
+      } else {
+        section.schema.locales = section.locales
+      }
+      section.locales = section.schema.locales
+    }
+  }
+
+  /**
+   * Write Schema Locales
+   * @param {Section} section
+   * @return {Promise<void>}
+   */
+  static async writeSchemaLocales (section) {
+    const rendersProcessed = []
+    for (const render of section.renders) {
+      if (render.snippet && render.snippet.schemaLocales && !rendersProcessed.includes(render.snippet.name)) {
+        section.schemaLocales = merge(section.schemaLocales, render.snippet.schemaLocales)
+        rendersProcessed.push(render.snippet.name)
+      }
+    }
+
+    for (const schemaLocale in section.schemaLocales) {
+      const schemaLocaleFileName = join(section.build.localesFolder, `${schemaLocale}.schema.json`)
+      const localeJson = {}
+      localeJson['sections'][section.name][schemaLocale] = section.schemaLocales[schemaLocale]
+      const localeJsonString = JSON.stringify(localeJson, null, 2)
+      await writeFile(schemaLocaleFileName, localeJsonString)
+    }
   }
 
   /**
@@ -194,7 +218,6 @@ class SectionBuilder extends ComponentBuilder {
       }
     }
 
-    stylesheets.unshift(section.build.stylesheet)
     const styles = await FileUtils.getMergedFilesContent(stylesheets)
     await FileUtils.writeFile(section.build.stylesheet, styles)
     section.liquidCode = `<link type="text/css" href="{{ ${basename(section.build.stylesheet)} | asset_url }}" rel="stylesheet">\n${section.liquidCode}`

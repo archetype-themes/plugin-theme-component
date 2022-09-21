@@ -1,5 +1,5 @@
 import esbuild from 'esbuild'
-import esbuildProcessor from './esbuildProcessor.js'
+import EsbuildProcessor from './EsbuildProcessor.js'
 import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
 
@@ -8,14 +8,14 @@ const { BuildResult } = esbuild
 class JavaScriptProcessor {
 
   /**
-   * This is simply a wrapper for the esbuildProcessor for now
+   * This is simply a wrapper for the EsbuildProcessor for now
    * @param {string} outputFile
    * @param {string} mainJavaScriptFile
    * @param {string[]} injectedFiles
    * @returns {Promise<BuildResult>}
    */
   static async buildJavaScript (outputFile, mainJavaScriptFile, injectedFiles = []) {
-    return esbuildProcessor.buildJavaScript(outputFile, mainJavaScriptFile, injectedFiles)
+    return EsbuildProcessor.buildJavaScript(outputFile, mainJavaScriptFile, injectedFiles)
   }
 
   /**
