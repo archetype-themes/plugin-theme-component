@@ -2,8 +2,8 @@ class Component {
   /** @type {string} **/
   #liquidCode
 
-  /** @type {Object[][]} **/
-  #locales = []
+  /** @type {Object} **/
+  #locales = {}
 
   /** @type {string} **/
   #name

@@ -19,6 +19,9 @@ class ComponentFiles {
   #schemaFile
 
   /** @type {string[]} **/
+  #schemaLocaleFiles = []
+
+  /** @type {string[]} **/
   #stylesheets = []
 
   constructor () {
@@ -121,6 +124,22 @@ class ComponentFiles {
    */
   set schemaFile (value) {
     this.#schemaFile = value
+  }
+
+  /**
+   * Get Schema Locale Files
+   * @return {string[]}
+   */
+  get schemaLocaleFiles () {
+    return this.#schemaLocaleFiles
+  }
+
+  /**
+   * Set Schema Locale Files
+   * @param {string[]} value
+   */
+  set schemaLocaleFiles (value) {
+    this.#schemaLocaleFiles = value
   }
 
   /**
