@@ -92,10 +92,15 @@ defaultFiles['/src/schema.json'] = `{
 `
 
 // Locales
-defaultFiles['/src/locales/en-US.json'] = `{
-  "snippets": {
-    "${snippet.name}": {
-    }
+defaultFiles['/src/locales.json'] = `{
+  "en": {
+    "snippet_name": "${snippet.name}"
+  },
+  "es": {
+    "snippet_name": "${snippet.name}"
+  },
+  "fr": {
+    "snippet_name": "${snippet.name}"
   }
 }
 `

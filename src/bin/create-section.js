@@ -94,10 +94,15 @@ defaultFiles['/src/schema.json'] = `{
 `
 
 // Locales
-defaultFiles['/src/locales/en-US.json'] = `{
-  "sections": {
-    "${section.name}": {
-    }
+defaultFiles['/src/locales.json'] = `{
+  "en": {
+    "section_name": "${section.name}"
+  },
+  "es": {
+    "section_name": "${section.name}"
+  },
+  "fr": {
+    "section_name": "${section.name}"
   }
 }
 `
