@@ -104,9 +104,15 @@ class ComponentUtils {
           if (filename === 'schema.json')
             componentFiles.schemaFile = file
           else if (
-            filename.match(/^([a-z]{2})(-[a-z]{2})?(\.(default|schema)){0,2}\.json$/) ||
-            filename.match(/^locales?\.json$/))
+            filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/) ||
+            filename.match(/^locales?\.json$/)) {
             componentFiles.localeFiles.push(file)
+          } else if (
+            filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.schema\.json$/) ||
+            filename.match(/^locales?\.schema\.json$/)) {
+            componentFiles.schemaLocaleFiles.push(file)
+          }
+
           break
         default:
           logger.debug(`Filter Files: Unrecognised JSON file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
@@ -163,7 +169,7 @@ class ComponentUtils {
 
       }
       // We have a single file with multiple locales
-      else if (localeFileWithPath.match(localesCollectionRegex)) {
+      else if (localeFileName.match(localesCollectionRegex)) {
         // Load locales.json file
         const localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
 
