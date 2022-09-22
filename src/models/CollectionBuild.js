@@ -3,6 +3,9 @@ class CollectionBuild {
   #assetsFolder
 
   /** @type {string} **/
+  #javascriptFile
+
+  /** @type {string} **/
   #localesFolder
 
   /** @type {string} **/
@@ -13,6 +16,9 @@ class CollectionBuild {
 
   /** @type {string} **/
   #snippetsFolder
+
+  /** @type {string} **/
+  #stylesheet
 
   /**
    * Get Assets Folder
@@ -28,6 +34,22 @@ class CollectionBuild {
    */
   set assetsFolder (value) {
     this.#assetsFolder = value
+  }
+
+  /**
+   * Get JavaScript Files
+   * @return {string}
+   */
+  get javascriptFile () {
+    return this.#javascriptFile
+  }
+
+  /**
+   * Set JavaScript File
+   * @param {string} value
+   */
+  set javascriptFile (value) {
+    this.#javascriptFile = value
   }
 
   /**
@@ -92,6 +114,22 @@ class CollectionBuild {
    */
   set snippetsFolder (value) {
     this.#snippetsFolder = value
+  }
+
+  /**
+   * Get Stylesheet File Location
+   * @return {string}
+   */
+  get stylesheet () {
+    return this.#stylesheet
+  }
+
+  /**
+   * Set Stylesheet File Location
+   * @param {string} value
+   */
+  set stylesheet (value) {
+    this.#stylesheet = value
   }
 }
 
