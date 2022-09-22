@@ -11,6 +11,9 @@ class BuildFactory {
     build.localesFolder = `${build.rootFolder}/locales`
     build.sectionsFolder = `${build.rootFolder}/sections`
     build.snippetsFolder = `${build.rootFolder}/snippets`
+
+    build.javascriptFile = `${build.assetsFolder}/${collection.name}.js`
+    build.stylesheet = `${build.assetsFolder}/${collection.name}.css`
     return build
   }
 
