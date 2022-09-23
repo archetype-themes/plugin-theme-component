@@ -70,7 +70,7 @@ defaultFiles['/package.json'] = `{
     "componentType": "section"
   },
   "devDependencies": {
-    "@archetype-themes/archie": "github:archetype-themes/archie"
+    "@archetype-themes/archie": "github:archetype-themes/archie",
     "standard": "^17.0.0"
   },
   "standard": {
