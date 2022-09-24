@@ -41,7 +41,7 @@ class Component {
 
   /**
    * Get Locales Multidimensional Array => locales[locale] = {}
-   * @returns {Object[][]}
+   * @returns {Object}
    */
   get locales () {
     return this.#locales
@@ -49,7 +49,7 @@ class Component {
 
   /**
    * Set Locales Multidimensional Array => locales[locale] = {}
-   * @param {Object[][]} value
+   * @param {Object} value
    */
   set locales (value) {
     this.#locales = value

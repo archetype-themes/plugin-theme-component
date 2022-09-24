@@ -124,6 +124,7 @@ class SectionBuilder extends ComponentBuilder {
    * @return {Promise<void>}
    */
   static async writeSchemaLocales (section) {
+    // TODO: THIS should be processed in FACTORY mode not BUILD - SEE collections
     const rendersProcessed = []
     for (const render of section.renders) {
       if (render.snippet && render.snippet.schemaLocales && !rendersProcessed.includes(render.snippet.name)) {
@@ -134,10 +135,10 @@ class SectionBuilder extends ComponentBuilder {
 
     for (const schemaLocale in section.schemaLocales) {
       const schemaLocaleFileName = join(section.build.localesFolder, `${schemaLocale}.schema.json`)
+      // TODO : This structure (['sections'][section.name]) should already be set in the section schemaLocales array
       const localeJson = {}
       localeJson['sections'] = {}
-      localeJson['sections'][section.name] = {}
-      localeJson['sections'][section.name][schemaLocale] = section.schemaLocales[schemaLocale]
+      localeJson['sections'][section.name] = section.schemaLocales[schemaLocale]
       const localeJsonString = JSON.stringify(localeJson, null, 2)
       await writeFile(schemaLocaleFileName, localeJsonString)
     }

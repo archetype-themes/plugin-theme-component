@@ -8,6 +8,9 @@ class Collection {
   /** @type {string} **/
   #rootFolder
 
+  /** @type {Object[][]} **/
+  #schemaLocales = []
+
   /** @type {string[]} **/
   #sectionNames
 
@@ -68,6 +71,22 @@ class Collection {
    */
   set rootFolder (value) {
     this.#rootFolder = value
+  }
+
+  /**
+   * Get Schema Locales
+   * @return {Object[][Object]}
+   */
+  get schemaLocales () {
+    return this.#schemaLocales
+  }
+
+  /**
+   * Set Schema Locales
+   * @param value
+   */
+  set schemaLocales (value) {
+    this.#schemaLocales = value
   }
 
   /**

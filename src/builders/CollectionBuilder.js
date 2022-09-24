@@ -1,12 +1,11 @@
 import logger from '../utils/Logger.js'
 import { env } from 'node:process'
-import { access, mkdir, readdir, rm } from 'node:fs/promises'
+import { access, mkdir, rm, writeFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import SectionBuilder from './SectionBuilder.js'
-import SectionFactory from '../factory/SectionFactory.js'
 import FileUtils from '../utils/FileUtils.js'
-import { join } from 'path'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import { join } from 'path'
 
 class CollectionBuilder {
   /**
@@ -18,27 +17,30 @@ class CollectionBuilder {
     logger.info(`Building ${collection.name} Collection ...`)
     console.time(`Building "${collection.name}" collection`)
 
-    if (collection.sectionNames.length === 0) {
-      logger.info(`No section list found for ${collection.name}; all sections will be processed.`)
-      await this.#findSectionNames(collection)
-    }
-
     logger.info(`We will bundle the following sections: ${collection.sectionNames.join(', ')}`)
 
-    console.log(collection.sectionNames)
+    for (const section of collection.sections) {
+      await SectionBuilder.build(section)
 
-    for (const sectionName of collection.sectionNames) {
-      const section = await SectionFactory.fromName(sectionName)
-      collection.sections.push(await SectionBuilder.build(section))
+      for (const schemaLocale in section.schemaLocales) {
+        if (!collection.schemaLocales[schemaLocale]) {
+          collection.schemaLocales[schemaLocale] = {}
+          collection.schemaLocales[schemaLocale]['sections'] = {}
+        }
+
+        collection.schemaLocales[schemaLocale]['sections'][section.name] = section.schemaLocales[schemaLocale]
+      }
     }
 
     await this.#resetBuildFolders(collection)
 
     for (const section of collection.sections) {
       try {
-
         await FileUtils.copyFolder(section.build.rootFolder, collection.build.sectionsFolder)
-        //await FileUtils.copyFolder(section.build.assetsFolder, collection.build.assetsFolder)
+      } catch {
+        //Errors ignored as some sections folders might not exist if there is no particular content for that section
+      }
+      try {
         await FileUtils.copyFolder(section.build.snippetsFolder, collection.build.snippetsFolder)
       } catch {
         //Errors ignored as some sections folders might not exist if there is no particular content for that section
@@ -48,12 +50,13 @@ class CollectionBuilder {
 
     Promise.all([
       this.buildJavascript(collection),
-      this.buildStylesheets(collection)])
-      .then(() => {
-        logger.info(`${collection.name}: Build Complete`)
-        console.timeEnd(`Building "${collection.name}" collection`)
-        console.log('\n')
-      })
+      this.buildStylesheets(collection),
+      this.writeSchemaLocales(collection)]
+    ).then(() => {
+      logger.info(`${collection.name}: Build Complete`)
+      console.timeEnd(`Building "${collection.name}" collection`)
+      console.log('\n')
+    })
 
   }
 
@@ -68,7 +71,6 @@ class CollectionBuilder {
     const injectedFiles = []
 
     for (const section of collection.sections) {
-
       // Add Section file
       if (!mainFile && section.files.javascriptIndex) {
         mainFile = section.files.javascriptIndex
@@ -129,24 +131,6 @@ class CollectionBuilder {
   }
 
   /**
-   * Find Section Names
-   * @param {Collection} collection
-   * @return {Promise<void>}
-   */
-  static async #findSectionNames (collection) {
-    const entries = await readdir(collection.sectionsFolder, { withFileTypes: true })
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        try {
-          const sectionFolder = join(collection.sectionsFolder, entry.name)
-          await access(sectionFolder + '/package.json', constants.R_OK)
-          collection.sectionNames.push(entry.name)
-        } catch {}
-      }
-    }
-  }
-
-  /**
    * Reset Collection Build Folders
    * @param {Collection} collection
    * @return {Promise<void>}
@@ -159,6 +143,20 @@ class CollectionBuilder {
     await mkdir(collection.build.localesFolder, { recursive: true })
     await mkdir(collection.build.sectionsFolder, { recursive: true })
     await mkdir(collection.build.snippetsFolder, { recursive: true })
+  }
+
+  /**
+   * Write Schema Locales
+   * @param {Collection} collection
+   * @return {Promise<void>}
+   */
+  static async writeSchemaLocales (collection) {
+
+    for (const schemaLocale in collection.schemaLocales) {
+      const schemaLocaleFileName = join(collection.build.localesFolder, `${schemaLocale}.schema.json`)
+      const localeJsonString = JSON.stringify(collection.schemaLocales[schemaLocale], null, 2)
+      await writeFile(schemaLocaleFileName, localeJsonString)
+    }
   }
 }
 
