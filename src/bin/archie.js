@@ -11,6 +11,8 @@ import Config from '../models/static/Config.js'
 import ArchieUtils from '../utils/ArchieUtils.js'
 import ConfigUtils from '../utils/ConfigUtils.js'
 import NodeUtils from '../utils/NodeUtils.js'
+import SectionWatcher from '../watchers/SectionWatcher.js'
+import CollectionWatcher from '../watchers/CollectionWatcher.js'
 
 //Init Config
 try {
@@ -21,14 +23,22 @@ try {
 
 await ArchieUtils.initArchie()
 
-if (Archie.command === Archie.BUILD_COMMAND) {
+if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
   if (Archie.commandOption === Config.COLLECTION_COMPONENT_TYPE) {
     const collection = await CollectionFactory.fromBuildScript()
     await CollectionBuilder.build(collection)
+    if (Archie.command === Archie.WATCH_COMMAND) {
+      CollectionWatcher.watch(collection)
+    }
+
   }
   if (Archie.commandOption === Config.SECTION_COMPONENT_TYPE) {
     const section = await SectionFactory.fromName(Archie.targetComponent)
     await SectionBuilder.build(section)
+
+    if (Archie.command === Archie.WATCH_COMMAND) {
+      await SectionWatcher.watch(section)
+    }
   }
 } else if (Archie.command === Archie.CREATE_COMMAND) {
   if (Archie.commandOption === Config.SECTION_COMPONENT_TYPE) {
@@ -37,4 +47,6 @@ if (Archie.command === Archie.BUILD_COMMAND) {
   if (Archie.commandOption === Config.SNIPPET_COMPONENT_TYPE) {
     await SnippetGenerator.generate(Archie.targetComponent)
   }
+} else if (Archie.command === Archie.INSTALL_COMMAND) {
+  NodeUtils.exitWithError('Not Implemented Yet')
 }

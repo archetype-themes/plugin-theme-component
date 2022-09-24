@@ -1,55 +1,39 @@
 #!/usr/bin/env node
-import { env, exit } from 'node:process'
-import { watch } from 'node:fs/promises'
-import logger from '../utils/Logger.js'
+import { env } from 'node:process'
 import SectionBuilder from '../builders/SectionBuilder.js'
 import Config from '../models/static/Config.js'
 import NodeUtils from '../utils/NodeUtils.js'
+import SectionWatcher from '../watchers/SectionWatcher.js'
+import SectionFactory from '../factory/SectionFactory.js'
+import Archie from '../models/static/Archie.js'
+import ConfigUtils from '../utils/ConfigUtils.js'
 
-// Make sure we are within a theme or collection architecture
-let componentType
+//Init Config
 try {
-  componentType = await Config.getComponentType()
+  await ConfigUtils.initConfig()
 } catch (error) {
+
   NodeUtils.exitWithError(error)
 }
 
-if (componentType === Config.SNIPPET_COMPONENT_TYPE) {
-  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${componentType}". This script can only be run from a "theme", "collection" or "section" Component.`)
+// Make sure we are within a theme or collection architecture
+if (Config.isSnippet() || Config.isTheme()) {
+  NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from a "collection" or "section" Component.`)
 }
 
 let sectionName
 
-if ([Config.COLLECTION_COMPONENT_TYPE, Config.THEME_COMPONENT_TYPE].includes(componentType)) {
+if (Config.isCollection()) {
   const args = NodeUtils.getArgs()
   if (!args[0]) {
     NodeUtils.exitWithError('Please specify a section name. ie: yarn build-section some-smart-section-name')
   }
   sectionName = args[0]
-} else if (componentType === Config.SECTION_COMPONENT_TYPE) {
-  sectionName = env.npm_package_name
+} else if (Config.isSection()) {
+  sectionName = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
 }
 
-const section = await SectionBuilder.build(sectionName)
+const section = await SectionFactory.fromName(Archie.targetComponent)
+await SectionBuilder.build(section)
 
-async function watchSection () {
-  try {
-    const watcher = watch(section.rootFolder + '/src', { recursive: true })
-    for await (const event of watcher) {
-      if (!event.filename.endsWith('~')) {
-        logger.debug(`Detected a "${event.eventType}" event on "${event.filename}"`)
-        await SectionBuilder.build(sectionName)
-      }
-    }
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      logger.debug('Received Abort Signal - Exiting')
-      logger.info('See you again soon!')
-      exit(0)
-    } else {
-      await watchSection()
-    }
-  }
-}
-
-await watchSection()
+await SectionWatcher.watch(section)
