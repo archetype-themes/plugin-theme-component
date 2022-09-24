@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import SectionBuilder from '../builders/SectionBuilder.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import Config from '../Config.js'
+import Config from '../models/static/Config.js'
 import { env } from 'node:process'
 import ConfigUtils from '../utils/ConfigUtils.js'
 import SectionFactory from '../factory/SectionFactory.js'

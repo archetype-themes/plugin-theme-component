@@ -1,9 +1,13 @@
 import NodeUtils from './NodeUtils.js'
 import logger from './Logger.js'
-import Config from '../Config.js'
+import Config from '../models/static/Config.js'
 
 class ConfigUtils {
 
+  /**
+   * Init Global Config, currently only sets targetComponent type
+   * @return {Promise<void>}
+   */
   static async initConfig () {
     Config.componentType = await this.findComponentType()
   }

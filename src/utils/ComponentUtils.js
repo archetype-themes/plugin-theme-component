@@ -9,7 +9,7 @@ import SectionFiles from '../models/SectionFiles.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import Section from '../models/Section.js'
 import Snippet from '../models/Snippet.js'
-import Config from '../Config.js'
+import Config from '../models/static/Config.js'
 import path from 'path'
 import merge from 'deepmerge'
 

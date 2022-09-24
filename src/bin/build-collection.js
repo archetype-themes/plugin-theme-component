@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import Config from '../Config.js'
+import Config from '../models/static/Config.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import CollectionBuilder from '../builders/CollectionBuilder.js'
 import ConfigUtils from '../utils/ConfigUtils.js'

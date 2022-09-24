@@ -5,7 +5,7 @@ import { access } from 'node:fs/promises'
 import { env } from 'node:process'
 import path from 'path'
 // Archie Config & Components
-import Config from '../Config.js'
+import Config from '../models/static/Config.js'
 import Section from '../models/Section.js'
 // Archie Utils
 import ComponentUtils from '../utils/ComponentUtils.js'
@@ -21,7 +21,7 @@ try {
   NodeUtils.exitWithError(error)
 }
 
-// Make sure we are within a collection component
+// Make sure we are within a collection targetComponent
 if (!Config.isCollection()) {
   NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from a "collection" Component.`)
 }

@@ -17,6 +17,7 @@ __metadata:
     pino-pretty: ^9.1.0
     standard: ^17.0.0
   bin:
+    archie: src/bin/archie.js
     build-collection: src/bin/build-collection.js
     build-section: src/bin/build-section.js
     create-section: src/bin/create-section.js

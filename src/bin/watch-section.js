@@ -3,7 +3,7 @@ import { env, exit } from 'node:process'
 import { watch } from 'node:fs/promises'
 import logger from '../utils/Logger.js'
 import SectionBuilder from '../builders/SectionBuilder.js'
-import Config from '../Config.js'
+import Config from '../models/static/Config.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
 // Make sure we are within a theme or collection architecture

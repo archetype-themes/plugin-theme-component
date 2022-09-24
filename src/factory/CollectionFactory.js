@@ -1,7 +1,7 @@
 import Collection from '../models/Collection.js'
 import { env } from 'node:process'
 import { dirname, join } from 'path'
-import Config from '../Config.js'
+import Config from '../models/static/Config.js'
 import BuildFactory from './BuildFactory.js'
 import SectionFactory from './SectionFactory.js'
 import logger from '../utils/Logger.js'

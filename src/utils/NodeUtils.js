@@ -5,6 +5,10 @@ import logger from './Logger.js'
 class NodeUtils {
   static #packageJson
 
+  /**
+   * Get Command Line Args
+   * @return {string[]}
+   */
   static getArgs () {
     const args = process.argv.slice(2)
     const filteredArgs = []
@@ -18,6 +22,10 @@ class NodeUtils {
     return filteredArgs
   }
 
+  /**
+   * Get Package JSON Content as an Object
+   * @return {Promise<Object>}
+   */
   static async getPackageJson () {
     if (!env.npm_package_json) {
       throw new Error(`Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of yarn.`)

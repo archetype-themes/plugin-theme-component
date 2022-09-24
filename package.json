@@ -7,6 +7,7 @@
   "type": "module",
   "version": "1.0.0",
   "bin": {
+    "archie": "src/bin/archie.js",
     "build-collection": "src/bin/build-collection.js",
     "build-section": "src/bin/build-section.js",
     "create-section": "src/bin/create-section.js",

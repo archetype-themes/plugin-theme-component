@@ -1,4 +1,4 @@
-import NodeUtils from './utils/NodeUtils.js'
+import NodeUtils from '../../utils/NodeUtils.js'
 import { dirname } from 'path'
 
 /**
