@@ -3,15 +3,14 @@ import { access, mkdir } from 'node:fs/promises'
 import { basename, dirname, extname } from 'node:path'
 import { env } from 'node:process'
 import FileUtils from './FileUtils.js'
-import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import logger from './Logger.js'
 import SectionFiles from '../models/SectionFiles.js'
-import StylesProcessor from '../processors/StylesProcessor.js'
 import Section from '../models/Section.js'
 import Snippet from '../models/Snippet.js'
 import Config from '../models/static/Config.js'
 import path from 'path'
 import merge from 'deepmerge'
+import Archie from '../models/static/Archie.js'
 
 class ComponentUtils {
 
@@ -59,12 +58,18 @@ class ComponentUtils {
     } else if (Config.isCollection()) {
       if (component instanceof Section) {
         return path.join(dirname(env.npm_package_json), Config.COLLECTION_SECTIONS_SUBFOLDER, component.name)
-      } else if (component instanceof Snippet) {
+      }
+      if (component instanceof Snippet) {
         return path.join(dirname(env.npm_package_json), Config.COLLECTION_SNIPPETS_SUBFOLDER, component.name)
       }
     } else if (Config.isTheme()) {
-      // TODO: FIX THAT componentFolder = `${dirname(env.npm_package_json)}/node_modules/@archetype-themes/${Config.collectionFolder}`
-      throw new Error('Config.getRootFolder: NOT IMPLEMENTED YET FOR THEMES')
+      if (component instanceof Section) {
+        return path.join(dirname(env.npm_package_json), 'node_modules', Config.PACKAGES_SCOPE, Archie.targetComponent, Config.COLLECTION_SECTIONS_SUBFOLDER, component.name)
+      }
+      if (component instanceof Snippet) {
+        return path.join(dirname(env.npm_package_json), 'node_modules', Config.PACKAGES_SCOPE, Archie.targetComponent, Config.COLLECTION_SNIPPETS_SUBFOLDER, component.name)
+
+      }
     }
 
     throw new Error(`Unable to determine Component Root Folder for ${component.name}`)
@@ -119,15 +124,6 @@ class ComponentUtils {
           break
       }
     }
-
-    if (componentFiles.javascriptFiles.length > 0) {
-      componentFiles.javascriptIndex = JavaScriptProcessor.getMainJavascriptFile(componentFiles.javascriptFiles)
-    }
-
-    if (componentFiles.stylesheets.length > 0) {
-      componentFiles.mainStylesheet = StylesProcessor.getMainStyleSheet(componentFiles.stylesheets)
-    }
-
   }
 
   /**
