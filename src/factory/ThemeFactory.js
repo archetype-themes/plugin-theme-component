@@ -1,8 +1,10 @@
-import ThemeUtils from '../utils/ThemeUtils.js'
-import Theme from '../models/Theme.js'
+//Node Imports
 import { env } from 'node:process'
 import { dirname, join } from 'path'
+
+//Archie Imports
 import Config from '../models/static/Config.js'
+import Theme from '../models/Theme.js'
 
 class ThemeFactory {
   /**
@@ -22,9 +24,6 @@ class ThemeFactory {
 
     // Prepare build object
     // theme.build = BuildFactory.fromCollection(theme)
-
-    // Fetch Section Names
-    theme.sectionNames = await ThemeUtils.findSectionNames(theme)
 
     return theme
   }

@@ -8,9 +8,6 @@ class Theme {
   /** @type {string} **/
   #rootFolder
 
-  /** @type {string[]} **/
-  #sectionNames
-
   /** @type {string} **/
   #sectionsFolder
 
@@ -63,22 +60,6 @@ class Theme {
    */
   set rootFolder (value) {
     this.#rootFolder = value
-  }
-
-  /**
-   * Get Section Names
-   * @return {string[]}
-   */
-  get sectionNames () {
-    return this.#sectionNames
-  }
-
-  /**
-   * Set Section Names
-   * @param {string[]} value
-   */
-  set sectionNames (value) {
-    this.#sectionNames = value
   }
 
   /**
