@@ -13,6 +13,7 @@ import ConfigUtils from '../utils/ConfigUtils.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import SectionWatcher from '../watchers/SectionWatcher.js'
 import CollectionWatcher from '../watchers/CollectionWatcher.js'
+import ThemeFactory from '../factory/ThemeFactory.js'
 
 //Init Config
 try {
@@ -25,7 +26,7 @@ await ArchieUtils.initArchie()
 
 if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
   if (Archie.commandOption === Config.COLLECTION_COMPONENT_TYPE) {
-    const collection = await CollectionFactory.fromBuildScript()
+    const collection = await CollectionFactory.fromArchieCall()
     await CollectionBuilder.build(collection)
     if (Archie.command === Archie.WATCH_COMMAND) {
       CollectionWatcher.watch(collection)
@@ -48,5 +49,10 @@ if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
     await SnippetGenerator.generate(Archie.targetComponent)
   }
 } else if (Archie.command === Archie.INSTALL_COMMAND) {
-  NodeUtils.exitWithError('Not Implemented Yet')
+
+  //NodeUtils.exitWithError('Not Implemented Yet')
+  const collection = await CollectionFactory.fromName(Archie.targetComponent)
+  const theme = await ThemeFactory.fromArchieCall()
+  await CollectionBuilder.build(collection)
+  await CollectionBuilder.install(collection, theme)
 }
