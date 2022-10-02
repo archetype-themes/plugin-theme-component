@@ -1,13 +1,28 @@
-import { copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
-import { basename, dirname, join } from 'path'
+import { access, constants, copyFile, mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
+import { basename, dirname, join } from 'path'
+
 import logger from './Logger.js'
+import NodeUtils from './NodeUtils.js'
 
 class FileUtils {
   /** @property {string[]} **/
   static #EXCLUDED_FOLDERS = ['node_modules', '.yarn', '.idea', '.git', 'build']
   /** @property {Object} **/
   static #FILE_ENCODING_OPTION = { encoding: 'utf8' }
+
+  /**
+   *
+   * @param {string[]|string} files
+   * @return {Promise<undefined[]>}
+   */
+  static async backup (files) {
+    files = (typeof files === 'string' || files instanceof String) ? [files] : files
+
+    return Promise.all(files.map((file) => {
+      rename(file, `${file}.${NodeUtils.getReadableTimestamp()}`)
+    }))
+  }
 
   /**
    * Convert Component (Section/Snippet) Absolute Path to a Relative one
@@ -19,54 +34,73 @@ class FileUtils {
   }
 
   /**
-   * Writes Asset files references in liquid code as is and returns a list of asset files not references in liquid file
-   * @param {string[]} sourceFiles Files to filter
-   * @param {string} outputFolder Folder where to output the copied files
-   * @param {string[]} inclusiveFilter Basename filter of files to copy
-   * @returns {Promise<string[]>}
+   * Copy Files from an associative array
+   * @param {string[]} files
+   * @return {Promise<Awaited<unknown>[]>}
    */
-  static async copyFiles (sourceFiles, outputFolder, inclusiveFilter = null) {
-    const excludedFiles = []
-
-    // Filter out JS Files already referenced in the liquid code
-    for (const file of sourceFiles) {
-      const fileBasename = basename(file)
-      // When already referenced, copy as is in the assets folder
-      if (inclusiveFilter) {
-        if (inclusiveFilter.includes(fileBasename)) {
-          await copyFile(file, join(outputFolder, fileBasename))
-        } else {
-          excludedFiles.push(file)
-        }
-      } else {
-        await copyFile(file, join(outputFolder, fileBasename))
-      }
+  static async copy (files) {
+    const copyPromises = []
+    for (const sourceFile in files) {
+      logger.debug(`Copying ${basename(sourceFile)}`)
+      copyPromises.push(copyFile(sourceFile, files[sourceFile]))
     }
-    return excludedFiles
+
+    return Promise.all(copyPromises)
   }
 
   /**
-   *
+   * Copy Folder Contents
    * @param {string} sourceFolder
    * @param {string} targetFolder
    * @param {boolean} [recursive=false]
    * @return {Promise<void>}
    */
   static async copyFolder (sourceFolder, targetFolder, recursive = false) {
+    const promises = []
     const folderContent = await readdir(sourceFolder, { withFileTypes: true })
+
     for (const dirent of folderContent) {
       if (dirent.isFile()) {
-        await copyFile(join(sourceFolder, dirent.name), join(targetFolder, dirent.name))
+        promises.push(copyFile(join(sourceFolder, dirent.name), join(targetFolder, dirent.name)))
       } else if (dirent.isDirectory() && recursive) {
         const newTargetFolder = join(targetFolder, dirent.name)
         await mkdir(newTargetFolder, { recursive: true })
-        await this.copyFolder(join(sourceFolder, dirent.name), newTargetFolder, recursive)
+        promises.push(this.copyFolder(join(sourceFolder, dirent.name), newTargetFolder, recursive))
       }
+    }
+    return Promise.all(promises)
+  }
+
+  /**
+   * Check If File Exists
+   * @param {string} file
+   * @return {Promise<boolean>}
+   */
+  static async exists (file) {
+    try {
+      await access(file, constants.F_OK)
+      return true
+    } catch {
+      return false
     }
   }
 
   /**
-   * Gets directory file listing recursively
+   * Check If File Is Writable
+   * @param file
+   * @return {Promise<boolean>}
+   */
+  static async isWritable (file) {
+    try {
+      await access(file, constants.W_OK)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * Get directory file listing recursively
    * @param folder
    * @returns {Promise<FlatArray[] | string>}
    * @link https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
