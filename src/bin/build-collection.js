@@ -17,6 +17,6 @@ if (!Config.isCollection()) {
   NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from a "collection" Component.`)
 }
 
-const collection = await CollectionFactory.fromBuildScript()
+const collection = await CollectionFactory.fromArchieCall()
 
 await CollectionBuilder.build(collection)
