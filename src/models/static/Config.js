@@ -11,6 +11,7 @@ class Config {
   static PACKAGES_SCOPE = '@archetype-themes'
   static YARN_VERSION = '3.2.2'
   // Collection Sub-Folders
+  static COLLECTION_ASSETS_SUBFOLDER = 'assets'
   static COLLECTION_SECTIONS_SUBFOLDER = 'sections'
   static COLLECTION_SNIPPETS_SUBFOLDER = 'snippets'
   // Component Types
