@@ -23,11 +23,12 @@ class ArchieUtils {
     // Set and validate Component Type
     await ArchieUtils.validateComponentType(this.getCommandAllowedComponents(Archie.command))
 
-    if (Archie.command !== Archie.INSTALL_COMMAND) {
+    if (Archie.command === Archie.INSTALL_COMMAND) {
+      Archie.commandOption = Config.COLLECTION_COMPONENT_TYPE
+    } else {
       Archie.commandOption = ArchieUtils.setArchieCommandOptionFromArgs(args, Archie.command, this.getCommandAvailableOptions(Archie.command))
     }
-    Archie.targetComponent = ArchieUtils.findArchieComponentName(args, Archie.commandOption)
-
+    Archie.targetComponent = ArchieUtils.findTargetComponentName(args, Archie.command, Archie.commandOption)
   }
 
   /**
@@ -111,17 +112,30 @@ class ArchieUtils {
   /**
    * Validate Component Name
    * @param {string[]} args
+   * @param {string} command
    * @param {string} commandOption
    */
-  static findArchieComponentName (args, commandOption) {
+  static findTargetComponentName (args, command, commandOption) {
+    //If we are performing an action on a section, and we are in a section, use current package's name as a target
     if (Config.componentType === commandOption) {
       return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
-    } else {
-      if (!args[2]) {
-        NodeUtils.exitWithError(`Please specify a ${commandOption} name. ie: yarn archie ${Archie.command} ${commandOption} some-smart-${commandOption}-name`)
-      }
-      return args[2].toLowerCase()
     }
+
+    let targetComponentName
+    if (command === Archie.INSTALL_COMMAND) {
+      targetComponentName = args[1]
+    } else {
+      targetComponentName = args[2]
+    }
+    if (!targetComponentName) {
+      if (command === Archie.INSTALL_COMMAND) {
+        NodeUtils.exitWithError(`Please specify a ${commandOption} name. ie: yarn archie ${command} some-smart-${commandOption}-name`)
+      } else {
+        NodeUtils.exitWithError(`Please specify a ${commandOption} name. ie: yarn archie ${command} ${commandOption} some-smart-${commandOption}-name`)
+      }
+    }
+    return targetComponentName.toLowerCase()
+
   }
 
   /**
