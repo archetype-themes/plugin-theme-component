@@ -38,16 +38,33 @@ class NodeUtils {
   }
 
   /**
+   * Get Readable Timestamp
+   * @param {Date} [date]
+   * @return {string}
+   */
+  static getReadableTimestamp (date) {
+    if (!date) {
+      date = new Date()
+    }
+    const dateString = date.toISOString()
+
+    return dateString.substring(0, 19).replace('T', '_').replaceAll(':', '-')
+  }
+
+  /**
    *
    * @param {Error|string} error
    */
   static exitWithError (error) {
-    if (error.message) {
-      logger.error(error.message)
-    } else {
+    if (typeof error === 'string' || error instanceof String) {
       logger.error(error)
+    } else {
+      if (error.name)
+        logger.error(error.name)
+      if (error.message) {
+        logger.error(error.message)
+      }
     }
-
     exit(1)
   }
 }
