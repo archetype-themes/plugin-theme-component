@@ -130,7 +130,8 @@ dist
 .pnp.*
 
 # IDE files
-.idea
+/.idea
+/.fleet
 
 # Components build folders
 sections/*/build
