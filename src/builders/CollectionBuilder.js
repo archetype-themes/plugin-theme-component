@@ -167,26 +167,36 @@ class CollectionBuilder {
     const filesToBackup = []
     const filesToCopy = []
 
+    let injectJavascript = false, injectStylesheet = false
+
     // JavaScript
     if (collection.build.javascriptFile && await FileUtils.exists(collection.build.javascriptFile)) {
-      logger.debug(`Source Collection Javascript file ${basename(collection.build.javascriptFile)} found.`)
-      const targetFile = join(theme.assetsFolder, basename(collection.build.javascriptFile))
+      const javascriptFileBasename = basename(collection.build.javascriptFile)
+      const targetFile = join(theme.assetsFolder, javascriptFileBasename)
+
+      logger.debug(`Source Collection Javascript file ${javascriptFileBasename} found.`)
+
       if (await FileUtils.exists(targetFile)) {
-        logger.debug(`Target Collection Javascript file ${basename(targetFile)} exists - backup requested.`)
+        logger.debug(`Target Collection Javascript file ${javascriptFileBasename} exists - backup requested.`)
         filesToBackup.push(targetFile)
       }
       filesToCopy[collection.build.javascriptFile] = targetFile
+      injectJavascript = true
     }
 
     // Stylesheet
     if (collection.build.stylesheet && await FileUtils.exists(collection.build.stylesheet)) {
-      logger.debug(`Source Collection Stylesheet file ${basename(collection.build.stylesheet)} found.`)
-      const targetFile = join(theme.assetsFolder, basename(collection.build.stylesheet))
+      const stylesheetBasename = basename(collection.build.stylesheet)
+      const targetFile = join(theme.assetsFolder, stylesheetBasename)
+
+      logger.debug(`Source Collection Stylesheet file ${stylesheetBasename} found.`)
+
       if (await FileUtils.exists(targetFile)) {
-        logger.debug(`Target Collection Stylesheet file ${basename(targetFile)} exists - backup requested.`)
+        logger.debug(`Target Collection Stylesheet file ${stylesheetBasename} exists - backup requested.`)
         filesToBackup.push(targetFile)
       }
       filesToCopy[collection.build.stylesheet] = targetFile
+      injectStylesheet = true
     }
 
     // Sections
