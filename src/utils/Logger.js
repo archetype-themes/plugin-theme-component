@@ -1,5 +1,5 @@
 import pino from 'pino'
-import pretty from 'pino-pretty'
+import PinoPretty from 'pino-pretty'
 import FileUtils from './FileUtils.js'
 
 const STACKTRACE_OFFSET = 2
@@ -35,10 +35,18 @@ if (process.argv.includes('--quiet')) {
   loglevel = 'debug'
 }
 
-const prettyPluginStream = pretty({
+/** @type{PrettyOptions} */
+const prettyOptions = {
   colorize: true,
-  ignore: 'time,pid,hostname'
-})
+  ignore: 'time,pid,hostname',
+  singleLine: false
+}
+
+if (loglevel === 'debug') {
+  prettyOptions.messageFormat = '\n >>> {msg}'
+}
+
+const prettyPluginStream = PinoPretty(prettyOptions)
 
 let logger = pino({ level: loglevel }, prettyPluginStream)
 
