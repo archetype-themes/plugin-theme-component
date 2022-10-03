@@ -86,6 +86,20 @@ class FileUtils {
   }
 
   /**
+   * Check If File Is Readable
+   * @param file
+   * @return {Promise<boolean>}
+   */
+  static async isReadable (file) {
+    try {
+      await access(file, constants.R_OK)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
    * Check If File Is Writable
    * @param file
    * @return {Promise<boolean>}
