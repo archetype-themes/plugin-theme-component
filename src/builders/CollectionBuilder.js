@@ -250,7 +250,81 @@ class CollectionBuilder {
 
     logger.info('Collection Files Installed Successfully.')
 
+    if (injectJavascript || injectStylesheet) {
+      await this.injectAssetReferences(collection, theme, {
+        'injectJavascript': injectJavascript,
+        'injectStylesheet': injectStylesheet
+      })
+    }
   }
+
+  static async injectAssetReferences (collection, theme, options) {
+    const javascriptFileBasename = basename(collection.build.javascriptFile)
+    const stylesheetBasename = basename(collection.build.stylesheet)
+
+    let injections = []
+
+    const themeLiquidFile = join(theme.rootFolder, 'layout', 'theme.liquid')
+    let themeLiquid = (await FileUtils.isReadable(themeLiquidFile)) ? await FileUtils.getFileContents(themeLiquidFile) : ''
+
+    if (options.injectJavascript) {
+      if (themeLiquid.includes(javascriptFileBasename)) {
+        logger.warn(`Html "script" tag injection unavailable: A conflictual reference to ${javascriptFileBasename} is already present within the theme.liquid file.`)
+      } else {
+        injections.push(`<script src="{{ ${javascriptFileBasename} | asset_url }}" async></script>`)
+      }
+    }
+
+    if (options.injectStylesheet) {
+      if (themeLiquid.includes(stylesheetBasename)) {
+        logger.warn(`Html "link" tag injection Unavailable: A conflictual reference to ${stylesheetBasename} is already present within the theme.liquid file.`)
+      } else {
+        injections.push(`<link type="text/css" href="{{ ${stylesheetBasename} | asset_url }}" rel="stylesheet">`)
+      }
+    }
+
+    if (await FileUtils.isWritable(themeLiquidFile)) {
+      if (injections.length > 0) {
+        await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
+
+      }
+    } else if (injections.length > 0) {
+      this.injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
+    }
+  }
+
+  static async writeAssetReferencesToThemeLiquidFile (injections, themeLiquid, themeLiquidFile) {
+    const headTagClosureCount = (themeLiquid.match(/<\/head>/g) || []).length
+    if (headTagClosureCount === 1) {
+      logger.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
+      themeLiquid = themeLiquid.replace(
+        '</head>',
+        `${injections.join('\n')}\n</head>`)
+      await FileUtils.backup(themeLiquidFile)
+      await FileUtils.writeFile(themeLiquidFile, themeLiquid)
+
+    } else if (headTagClosureCount === 0) {
+      this.injectionFailureWarning(`Html head tag closure not found in "theme.liquid".`, injections)
+    } else {
+      this.injectionFailureWarning(`${headTagClosureCount} Html head tag closure found in "theme.liquid". It should only be present once.`, injections)
+    }
+
+  }
+
+  static injectionFailureWarning (message, injections) {
+    logger.warn(`
+**************************************************************************************************
+${message} 
+
+References to collection stylesheet and javaScript file will not be inserted automatically.
+You should manually insert these lines inside your "theme.liquid" file:
+
+ >>> ${injections.join('\n >>> ')}
+
+**************************************************************************************************`)
+
+  }
+
 }
 
 export default CollectionBuilder
