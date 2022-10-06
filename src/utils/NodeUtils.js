@@ -59,7 +59,7 @@ class NodeUtils {
     if (typeof error === 'string' || error instanceof String) {
       logger.error(error)
     } else {
-      if (error.name)
+      if (error.name && error.name.toLowerCase() !== 'error')
         logger.error(error.name)
       if (error.message) {
         logger.error(error.message)
