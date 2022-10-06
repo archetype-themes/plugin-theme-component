@@ -38,7 +38,7 @@ class ComponentUtils {
     try {
       await access(componentFolder, constants.X_OK)
     } catch (error) {
-      throw new Error(`${component}: Can't access component root folder at expected location "${componentFolder}" - Verify that the folder exists and has access execute permissions (ie: 755)`)
+      throw new Error(`"${component.name}" not found at "${componentFolder}".\n\tVerify that the folder exists and its permissions.`)
     }
 
     return componentFolder
