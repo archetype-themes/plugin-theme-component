@@ -14,6 +14,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 import SectionWatcher from '../watchers/SectionWatcher.js'
 import CollectionWatcher from '../watchers/CollectionWatcher.js'
 import ThemeFactory from '../factory/ThemeFactory.js'
+import CollectionInstaller from '../Installers/CollectionInstaller.js'
 
 //Init Config
 try {
@@ -72,7 +73,7 @@ if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
     const collection = await CollectionFactory.fromName(Archie.targetComponent)
     const theme = await ThemeFactory.fromArchieCall()
     await CollectionBuilder.build(collection)
-    await CollectionBuilder.install(collection, theme)
+    await CollectionInstaller.install(collection, theme)
   } catch (error) {
     NodeUtils.exitWithError(error)
   }
