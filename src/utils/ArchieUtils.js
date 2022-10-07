@@ -38,7 +38,7 @@ class ArchieUtils {
   static validateCommand (command) {
     if (!Archie.AVAILABLE_COMMANDS.includes(command)) {
       this.sayHi()
-      NodeUtils.exitWithError(`Unknown command "${command}"`)
+      throw new Error(`Unknown command "${command}"`)
     }
   }
 
@@ -58,7 +58,7 @@ class ArchieUtils {
       case Archie.WATCH_COMMAND:
         return Archie.WATCH_COMMAND_OPTIONS
       default:
-        NodeUtils.exitWithError(`Unknown command ${command}`)
+        throw new Error(`Unknown command "${command}"`)
     }
   }
 
@@ -73,7 +73,7 @@ class ArchieUtils {
       case Archie.WATCH_COMMAND:
         return Archie.WATCH_COMMAND_ALLOWED_COMPONENTS
       default:
-        NodeUtils.exitWithError(`Unknown command ${command}`)
+        throw new Error(`Unknown command ${command}`)
     }
   }
 
@@ -93,7 +93,7 @@ class ArchieUtils {
 
     if (!availableOptions.includes(commandOption)) {
       this.sayHi(command, availableOptions)
-      NodeUtils.exitWithError(`Unknown command option "${commandOption}"`)
+      throw new Error(`Unknown command option "${commandOption}"`)
     }
     return commandOption
   }
@@ -105,7 +105,7 @@ class ArchieUtils {
    */
   static async validateComponentType (allowedComponentTypes) {
     if (!allowedComponentTypes.includes(Config.componentType)) {
-      NodeUtils.exitWithError(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from the following component(s): [${allowedComponentTypes.join('/')}].`)
+      throw new Error(`INVALID COMPONENT TYPE: "${Config.componentType}". This script can only be run from the following component(s): [${allowedComponentTypes.join('/')}].`)
     }
   }
 
@@ -129,9 +129,9 @@ class ArchieUtils {
     }
     if (!targetComponentName) {
       if (command === Archie.INSTALL_COMMAND) {
-        NodeUtils.exitWithError(`Please specify a ${commandOption} name. ie: yarn archie ${command} some-smart-${commandOption}-name`)
+        throw new Error(`Please specify a ${commandOption} name. ie: yarn archie ${command} some-smart-${commandOption}-name`)
       } else {
-        NodeUtils.exitWithError(`Please specify a ${commandOption} name. ie: yarn archie ${command} ${commandOption} some-smart-${commandOption}-name`)
+        throw new Error(`Please specify a ${commandOption} name. ie: yarn archie ${command} ${commandOption} some-smart-${commandOption}-name`)
       }
     }
     return targetComponentName.toLowerCase()

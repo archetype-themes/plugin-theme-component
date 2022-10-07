@@ -5,7 +5,6 @@ import { env } from 'node:process'
 import Config from '../models/static/Config.js'
 import { access } from 'node:fs/promises'
 import { constants } from 'node:fs'
-import NodeUtils from '../utils/NodeUtils.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import { exec } from 'node:child_process'
@@ -25,19 +24,22 @@ class SectionGenerator {
     section.rootFolder = path.join(env.PROJECT_CWD, Config.COLLECTION_SECTIONS_SUBFOLDER, section.name)
 
     // Exit if the folder already exists
+    let folderExists = false
     try {
+      // This will throw an error if the folder doesn't exist.
       await access(section.rootFolder, constants.X_OK)
-      NodeUtils.exitWithError('Section folder already exists. Please remove it or rename your section')
-    } catch (error) {
-      // Error is expected, the folder shouldn't exist
+      // This only run if the previous "access" call was successful, proving the folder already exists
+      folderExists = true
+    } catch {
+      // An error is expected since the folder shouldn't exist
+    }
+
+    if (folderExists) {
+      throw new Error(`The "${sectionName}" section folder already exists. Please remove it or choose a different name.`)
     }
 
     // Create the folder structure
-    try {
-      await ComponentUtils.createFolderStructure(section)
-    } catch (error) {
-      NodeUtils.exitWithError(error)
-    }
+    await ComponentUtils.createFolderStructure(section)
 
     const collectionName = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
 

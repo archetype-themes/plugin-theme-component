@@ -1,12 +1,10 @@
-import NodeUtils from '../utils/NodeUtils.js'
-
 class CollectionWatcher {
   /**
    *
    * @param {Collection} collection
    */
   static watch (collection) {
-    NodeUtils.exitWithError('Not Implemented Yet')
+    throw new Error('Not Implemented Yet')
   }
 }
 

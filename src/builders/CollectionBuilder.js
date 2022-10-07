@@ -8,7 +8,6 @@ import SectionBuilder from './SectionBuilder.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
 
 class CollectionBuilder {
   static backupFiles
@@ -232,21 +231,14 @@ class CollectionBuilder {
 
     if (filesToBackup.length) {
       logger.debug(`Backing up ${filesToBackup.length} files`)
-      try {
-        await FileUtils.backup(filesToBackup)
-      } catch (error) {
-        NodeUtils.exitWithError(error)
-      }
+      await FileUtils.backup(filesToBackup)
+
     } else {
       logger.debug('No files to backup')
     }
 
     logger.debug(`Copying ${Object.keys(filesToCopy).length} files`)
-    try {
-      await FileUtils.copy(filesToCopy)
-    } catch (error) {
-      NodeUtils.exitWithError(error)
-    }
+    await FileUtils.copy(filesToCopy)
 
     logger.info('Collection Files Installed Successfully.')
 

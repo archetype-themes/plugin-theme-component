@@ -22,37 +22,59 @@ try {
   NodeUtils.exitWithError(error)
 }
 
-await ArchieUtils.initArchie()
+try {
+  await ArchieUtils.initArchie()
+} catch (error) {
+  NodeUtils.exitWithError(error)
+}
 
 if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
   if (Archie.commandOption === Config.COLLECTION_COMPONENT_TYPE) {
-    const collection = await CollectionFactory.fromArchieCall()
-    await CollectionBuilder.build(collection)
-    if (Archie.command === Archie.WATCH_COMMAND) {
-      CollectionWatcher.watch(collection)
+    try {
+      const collection = await CollectionFactory.fromArchieCall()
+      await CollectionBuilder.build(collection)
+      if (Archie.command === Archie.WATCH_COMMAND) {
+        CollectionWatcher.watch(collection)
+      }
+    } catch (error) {
+      NodeUtils.exitWithError(error)
     }
-
   }
   if (Archie.commandOption === Config.SECTION_COMPONENT_TYPE) {
-    const section = await SectionFactory.fromName(Archie.targetComponent)
-    await SectionBuilder.build(section)
+    try {
+      const section = await SectionFactory.fromName(Archie.targetComponent)
+      await SectionBuilder.build(section)
 
-    if (Archie.command === Archie.WATCH_COMMAND) {
-      await SectionWatcher.watch(section)
+      if (Archie.command === Archie.WATCH_COMMAND) {
+        await SectionWatcher.watch(section)
+      }
+    } catch (error) {
+      NodeUtils.exitWithError(error)
     }
   }
 } else if (Archie.command === Archie.CREATE_COMMAND) {
   if (Archie.commandOption === Config.SECTION_COMPONENT_TYPE) {
-    await SectionGenerator.generate(Archie.targetComponent)
+    try {
+      await SectionGenerator.generate(Archie.targetComponent)
+    } catch (error) {
+      NodeUtils.exitWithError(error)
+    }
   }
   if (Archie.commandOption === Config.SNIPPET_COMPONENT_TYPE) {
-    await SnippetGenerator.generate(Archie.targetComponent)
+    try {
+      await SnippetGenerator.generate(Archie.targetComponent)
+    } catch (error) {
+      NodeUtils.exitWithError(error)
+    }
   }
 } else if (Archie.command === Archie.INSTALL_COMMAND) {
+  try {
+    const collection = await CollectionFactory.fromName(Archie.targetComponent)
+    const theme = await ThemeFactory.fromArchieCall()
+    await CollectionBuilder.build(collection)
+    await CollectionBuilder.install(collection, theme)
+  } catch (error) {
+    NodeUtils.exitWithError(error)
+  }
 
-  //NodeUtils.exitWithError('Not Implemented Yet')
-  const collection = await CollectionFactory.fromName(Archie.targetComponent)
-  const theme = await ThemeFactory.fromArchieCall()
-  await CollectionBuilder.build(collection)
-  await CollectionBuilder.install(collection, theme)
 }

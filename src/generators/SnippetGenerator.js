@@ -5,7 +5,6 @@ import { env } from 'node:process'
 import Config from '../models/static/Config.js'
 import { access } from 'node:fs/promises'
 import { constants } from 'node:fs'
-import NodeUtils from '../utils/NodeUtils.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import { exec } from 'child_process'
@@ -25,19 +24,22 @@ class SnippetGenerator {
     snippet.rootFolder = path.join(env.PROJECT_CWD, Config.COLLECTION_SNIPPETS_SUBFOLDER, snippet.name)
 
     // Exit if the folder already exists
+    let folderExists = false
     try {
+      // This will throw an error if the folder doesn't exist.
       await access(snippet.rootFolder, constants.X_OK)
-      NodeUtils.exitWithError('Snippet folder already exists. Please remove it or rename your snippet')
+      // This only run if the previous "access" call was successful, proving the folder already exists
+      folderExists = true
     } catch (error) {
-      // Error is expected, the folder shouldn't exist
+      // An error is expected, the folder shouldn't exist
+    }
+
+    if (folderExists) {
+      throw new Error(`The "${snippetName}" snippet folder already exists. Please remove it or choose a different name.`)
     }
 
     // Create the folder structure
-    try {
-      await ComponentUtils.createFolderStructure(snippet)
-    } catch (error) {
-      NodeUtils.exitWithError(error)
-    }
+    await ComponentUtils.createFolderStructure(snippet)
 
     const collectionName = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
 

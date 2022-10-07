@@ -6,7 +6,6 @@ import BuildFactory from './BuildFactory.js'
 import SectionFactory from './SectionFactory.js'
 import logger from '../utils/Logger.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
-import NodeUtils from '../utils/NodeUtils.js'
 
 class CollectionFactory {
   /**
@@ -66,7 +65,7 @@ class CollectionFactory {
       try {
         await CollectionUtils.findSectionNames(collection)
       } catch (error) {
-        NodeUtils.exitWithError(`Couldn't find the ${collection.name} collection on disk. Is it installed?`)
+        throw new Error(`Couldn't find the ${collection.name} collection on disk. Is it installed?`)
       }
 
     }
