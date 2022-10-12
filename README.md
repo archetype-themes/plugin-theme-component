@@ -18,7 +18,7 @@ yarn add https://github.com/archetype-themes/archie --dev
 To build your section, just use the following command
 
 ```shell
-yarn  build-section
+yarn  archie build section
 ```
 
 ### Log Level
@@ -32,7 +32,7 @@ level. To use a different log level, use the following flags when running the bu
 
 ```shell
 # Show Error, Info and Debug messages
-yarn build-section --verbose
+yarn archie build section --verbose
 ```
 
 ```shell
