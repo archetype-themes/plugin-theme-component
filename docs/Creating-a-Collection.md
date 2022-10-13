@@ -1,13 +1,21 @@
+- [Archie Collections](#archie-collections)
+    * [Prerequisites](#prerequisites)
+    * [Creating an Archie Collection](#creating-an-archie-collection)
+        + [Node Package Creation](#node-package-creation)
+        + [Node Package Configuration](#node-package-configuration)
+        + [Installing Archie](#installing-archie)
+            - [Let's kick shell!](#lets-kick-shell)
+    * [Using your Collection](#using-your-collection)
+
 # Archie Collections
 
 An Archie Collection is an amalgamation of [Sections](Sections.md) and Snippets. Since they can be installed within any
 Shopify theme, their structure greatly helps avoid code duplication when sharing sections amongst multiple themes.
 
-### Prerequisites
+## Prerequisites
 
-Archie was designed to be used in conjunction with
-recent yarn versions, version 3.3 at the time of this writing. Its behaviour with npm and npx commands is untested and
-is not recommended at the time.
+Archie was designed to be used in conjunction with recent yarn versions, version 3.3 at the time of this writing. Its
+behaviour with npm and npx commands is untested and is not recommended at the time.
 
 Please make sure your node and yarn versions are up-to-date by following the [Setup Guide](Setup.md)
 
@@ -17,7 +25,7 @@ An Archie Collection is a yarn monorepo that contains multiple child elements, b
 
 We will start by creating a Node JS Package.
 
-### Node Module Creation
+### Node Package Creation
 
 ```shell
 # Save your collection name
@@ -26,12 +34,12 @@ collection="my-awesome-collection"
 # Create and enter its folder
 mkdir $collection && cd $collection
 
-# Create the node module and configure its nodeLinker param to be npm compatible
+# Create the node package and configure its nodeLinker param to be npm compatible
 yarn init -2
 yarn config set nodeLinker node-modules
 ```
 
-### Configuring your module
+### Node Package Configuration
 
 Next, you will need to edit your package.json.
 
@@ -49,10 +57,10 @@ Next, you will need to edit your package.json.
 }
 ```
 
-- Adding the **archie** group with the **"collection"** component type identifies your module as a collection monorepo
+- Adding the **archie** group with the **"collection"** component type identifies your package as a collection monorepo
   for Archie.
-- Adding the **workspaces** group indicates that this is a monrepo with multiples modules that can be found in the
-  **"sections"** or **"snippets"** sub-folders.
+- Adding the **workspaces** group indicates that this is a monorepo with multiples child modules that can be found in
+  the **"sections"** or **"snippets"** sub-folders.
 
 ### Installing Archie
 
@@ -63,7 +71,7 @@ yarn add archie@archetype-themes/archie --dev --peer
 ```
 
 - It is a dev dependency and a peer dev dependency to any Theme installing your collection.
-- It is private module fetched through GitHub. Therefore, authentication to @archetype-themes is required.
+- It is private package fetched through GitHub. Therefore, authentication to @archetype-themes is required.
 
 Once installed, the following command will be available:
 
