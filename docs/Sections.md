@@ -130,4 +130,5 @@ Use Ctrl+C to stop watching the files for changes.
 
 ## Install a Section
 
-A section can be installed within a Shopify Theme. Please read the [Themes](Themes.md) documentation to learn more.
+When part of a collection, a section can be installed within a Shopify Theme. Please read the [Themes](Themes.md)
+documentation to learn more.
