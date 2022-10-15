@@ -1,24 +1,62 @@
 # Archie
 
-Archie, short for Archetype, is our internal builder. Archie takes care of assembling your sections and snippets
-according to Shopify's standards while allowing you to separate and organise your section contents as you see fit.
+Archie is Archetype's CLI (Command Line Interface). Archie is designed to segment and structure code in a way to help
+Shopify Theme development. Shared Collections of Sections can be easily integrated in ahy Shopify Theme. This reduces
+code duplication, therefore allowing for theme maintenance.
 
-## Install
+## Prerequisites
 
-This package is meant for use within the Archetype Themes Components Monorepo. When creating a new section package
-inside the appropriate folder, use yarn to add this module as a development dependency through its GitHub
-address.
+Archie was designed to be used in conjunction with recent yarn versions, version 3.3 at the time of this writing. Its
+behaviour with npm and npx commands is untested and is not recommended at the time.
+
+- [Setup Guide](docs/Setup.md)
+
+## Archie Components
+
+Archie helps with multiple components: Collections, Sections & Snippets, and Themes.
+
+With Archie, you can easily create and share a Collection of Sections to share amongst your themes. Collections are
+structured as a NodeJS Monorepo of child repositories consisting of Sections and snippet in their respective workspaces.
+
+Please read the following guides to help you on your journey:
+
+- Collections
+  - [Create your own Collection](docs/Creating-a-Collection.md)
+  - [User's Guide](docs/Using-a-Collection.md)
+- Sections & Snippets
+  - [User's Guide](docs/Sections.md)
+- Themes
+  - [Using a Collection with your Theme.](docs/Themes.md)
+
+## Install Archie
+
+This is a shortcut command to install Archie, but contextual use of this is provided in the guide links above.
 
 ```shell
 yarn add https://github.com/archetype-themes/archie --dev
 ```
 
-## Section Builder: How to use it
-
-To build your section, just use the following command
+## Archie Commands
 
 ```shell
-yarn  archie build section
+##### Collection Commands #####
+archie build collection
+archie build section [section-name]
+
+archie create section [section-name]
+archie create snippet [snippet-name]
+
+# SOON: archie watch collection
+archie watch section [section-name]
+
+##### Section Commands #####
+archie build section
+archie watch section
+
+##### Theme Commands #####
+archie install [name-of-collection]
+
+
 ```
 
 ### Log Level
@@ -40,112 +78,12 @@ yarn archie build section --verbose
 yarn build-section --quiet
 ```
 
-## Aaaand ACTION!
+## Limitations Being Worked On
 
-The script will analyze the contents of the section folder and create a final build in a folder of tha name. Here is how
-it proceeds according to the file type detected.
-
-### TLDR
-
-#### Accepted input
-
-```ignorelang
-# Liquid files
-**/*.liquid
-# Javascript files
-**/*.js
-**/*.mjs
-# CSS files
-**/*.css
-# Locale files
-**/en(-US)?(.(default|schema)){0,2}.json
-**/schema.json
-
-# Ignored entries
-!/build
-!/node_modules
-```
-
-#### Expected Output
-
-```shell
-build/section-name.liquid
-build/assets/section-name.js
-build/assets/section-name.css
-build/locales/en-US.default.json
-```
-
-### JS Files
-
-Any JavaScript file detected in the section folders will be merged in a single JavaScript file bearing the name of the
-section and put in the assets' subfolder. Files are processed in alphabetical order.
-
-`build/assets/section-name.js`
-
-A reference to this JavaScript file will be inserted at the end of the liquid file with an async property.
-
-`<script src="{{ 'section-name.js' | asset_url }}" async></script>`
-
-It is possible to avoid merging a JavaScript file by manually including an HTML `<script>` tag inside a liquid file.
-The file will be copied as is in the `build/assets` folder and will retain its original name.
-
-#### Caveat
-
-JS file manual inclusions inside the liquid code without the html `<script>` tag, such as with only liquid code
-(ie: `{{ 'lightbox.js' | global_asset_url | script_tag }}`) are not detected at the moment and will result in a double
-inclusion.
-
-### JS Modules
-
-Any JavaScript module file detected in the section folders will be copied as is in the assets' subfolder.
-The detection pattern works by extension, your module file must end with the **.mjs** extension.
-
-#### Important Note
-
-The file will be included at the end of the liquid code with an HTML script tag of type **module** and will be set for
-**async** load. The script will search for manual inclusion before adding the script tag, this allows you to remove
-async and potentially replace it with defer or use any other customization as needed.
-
-### CSS Files
-
-Any CSS file detected in the section folders will be merged in a single CSS file bearing the name of the section and put
-in the assets' subfolder. Files are processed in alphabetical order.
-
-`build/assets/section-name.css`
-
-A reference to this CSS file will be inserted at the end of the liquid file.
-
-`{{ '${section-name.css}' | global_asset_url | stylesheet_tag }}`
-
-It is possible to avoid merging a CSS file by manually including an HTML `<link>` tag inside a liquid file.
-The file will be copied as is in the `build/assets` folder and will retain its original name.
-
-#### Caveat
-
-At the moment Sass files are not processed.
-
-CSS file manual inclusions inside the liquid code without the html `<link>` tag, such as with only liquid code
-(ie: `{{ 'section-styles.css' | global_asset_url | stylesheet_tag }}`) is not detected at the moment and will result in
-a double inclusion.
-
-## Schema file
-
-The schema file must be names `schema.json` in order to be processed correctly. Its content will be added at the end of
-the section's liquid file.
-
-## Locale files
-
-The locale files must follow the naming patterns enforced by Shopify. This looks like `en-US.json`, `en.default.json`
-or `en.schema.json`. You can put them in any folder you want. When the build runs, they will be copied to the
-`build/locales` folder.
-
-## Liquid files
-
-By default, any Liquid file detected in the section folders (recursively) will be merged in a single liquid file bearing
-the name of the section and put at the root of the `build` folder. Files are processed in alphabetical order.
-
-`build/section-name.liquid`
-
-## Snippets
-
-Coming Soon
+* When you run ```archie watch section```, only the Section folder is being watched. Included snippets repositories are
+  ignored.
+* ```watch collection``` is not implemented.
+* Snippets can't include another snippet.
+* Stylesheets with a shared core are not handled at the moment.
+* No Stylesheet Merge or optimisation is being performed.
+* Installing multiple collections in a theme is not handled.

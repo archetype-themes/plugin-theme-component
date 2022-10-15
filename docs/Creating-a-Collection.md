@@ -1,31 +1,17 @@
-- [Archie Collections](#archie-collections)
-    * [Prerequisites](#prerequisites)
-    * [Creating an Archie Collection](#creating-an-archie-collection)
-        + [Node Package Creation](#node-package-creation)
-        + [Node Package Configuration](#node-package-configuration)
-        + [Installing Archie](#installing-archie)
-            - [Let's kick shell!](#lets-kick-shell)
-    * [Using your Collection](#using-your-collection)
+# Creating An Archie Collection
 
-# Archie Collections
-
-An Archie Collection is an amalgamation of [Sections](Sections.md) and Snippets. Since they can be installed within any
-Shopify theme, their structure greatly helps avoid code duplication when sharing sections amongst multiple themes.
+An Archie Collection is a NodeJS Monorepo that regroups multiple Shopify Theme [Sections](Sections.md) and Snippets in
+the form of child repositories in their respective namespaces.
 
 ## Prerequisites
 
-Archie was designed to be used in conjunction with recent yarn versions, version 3.3 at the time of this writing. Its
-behaviour with npm and npx commands is untested and is not recommended at the time.
-
-Please make sure your node and yarn versions are up-to-date by following the [Setup Guide](Setup.md)
+Please make sure you have followed the [Setup Guide](Setup.md)
 
 ## Creating an Archie Collection
 
-An Archie Collection is a yarn monorepo that contains multiple child elements, be it Sections or Snippets.
-
-We will start by creating a Node JS Package.
-
 ### Node Package Creation
+
+We will start by creating a NodeJS Package.
 
 ```shell
 # Save your collection name
@@ -77,22 +63,6 @@ Once installed, the following command will be available:
 
 ```shell
 yarn archie
-```
-
-#### Let's kick shell!
-
-I strongly recommend creating a helper shortcut to be able to use just plain "archie". Edit your .zshrc file and append
-this next line at the end. The next examples will assume you did.
-
-```shell
-alias archie='yarn archie'
-```
-
-To apply the newly created shortcut, you can reload your .zshrc using the "source" command, or open a new console.
-
-```shell
-# Reloading .zshrc file with "source" command
-source ~/.zshrc
 ```
 
 ## Using your Collection

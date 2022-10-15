@@ -1,4 +1,4 @@
-# Set up your workstation
+# Set up your workstation to be ready for Archie
 
 ## MacOS with Homebrew
 
@@ -39,3 +39,21 @@ their [releases](https://github.com/yarnpkg/berry/releases) page, then run the f
 ```shell
 corepack prepare yarn@3.2.4 --activate
 ```
+
+### Archie's command shortcut
+
+I strongly recommend creating a helper shortcut to be able to use just plain "archie". Edit your .zshrc file and append
+this next line at the end. The documentation examples will assume you did.
+
+```shell
+alias archie='yarn archie'
+```
+
+To apply the newly created shortcut, you can reload your .zshrc using the "source" command, or open a new console.
+
+```shell
+# Reloading .zshrc file with "source" command
+source ~/.zshrc
+```
+
+*Please note: This shortcut will only work in a repository with the NodeJS archie package installed.*
