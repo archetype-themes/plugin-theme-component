@@ -56,6 +56,11 @@ A reference to this JavaScript file will be inserted
 - Theme install: Customization of that script tag is possible. Archie will check for an existing reference to the
   javascript file before insertion and will not proceed if it already exists, it will not be overwritten.
 
+**External Tools**
+
+JavaScript is built using [esbuild](https://esbuild.github.io/) bundler
+
+
 ### Stylesheets Build Process
 
 Archie will look for an `index.css` or a `main.css` file in your `src` folder. Any
@@ -88,6 +93,11 @@ A reference to this CSS file will be inserted
 ```liquid
 {{ '${section-name.css}' | global_asset_url | stylesheet_tag }}
 ```
+
+**External Tools**
+
+Stylesheet are built using [esbuild](https://esbuild.github.io/) bundler
+
 
 ## Locales Build Transformations
 
