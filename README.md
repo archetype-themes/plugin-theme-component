@@ -27,6 +27,8 @@ Please read the following guides to help you on your journey:
   - [User's Guide](docs/Sections.md)
 - Themes
   - [Using a Collection with your Theme.](docs/Themes.md)
+- Technical Guides
+  - [Understanding the Build Process](docs/Build-process.md)
 
 ## Install Archie
 
@@ -80,9 +82,9 @@ yarn build-section --quiet
 
 ## Limitations Being Worked On
 
-* When you run ```archie watch section```, only the Section folder is being watched. Included snippets repositories are
+* When you run `archie watch section`, only the Section folder is being watched. Included snippets repositories are
   ignored.
-* ```watch collection``` is not implemented.
+* `watch collection` is not implemented.
 * Snippets can't include another snippet.
 * Stylesheets with a shared core are not handled at the moment.
 * No Stylesheet Merge or optimisation is being performed.

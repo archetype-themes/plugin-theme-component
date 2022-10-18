@@ -2,8 +2,6 @@
 
 Let's see what happens behind the curtains
 
-## Sections
-
 ## Liquid files
 
 By default, any Liquid file detected in the section folders (recursively) will be merged in a single liquid file bearing
@@ -12,10 +10,12 @@ the name of the section and put at the root of the `build` folder. Files are pro
 - Any Snippet rendering liquid tag will be replaced by the actual Snippet's content, unless it is a for loop.
 - Schema will be appended. The content will consist of an assembly of locales.json and schema.json
 
-Output file: 
+Output files :
 ```shell
 # For Collections
-build/[collection-name].liquid
+build/sections/[section-name-one].liquid
+build/sections/[section-name-two].liquid
+build/sections/[section-name-three].liquid
 
 # For Sections
 build/section-name.liquid
@@ -24,14 +24,14 @@ build/section-name.liquid
 ### JavaScript Build Process
 
 Archie will look for an `index.js` or a `main.js` file in your `src` folder. Any other javascript file or module that is
- used by your main file will automatically be processed. 
+used by your main file will automatically be processed.
 
-If your Section happens to include some Snippets with external javascript files, Archie will also look for their main
- javascript file and process them.
+**Recursion:** If your Section includes Snippets with external javascript files, Archie will also look for their main javascript file
+and process it.
 
 **Notes**
 - The mjs file extension is also accepted.
-- Use of a scripts sub-folder is recommended but not compulsory since Archie will search the whole src diretory tree for
+- Use of a scripts sub-folder is recommended but not compulsory. Archie will search the whole src diretory tree for
   your main JavaScript file.
 
 **Resulting files**
@@ -44,36 +44,50 @@ build/assets/[collection-name].js
 build/assets/[section-name].js
 ```
 
-A reference to this JavaScript file will be inserted when needed.
-
-- Section build: At the end of the section's liquid file
-- Collection Theme install: Just before the closing </head> tag of a theme.liquid file
+A reference to this JavaScript file will be inserted
+- For A Section Build: At the end of the section's liquid file
+- For A Theme Install: Just before the closing </head> tag of a `theme.liquid` file (only if missing - won't add twice)
 
 ```liquid
 <script src="{{ '[collection-name||section-name].js' | asset_url }}" async></script>
 ```
 
 **Note**
-- Theme install: Customization of that script tag is possible. Archie will check for an existing reference to the 
-  javascript file before insertion and will not proceed if it already exists, it will not be overwritten. 
+- Theme install: Customization of that script tag is possible. Archie will check for an existing reference to the
+  javascript file before insertion and will not proceed if it already exists, it will not be overwritten.
 
 ### Stylesheets Build Process
 
-Archie will look for an `index.(css|sass|scss|less)` or a `main.(css|sass|scss|less)` file in your `src` folder. Any other javascript file or module that is used
-by your main file will automatically be processed. 
+Archie will look for an `index.css` or a `main.css` file in your `src` folder. Any
+other javascript file or module that is used by your main file will automatically be processed.
 
-Any stylesheet file detected in the section folders will be merged in a single CSS file bearing the name of the section and put
-in the assets' sub-folder. Files are processed in alphabetical order.
+**Recursion:** If your Section includes Snippets with external stylesheets, Archie will also look for their main
+stylesheet and process it.
 
-`build/assets/section-name.css`
+**Notes**
+- Sass and Less is also handled. Your main file can also use any of the following extensions (css|sass|scss|less)
+- Use of a styles sub-folder is recommended but not compulsory. Archie will search the whole src diretory tree for
+  your main stylesheet.
 
-A reference to this CSS file will be inserted at the end of the liquid file.
+**Resulting files**
 
-`{{ '${section-name.css}' | global_asset_url | stylesheet_tag }}`
+```shell
+# For Collections
+build/assets/[collection-name].css
 
-It is possible to avoid merging a CSS file by manually including an HTML `<link>` tag inside a liquid file.
-The file will be copied as is in the `build/assets` folder and will retain its original name.
+# For Sections
+build/assets/[section-name].css
+```
 
+
+A reference to this CSS file will be inserted
+- For A Section Build: At the end of the section's liquid file
+- For A Theme Install: Just before the closing </head> tag of a `theme.liquid` file (only if missing - won't add twice)
+  A reference to this CSS file will be inserted at the end of the liquid file.
+
+```liquid
+{{ '${section-name.css}' | global_asset_url | stylesheet_tag }}
+```
 
 ## Locales Build Transformations
 

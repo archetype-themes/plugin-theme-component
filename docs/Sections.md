@@ -62,7 +62,7 @@ rest.
 
 - Include JavaScript librairies as yarn dependencies for your section.
 - If multiple Sections share some internal JS code, put that code in a Node Module in a separate GitHub repo and include
-  it with yarn with ``yarn add some-shared-js-module@archetype-themes/some-shared-js-module``.
+  it with yarn with `yarn add some-shared-js-module@archetype-themes/some-shared-js-module`.
 
 #### Styles
 
@@ -76,8 +76,8 @@ Caveat: At the moment, there is no check for duplicate CSS styles and shared lib
 Tired of managing a huge number of locale files with a never ending scroll to reach your section? Isolate your section's
 translations and regroup all your locales in one file with **archie**!
 
-Storefront locales can be brought together in ``src/locales/locales.json`` in a simplified structure. This is also
-available for Schema under``src/locales/locales.schema.json``. The structure hierarchy is a parent locale with children
+Storefront locales can be brought together in `src/locales/locales.json` in a simplified structure. This is also
+available for Schema under `src/locales/locales.schema.json`. The structure hierarchy is a parent locale with children
 descriptions and their translations.
 
 ```json
