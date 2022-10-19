@@ -27,7 +27,7 @@ class SnippetBuilder extends ComponentBuilder {
    */
   static async buildJavascript (snippet) {
     await JavaScriptProcessor.buildJavaScript(snippet.build.javascriptFile, snippet.files.javascriptIndex)
-    snippet.liquidCode = `<script src="{{ ${basename(snippet.build.javascriptFile)} | asset_url }}" async></script>\n${snippet.liquidCode}`
+    snippet.liquidCode = `<script src="{{ '${basename(snippet.build.javascriptFile)}' | asset_url }}" async></script>\n${snippet.liquidCode}`
   }
 
   /**
@@ -37,7 +37,7 @@ class SnippetBuilder extends ComponentBuilder {
    */
   static async buildStylesheets (snippet) {
     await StylesProcessor.buildStyles(snippet.build.stylesheet, snippet.files.mainStylesheet)
-    snippet.liquidCode = `<link type="text/css" href="{{ ${basename(snippet.build.stylesheet)} | asset_url }}" rel="stylesheet">\n${snippet.liquidCode}`
+    snippet.liquidCode = `<link type="text/css" href="{{ '${basename(snippet.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${snippet.liquidCode}`
   }
 
   /**

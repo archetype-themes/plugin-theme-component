@@ -92,7 +92,7 @@ class SectionBuilder extends ComponentBuilder {
     } else {
       await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex)
     }
-    section.liquidCode = `<script src="{{ ${basename(section.build.javascriptFile)} | asset_url }}" async></script>\n${section.liquidCode}`
+    section.liquidCode = `<script src="{{ '${basename(section.build.javascriptFile)}' | asset_url }}" async></script>\n${section.liquidCode}`
   }
 
   /**
@@ -223,7 +223,7 @@ class SectionBuilder extends ComponentBuilder {
 
     const styles = await FileUtils.getMergedFilesContent(stylesheets)
     await FileUtils.writeFile(section.build.stylesheet, styles)
-    section.liquidCode = `<link type="text/css" href="{{ ${basename(section.build.stylesheet)} | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
+    section.liquidCode = `<link type="text/css" href="{{ '${basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
 
   }
 }

@@ -107,7 +107,7 @@ class CollectionInstaller {
       if (themeLiquid.includes(javascriptFileBasename)) {
         logger.warn(`Html "script" tag injection unavailable: A conflictual reference to ${javascriptFileBasename} is already present within the theme.liquid file.`)
       } else {
-        injections.push(`<script src="{{ ${javascriptFileBasename} | asset_url }}" async></script>`)
+        injections.push(`<script src="{{ '${javascriptFileBasename}' | asset_url }}" async></script>`)
       }
     }
 
@@ -115,7 +115,7 @@ class CollectionInstaller {
       if (themeLiquid.includes(stylesheetBasename)) {
         logger.warn(`Html "link" tag injection Unavailable: A conflictual reference to ${stylesheetBasename} is already present within the theme.liquid file.`)
       } else {
-        injections.push(`<link type="text/css" href="{{ ${stylesheetBasename} | asset_url }}" rel="stylesheet">`)
+        injections.push(`<link type="text/css" href="{{ '${stylesheetBasename}' | asset_url }}" rel="stylesheet">`)
       }
     }
 
@@ -150,7 +150,7 @@ class CollectionInstaller {
   static injectionFailureWarning (message, injections) {
     logger.warn(`
 **************************************************************************************************
-${message} 
+${message}
 
 References to collection stylesheet and javaScript file will not be inserted automatically.
 You should manually insert these lines inside your "theme.liquid" file:
