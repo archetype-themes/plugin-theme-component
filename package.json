@@ -6,9 +6,7 @@
   "name": "@archetype-themes/archie",
   "type": "module",
   "version": "1.0.1",
-  "bin": {
-    "archie": "src/bin/archie.js"
-  },
+  "bin": "src/bin/archie.js",
   "dependencies": {
     "deepmerge": "^4.2.2",
     "esbuild": "^0.15.7",

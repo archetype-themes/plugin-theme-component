@@ -35,7 +35,11 @@ Please read the following guides to help you on your journey:
 This is a shortcut command to install Archie, but contextual use of this is provided in the guide links above.
 
 ```shell
+# Defaults to the latest version
 yarn add @archetype-themes/archie@archetype-themes/archie --dev
+
+# Install a specific version (use a tag, a commit, or a head)
+yarn add @archetype-themes/archie@archetype-themes/archie#1.0.1 --dev
 ```
 
 ## Archie Commands

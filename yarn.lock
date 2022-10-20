@@ -18,11 +18,6 @@ __metadata:
     standard: ^17.0.0
   bin:
     archie: src/bin/archie.js
-    build-collection: src/bin/build-collection.js
-    build-section: src/bin/build-section.js
-    create-section: src/bin/create-section.js
-    create-snippet: src/bin/create-snippet.js
-    watch-section: src/bin/watch-section.js
   languageName: unknown
   linkType: soft
 
