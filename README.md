@@ -35,7 +35,7 @@ Please read the following guides to help you on your journey:
 This is a shortcut command to install Archie, but contextual use of this is provided in the guide links above.
 
 ```shell
-yarn add https://github.com/archetype-themes/archie --dev
+yarn add @archetype-themes/archie@archetype-themes/archie --dev
 ```
 
 ## Archie Commands

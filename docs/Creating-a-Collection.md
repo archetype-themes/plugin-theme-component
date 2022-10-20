@@ -53,7 +53,7 @@ Next, you will need to edit your package.json.
 Now, let's set Archie as a dependency.
 
 ```shell
-yarn add archie@archetype-themes/archie --dev --peer
+yarn add @archetype-themes/archie@archetype-themes/archie --dev --peer
 ```
 
 - It is a dev dependency and a peer dev dependency to any Theme installing your collection.

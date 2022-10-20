@@ -61,8 +61,8 @@ rest.
 **Good practice:**
 
 - Include JavaScript librairies as yarn dependencies for your section.
-- If multiple Sections share some internal JS code, put that code in a Node Module in a separate GitHub repo and include
-  it with yarn with `yarn add some-shared-js-module@archetype-themes/some-shared-js-module`.
+- If multiple Sections share some internal JS code, put that code in a Node Module in a distinct workspace or a separate
+- GitHub repo and include it with yarn with `yarn add some-shared-js-module@archetype-themes/some-shared-js-module`.
 
 #### Styles
 
