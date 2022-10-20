@@ -93,3 +93,7 @@ yarn build-section --quiet
 * Stylesheets with a shared core are not handled at the moment.
 * No Stylesheet Merge or optimisation is being performed.
 * Installing multiple collections in a theme is not handled.
+
+## Contributing
+
+Please read our [Contributing GUide](docs/Contributing.md) for details.
