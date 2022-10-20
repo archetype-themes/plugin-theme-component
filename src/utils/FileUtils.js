@@ -1,4 +1,4 @@
-import { access, constants, copyFile, mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
 import { basename, dirname, join } from 'path'
 
