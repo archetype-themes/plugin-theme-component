@@ -33,8 +33,11 @@ Collection's code within your theme files.
 # Add Archie
 yarn add archie@archetype-themes/archie --dev
 
-# Add you collection
+# Add a finalized collection from GitHub
 yarn add [my-awesome-collection]@archetype-themes/[my-awesome-collection] --dev
+
+# Add your work-in-progress local collection with a relative path
+yarn add [my-awesome-collection]@portal:../[my-awesome-collection] --dev
 ```
 
 ### Node Package Configuration
@@ -83,7 +86,7 @@ src/snippets/[snippet-one].liquid
 
 ```
 
-The edited files should be the following:
+The following files will be edited or created if need be:
 
 ```shell
 # Adding JavaScript and Styles references if needed
