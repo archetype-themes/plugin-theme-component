@@ -36,7 +36,7 @@ yarn add archie@archetype-themes/archie --dev
 # Add a finalized collection from GitHub
 yarn add [my-awesome-collection]@archetype-themes/[my-awesome-collection] --dev
 
-# Add your work-in-progress local collection with a relative path
+# Add your work-in-progress local collection from a local folder (relative or absolute path accepted)
 yarn add [my-awesome-collection]@portal:../[my-awesome-collection] --dev
 ```
 
