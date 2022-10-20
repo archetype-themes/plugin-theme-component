@@ -96,4 +96,4 @@ yarn build-section --quiet
 
 ## Contributing
 
-Please read our [Contributing GUide](docs/Contributing.md) for details.
+Please read our [Contributing Guide](docs/Contributing.md) for details.
