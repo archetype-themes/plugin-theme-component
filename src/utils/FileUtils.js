@@ -20,7 +20,7 @@ class FileUtils {
     files = (typeof files === 'string' || files instanceof String) ? [files] : files
 
     return Promise.all(files.map((file) => {
-      rename(file, `${file}.${NodeUtils.getReadableTimestamp()}`)
+      copyFile(file, `${file}.${NodeUtils.getReadableTimestamp()}`)
     }))
   }
 
