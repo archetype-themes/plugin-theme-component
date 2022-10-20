@@ -37,7 +37,7 @@ yarn add archie@archetype-themes/archie --dev
 yarn add [my-awesome-collection]@archetype-themes/[my-awesome-collection] --dev
 
 # Add your work-in-progress local collection from a local folder (relative or absolute path accepted)
-yarn add [my-awesome-collection]@portal:../[my-awesome-collection] --dev
+yarn add [my-awesome-collection]@portal:[path/to/my-awesome-collection] --dev
 ```
 
 ### Node Package Configuration
