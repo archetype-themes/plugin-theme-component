@@ -16,6 +16,9 @@ class ComponentFiles {
   #mainStylesheet
 
   /** @type {string} **/
+  #packageJson
+
+  /** @type {string} **/
   #schemaFile
 
   /** @type {string[]} **/
@@ -31,7 +34,7 @@ class ComponentFiles {
   }
 
   /**
-   * Get Javascript Files
+   * Get Javascript Files' locations
    * @returns {string[]}
    */
   get javascriptFiles () {
@@ -39,7 +42,7 @@ class ComponentFiles {
   }
 
   /**
-   * Set Javascript Files
+   * Set Javascript Files' locations
    * @param {string[]} value
    */
   set javascriptFiles (value) {
@@ -47,7 +50,7 @@ class ComponentFiles {
   }
 
   /**
-   * Get Javascript Index File
+   * Get Javascript Index File location
    * @returns {string}
    */
   get javascriptIndex () {
@@ -55,7 +58,7 @@ class ComponentFiles {
   }
 
   /**
-   * Set Javascript Index File
+   * Set Javascript Index File location
    * @param {string} value
    */
   set javascriptIndex (value) {
@@ -63,7 +66,7 @@ class ComponentFiles {
   }
 
   /**
-   * Get Liquid Files
+   * Get Liquid Files' locations
    * @returns {string[]}
    */
   get liquidFiles () {
@@ -71,7 +74,7 @@ class ComponentFiles {
   }
 
   /**
-   * Set Liquid Files
+   * Set Liquid Files' locations
    * @param {string[]} value
    */
   set liquidFiles (value) {
@@ -79,7 +82,7 @@ class ComponentFiles {
   }
 
   /**
-   * Get Locale Files
+   * Get Locale Files' locations
    * @returns {string[]}
    */
   get localeFiles () {
@@ -87,7 +90,7 @@ class ComponentFiles {
   }
 
   /**
-   * Set Locale Files
+   * Set Locale Files' locations
    * @param {string[]} value
    */
   set localeFiles (value) {
@@ -95,7 +98,7 @@ class ComponentFiles {
   }
 
   /**
-   * Get Main Stylesheet
+   * Get Main Stylesheet file location
    * @returns {string}
    */
   get mainStylesheet () {
@@ -103,7 +106,7 @@ class ComponentFiles {
   }
 
   /**
-   * Set Main Stylesheet
+   * Set Main Stylesheet file location
    * @param {string} value
    */
   set mainStylesheet (value) {
@@ -111,7 +114,23 @@ class ComponentFiles {
   }
 
   /**
-   *  Get Schema File
+   * Get package.json file location
+   * @return {string}
+   */
+  get packageJson () {
+    return this.#packageJson
+  }
+
+  /**
+   * Set package.json file location
+   * @param {string} value
+   */
+  set packageJson (value) {
+    this.#packageJson = value
+  }
+
+  /**
+   *  Get Schema File location
    * @returns {string}
    */
   get schemaFile () {
@@ -119,7 +138,7 @@ class ComponentFiles {
   }
 
   /**
-   * Set Schema File
+   * Set Schema File location
    * @param {string} value
    */
   set schemaFile (value) {
@@ -127,7 +146,7 @@ class ComponentFiles {
   }
 
   /**
-   * Get Schema Locale Files
+   * Get Schema Locale Files' location
    * @return {string[]}
    */
   get schemaLocaleFiles () {
@@ -135,7 +154,7 @@ class ComponentFiles {
   }
 
   /**
-   * Set Schema Locale Files
+   * Set Schema Locale Files' locations
    * @param {string[]} value
    */
   set schemaLocaleFiles (value) {
@@ -143,7 +162,7 @@ class ComponentFiles {
   }
 
   /**
-   * Get Stylesheets
+   * Get Stylesheets' locations
    * @returns {string[]}
    */
   get stylesheets () {
@@ -151,7 +170,7 @@ class ComponentFiles {
   }
 
   /**
-   * Set Stylesheets
+   * Set Stylesheets' locations
    * @param {string[]} value
    */
   set stylesheets (value) {
