@@ -106,7 +106,9 @@ class ComponentUtils {
           break
         case '.json':
           const filename = basename(file).toLowerCase()
-          if (filename === 'schema.json')
+          if (filename === 'package.json') {
+            componentFiles.packageJson = file
+          } else if (filename === 'schema.json')
             componentFiles.schemaFile = file
           else if (
             filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/) ||

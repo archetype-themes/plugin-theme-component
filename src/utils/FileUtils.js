@@ -124,8 +124,10 @@ class FileUtils {
     const files = []
     for (const entry of entries) {
       const absolutePath = join(folder, entry.name)
-      if (entry.isDirectory() && !this.#EXCLUDED_FOLDERS.includes(entry.name)) {
-        files.push(...(await this.getFolderFilesRecursively(absolutePath)))
+      if (entry.isDirectory()) {
+        if (!this.#EXCLUDED_FOLDERS.includes(entry.name)) {
+          files.push(...(await this.getFolderFilesRecursively(absolutePath)))
+        }
       } else { files.push(absolutePath)}
     }
 
