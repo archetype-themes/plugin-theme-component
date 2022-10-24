@@ -29,19 +29,22 @@ try {
   NodeUtils.exitWithError(error)
 }
 
+// Build & Watch Commands
 if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
+  // Build/Watch Collection
   if (Archie.commandOption === Config.COLLECTION_COMPONENT_TYPE) {
     try {
       const collection = await CollectionFactory.fromArchieCall()
       await CollectionBuilder.build(collection)
       if (Archie.command === Archie.WATCH_COMMAND) {
-        CollectionWatcher.watch(collection)
+        await CollectionWatcher.watch(collection)
       }
     } catch (error) {
       NodeUtils.exitWithError(error)
     }
   }
-  if (Archie.commandOption === Config.SECTION_COMPONENT_TYPE) {
+  // Build/Watch Section
+  else if (Archie.commandOption === Config.SECTION_COMPONENT_TYPE) {
     try {
       const section = await SectionFactory.fromName(Archie.targetComponent)
       await SectionBuilder.build(section)
@@ -53,7 +56,10 @@ if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
       NodeUtils.exitWithError(error)
     }
   }
-} else if (Archie.command === Archie.CREATE_COMMAND) {
+}
+
+// Create Command
+else if (Archie.command === Archie.CREATE_COMMAND) {
   if (Archie.commandOption === Config.SECTION_COMPONENT_TYPE) {
     try {
       await SectionGenerator.generate(Archie.targetComponent)
@@ -68,7 +74,10 @@ if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
       NodeUtils.exitWithError(error)
     }
   }
-} else if (Archie.command === Archie.INSTALL_COMMAND) {
+}
+
+// Install Command
+else if (Archie.command === Archie.INSTALL_COMMAND) {
   try {
     const collection = await CollectionFactory.fromName(Archie.targetComponent)
     const theme = await ThemeFactory.fromArchieCall()

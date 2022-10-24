@@ -8,6 +8,7 @@
   "version": "1.0.1",
   "bin": "src/bin/archie.js",
   "dependencies": {
+    "chokidar": "^3.5.3",
     "deepmerge": "^4.2.2",
     "esbuild": "^0.15.7",
     "esbuild-plugin-less": "^1.1.9",

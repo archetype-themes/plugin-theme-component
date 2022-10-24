@@ -9,6 +9,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@archetype-themes/archie@workspace:."
   dependencies:
+    chokidar: ^3.5.3
     deepmerge: ^4.2.2
     esbuild: ^0.15.7
     esbuild-plugin-less: ^1.1.9
@@ -392,7 +393,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:>=3.0.0 <4.0.0":
+"chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.5.3":
   version: 3.5.3
   resolution: "chokidar@npm:3.5.3"
   dependencies:
