@@ -37,7 +37,7 @@ if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
       const collection = await CollectionFactory.fromArchieCall()
       await CollectionBuilder.build(collection)
       if (Archie.command === Archie.WATCH_COMMAND) {
-        await CollectionWatcher.watch(collection)
+        await CollectionWatcher.buildOnChange(collection.rootFolder)
       }
     } catch (error) {
       NodeUtils.exitWithError(error)
@@ -50,7 +50,7 @@ if ([Archie.BUILD_COMMAND, Archie.WATCH_COMMAND].includes(Archie.command)) {
       await SectionBuilder.build(section)
 
       if (Archie.command === Archie.WATCH_COMMAND) {
-        await SectionWatcher.watch(section)
+        await SectionWatcher.buildOnChange(section.rootFolder)
       }
     } catch (error) {
       NodeUtils.exitWithError(error)
@@ -83,6 +83,7 @@ else if (Archie.command === Archie.INSTALL_COMMAND) {
     const theme = await ThemeFactory.fromArchieCall()
     await CollectionBuilder.build(collection)
     await CollectionInstaller.install(collection, theme)
+    await CollectionWatcher.installOnChange(collection.rootFolder)
   } catch (error) {
     NodeUtils.exitWithError(error)
   }
