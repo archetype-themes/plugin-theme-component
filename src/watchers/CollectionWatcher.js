@@ -19,7 +19,6 @@ class CollectionWatcher {
     })
 
     watcher.on('all', await this.onWatchEvent)
-
   }
 
   static async onWatchEvent (event, path) {
@@ -28,7 +27,6 @@ class CollectionWatcher {
     const collection = await CollectionFactory.fromArchieCall()
     return CollectionBuilder.build(collection)
   }
-
 }
 
 export default CollectionWatcher
