@@ -5,8 +5,6 @@ import Archie from '../models/static/Archie.js'
 import logger from '../utils/Logger.js'
 
 class SectionWatcher {
-  static
-
   /**
    *
    * @param {string} sectionRootFolder
