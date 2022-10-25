@@ -1,8 +1,10 @@
-import logger from '../utils/Logger.js'
-import { env } from 'node:process'
-import FileUtils from '../utils/FileUtils.js'
-import { basename, join } from 'path'
+// Node Core imports
 import { readdir } from 'node:fs/promises'
+import { basename, join } from 'node:path'
+import { env } from 'node:process'
+// Archie  imports
+import FileUtils from '../utils/FileUtils.js'
+import logger from '../utils/Logger.js'
 
 class CollectionInstaller {
 
