@@ -11,6 +11,8 @@ import Config from '../models/static/Config.js'
 import path from 'path'
 import merge from 'deepmerge'
 import Archie from '../models/static/Archie.js'
+import ComponentsConfig from '../config/ComponentsConfig.js'
+import NodeConfig from '../config/NodeConfig.js'
 
 class ComponentUtils {
 
@@ -57,17 +59,17 @@ class ComponentUtils {
       }
     } else if (Config.isCollection()) {
       if (component instanceof Section) {
-        return path.join(dirname(env.npm_package_json), Config.COLLECTION_SECTIONS_SUBFOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER, component.name)
       }
       if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), Config.COLLECTION_SNIPPETS_SUBFOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), ComponentsConfig.COLLECTION_SNIPPETS_SUB_FOLDER, component.name)
       }
     } else if (Config.isTheme()) {
       if (component instanceof Section) {
-        return path.join(dirname(env.npm_package_json), 'node_modules', Config.PACKAGES_SCOPE, Archie.targetComponent, Config.COLLECTION_SECTIONS_SUBFOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), 'node_modules', NodeConfig.DEFAULT_PACKAGES_SCOPE, Archie.targetComponent, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER, component.name)
       }
       if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), 'node_modules', Config.PACKAGES_SCOPE, Archie.targetComponent, Config.COLLECTION_SNIPPETS_SUBFOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), 'node_modules', NodeConfig.DEFAULT_PACKAGES_SCOPE, Archie.targetComponent, ComponentsConfig.COLLECTION_SNIPPETS_SUB_FOLDER, component.name)
 
       }
     }
@@ -108,9 +110,9 @@ class ComponentUtils {
           const filename = basename(file).toLowerCase()
           if (filename === 'package.json') {
             componentFiles.packageJson = file
-          } else if (filename === 'schema.json')
+          } else if (filename === 'schema.json') {
             componentFiles.schemaFile = file
-          else if (
+          } else if (
             filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/) ||
             filename.match(/^locales?\.json$/)) {
             componentFiles.localeFiles.push(file)

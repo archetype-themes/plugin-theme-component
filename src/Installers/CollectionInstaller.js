@@ -1,10 +1,10 @@
 // Node Core imports
 import { readdir } from 'node:fs/promises'
 import { basename, join } from 'node:path'
-import { env } from 'node:process'
 // Archie  imports
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
 class CollectionInstaller {
 
@@ -15,8 +15,9 @@ class CollectionInstaller {
    * @return {Promise<void>}
    */
   static async install (collection, theme) {
-    logger.info(`Installing ${collection.name} Collection for ${env.npm_package_name}.`)
-    console.time(`Installing ${collection.name} Collection for ${env.npm_package_name}.`)
+    const packageName = NodeUtils.getPackageName()
+    logger.info(`Installing ${collection.name} Collection for ${packageName}.`)
+    console.time(`Installing ${collection.name} Collection for ${packageName}.`)
 
     const filesToCopy = []
 

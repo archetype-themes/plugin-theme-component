@@ -1,11 +1,14 @@
 import Collection from '../models/Collection.js'
 import { env } from 'node:process'
 import { dirname, join } from 'path'
-import Config from '../models/static/Config.js'
 import BuildFactory from './BuildFactory.js'
 import SectionFactory from './SectionFactory.js'
+import ComponentsConfig from '../config/ComponentsConfig.js'
+import NodeConfig from '../config/NodeConfig.js'
+import Config from '../models/static/Config.js'
 import logger from '../utils/Logger.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
 class CollectionFactory {
   /**
@@ -16,16 +19,16 @@ class CollectionFactory {
 
     const collection = new Collection()
 
-    collection.name = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
+    collection.name = NodeUtils.getPackageName()
     // Set folder names
     collection.rootFolder = dirname(env.npm_package_json)
-    collection.sectionsFolder = join(collection.rootFolder, Config.COLLECTION_SECTIONS_SUBFOLDER)
+    collection.sectionsFolder = join(collection.rootFolder, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER)
 
     // Prepare build object
     collection.build = BuildFactory.fromCollection(collection)
 
     // Fetch Section Names
-    collection.sectionNames = await Config.getSectionsList(collection.name)
+    collection.sectionNames = Config.getCollectionSections(collection.name)
 
     if (collection.sectionNames.length === 0) {
       logger.info(`No section list found for ${collection.name}; all sections will be processed.`)
@@ -51,14 +54,14 @@ class CollectionFactory {
 
     collection.name = collectionName
     //Folders
-    collection.rootFolder = join(dirname(env.npm_package_json), 'node_modules', Config.PACKAGES_SCOPE, collection.name)
-    collection.sectionsFolder = join(collection.rootFolder, Config.COLLECTION_SECTIONS_SUBFOLDER)
+    collection.rootFolder = join(dirname(env.npm_package_json), 'node_modules', NodeConfig.DEFAULT_PACKAGES_SCOPE, collection.name)
+    collection.sectionsFolder = join(collection.rootFolder, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER)
 
     // Prepare build object
     collection.build = BuildFactory.fromCollection(collection)
 
     // Fetch Section Names
-    collection.sectionNames = await Config.getSectionsList(collection.name)
+    collection.sectionNames = Config.getCollectionSections(collection.name)
 
     if (collection.sectionNames.length === 0) {
       logger.info(`No section list found for ${collection.name}; all sections will be processed.`)

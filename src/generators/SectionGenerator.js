@@ -9,10 +9,11 @@ import merge from 'deepmerge'
 // Archie imports
 import Section from '../models/Section.js'
 import SectionFiles from '../models/SectionFiles.js'
-import Config from '../models/static/Config.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import ComponentsConfig from '../config/ComponentsConfig.js'
 
 const execPromise = util.promisify(exec)
 
@@ -23,13 +24,13 @@ class SectionGenerator {
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async generate (sectionName) {
-    const collectionName = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
+    const collectionName = NodeUtils.getPackageName()
     const promises = []
     const section = new Section()
 
     // Initialize sections
     section.name = sectionName
-    section.rootFolder = path.join(env.PROJECT_CWD, Config.COLLECTION_SECTIONS_SUBFOLDER, section.name)
+    section.rootFolder = path.join(env.PROJECT_CWD, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER, section.name)
     section.files = new SectionFiles()
     section.files.packageJson = path.join(section.rootFolder, 'package.json')
 
@@ -154,7 +155,7 @@ ${collectionName} Collection as a node dependency first. Configure your Theme ac
       description: `${collectionName}'s ${sectionName} Section`,
       license: 'UNLICENSED',
       main: `src/${sectionName}.liquid`,
-      name: `${Config.PACKAGES_SCOPE}/${sectionName}`,
+      name: `${sectionName}`,
       version: '1.0.0',
       archie: {
         componentType: 'section'

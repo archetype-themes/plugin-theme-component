@@ -7,12 +7,13 @@ import util from 'util'
 // Node Modules imports
 import merge from 'deepmerge'
 // Archie imports
+import ComponentsConfig from '../config/ComponentsConfig.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
-import Config from '../models/static/Config.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
 const execPromise = util.promisify(exec)
 
@@ -23,13 +24,13 @@ class SnippetGenerator {
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async generate (snippetName) {
-    const collectionName = env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
+    const collectionName = NodeUtils.getPackageName()
     const promises = []
     const snippet = new Snippet()
 
     // Initialize Snippet
     snippet.name = snippetName
-    snippet.rootFolder = path.join(env.PROJECT_CWD, Config.COLLECTION_SNIPPETS_SUBFOLDER, snippet.name)
+    snippet.rootFolder = path.join(env.PROJECT_CWD, ComponentsConfig.COLLECTION_SNIPPETS_SUB_FOLDER, snippet.name)
     snippet.files = new SnippetFiles()
     snippet.files.packageJson = path.join(snippet.rootFolder, 'package.json')
 
@@ -150,7 +151,7 @@ Collection, simply require its main liquid file without a path and Archie will t
       description: `${collectionName}'s ${snippetName} Snippet`,
       license: 'UNLICENSED',
       main: `src/${snippetName}.liquid`,
-      name: `${Config.PACKAGES_SCOPE}/${snippetName}`,
+      name: `${snippetName}`,
       version: '1.0.0',
       archie: {
         componentType: 'snippet'
