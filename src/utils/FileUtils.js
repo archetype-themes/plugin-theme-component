@@ -1,6 +1,6 @@
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
-import { basename, dirname, join } from 'path'
+import { basename, join } from 'path'
 
 import logger from './Logger.js'
 import NodeUtils from './NodeUtils.js'
@@ -132,14 +132,6 @@ class FileUtils {
     }
 
     return files
-  }
-
-  /**
-   * Shortcut to a method to get root folder username of this builder package
-   * @returns {string}
-   */
-  static getBuilderRootFolderName () {
-    return dirname(dirname(import.meta.url)).substring(7)
   }
 
   /**

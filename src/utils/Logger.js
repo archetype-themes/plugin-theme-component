@@ -1,6 +1,6 @@
 import pino from 'pino'
 import PinoPretty from 'pino-pretty'
-import FileUtils from './FileUtils.js'
+import NodeUtils from './NodeUtils.js'
 
 const STACKTRACE_OFFSET = 2
 const LINE_OFFSET = 7
@@ -19,7 +19,7 @@ function traceCaller (pinoInstance) {
     args[0] = args[0] || Object.create(null)
     args[0].caller = Error().stack.split('\n')
       .filter(s => !s.includes('node_modules/pino') && !s.includes('node_modules\\pino'))[STACKTRACE_OFFSET]
-      .substring(LINE_OFFSET).replace(`file://${FileUtils.getBuilderRootFolderName()}`, '')
+      .substring(LINE_OFFSET).replace(`file://${NodeUtils.getRootFolderName()}`, '')
 
     return pinoInstance[asJsonSym].apply(this, args)
   }

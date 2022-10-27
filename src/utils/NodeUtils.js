@@ -1,8 +1,10 @@
 import { env, exit } from 'node:process'
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
+import { dirname } from 'path'
 
 class NodeUtils {
+
   static #packageJson
 
   /**
@@ -38,6 +40,14 @@ class NodeUtils {
   }
 
   /**
+   * Get NodeJS package name without the namespace
+   * @return {string}
+   */
+  static getPackageName () {
+    return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
+  }
+
+  /**
    * Get Readable Timestamp
    * @param {Date} [date]
    * @return {string}
@@ -49,6 +59,14 @@ class NodeUtils {
     const dateString = date.toISOString()
 
     return dateString.substring(0, 19).replace('T', '_').replaceAll(':', '-')
+  }
+
+  /**
+   * Shortcut to a method to get root folder username
+   * @returns {string}
+   */
+  static getRootFolderName () {
+    return dirname(dirname(import.meta.url)).substring(7)
   }
 
   /**
