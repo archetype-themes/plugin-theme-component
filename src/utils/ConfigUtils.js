@@ -11,7 +11,7 @@ class ConfigUtils {
    */
   static async initConfig () {
     ArchieNodeConfig.componentType = await this.findComponentType()
-    ArchieNodeConfig.collections = this.findCollections()
+    ArchieNodeConfig.collections = await this.findCollections()
   }
 
   /**
