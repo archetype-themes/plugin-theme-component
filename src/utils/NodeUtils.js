@@ -77,11 +77,19 @@ class NodeUtils {
     if (typeof error === 'string' || error instanceof String) {
       logger.error(error)
     } else {
-      if (error.name && error.name.toLowerCase() !== 'error')
-        logger.error(error.name)
-      if (error.message) {
-        logger.error(error.message)
+      if (logger.isLevelEnabled('debug')) {
+        logger.error(error)
+      } else {
+        let errorMessage = ''
+        if (error.name && error.name.toLowerCase() !== 'error') {
+          errorMessage = `${error.name}: `
+        }
+        if (error.message) {
+          errorMessage += error.message
+        }
+        logger.error(errorMessage)
       }
+
     }
     exit(1)
   }
