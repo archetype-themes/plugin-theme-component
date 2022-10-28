@@ -1,7 +1,7 @@
 import chokidar from 'chokidar'
 import SectionBuilder from '../builders/SectionBuilder.js'
 import SectionFactory from '../factory/SectionFactory.js'
-import Archie from '../models/static/Archie.js'
+import ArchieCLI from '../models/static/ArchieCLI.js'
 import logger from '../utils/Logger.js'
 
 class SectionWatcher {
@@ -22,7 +22,7 @@ class SectionWatcher {
     watcher.on('all', async (event, path) => {
       logger.debug(`Event: "${event}" on file: ${path} detected`)
 
-      const section = await SectionFactory.fromName(Archie.targetComponent)
+      const section = await SectionFactory.fromName(ArchieCLI.targetComponent)
       await SectionBuilder.build(section)
     })
   }

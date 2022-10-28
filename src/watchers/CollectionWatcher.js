@@ -4,7 +4,7 @@ import chokidar from 'chokidar'
 import CollectionBuilder from '../builders/CollectionBuilder.js'
 import CollectionFactory from '../factory/CollectionFactory.js'
 import ThemeFactory from '../factory/ThemeFactory.js'
-import Archie from '../models/static/Archie.js'
+import ArchieCLI from '../models/static/ArchieCLI.js'
 import logger from '../utils/Logger.js'
 
 import CollectionInstaller from '../Installers/CollectionInstaller.js'
@@ -36,7 +36,7 @@ class CollectionWatcher {
     watcher.on('all', async (event, path) => {
       logger.debug(`Event: "${event}" on file: ${path} detected`)
 
-      const collection = await CollectionFactory.fromName(Archie.targetComponent)
+      const collection = await CollectionFactory.fromName(ArchieCLI.targetComponent)
       const theme = await ThemeFactory.fromArchieCall()
       await CollectionBuilder.build(collection)
       return CollectionInstaller.install(collection, theme)

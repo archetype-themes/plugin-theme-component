@@ -1,11 +1,11 @@
-class Archie {
+class ArchieCLI {
   /** @type {string}  **/
   static #command
 
   /** @type {string}  **/
   static #commandOption
 
-  /** @type {string}  **/
+  /** @type {string|Object}  **/
   static #targetComponent
 
   /** @type {boolean}  **/
@@ -45,7 +45,7 @@ class Archie {
 
   /**
    * Get Target Component Name
-   * @return {string}
+   * @return {string|Object}
    */
   static get targetComponent () {
     return this.#targetComponent
@@ -53,7 +53,7 @@ class Archie {
 
   /**
    * Set Target Component Name
-   * @param {string} value
+   * @param {string|Object} value
    */
   static set targetComponent (value) {
     this.#targetComponent = value
@@ -76,4 +76,4 @@ class Archie {
   }
 }
 
-export default Archie
+export default ArchieCLI

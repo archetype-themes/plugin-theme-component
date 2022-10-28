@@ -1,13 +1,13 @@
 import { dirname } from 'path'
-import ComponentsConfig from '../../config/ComponentsConfig.js'
+import ArchieComponents from '../../config/ArchieComponents.js'
 
 /**
  * @typedef archie
  * @type {object}
- * @property {string} componentType - one of ALLOWED_COMPONENT_TYPES.
+ * @property {string} componentType - one of  NODE_CONFIG_ALLOWED_COMPONENT_TYPES
  */
 
-class Config {
+class ArchieNodeConfig {
 
   /** @type {string[]}  **/
   static #collections = []
@@ -49,21 +49,21 @@ class Config {
   }
 
   static isTheme () {
-    return this.#componentType === ComponentsConfig.THEME_COMPONENT_TYPE
+    return this.#componentType === ArchieComponents.THEME_COMPONENT_TYPE
   }
 
   static isCollection () {
-    return this.#componentType === ComponentsConfig.COLLECTION_COMPONENT_TYPE
+    return this.#componentType === ArchieComponents.COLLECTION_COMPONENT_TYPE
   }
 
   static isSection () {
-    return this.#componentType === ComponentsConfig.SECTION_COMPONENT_TYPE
+    return this.#componentType === ArchieComponents.SECTION_COMPONENT_TYPE
   }
 
   static isSnippet () {
-    return this.#componentType === ComponentsConfig.SNIPPET_COMPONENT_TYPE
+    return this.#componentType === ArchieComponents.SNIPPET_COMPONENT_TYPE
   }
 
 }
 
-export default Config
+export default ArchieNodeConfig

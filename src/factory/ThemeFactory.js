@@ -3,7 +3,7 @@ import { env } from 'node:process'
 import { dirname, join } from 'path'
 
 //Archie Imports
-import ComponentsConfig from '../config/ComponentsConfig.js'
+import ArchieComponents from '../config/ArchieComponents.js'
 import Theme from '../models/Theme.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
@@ -19,9 +19,9 @@ class ThemeFactory {
     theme.name = NodeUtils.getPackageName()
     // Set folder names
     theme.rootFolder = join(dirname(env.npm_package_json), 'src')
-    theme.assetsFolder = join(theme.rootFolder, ComponentsConfig.COLLECTION_ASSETS_SUB_FOLDER)
-    theme.sectionsFolder = join(theme.rootFolder, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER)
-    theme.snippetsFolder = join(theme.rootFolder, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER)
+    theme.assetsFolder = join(theme.rootFolder, ArchieComponents.COLLECTION_ASSETS_SUB_FOLDER)
+    theme.sectionsFolder = join(theme.rootFolder, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER)
+    theme.snippetsFolder = join(theme.rootFolder, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER)
 
     // Prepare build object
     // theme.build = BuildFactory.fromCollection(theme)

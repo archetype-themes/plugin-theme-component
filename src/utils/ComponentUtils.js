@@ -7,12 +7,11 @@ import logger from './Logger.js'
 import SectionFiles from '../models/SectionFiles.js'
 import Section from '../models/Section.js'
 import Snippet from '../models/Snippet.js'
-import Config from '../models/static/Config.js'
+import ArchieNodeConfig from '../models/static/ArchieNodeConfig.js'
 import path from 'path'
 import merge from 'deepmerge'
-import Archie from '../models/static/Archie.js'
-import ComponentsConfig from '../config/ComponentsConfig.js'
-import NodeConfig from '../config/NodeConfig.js'
+import ArchieCLI from '../models/static/ArchieCLI.js'
+import ArchieComponents from '../config/ArchieComponents.js'
 
 class ComponentUtils {
 
@@ -52,24 +51,24 @@ class ComponentUtils {
    * @returns {string}
    */
   static getRootFolder (component) {
-    if (Config.isSection() || Config.isSnippet()) {
+    if (ArchieNodeConfig.isSection() || ArchieNodeConfig.isSnippet()) {
 
       if (env.npm_package_name && env.npm_package_name.includes(component.name)) {
         return dirname(env.npm_package_json)
       }
-    } else if (Config.isCollection()) {
+    } else if (ArchieNodeConfig.isCollection()) {
       if (component instanceof Section) {
-        return path.join(dirname(env.npm_package_json), ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER, component.name)
       }
       if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), ComponentsConfig.COLLECTION_SNIPPETS_SUB_FOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), ArchieComponents.COLLECTION_SNIPPETS_SUB_FOLDER, component.name)
       }
-    } else if (Config.isTheme()) {
+    } else if (ArchieNodeConfig.isTheme()) {
       if (component instanceof Section) {
-        return path.join(dirname(env.npm_package_json), 'node_modules', NodeConfig.DEFAULT_PACKAGES_SCOPE, Archie.targetComponent, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), 'node_modules', ArchieComponents.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponent, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER, component.name)
       }
       if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), 'node_modules', NodeConfig.DEFAULT_PACKAGES_SCOPE, Archie.targetComponent, ComponentsConfig.COLLECTION_SNIPPETS_SUB_FOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), 'node_modules', ArchieComponents.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponent, ArchieComponents.COLLECTION_SNIPPETS_SUB_FOLDER, component.name)
 
       }
     }

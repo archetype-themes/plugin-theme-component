@@ -13,7 +13,7 @@ import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import ComponentsConfig from '../config/ComponentsConfig.js'
+import ArchieComponents from '../config/ArchieComponents.js'
 
 const execPromise = util.promisify(exec)
 
@@ -30,7 +30,7 @@ class SectionGenerator {
 
     // Initialize sections
     section.name = sectionName
-    section.rootFolder = path.join(env.PROJECT_CWD, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER, section.name)
+    section.rootFolder = path.join(env.PROJECT_CWD, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER, section.name)
     section.files = new SectionFiles()
     section.files.packageJson = path.join(section.rootFolder, 'package.json')
 

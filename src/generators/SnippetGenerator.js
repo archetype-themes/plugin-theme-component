@@ -7,7 +7,7 @@ import util from 'util'
 // Node Modules imports
 import merge from 'deepmerge'
 // Archie imports
-import ComponentsConfig from '../config/ComponentsConfig.js'
+import ArchieComponents from '../config/ArchieComponents.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
@@ -30,7 +30,7 @@ class SnippetGenerator {
 
     // Initialize Snippet
     snippet.name = snippetName
-    snippet.rootFolder = path.join(env.PROJECT_CWD, ComponentsConfig.COLLECTION_SNIPPETS_SUB_FOLDER, snippet.name)
+    snippet.rootFolder = path.join(env.PROJECT_CWD, ArchieComponents.COLLECTION_SNIPPETS_SUB_FOLDER, snippet.name)
     snippet.files = new SnippetFiles()
     snippet.files.packageJson = path.join(snippet.rootFolder, 'package.json')
 

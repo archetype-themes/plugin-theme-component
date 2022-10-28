@@ -1,7 +1,7 @@
 import NodeUtils from './NodeUtils.js'
 import logger from './Logger.js'
-import Config from '../models/static/Config.js'
-import PackageArchieConfig from '../config/PackageArchieConfig.js'
+import ArchieComponents from '../config/ArchieComponents.js'
+import ArchieNodeConfig from '../models/static/ArchieNodeConfig.js'
 
 class ConfigUtils {
 
@@ -10,8 +10,8 @@ class ConfigUtils {
    * @return {Promise<void>}
    */
   static async initConfig () {
-    Config.componentType = await this.findComponentType()
-    Config.collections = this.findCollections()
+    ArchieNodeConfig.componentType = await this.findComponentType()
+    ArchieNodeConfig.collections = this.findCollections()
   }
 
   /**
@@ -27,7 +27,7 @@ class ConfigUtils {
 
     const componentType = packageJson.archie.componentType.toLowerCase()
 
-    if (!PackageArchieConfig.ALLOWED_COMPONENT_TYPES.includes(componentType)) {
+    if (!ArchieComponents.NODE_CONFIG_ALLOWED_COMPONENT_TYPES.includes(componentType)) {
       throw new Error(`The value for archie.componentType from package.json must be changed to one of these: theme/collection/section/snippet, "${packageJson.archie.componentType}" is not an allowed value`)
     }
     logger.debug(`Component Type: "${componentType}"`)

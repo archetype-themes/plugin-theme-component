@@ -1,4 +1,4 @@
-class ComponentsConfig {
+class ArchieComponents {
   // Collection Sub-Folders
   static COLLECTION_ASSETS_SUB_FOLDER = 'assets'
   static COLLECTION_SECTIONS_SUB_FOLDER = 'sections'
@@ -9,7 +9,11 @@ class ComponentsConfig {
   static SNIPPET_COMPONENT_TYPE = 'snippet'
   static THEME_COMPONENT_TYPE = 'theme'
 
-  static ALLOWED_COMPONENT_TYPES = [
+  // Default Package Scope for all Components
+  static DEFAULT_PACKAGE_SCOPE = '@archetype-themes'
+
+  // Allowed Component Types in package.json file under archie.collections
+  static NODE_CONFIG_ALLOWED_COMPONENT_TYPES = [
     this.COLLECTION_COMPONENT_TYPE,
     this.SECTION_COMPONENT_TYPE,
     this.SNIPPET_COMPONENT_TYPE,
@@ -17,4 +21,4 @@ class ComponentsConfig {
 
 }
 
-export default ComponentsConfig
+export default ArchieComponents

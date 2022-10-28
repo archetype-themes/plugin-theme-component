@@ -3,9 +3,8 @@ import { env } from 'node:process'
 import { dirname, join } from 'path'
 import BuildFactory from './BuildFactory.js'
 import SectionFactory from './SectionFactory.js'
-import ComponentsConfig from '../config/ComponentsConfig.js'
-import NodeConfig from '../config/NodeConfig.js'
-import Config from '../models/static/Config.js'
+import ArchieComponents from '../config/ArchieComponents.js'
+import ArchieNodeConfig from '../models/static/ArchieNodeConfig.js'
 import logger from '../utils/Logger.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import NodeUtils from '../utils/NodeUtils.js'
@@ -22,13 +21,13 @@ class CollectionFactory {
     collection.name = NodeUtils.getPackageName()
     // Set folder names
     collection.rootFolder = dirname(env.npm_package_json)
-    collection.sectionsFolder = join(collection.rootFolder, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER)
+    collection.sectionsFolder = join(collection.rootFolder, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER)
 
     // Prepare build object
     collection.build = BuildFactory.fromCollection(collection)
 
     // Fetch Section Names
-    collection.sectionNames = Config.getCollectionSections(collection.name)
+    collection.sectionNames = ArchieNodeConfig.getCollectionSections(collection.name)
 
     if (collection.sectionNames.length === 0) {
       logger.info(`No section list found for ${collection.name}; all sections will be processed.`)
@@ -54,14 +53,14 @@ class CollectionFactory {
 
     collection.name = collectionName
     //Folders
-    collection.rootFolder = join(dirname(env.npm_package_json), 'node_modules', NodeConfig.DEFAULT_PACKAGES_SCOPE, collection.name)
-    collection.sectionsFolder = join(collection.rootFolder, ComponentsConfig.COLLECTION_SECTIONS_SUB_FOLDER)
+    collection.rootFolder = join(dirname(env.npm_package_json), 'node_modules', ArchieComponents.DEFAULT_PACKAGE_SCOPE, collection.name)
+    collection.sectionsFolder = join(collection.rootFolder, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER)
 
     // Prepare build object
     collection.build = BuildFactory.fromCollection(collection)
 
     // Fetch Section Names
-    collection.sectionNames = Config.getCollectionSections(collection.name)
+    collection.sectionNames = ArchieNodeConfig.getCollectionSections(collection.name)
 
     if (collection.sectionNames.length === 0) {
       logger.info(`No section list found for ${collection.name}; all sections will be processed.`)

@@ -2,13 +2,13 @@
 
 import CollectionBuilder from '../builders/CollectionBuilder.js'
 import SectionBuilder from '../builders/SectionBuilder.js'
-import ComponentsConfig from '../config/ComponentsConfig.js'
-import CommandsConfig from '../config/CommandsConfig.js'
+import ArchieComponents from '../config/ArchieComponents.js'
+import ArchieCLICommands from '../config/ArchieCLICommands.js'
 import CollectionFactory from '../factory/CollectionFactory.js'
 import SectionFactory from '../factory/SectionFactory.js'
 import SectionGenerator from '../generators/SectionGenerator.js'
 import SnippetGenerator from '../generators/SnippetGenerator.js'
-import Archie from '../models/static/Archie.js'
+import ArchieCLI from '../models/static/ArchieCLI.js'
 import ArchieUtils from '../utils/ArchieUtils.js'
 import ConfigUtils from '../utils/ConfigUtils.js'
 import NodeUtils from '../utils/NodeUtils.js'
@@ -31,13 +31,13 @@ try {
 }
 
 // Build Command
-if (CommandsConfig.BUILD_COMMAND === Archie.command) {
+if (ArchieCLICommands.BUILD_COMMAND === ArchieCLI.command) {
   // Build/Watch Collection
-  if (Archie.commandOption === ComponentsConfig.COLLECTION_COMPONENT_TYPE) {
+  if (ArchieCLI.commandOption === ArchieComponents.COLLECTION_COMPONENT_TYPE) {
     try {
       const collection = await CollectionFactory.fromArchieCall()
       await CollectionBuilder.build(collection)
-      if (Archie.watchMode) {
+      if (ArchieCLI.watchMode) {
         await CollectionWatcher.buildOnChange(collection.rootFolder)
       }
     } catch (error) {
@@ -45,12 +45,12 @@ if (CommandsConfig.BUILD_COMMAND === Archie.command) {
     }
   }
   // Build/Watch Section
-  else if (Archie.commandOption === ComponentsConfig.SECTION_COMPONENT_TYPE) {
+  else if (ArchieCLI.commandOption === ArchieComponents.SECTION_COMPONENT_TYPE) {
     try {
-      const section = await SectionFactory.fromName(Archie.targetComponent)
+      const section = await SectionFactory.fromName(ArchieCLI.targetComponent)
       await SectionBuilder.build(section)
 
-      if (Archie.watchMode) {
+      if (ArchieCLI.watchMode) {
         await SectionWatcher.buildOnChange(section.rootFolder)
       }
     } catch (error) {
@@ -60,17 +60,17 @@ if (CommandsConfig.BUILD_COMMAND === Archie.command) {
 }
 
 // Create Command
-else if (Archie.command === CommandsConfig.CREATE_COMMAND) {
-  if (Archie.commandOption === ComponentsConfig.SECTION_COMPONENT_TYPE) {
+else if (ArchieCLI.command === ArchieCLICommands.CREATE_COMMAND) {
+  if (ArchieCLI.commandOption === ArchieComponents.SECTION_COMPONENT_TYPE) {
     try {
-      await SectionGenerator.generate(Archie.targetComponent)
+      await SectionGenerator.generate(ArchieCLI.targetComponent)
     } catch (error) {
       NodeUtils.exitWithError(error)
     }
   }
-  if (Archie.commandOption === ComponentsConfig.SNIPPET_COMPONENT_TYPE) {
+  if (ArchieCLI.commandOption === ArchieComponents.SNIPPET_COMPONENT_TYPE) {
     try {
-      await SnippetGenerator.generate(Archie.targetComponent)
+      await SnippetGenerator.generate(ArchieCLI.targetComponent)
     } catch (error) {
       NodeUtils.exitWithError(error)
     }
@@ -78,13 +78,13 @@ else if (Archie.command === CommandsConfig.CREATE_COMMAND) {
 }
 
 // Install Command
-else if (Archie.command === CommandsConfig.INSTALL_COMMAND) {
+else if (ArchieCLI.command === ArchieCLICommands.INSTALL_COMMAND) {
   try {
     const collection = await CollectionFactory.fromName(Archie.targetComponent)
     const theme = await ThemeFactory.fromArchieCall()
     await CollectionBuilder.build(collection)
     await CollectionInstaller.install(collection, theme)
-    if (Archie.watchMode) {
+    if (ArchieCLI.watchMode) {
       await CollectionWatcher.installOnChange(collection.rootFolder)
     }
   } catch (error) {
