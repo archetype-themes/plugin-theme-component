@@ -12,7 +12,7 @@ class ThemeFactory {
    * From Build Script
    * @return {Promise<Theme>}
    */
-  static async fromArchieCall () {
+  static async fromInstallCommand () {
 
     const theme = new Theme()
 
