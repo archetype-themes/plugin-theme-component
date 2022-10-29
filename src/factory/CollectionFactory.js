@@ -14,7 +14,7 @@ class CollectionFactory {
    * From Collection Build Script
    * @return {Promise<Collection>}
    */
-  static async fromArchieCall () {
+  static async fromCollectionBuildCommand () {
 
     const collection = new Collection()
 
@@ -48,7 +48,7 @@ class CollectionFactory {
    * @param {string} collectionName
    * @return {Promise<Collection>}
    */
-  static async fromName (collectionName) {
+  static async fromThemeInstallCommand (collectionName) {
     const collection = new Collection()
 
     collection.name = collectionName
@@ -74,7 +74,7 @@ class CollectionFactory {
 
     // Create sections
     for (const sectionName of collection.sectionNames) {
-      const section = await SectionFactory.fromName(sectionName)
+      const section = await SectionFactory.fromSectionBuildCommand(sectionName)
       collection.sections.push(section)
     }
 

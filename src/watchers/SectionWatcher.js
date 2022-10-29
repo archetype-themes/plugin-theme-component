@@ -22,7 +22,7 @@ class SectionWatcher {
     watcher.on('all', async (event, path) => {
       logger.debug(`Event: "${event}" on file: ${path} detected`)
 
-      const section = await SectionFactory.fromName(ArchieCLI.targetComponent)
+      const section = await SectionFactory.fromSectionBuildCommand(ArchieCLI.targetComponent)
       await SectionBuilder.build(section)
     })
   }

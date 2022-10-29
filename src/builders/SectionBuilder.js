@@ -163,14 +163,14 @@ class SectionBuilder extends ComponentBuilder {
         // Look within the section's local snippets first
         for (const snippetFile of section.files.snippetFiles) {
           if (render.snippetName === path.parse(snippetFile).name) {
-            snippetCache[render.snippetName] = await SnippetFactory.fromSingleFile(render.snippetName, snippetFile)
+            snippetCache[render.snippetName] = await SnippetFactory.internalToSection(render.snippetName, snippetFile)
             break
           }
         }
 
         // Generate from the packages folder if it wasn't found locally
         if (!snippetCache[render.snippetName]) {
-          const snippet = await SnippetFactory.fromName(render.snippetName)
+          const snippet = await SnippetFactory.externalToSection(render.snippetName)
           if (snippet.schema && section.schema) {
             section.schema = merge(section.schema, snippet.schema)
           }

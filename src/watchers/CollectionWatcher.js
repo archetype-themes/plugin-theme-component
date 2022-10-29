@@ -20,7 +20,7 @@ class CollectionWatcher {
     watcher.on('all', async (event, path) => {
       logger.debug(`Event: "${event}" on file: ${path} detected`)
 
-      const collection = await CollectionFactory.fromArchieCall()
+      const collection = await CollectionFactory.fromCollectionBuildCommand()
       return CollectionBuilder.build(collection)
     })
   }

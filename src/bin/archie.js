@@ -35,7 +35,7 @@ if (ArchieCLICommands.BUILD_COMMAND === ArchieCLI.command) {
   // Build/Watch Collection
   if (ArchieCLI.commandOption === ArchieComponents.COLLECTION_COMPONENT_TYPE) {
     try {
-      const collection = await CollectionFactory.fromArchieCall()
+      const collection = await CollectionFactory.fromCollectionBuildCommand()
       await CollectionBuilder.build(collection)
       if (ArchieCLI.watchMode) {
         await CollectionWatcher.buildOnChange(collection.rootFolder)
@@ -47,7 +47,7 @@ if (ArchieCLICommands.BUILD_COMMAND === ArchieCLI.command) {
   // Build/Watch Section
   else if (ArchieCLI.commandOption === ArchieComponents.SECTION_COMPONENT_TYPE) {
     try {
-      const section = await SectionFactory.fromName(ArchieCLI.targetComponent)
+      const section = await SectionFactory.fromSectionBuildCommand(ArchieCLI.targetComponent)
       await SectionBuilder.build(section)
 
       if (ArchieCLI.watchMode) {

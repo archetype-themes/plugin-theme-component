@@ -14,7 +14,7 @@ class SectionFactory {
    * @param {string} name
    * @returns {Promise<Section>}
    */
-  static async fromName (name) {
+  static async fromSectionBuildCommand (name) {
     const section = new Section()
     section.name = name
 

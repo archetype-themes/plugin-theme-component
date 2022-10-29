@@ -12,7 +12,7 @@ class SnippetFactory {
    * @param {string} snippetName
    * @returns {Promise<Snippet>}
    */
-  static async fromName (snippetName) {
+  static async externalToSection (snippetName) {
     const snippet = new Snippet()
     snippet.name = snippetName
 
@@ -44,7 +44,7 @@ class SnippetFactory {
    * @param {string} snippetFile
    * @returns {Promise<Snippet>}
    */
-  static async fromSingleFile (snippetName, snippetFile) {
+  static async internalToSection (snippetName, snippetFile) {
     const snippet = new Snippet()
     snippet.name = snippetName
     snippet.files = new SnippetFiles()
