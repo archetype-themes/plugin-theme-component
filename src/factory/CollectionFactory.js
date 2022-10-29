@@ -72,12 +72,6 @@ class CollectionFactory {
 
     }
 
-    // Create sections
-    for (const sectionName of collection.sectionNames) {
-      const section = await SectionFactory.fromSectionBuildCommand(sectionName)
-      collection.sections.push(section)
-    }
-
     return collection
   }
 
