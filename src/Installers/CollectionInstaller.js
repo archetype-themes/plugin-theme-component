@@ -4,20 +4,18 @@ import { basename, join } from 'node:path'
 // Archie  imports
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
 
 class CollectionInstaller {
 
   /**
    * Install Collection Within a Theme
-   * @param {Collection} collection
    * @param {Theme} theme
+   * @param {Collection} collection
    * @return {Promise<void>}
    */
-  static async install (collection, theme) {
-    const packageName = NodeUtils.getPackageName()
-    logger.info(`Installing ${collection.name} Collection for ${packageName}.`)
-    console.time(`Installing ${collection.name} Collection for ${packageName}.`)
+  static async install (theme, collection) {
+    logger.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
+    console.time(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
 
     const filesToCopy = []
 
@@ -76,6 +74,10 @@ class CollectionInstaller {
         'injectStylesheet': injectStylesheet
       })
     }
+
+    logger.info(`${collection.name}: Install Complete`)
+    console.timeEnd(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
+    console.log('\n')
   }
 
   static async backupFiles (filesToCopy) {
