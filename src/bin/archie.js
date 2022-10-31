@@ -47,7 +47,7 @@ if (ArchieCLICommands.BUILD_COMMAND === ArchieCLI.command) {
   // Build/Watch Section
   else if (ArchieCLI.commandOption === ArchieComponents.SECTION_COMPONENT_TYPE) {
     try {
-      const section = await SectionFactory.fromSectionBuildCommand(ArchieCLI.targetComponent)
+      const section = await SectionFactory.fromName(ArchieCLI.targetComponent)
       await SectionBuilder.build(section)
 
       if (ArchieCLI.watchMode) {
