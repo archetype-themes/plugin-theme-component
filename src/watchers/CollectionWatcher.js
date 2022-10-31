@@ -24,25 +24,6 @@ class CollectionWatcher {
   }
 
   /**
-   * Build and Install Collection in Current Theme on File Change
-   * @param {string} collectionRootFolder
-   * @return {Promise<void>}
-   */
-  static async installOnChange (collectionRootFolder) {
-    const watcher = this.getChokidarCollectionWatcher(collectionRootFolder)
-
-    watcher.on('all', async (event, path) => {
-      logger.debug(`Event: "${event}" on file: ${path} detected`)
-
-      const collection = await CollectionFactory.fromName(ArchieCLI.targetComponent)
-      const theme = await ThemeFactory.fromArchieCall()
-      await CollectionBuilder.build(collection)
-      return CollectionInstaller.install(collection, theme)
-    })
-
-  }
-
-  /**
    * Get Chokidar Collection Watcher
    * @param {string} collectionRootFolder
    * @return {FSWatcher}
