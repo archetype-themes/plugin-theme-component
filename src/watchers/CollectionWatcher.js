@@ -3,11 +3,8 @@ import chokidar from 'chokidar'
 // Archie imports
 import CollectionBuilder from '../builders/CollectionBuilder.js'
 import CollectionFactory from '../factory/CollectionFactory.js'
-import ThemeFactory from '../factory/ThemeFactory.js'
-import ArchieCLI from '../models/static/ArchieCLI.js'
 import logger from '../utils/Logger.js'
-
-import CollectionInstaller from '../Installers/CollectionInstaller.js'
+import SectionFactory from '../factory/SectionFactory.js'
 
 class CollectionWatcher {
   /**
