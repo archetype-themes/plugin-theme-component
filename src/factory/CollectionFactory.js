@@ -35,10 +35,7 @@ class CollectionFactory {
     }
 
     // Create sections
-    for (const sectionName of collection.sectionNames) {
-      const section = await SectionFactory.fromName(sectionName)
-      collection.sections.push(section)
-    }
+    collection.sections = await SectionFactory.fromCollection(collection)
 
     return collection
   }
