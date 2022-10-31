@@ -6,20 +6,28 @@ import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
 import merge from 'deepmerge'
+import ArchieComponents from '../config/ArchieComponents.js'
+import path from 'path'
 
 class SectionFactory {
 
   /**
    * Builds a new Section and sets its basic parameters
    * @param {string} name
+   * @param {Collection} [collection] Parent Collection
    * @returns {Promise<Section>}
    */
-  static async fromSectionBuildCommand (name) {
+  static async fromName (name, collection) {
     const section = new Section()
     section.name = name
 
     // Set Section folders
-    section.rootFolder = await ComponentUtils.getValidRootFolder(section)
+    if (collection && collection.rootFolder) {
+      section.rootFolder = path.join(collection.rootFolder, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER, section.name)
+    } else {
+      section.rootFolder = await ComponentUtils.getValidRootFolder(section)
+    }
+
     // Generate build elements
     section.build = BuildFactory.fromSection(section)
     // Find section files
@@ -53,6 +61,21 @@ class SectionFactory {
     section.renders = LiquidUtils.findRenders(section.liquidCode)
 
     return section
+  }
+
+  /**
+   * Create Sections from a Collection
+   * @param collection
+   * @return {Promise<Section[]>}
+   */
+  static async fromCollection (collection) {
+    const sections = []
+    // Create sections
+    for (const sectionName of collection.sectionNames) {
+      const section = await SectionFactory.fromName(sectionName, collection)
+      sections.push(section)
+    }
+    return sections
   }
 }
 
