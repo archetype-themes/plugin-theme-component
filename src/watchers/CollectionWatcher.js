@@ -21,6 +21,7 @@ class CollectionWatcher {
       logger.debug(`Event: "${event}" on file: ${path} detected`)
 
       const collection = await CollectionFactory.fromCollectionBuildCommand()
+      collection.sections = await SectionFactory.fromCollection(collection)
       return CollectionBuilder.build(collection)
     })
   }
