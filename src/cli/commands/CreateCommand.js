@@ -5,8 +5,11 @@ import SectionGenerator from '../../generators/SectionGenerator.js'
 import SnippetGenerator from '../../generators/SnippetGenerator.js'
 
 class CreateCommand {
+  /** @type {string} **/
   static NAME = 'create'
+  /** @type {string[]} **/
   static ENABLED_COMPONENTS = [Collection.COMPONENT_NAME]
+  /** @type {string[]} **/
   static AVAILABLE_OPTIONS = [Section.COMPONENT_NAME, Snippet.COMPONENT_NAME]
 
   static async execute (commandOption, targetComponent) {

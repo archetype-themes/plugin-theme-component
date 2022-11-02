@@ -5,7 +5,7 @@ import { constants } from 'node:fs'
 class CollectionUtils {
   /**
    * Find Section Names
-   * @param {Collection} collection
+   * @param {module:models/Collection} collection
    * @return {Promise<void>}
    */
   static async findSectionNames (collection) {

@@ -1,6 +1,9 @@
 import Component from './abstract/Component.js'
 
 class Snippet extends Component {
+  /** @type {string} **/
+  static COMPONENT_NAME = 'snippet'
+
   /** @type {SnippetBuild} **/
   #build
   /** @type {SnippetFiles} **/

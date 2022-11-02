@@ -10,7 +10,7 @@ class CollectionInstaller {
   /**
    * Install Collection Within a Theme
    * @param {Theme} theme
-   * @param {Collection} collection
+   * @param {module:models/Collection} collection
    * @return {Promise<void>}
    */
   static async install (theme, collection) {

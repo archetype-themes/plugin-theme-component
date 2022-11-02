@@ -13,7 +13,7 @@ class CollectionBuilder {
 
   /**
    * Build Collection Javascript
-   * @param {Collection} collection
+   * @param {module:models/Collection} collection
    * @returns {Promise<void>}
    */
   static async buildJavascript (collection) {
@@ -50,7 +50,7 @@ class CollectionBuilder {
 
   /**
    * Build Main Stylesheet
-   * @param {Collection} collection
+   * @param {module:models/Collection} collection
    * @returns {Promise<void>}
    */
   static async buildStylesheets (collection) {
@@ -73,7 +73,7 @@ class CollectionBuilder {
 
   /**
    *
-   * @param {Collection} collection
+   * @param {module:models/Collection} collection
    * @return {Promise<void>}
    */
   static async build (collection) {
@@ -125,7 +125,7 @@ class CollectionBuilder {
 
   /**
    * Reset Collection Build Folders
-   * @param {Collection} collection
+   * @param {module:models/Collection} collection
    * @return {Promise<void>}
    */
   static async #resetBuildFolders (collection) {
@@ -140,7 +140,7 @@ class CollectionBuilder {
 
   /**
    * Write Schema Locales
-   * @param {Collection} collection
+   * @param {module:models/Collection} collection
    * @return {Promise<void>}
    */
   static async writeSchemaLocales (collection) {

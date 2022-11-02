@@ -16,6 +16,7 @@ class ComponentBuilder {
       logger.debug(`${component.name}: Processing Schema`)
 
       if (component.locales) {
+        /** @type {Object} component.schema.locales */
         if (component.schema.locales) {
           component.schema.locales = merge(component.schema.locales, component.locales)
           // Resulting merge is copied back to the component.locales property, just in case
