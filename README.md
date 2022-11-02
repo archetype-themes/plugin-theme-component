@@ -15,7 +15,7 @@ behaviour with npm and npx commands is untested and is not recommended at the ti
 
 Archie helps with multiple components: Collections, Sections & Snippets, and Themes.
 
-With Archie, you can easily create and share a Collection of Sections to share amongst your themes. Collections are
+With Archie, you can easily create and maintain a Collection of Sections to share amongst your themes. Collections are
 structured as a NodeJS Monorepo of child repositories consisting of Sections and snippet in their respective workspaces.
 
 Please read the following guides to help you on your journey:
@@ -47,23 +47,28 @@ yarn add @archetype-themes/archie@archetype-themes/archie#1.0.1 --dev
 ```shell
 ##### Collection Commands #####
 archie build collection
+archie build collection --watch
 archie build section [section-name]
+archie build section [section-name] --watch
 
 archie create section [section-name]
 archie create snippet [snippet-name]
 
-# SOON: archie watch collection
-archie watch section [section-name]
-
 ##### Section Commands #####
 archie build section
-archie watch section
+archie build section --watch
 
 ##### Theme Commands #####
 archie install [name-of-collection]
+archie install [name-of-collection] --watch
 
 
 ```
+
+### Watch Flag
+
+Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor source folders and refresh your
+build/install on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ### Log Level
 
@@ -86,13 +91,10 @@ yarn build-section --quiet
 
 ## Limitations Being Worked On
 
-* When you run `archie watch section`, only the Section folder is being watched. Included snippets repositories are
-  ignored.
-* `watch collection` is not implemented.
 * Snippets can't include another snippet.
 * Stylesheets with a shared core are not handled at the moment.
 * No Stylesheet Merge or optimisation is being performed.
-* Installing multiple collections in a theme is not handled.
+* Installing multiple collections in a theme is not handled at the moment.
 
 ## Contributing
 

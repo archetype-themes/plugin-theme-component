@@ -106,27 +106,24 @@ Building a section from its root folder is pretty simple with Archie, just run
 
 ```shell
 archie build section
+
+# Use the watch flag to refresh build on file change
+archie build section --watch
 ```
 
 If you are one level up, that is, inside the parent Collection folder, you need to specify the section's name.
 
 ```shell
-archie build section some-smart-section-name
+archie build section [some-smart-section-name]
+
+# Use the watch flag to refresh build on file change
+archie build section [some-smart-section-name] -w
 ```
 
-### Watch a Section
+**Watch Flag**
 
-If you are working on a section and want to continuously build it on file change, use the watch command instead:
-
-```shell
-# From the section's root folder
-archie watch section
-
-# From the Collection's root folder
-archie build section some-smart-section-name
-```
-
-Use Ctrl+C to stop watching the files for changes.
+Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor source folders and refresh your
+build on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ## Install a Section
 

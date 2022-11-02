@@ -31,9 +31,16 @@ For both Sections and Snippets, please refer to the [Sections Guide](Sections.md
 
 ```shell
 archie build collection
+
+# Use the watch flag to refresh build on file change
+archie build collection --watch
 ```
 
 This will package your collection's sections and snippets together inside the **build** sub-folder.
+
+**Watch Flag**
+Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor source folders and refresh your
+build on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ## Installing your Collection
 

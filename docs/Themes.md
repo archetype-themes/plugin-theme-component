@@ -64,10 +64,20 @@ Next, you will need to edit your package.json to add the archie configuration el
 
 ```shell
 archie install [my-awesome-collection]
+
+# Using the watch flag to refresh the collection build on file change and install it again in your theme.
+archie install [my-awesome-collection] --watch
 ```
 
-this command will build a fresh brew of your collection and install it with your Theme.
-Archie will create a backup of all files modified, just in case.
+This command will build a fresh brew of your collection and install it with your Theme.
+Archie will create a backup of all files modified.
+
+**Watch Flag**
+
+Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor the collection's source folders
+and refresh your install on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
+
+---
 
 The newly added files should look something like that:
 
@@ -83,7 +93,6 @@ src/sections/[section-two].liquid
 
 # Collection Snippets (only if invoked as a for loop)
 src/snippets/[snippet-one].liquid
-
 ```
 
 The following files will be edited or created if need be:
