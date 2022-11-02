@@ -1,6 +1,8 @@
 import Component from './abstract/Component.js'
 
 class Section extends Component {
+  /** @type {string} **/
+  static COMPONENT_NAME = 'section'
   /** @type {SectionBuild} **/
   #build
   /** @type {SectionFiles} **/

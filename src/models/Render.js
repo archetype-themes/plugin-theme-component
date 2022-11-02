@@ -11,7 +11,7 @@ class Render {
   #snippet
   /** @type {string} **/
   #snippetName
-  /** @type {string[][]} **/
+  /** @type {string[]} **/
   #variables = []
 
   /**
@@ -112,7 +112,7 @@ class Render {
 
   /**
    * Get Variable Names
-   * @returns {string[][]}
+   * @returns {string[]}
    */
   get variables () {
     return this.#variables
@@ -120,7 +120,7 @@ class Render {
 
   /**
    *  Set Variable Names
-   * @param {string[][]} variables
+   * @param {string[]} variables
    */
   set variables (variables) {
     this.#variables = variables

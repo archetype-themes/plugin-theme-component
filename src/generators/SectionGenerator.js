@@ -13,8 +13,14 @@ import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import ArchieComponents from '../config/ArchieComponents.js'
+import Collection from '../models/Collection.js'
 
+/**
+ * This callback is displayed as part of the Requester class.
+ * @type{function} execPromise
+ * @param {number} responseCode
+ * @param {string} responseMessage
+ */
 const execPromise = util.promisify(exec)
 
 class SectionGenerator {
@@ -30,7 +36,7 @@ class SectionGenerator {
 
     // Initialize sections
     section.name = sectionName
-    section.rootFolder = path.join(env.PROJECT_CWD, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER, section.name)
+    section.rootFolder = path.join(env.PROJECT_CWD, Collection.SECTIONS_SUB_FOLDER, section.name)
     section.files = new SectionFiles()
     section.files.packageJson = path.join(section.rootFolder, 'package.json')
 

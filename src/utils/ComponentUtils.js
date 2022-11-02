@@ -7,11 +7,11 @@ import logger from './Logger.js'
 import SectionFiles from '../models/SectionFiles.js'
 import Section from '../models/Section.js'
 import Snippet from '../models/Snippet.js'
-import ArchieNodeConfig from '../models/static/ArchieNodeConfig.js'
+import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
 import path from 'path'
 import merge from 'deepmerge'
-import ArchieCLI from '../models/static/ArchieCLI.js'
-import ArchieComponents from '../config/ArchieComponents.js'
+import ArchieCLI from '../cli/models/ArchieCLI.js'
+import Collection from '../models/Collection.js'
 
 class ComponentUtils {
 
@@ -58,17 +58,17 @@ class ComponentUtils {
       }
     } else if (ArchieNodeConfig.isCollection()) {
       if (component instanceof Section) {
-        return path.join(dirname(env.npm_package_json), ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, component.name)
       }
       if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), ArchieComponents.COLLECTION_SNIPPETS_SUB_FOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), Collection.SNIPPETS_SUB_FOLDER, component.name)
       }
     } else if (ArchieNodeConfig.isTheme()) {
       if (component instanceof Section) {
-        return path.join(dirname(env.npm_package_json), 'node_modules', ArchieComponents.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponent, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponentName, Collection.SECTIONS_SUB_FOLDER, component.name)
       }
       if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), 'node_modules', ArchieComponents.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponent, ArchieComponents.COLLECTION_SNIPPETS_SUB_FOLDER, component.name)
+        return path.join(dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponentName, Collection.SNIPPETS_SUB_FOLDER, component.name)
 
       }
     }
@@ -132,7 +132,7 @@ class ComponentUtils {
   /**
    * Parse Locale Files into an object
    * @param {string[]} localeFiles
-   * @return {Promise<string[][]>}
+   * @return {Promise<string[]|Object>}
    */
   static async parseLocaleFilesContent (localeFiles) {
     let locales

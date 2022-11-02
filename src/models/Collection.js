@@ -1,4 +1,14 @@
+/** @module models/Collection */
 class Collection {
+  /** @type {string} **/
+  static COMPONENT_NAME = 'collection'
+  /** @type {string} **/
+  static ASSETS_SUB_FOLDER = 'assets'
+  /** @type {string} **/
+  static SECTIONS_SUB_FOLDER = 'sections'
+  /** @type {string} **/
+  static SNIPPETS_SUB_FOLDER = 'snippets'
+
   /** @type {CollectionBuild} **/
   #build
 
@@ -8,7 +18,7 @@ class Collection {
   /** @type {string} **/
   #rootFolder
 
-  /** @type {Object[][]} **/
+  /** @type {Object[]} **/
   #schemaLocales = []
 
   /** @type {string[]} **/
@@ -75,7 +85,7 @@ class Collection {
 
   /**
    * Get Schema Locales
-   * @return {Object[][Object]}
+   * @return {Object[]}
    */
   get schemaLocales () {
     return this.#schemaLocales
@@ -83,7 +93,7 @@ class Collection {
 
   /**
    * Set Schema Locales
-   * @param value
+   * @param {Object[]} value
    */
   set schemaLocales (value) {
     this.#schemaLocales = value

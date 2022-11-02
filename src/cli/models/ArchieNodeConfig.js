@@ -1,13 +1,19 @@
 import { dirname } from 'path'
-import ArchieComponents from '../../config/ArchieComponents.js'
-
-/**
- * @typedef archie
- * @type {object}
- * @property {string} componentType - one of  NODE_CONFIG_ALLOWED_COMPONENT_TYPES
- */
+import Collection from '../../models/Collection.js'
+import Section from '../../models/Section.js'
+import Snippet from '../../models/Snippet.js'
+import Theme from '../../models/Theme.js'
 
 class ArchieNodeConfig {
+  /** @type {string}  **/
+  static DEFAULT_PACKAGE_SCOPE = '@archetype-themes'
+
+  /** @type {string[]}  **/
+  static ALLOWED_COMPONENT_TYPES = [
+    Collection.COMPONENT_NAME,
+    Section.COMPONENT_NAME,
+    Snippet.COMPONENT_NAME,
+    Theme.COMPONENT_NAME]
 
   /** @type {string[]}  **/
   static #collections = []
@@ -49,19 +55,19 @@ class ArchieNodeConfig {
   }
 
   static isTheme () {
-    return this.#componentType === ArchieComponents.THEME_COMPONENT_TYPE
+    return this.#componentType === Theme.COMPONENT_NAME
   }
 
   static isCollection () {
-    return this.#componentType === ArchieComponents.COLLECTION_COMPONENT_TYPE
+    return this.#componentType === Collection.COMPONENT_NAME
   }
 
   static isSection () {
-    return this.#componentType === ArchieComponents.SECTION_COMPONENT_TYPE
+    return this.#componentType === Section.COMPONENT_NAME
   }
 
   static isSnippet () {
-    return this.#componentType === ArchieComponents.SNIPPET_COMPONENT_TYPE
+    return this.#componentType === Snippet.COMPONENT_NAME
   }
 
 }

@@ -6,15 +6,15 @@ import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
 import merge from 'deepmerge'
-import ArchieComponents from '../config/ArchieComponents.js'
 import path from 'path'
+import Collection from '../models/Collection.js'
 
 class SectionFactory {
 
   /**
    * Builds a new Section and sets its basic parameters
    * @param {string} name
-   * @param {Collection} [collection] Parent Collection
+   * @param {module:models/Collection} [collection] Parent Collection
    * @returns {Promise<Section>}
    */
   static async fromName (name, collection) {
@@ -23,7 +23,7 @@ class SectionFactory {
 
     // Set Section folders
     if (collection && collection.rootFolder) {
-      section.rootFolder = path.join(collection.rootFolder, ArchieComponents.COLLECTION_SECTIONS_SUB_FOLDER, section.name)
+      section.rootFolder = path.join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
     } else {
       section.rootFolder = await ComponentUtils.getValidRootFolder(section)
     }
