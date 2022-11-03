@@ -29,7 +29,7 @@ class BuildCommand {
       const section = await this.buildSection(targetComponentName)
 
       if (watchMode) {
-        await this.watchSection(section.rootFolder)
+        await this.watchSection(section.name, section.rootFolder)
       }
     }
 
@@ -64,7 +64,7 @@ class BuildCommand {
 
   static async watchSection (sectionName, sectionRootFolder) {
     const onSectionWatchEvent = this.onSectionWatchEvent.bind(null, sectionName)
-    Watcher.watch(['sections/*/src/*', '../snippets/*/src/*'], onSectionWatchEvent, sectionRootFolder)
+    Watcher.watch(['src/*', '../../snippets/*/src/*'], onSectionWatchEvent, sectionRootFolder)
   }
 
   static async onCollectionWatchEvent (event, path) {
