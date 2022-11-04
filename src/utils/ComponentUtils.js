@@ -55,6 +55,8 @@ class ComponentUtils {
 
       if (env.npm_package_name && env.npm_package_name.includes(component.name)) {
         return dirname(env.npm_package_json)
+      } else if (component instanceof Snippet) {
+        return path.join(dirname(env.npm_package_json), '../../', Collection.SNIPPETS_SUB_FOLDER, component.name)
       }
     } else if (ArchieNodeConfig.isCollection()) {
       if (component instanceof Section) {

@@ -186,16 +186,14 @@ class SectionBuilder extends ComponentBuilder {
 
       render.snippet = snippetCache[render.snippetName]
 
-      if (!render.hasForClause()) {
-        // Prepends variables creation to accompany liquid code injection
-        let snippetLiquidCode = await LiquidUtils.getRenderSnippetInlineLiquidCode(render)
-
-        section.liquidCode = section.liquidCode.replace(render.liquidTag, snippetLiquidCode)
-      } else {
+      if (render.hasForClause()) {
         // Copy snippet liquid files since we can't inline a for loop
         await FileUtils.writeFile(`${section.build.snippetsFolder}/${render.snippet.name}.liquid`, render.snippet.liquidCode)
+      } else {
+        // Prepends variables creation to accompany liquid code injection
+        let snippetLiquidCode = await LiquidUtils.getRenderSnippetInlineLiquidCode(render)
+        section.liquidCode = section.liquidCode.replace(render.liquidTag, snippetLiquidCode)
       }
-
     }
   }
 
