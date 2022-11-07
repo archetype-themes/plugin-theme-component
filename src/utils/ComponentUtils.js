@@ -79,7 +79,7 @@ class ComponentUtils {
   }
 
   /**
-   *
+   * Filter Section/Snippet Files by Type
    * @param {string[]} files
    * @param {SectionFiles|SnippetFiles} componentFiles
    */
@@ -180,6 +180,22 @@ class ComponentUtils {
 
     return locales
   }
+
+  /**
+   * Get Snippet Root Folders From Section/Snippet Renders
+   * @param {Render[]} renders
+   * @return {string[]}
+   */
+  static getSnippetRootFoldersFromRenders (renders) {
+    const snippetRootFolders = []
+    for (const render of renders) {
+      if (render.snippet && render.snippet.rootFolder && !snippetRootFolders.includes(render.snippet.rootFolder)) {
+        snippetRootFolders.push(render.snippet.rootFolder)
+      }
+    }
+    return snippetRootFolders
+  }
+
 }
 
 export default ComponentUtils
