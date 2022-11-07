@@ -25,7 +25,7 @@ class CollectionUtils {
   /**
    * Get Watch Folders for a Collection
    * @param collection
-   * @return {*[]}
+   * @return {string[]}
    */
   static getWatchFolders (collection) {
     let watchFolders = []
