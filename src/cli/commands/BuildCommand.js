@@ -78,7 +78,6 @@ class BuildCommand {
    */
   static async watchCollection (collection) {
     const watchFolders = CollectionUtils.getWatchFolders(collection)
-    console.log(watchFolders)
 
     const watcher = Watcher.getWatcher(watchFolders)
     const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, watcher)
