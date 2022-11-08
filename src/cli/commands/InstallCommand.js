@@ -53,13 +53,6 @@ class InstallCommand {
   static async installOne (collectionName) {
     const theme = ThemeFactory.fromThemeInstallCommand()
     const collection = await CollectionFactory.fromThemeInstallCommand(collectionName)
-
-    if (!await FileUtils.isReadable(collection.rootFolder)) {
-      const error = new Error(`Collection not accessible. Expected location was: "${collection.rootFolder}". Collection Install cancelled.`)
-      error.name = 'File Access Error'
-      NodeUtils.exitWithError(error)
-    }
-
     collection.sections = await SectionFactory.fromCollection(collection)
 
     for (const section of collection.sections) {
