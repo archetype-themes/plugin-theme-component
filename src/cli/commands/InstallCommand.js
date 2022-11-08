@@ -22,25 +22,27 @@ class InstallCommand {
    * Execute Install command
    * @param {string|Object} collectionNames
    * @param {boolean} watchMode
-   * @return {Promise<Awaited<Collection>[]>}
+   * @return {Promise<Awaited<void>[]>}
    */
   static async execute (collectionNames, watchMode) {
     const promises = []
 
-    if (typeof collectionNames === 'object') {
+    if (typeof collectionNames === 'object' && Object.keys(collectionNames).length > 0) {
       for (const collectionName in collectionNames) {
         const collection = await InstallCommand.installOne(collectionName)
 
         if (watchMode) {
-          promises.push(this.watch(collection.name, collection.rootFolder))
+          promises.push(this.watch(collection))
         }
       }
     } else if (typeof collectionNames === 'string') {
       const collection = await InstallCommand.installOne(collectionNames)
 
       if (watchMode) {
-        promises.push(this.watch(collection.name, collection.rootFolder))
+        promises.push(this.watch(collection))
       }
+    } else {
+      throw new Error('No Collection found in Config or on the command line.')
     }
     return Promise.all(promises)
   }
@@ -67,20 +69,30 @@ class InstallCommand {
     return collection
   }
 
-  static async onCollectionWatchEvent (collectionName, event, path) {
-    logger.debug(`Watcher Event: "${event}" on file: ${path} detected`)
-    return InstallCommand.installOne(collectionName)
+  static async onCollectionWatchEvent (collectionName, watcher, event, eventPath) {
+    const filename = path.basename(eventPath)
+    logger.debug(`Watcher Event: "${event}" on file: ${filename} detected`)
+
+    const collection = await InstallCommand.installOne(collectionName)
+
+    if (filename.endsWith('.liquid')) {
+      await watcher.close()
+      return InstallCommand.watch(collection)
+    }
   }
 
   /**
    * Build and Install Collection in Current Theme on File Change
-   * @param {string} collectionName
-   * @param {string} collectionRootFolder
-   * @return {Promise<Collection>}
+   * @param {Collection} collection
+   * @return {Promise<module: models/Collection>}
    */
-  static async watch (collectionName, collectionRootFolder) {
-    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collectionName)
-    Watcher.watch(['sections/*/src/*', 'snippets/*/src/*'], onCollectionWatchEvent, collectionRootFolder)
+  static async watch (collection) {
+    const watchFolders = CollectionUtils.getWatchFolders(collection)
+
+    const watcher = Watcher.getWatcher(watchFolders)
+
+    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, watcher)
+    Watcher.watch(watcher, onCollectionWatchEvent)
   }
 }
 
