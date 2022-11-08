@@ -1,3 +1,7 @@
+// Node imports
+import path from 'path'
+
+//Archie imports
 import CollectionBuilder from '../../builders/CollectionBuilder.js'
 import CollectionFactory from '../../factory/CollectionFactory.js'
 import SectionFactory from '../../factory/SectionFactory.js'
@@ -5,6 +9,7 @@ import ThemeFactory from '../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../Installers/CollectionInstaller.js'
 import Collection from '../../models/Collection.js'
 import Theme from '../../models/Theme.js'
+import CollectionUtils from '../../utils/CollectionUtils.js'
 import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
 import NodeUtils from '../../utils/NodeUtils.js'
