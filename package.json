@@ -1,6 +1,6 @@
 {
   "author": "Archetype Themes Limited Partnership",
-  "description": "Archie is Archetype Theme's Development Toolset bundle.",
+  "description": "Archie is Archetype Theme's Development CLI.",
   "license": "UNLICENSED",
   "main": "src/bin/archie.js",
   "name": "@archetype-themes/archie",
