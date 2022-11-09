@@ -25,30 +25,19 @@ class InstallCommand {
 
   /**
    * Execute Install command
-   * @param {string|Object} collectionNames
+   * @param {string} collectionName
    * @param {boolean} watchMode
    * @return {Promise<Awaited<void>[]>}
    */
-  static async execute (collectionNames, watchMode) {
+  static async execute (collectionName, watchMode) {
     const promises = []
 
-    if (typeof collectionNames === 'object' && Object.keys(collectionNames).length > 0) {
-      for (const collectionName in collectionNames) {
-        const collection = await InstallCommand.installOne(collectionName)
+    const collection = await InstallCommand.installOne(collectionName)
 
-        if (watchMode) {
-          promises.push(this.watch(collection))
-        }
-      }
-    } else if (typeof collectionNames === 'string') {
-      const collection = await InstallCommand.installOne(collectionNames)
-
-      if (watchMode) {
-        promises.push(this.watch(collection))
-      }
-    } else {
-      throw new Error('No Collection found in Config or on the command line.')
+    if (watchMode) {
+      promises.push(this.watch(collection))
     }
+
     return Promise.all(promises)
   }
 
@@ -64,7 +53,7 @@ class InstallCommand {
 
     for (const section of collection.sections) {
       if (!await FileUtils.isReadable(section.rootFolder)) {
-        const error = new Error(`Section not accessible. Expected location was: "${section.rootFolder}". Collection Install cancelled.`)
+        const error = new Error(`Collection Install cancelled: Section not found ${section.name}. Is it spelled properly? Is it installed?". `)
         error.name = 'File Access Error'
         NodeUtils.exitWithError(error)
       }

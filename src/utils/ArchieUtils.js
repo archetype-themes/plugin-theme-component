@@ -52,7 +52,8 @@ class ArchieUtils {
 
     // Use the default Target Component if one wasn't provided
     if (!ArchieCLI.targetComponentName) {
-      ArchieCLI.targetComponentName = this.getCommandDefaultTargetComponent(callerComponentType, ArchieCLI.command, ArchieCLI.commandOption, NodeUtils.getPackageName())
+      ArchieCLI.targetComponentName =
+        this.getCommandDefaultTargetComponent(callerComponentType, ArchieCLI.command, ArchieCLI.commandOption, NodeUtils.getPackageName())
     }
 
     // Search for the Watch Mode flag
@@ -155,7 +156,10 @@ class ArchieUtils {
       case CreateCommand.NAME:
         return null
       case InstallCommand.NAME:
-        return ArchieNodeConfig.collections
+        if (Object.keys(ArchieNodeConfig.collections).length > 0)
+          return Object.keys(ArchieNodeConfig.collections)[0]
+        else
+          throw new Error(`No Default Collection found in configuration for install, please specify a collection name.`)
       default:
         throw new Error(`ARCHIE UTILS: getCommandDefaultTargetComponent => Unknown command ${command}`)
     }
