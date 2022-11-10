@@ -1,13 +1,18 @@
+// Node JS Internal imports
+import path from 'path'
+// External Node JS Modules
+import merge from 'deepmerge'
+// Archie Internal JS imports
 import BuildFactory from './BuildFactory.js'
 import FilesFactory from './FilesFactory.js'
+import RenderFactory from './RenderFactory.js'
+import SnippetFactory from './SnippetFactory.js'
+import FileAccessError from '../errors/FileAccessError.js'
+import Collection from '../models/Collection.js'
 import Section from '../models/Section.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
-import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
-import merge from 'deepmerge'
-import path from 'path'
-import Collection from '../models/Collection.js'
 
 class SectionFactory {
 
@@ -25,7 +30,12 @@ class SectionFactory {
     if (collection && collection.rootFolder) {
       section.rootFolder = path.join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
     } else {
-      section.rootFolder = await ComponentUtils.getValidRootFolder(section)
+      section.rootFolder = ComponentUtils.getRootFolder(section)
+    }
+
+    if (!await FileUtils.isReadable(section.rootFolder)) {
+      logger.error(`Section Factory Abort: ${section.name} was not found at any expected location: "${section.rootFolder}".`)
+      throw new FileAccessError(`Unable to access the "${section.name}" section on disk. Tips: Is it spelled properly in your archie config? Is the collection installed?`)
     }
 
     // Generate build elements
@@ -35,11 +45,12 @@ class SectionFactory {
 
     // Abort if no liquid file was found
     if (section.files.liquidFiles.length === 0) {
-      throw new Error(`${section.name}: No liquidFiles file found - aborting build`)
+      throw new FileAccessError(`Section Factory: No liquid files file found for the "${section.name}" section`)
     }
 
     // Load liquid files' content
-    logger.debug(`${section.name}: ${section.files.liquidFiles.length} liquid file${section.files.liquidFiles.length > 1 ? 's' : ''} found`)
+    const pluralForm = section.files.liquidFiles.length > 1 ? 's' : ''
+    logger.debug(`${section.name}: ${section.files.liquidFiles.length} liquid file${pluralForm} found`)
     section.liquidCode = await FileUtils.getMergedFilesContent(section.files.liquidFiles)
 
     // Load Schema file content
@@ -58,7 +69,11 @@ class SectionFactory {
     }
 
     // Parse and prepare Render models from liquid code
-    section.renders = LiquidUtils.findRenders(section.liquidCode)
+    const snippetsPath = path.join(collection.rootFolder, Collection.SNIPPETS_SUB_FOLDER)
+    // Create Render Models form Liquid Code
+    section.renders = RenderFactory.fromComponent(section)
+    // Create Child Snippet Models Within Render Models
+    section.renders = await SnippetFactory.fromRenders(section.renders, section.files.snippetFiles, snippetsPath)
 
     return section
   }
