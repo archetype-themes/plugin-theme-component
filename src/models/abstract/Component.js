@@ -8,6 +8,9 @@ class Component {
   /** @type {string} **/
   #name
 
+  /** @type {Render[]} **/
+  #renders = []
+
   /** @type {string} **/
   #rootFolder
 
@@ -69,6 +72,22 @@ class Component {
    */
   set name (value) {
     this.#name = value
+  }
+
+  /**
+   * Get Renders
+   * @returns {Render[]}
+   */
+  get renders () {
+    return this.#renders
+  }
+
+  /**
+   * Set Renders
+   * @param {Render[]} value
+   */
+  set renders (value) {
+    this.#renders = value
   }
 
   /**

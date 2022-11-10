@@ -3,12 +3,11 @@ import Component from './abstract/Component.js'
 class Section extends Component {
   /** @type {string} **/
   static COMPONENT_NAME = 'section'
+
   /** @type {SectionBuild} **/
   #build
   /** @type {SectionFiles} **/
   #files
-  /** @type {Render[]} **/
-  #renders = []
 
   /**
    *  Get Build
@@ -40,22 +39,6 @@ class Section extends Component {
    */
   set files (value) {
     this.#files = value
-  }
-
-  /**
-   * Get Renders
-   * @returns {Render[]}
-   */
-  get renders () {
-    return this.#renders
-  }
-
-  /**
-   * Set Renders
-   * @param {Render[]} value
-   */
-  set renders (value) {
-    this.#renders = value
   }
 
 }
