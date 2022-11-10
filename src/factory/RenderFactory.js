@@ -1,15 +1,49 @@
 import Render from '../models/Render.js'
-import logger from '../utils/Logger.js'
-import { exit } from 'node:process'
+import LiquidUtils from '../utils/LiquidUtils.js'
 
 class RenderFactory {
 
-  static fromMatch (matchText, matchGroups) {
+  /**
+   * Create Render Models From Component By Searching Through The Liquid Code For Render Tags
+   * @param {Component} component
+   * @return {Render[]}
+   */
+  static fromComponent (component) {
+    // Parse and prepare Render models from liquid code
+    const renderTags = LiquidUtils.findRenderTags(component.liquidCode)
+
+    if (renderTags.length > 0) {
+      return this.fromRenderTags(renderTags)
+    }
+    return []
+  }
+
+  /**
+   * Create Renders from Liquid Code
+   * @param {RegExpMatchArray[]} renderTags
+   * @return {Render[]}
+   */
+  static fromRenderTags (renderTags) {
+    const renders = []
+
+    for (const match of renderTags) {
+      renders.push(this.fromRenderTag(match[0], match.groups))
+    }
+
+    return renders
+  }
+
+  /**
+   *
+   * @param {string} matchText
+   * @param {Object} matchGroups
+   * @return {Render}
+   */
+  static fromRenderTag (matchText, matchGroups) {
     const render = new Render()
 
     if (!matchGroups.snippet) {
-      logger.error('Expected name of snippet is empty')
-      exit(1)
+      throw new Error('Expected name of snippet is empty')
     }
     render.snippetName = matchGroups.snippet
     render.liquidTag = matchText
@@ -35,6 +69,7 @@ class RenderFactory {
 
     return render
   }
+
 }
 
 export default RenderFactory
