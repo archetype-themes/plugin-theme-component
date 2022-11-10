@@ -17,7 +17,7 @@ class LiquidUtils {
    * @param {Render} render
    * @returns {Promise<string>}
    */
-  static async getRenderSnippetInlineLiquidCode (render) {
+  static async getSnippetInlineLiquidCode (render) {
     let snippetLiquidCode
     if (render.snippet.liquidCode) {
       snippetLiquidCode = render.snippet.liquidCode
@@ -27,7 +27,8 @@ class LiquidUtils {
 
     // Process "With" clause variable
     if (render.hasWithClause() && render.clauseSourceVariable !== render.clauseTargetVariable) {
-      snippetLiquidCode = `{% assign ${render.clauseTargetVariable} = ${render.clauseSourceVariable} %}\n${snippetLiquidCode}`
+      snippetLiquidCode =
+        `{% assign ${render.clauseTargetVariable} = ${render.clauseSourceVariable} %}\n${snippetLiquidCode}`
     }
 
     // Process additional variables

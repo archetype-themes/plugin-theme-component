@@ -1,16 +1,16 @@
 import { mkdir, writeFile } from 'node:fs/promises'
-import path, { basename, join } from 'path'
+import { basename, join } from 'path'
 import merge from 'deepmerge'
 
 // Archie Components
 import ComponentBuilder from './ComponentBuilder.js'
 import SnippetBuilder from './SnippetBuilder.js'
-import SnippetFactory from '../factory/SnippetFactory.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
+import ComponentUtils from '../utils/ComponentUtils.js'
 
 class SectionBuilder extends ComponentBuilder {
 
@@ -28,7 +28,7 @@ class SectionBuilder extends ComponentBuilder {
     //  Fill renders with the proper snippet object
     if (section.renders.length > 0) {
       await mkdir(section.build.snippetsFolder, { recursive: true })
-      await this.buildSnippets(section)
+      await this.processRenders(section)
     } else {
       logger.debug(`${section.name}: No "Render" tags found`)
     }
@@ -92,7 +92,8 @@ class SectionBuilder extends ComponentBuilder {
     } else {
       await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex)
     }
-    section.liquidCode = `<script src="{{ '${basename(section.build.javascriptFile)}' | asset_url }}" async></script>\n${section.liquidCode}`
+    section.liquidCode =
+      `<script src="{{ '${basename(section.build.javascriptFile)}' | asset_url }}" async></script>\n${section.liquidCode}`
   }
 
   /**
@@ -149,51 +150,26 @@ class SectionBuilder extends ComponentBuilder {
    * @param {Section} section
    * @returns {Promise<void>}
    */
-  static async buildSnippets (section) {
+  static async processRenders (section) {
 
     logger.debug(`Processing section's "render" tags`)
 
-    const snippetCache = []
-
     for (const render of section.renders) {
-      // Create snippet from render and put into cache
-      if (!snippetCache[render.snippetName]) {
-        logger.debug(`${section.name}: Building "${render.snippetName}" Snippet`)
 
-        // Look within the section's local snippets first
-        for (const snippetFile of section.files.snippetFiles) {
-          if (render.snippetName === path.parse(snippetFile).name) {
-            snippetCache[render.snippetName] = await SnippetFactory.internalToSection(render.snippetName, snippetFile)
-            break
-          }
-        }
-
-        // Generate from the packages folder if it wasn't found locally
-        if (!snippetCache[render.snippetName]) {
-          const snippet = await SnippetFactory.externalToSection(render.snippetName)
-          if (snippet.schema && section.schema) {
-            section.schema = merge(section.schema, snippet.schema)
-          }
-
-          if (snippet.locales && section.locales) {
-            section.locales = merge(section.locales, snippet.locales)
-          }
-
-          snippetCache[render.snippetName] = snippet
-        }
-
+      if (render.snippet.renders) {
+        await SnippetBuilder.processRenders(render.snippet, section.build.snippetsFolder)
       }
-
-      render.snippet = snippetCache[render.snippetName]
 
       if (render.hasForClause()) {
         // Copy snippet liquid files since we can't inline a for loop
         await FileUtils.writeFile(`${section.build.snippetsFolder}/${render.snippet.name}.liquid`, render.snippet.liquidCode)
       } else {
         // Prepends variables creation to accompany liquid code injection
-        let snippetLiquidCode = await LiquidUtils.getRenderSnippetInlineLiquidCode(render)
+        let snippetLiquidCode = await LiquidUtils.getSnippetInlineLiquidCode(render)
         section.liquidCode = section.liquidCode.replace(render.liquidTag, snippetLiquidCode)
       }
+
+      await ComponentUtils.mergeSnippetData(section, render.snippet)
     }
   }
 
@@ -221,7 +197,8 @@ class SectionBuilder extends ComponentBuilder {
 
     const styles = await FileUtils.getMergedFilesContent(stylesheets)
     await FileUtils.writeFile(section.build.stylesheet, styles)
-    section.liquidCode = `<link type="text/css" href="{{ '${basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
+    section.liquidCode =
+      `<link type="text/css" href="{{ '${basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
 
   }
 }

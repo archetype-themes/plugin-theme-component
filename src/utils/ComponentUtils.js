@@ -1,17 +1,21 @@
-import { constants } from 'node:fs'
-import { access, mkdir } from 'node:fs/promises'
-import { basename, dirname, extname } from 'node:path'
+// NodeJS Imports
+import path from 'path'
 import { env } from 'node:process'
+import { access, constants, mkdir } from 'node:fs/promises'
+
+// External Modules imports
+import merge from 'deepmerge'
+
+// Internal Modules
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
-import SectionFiles from '../models/SectionFiles.js'
-import Section from '../models/Section.js'
-import Snippet from '../models/Snippet.js'
-import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
-import path from 'path'
-import merge from 'deepmerge'
 import ArchieCLI from '../cli/models/ArchieCLI.js'
+import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
+import FileAccessError from '../errors/FileAccessError.js'
 import Collection from '../models/Collection.js'
+import Section from '../models/Section.js'
+import SectionFiles from '../models/SectionFiles.js'
+import Snippet from '../models/Snippet.js'
 
 class ComponentUtils {
 
@@ -39,7 +43,7 @@ class ComponentUtils {
     try {
       await access(componentFolder, constants.X_OK)
     } catch (error) {
-      throw new Error(`"${component.name}" not found at "${componentFolder}".\n\tVerify that the folder exists and its permissions.`)
+      throw new FileAccessError(`"${component.name}" not found at "${componentFolder}".\n\tVerify that the folder exists and its permissions.`)
     }
 
     return componentFolder
@@ -54,23 +58,23 @@ class ComponentUtils {
     if (ArchieNodeConfig.isSection() || ArchieNodeConfig.isSnippet()) {
 
       if (env.npm_package_name && env.npm_package_name.includes(component.name)) {
-        return dirname(env.npm_package_json)
+        return path.dirname(env.npm_package_json)
       } else if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), '../../', Collection.SNIPPETS_SUB_FOLDER, component.name)
+        return path.join(path.dirname(env.npm_package_json), '../../', Collection.SNIPPETS_SUB_FOLDER, component.name)
       }
     } else if (ArchieNodeConfig.isCollection()) {
       if (component instanceof Section) {
-        return path.join(dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, component.name)
+        return path.join(path.dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, component.name)
       }
       if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), Collection.SNIPPETS_SUB_FOLDER, component.name)
+        return path.join(path.dirname(env.npm_package_json), Collection.SNIPPETS_SUB_FOLDER, component.name)
       }
     } else if (ArchieNodeConfig.isTheme()) {
       if (component instanceof Section) {
-        return path.join(dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponentName, Collection.SECTIONS_SUB_FOLDER, component.name)
+        return path.join(path.dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponentName, Collection.SECTIONS_SUB_FOLDER, component.name)
       }
       if (component instanceof Snippet) {
-        return path.join(dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponentName, Collection.SNIPPETS_SUB_FOLDER, component.name)
+        return path.join(path.dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponentName, Collection.SNIPPETS_SUB_FOLDER, component.name)
 
       }
     }
@@ -86,7 +90,7 @@ class ComponentUtils {
   static filterFiles (files, componentFiles) {
     // Categorize files for the build steps
     for (const file of files) {
-      const extension = extname(file)
+      const extension = path.extname(file)
 
       switch (extension) {
         case '.css':
@@ -100,7 +104,7 @@ class ComponentUtils {
           componentFiles.javascriptFiles.push(file)
           break
         case '.liquid':
-          if (componentFiles instanceof SectionFiles && dirname(file).endsWith('/snippets')) {
+          if (componentFiles instanceof SectionFiles && path.dirname(file).endsWith('/snippets')) {
             componentFiles.snippetFiles.push(file)
           } else {
             componentFiles.liquidFiles.push(file)
@@ -108,7 +112,7 @@ class ComponentUtils {
 
           break
         case '.json':
-          const filename = basename(file).toLowerCase()
+          const filename = path.basename(file).toLowerCase()
           if (filename === 'package.json') {
             componentFiles.packageJson = file
           } else if (filename === 'schema.json') {
@@ -149,7 +153,7 @@ class ComponentUtils {
     const singleLocaleFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2}))?(\.default)?(\.schema)?\.json$/
 
     for (const localeFileWithPath of localeFiles) {
-      const localeFileName = basename(localeFileWithPath).toLowerCase()
+      const localeFileName = path.basename(localeFileWithPath).toLowerCase()
 
       const singleLocaleMatch = localeFileName.match(singleLocaleFileRegex)
 
@@ -194,6 +198,29 @@ class ComponentUtils {
       }
     }
     return snippetRootFolders
+  }
+
+  /**
+   *
+   * @param {Section|Snippet} component
+   * @param {Snippet} snippet
+   * @return {Promise<void>}
+   */
+  static mergeSnippetData (component, snippet) {
+
+    // Merge snippet schema data into section
+    if (snippet.schema && component.schema) {
+      component.schema = merge(component.schema, snippet.schema)
+    } else if (snippet.schema) {
+      component.schema = snippet.schema
+    }
+
+    // Merge snippet locale data into section
+    if (snippet.locales && component.locales) {
+      component.locales = merge(component.locales, snippet.locales)
+    } else if (snippet.locales) {
+      component.locales = snippet.locales
+    }
   }
 
 }
