@@ -10,9 +10,7 @@ import CollectionInstaller from '../../Installers/CollectionInstaller.js'
 import Collection from '../../models/Collection.js'
 import Theme from '../../models/Theme.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
-import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
-import NodeUtils from '../../utils/NodeUtils.js'
 import Watcher from '../../utils/Watcher.js'
 
 class InstallCommand {
@@ -47,19 +45,16 @@ class InstallCommand {
    * @return {Promise<Collection>}
    */
   static async installOne (collectionName) {
+    // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
+    // Creating Collection and its children
     const collection = await CollectionFactory.fromThemeInstallCommand(collectionName)
     collection.sections = await SectionFactory.fromCollection(collection)
 
-    for (const section of collection.sections) {
-      if (!await FileUtils.isReadable(section.rootFolder)) {
-        const error = new Error(`Collection Install cancelled: Section not found ${section.name}. Is it spelled properly? Is it installed?". `)
-        error.name = 'File Access Error'
-        NodeUtils.exitWithError(error)
-      }
-    }
+    // Build and install Collection
     await CollectionBuilder.build(collection)
     await CollectionInstaller.install(theme, collection)
+
     return collection
   }
 
