@@ -14,6 +14,7 @@ import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Collection from '../models/Collection.js'
+import FileAccessError from '../errors/FileAccessError.js'
 
 /**
  * This callback is displayed as part of the Requester class.
@@ -55,7 +56,7 @@ class SectionGenerator {
 
     // Don't overwrite an existing section, throw an error
     if (folderExists) {
-      throw new Error(`The "${section.name}" section folder already exists. Please remove it or choose a different name.`)
+      throw new FileAccessError(`The "${section.name}" section folder already exists. Please remove it or choose a different name.`)
     }
 
     // Create the folder structure
