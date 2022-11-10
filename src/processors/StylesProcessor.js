@@ -2,6 +2,7 @@ import esbuild from 'esbuild'
 import logger from '../utils/Logger.js'
 import EsbuildProcessor from './EsbuildProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
+import FileAccessError from '../errors/FileAccessError.js'
 
 const { BuildResult } = esbuild
 
@@ -54,10 +55,10 @@ class StylesProcessor {
       logger.debug(`Main StyleSheet Found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
       return matches[0]
     } else if (matches.length === 0) {
-      throw new Error('An index or main StyleSheet file could not be found.')
+      throw new FileAccessError('An index or main StyleSheet file could not be found.')
     }
     logger.debug(matches)
-    throw new Error('Only one index or main StyleSheet file is allowed but multiple matches were found.')
+    throw new FileAccessError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
   }
 }
 

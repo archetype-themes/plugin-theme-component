@@ -7,6 +7,7 @@ import logger from '../utils/Logger.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import ThemeUtils from '../utils/ThemeUtils.js'
+import FileAccessError from '../errors/FileAccessError.js'
 
 class CollectionFactory {
   /**
@@ -60,7 +61,7 @@ class CollectionFactory {
       try {
         await CollectionUtils.findSectionNames(collection)
       } catch (error) {
-        throw new Error(`Couldn't find the ${collection.name} collection on disk. Is it installed?`)
+        throw new FileAccessError(`Couldn't find the ${collection.name} collection on disk. Is it installed?`)
       }
 
     }

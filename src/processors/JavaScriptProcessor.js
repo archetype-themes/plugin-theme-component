@@ -2,6 +2,7 @@ import esbuild from 'esbuild'
 import EsbuildProcessor from './EsbuildProcessor.js'
 import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
+import FileAccessError from '../errors/FileAccessError.js'
 
 const { BuildResult } = esbuild
 
@@ -38,10 +39,10 @@ class JavaScriptProcessor {
       logger.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
       return matches[0]
     } else if (matches.length === 0) {
-      throw new Error('An index or main JavaScript file could not be found.')
+      throw new FileAccessError('An index or main JavaScript file could not be found.')
     }
     logger.debug(matches)
-    throw new Error('Only one index or main JavaScript file is allowed but multiple matches were found.')
+    throw new FileAccessError('Only one index or main JavaScript file is allowed but multiple matches were found.')
   }
 
   /**
