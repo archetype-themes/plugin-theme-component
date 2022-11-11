@@ -5,6 +5,8 @@ import merge from 'deepmerge'
 // Archie Components
 import ComponentBuilder from './ComponentBuilder.js'
 import SnippetBuilder from './SnippetBuilder.js'
+import ArchieCLI from '../cli/models/ArchieCLI.js'
+import Section from '../models/Section.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
@@ -92,8 +94,10 @@ class SectionBuilder extends ComponentBuilder {
     } else {
       await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex)
     }
-    section.liquidCode =
-      `<script src="{{ '${basename(section.build.javascriptFile)}' | asset_url }}" async></script>\n${section.liquidCode}`
+    if (ArchieCLI.commandOption === Section.COMPONENT_NAME) {
+      section.liquidCode =
+        `<script src="{{ '${basename(section.build.javascriptFile)}' | asset_url }}" async></script>\n${section.liquidCode}`
+    }
   }
 
   /**
@@ -197,8 +201,10 @@ class SectionBuilder extends ComponentBuilder {
 
     const styles = await FileUtils.getMergedFilesContent(stylesheets)
     await FileUtils.writeFile(section.build.stylesheet, styles)
-    section.liquidCode =
-      `<link type="text/css" href="{{ '${basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
+    if (ArchieCLI.commandOption === Section.COMPONENT_NAME) {
+      section.liquidCode =
+        `<link type="text/css" href="{{ '${basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
+    }
 
   }
 }
