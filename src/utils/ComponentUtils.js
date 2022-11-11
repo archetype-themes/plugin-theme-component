@@ -1,7 +1,7 @@
 // NodeJS Imports
 import path from 'path'
 import { env } from 'node:process'
-import { access, constants, mkdir } from 'node:fs/promises'
+import { mkdir } from 'node:fs/promises'
 
 // External Modules imports
 import merge from 'deepmerge'
@@ -11,10 +11,8 @@ import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 import ArchieCLI from '../cli/models/ArchieCLI.js'
 import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
-import FileAccessError from '../errors/FileAccessError.js'
 import Collection from '../models/Collection.js'
 import Section from '../models/Section.js'
-import SectionFiles from '../models/SectionFiles.js'
 import Snippet from '../models/Snippet.js'
 
 class ComponentUtils {
@@ -29,24 +27,6 @@ class ComponentUtils {
     await mkdir(`${component.rootFolder}/src/scripts`, { recursive: true })
     await mkdir(`${component.rootFolder}/src/styles`, { recursive: true })
     await mkdir(`${component.rootFolder}/src/snippets`, { recursive: true })
-  }
-
-  /**
-   * Detects the package Folder Name
-   * @param {Section|Snippet} component
-   * @returns {Promise<string>}
-   */
-  static async getValidRootFolder (component) {
-
-    let componentFolder = this.getRootFolder(component)
-
-    try {
-      await access(componentFolder, constants.X_OK)
-    } catch (error) {
-      throw new FileAccessError(`"${component.name}" not found at "${componentFolder}".\n\tVerify that the folder exists and its permissions.`)
-    }
-
-    return componentFolder
   }
 
   /**
@@ -104,7 +84,7 @@ class ComponentUtils {
           componentFiles.javascriptFiles.push(file)
           break
         case '.liquid':
-          if (componentFiles instanceof SectionFiles && path.dirname(file).endsWith('/snippets')) {
+          if (path.dirname(file).endsWith('/snippets')) {
             componentFiles.snippetFiles.push(file)
           } else {
             componentFiles.liquidFiles.push(file)
