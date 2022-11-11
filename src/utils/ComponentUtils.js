@@ -1,6 +1,5 @@
 // NodeJS Imports
 import path from 'path'
-import { env } from 'node:process'
 import { mkdir } from 'node:fs/promises'
 
 // External Modules imports
@@ -9,11 +8,6 @@ import merge from 'deepmerge'
 // Internal Modules
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
-import ArchieCLI from '../cli/models/ArchieCLI.js'
-import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
-import Collection from '../models/Collection.js'
-import Section from '../models/Section.js'
-import Snippet from '../models/Snippet.js'
 
 class ComponentUtils {
 
@@ -27,39 +21,6 @@ class ComponentUtils {
     await mkdir(`${component.rootFolder}/src/scripts`, { recursive: true })
     await mkdir(`${component.rootFolder}/src/styles`, { recursive: true })
     await mkdir(`${component.rootFolder}/src/snippets`, { recursive: true })
-  }
-
-  /**
-   * Detects the package Folder Name
-   * @param {Section|Snippet} component
-   * @returns {string}
-   */
-  static getRootFolder (component) {
-    if (ArchieNodeConfig.isSection() || ArchieNodeConfig.isSnippet()) {
-
-      if (env.npm_package_name && env.npm_package_name.includes(component.name)) {
-        return path.dirname(env.npm_package_json)
-      } else if (component instanceof Snippet) {
-        return path.join(path.dirname(env.npm_package_json), '../../', Collection.SNIPPETS_SUB_FOLDER, component.name)
-      }
-    } else if (ArchieNodeConfig.isCollection()) {
-      if (component instanceof Section) {
-        return path.join(path.dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, component.name)
-      }
-      if (component instanceof Snippet) {
-        return path.join(path.dirname(env.npm_package_json), Collection.SNIPPETS_SUB_FOLDER, component.name)
-      }
-    } else if (ArchieNodeConfig.isTheme()) {
-      if (component instanceof Section) {
-        return path.join(path.dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponentName, Collection.SECTIONS_SUB_FOLDER, component.name)
-      }
-      if (component instanceof Snippet) {
-        return path.join(path.dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, ArchieCLI.targetComponentName, Collection.SNIPPETS_SUB_FOLDER, component.name)
-
-      }
-    }
-
-    throw new Error(`Unable to determine Component Root Folder for ${component.name}`)
   }
 
   /**
