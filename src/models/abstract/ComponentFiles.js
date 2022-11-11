@@ -25,6 +25,9 @@ class ComponentFiles {
   #schemaLocaleFiles = []
 
   /** @type {string[]} **/
+  #snippetFiles = []
+
+  /** @type {string[]} **/
   #stylesheets = []
 
   constructor () {
@@ -159,6 +162,24 @@ class ComponentFiles {
    */
   set schemaLocaleFiles (value) {
     this.#schemaLocaleFiles = value
+  }
+
+  /**
+   * Get Snippet Files Object
+   * #snippetFiles{snippetName: snippetFile}
+   * @returns {string[]}
+   */
+  get snippetFiles () {
+    return this.#snippetFiles
+  }
+
+  /**
+   * Set Snippet Files Object
+   * #snippetFiles{snippetName: snippetFile}
+   * @param {string[]} value
+   */
+  set snippetFiles (value) {
+    this.#snippetFiles = value
   }
 
   /**
