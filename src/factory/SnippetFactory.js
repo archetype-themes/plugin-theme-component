@@ -9,6 +9,9 @@ import SnippetFiles from '../models/SnippetFiles.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import FileAccessError from '../errors/FileAccessError.js'
+import merge from 'deepmerge'
+import RenderFactory from './RenderFactory.js'
 
 class SnippetFactory {
   /**
@@ -23,23 +26,48 @@ class SnippetFactory {
 
     // Set Snippet folders
     snippet.rootFolder = path.join(snippetsPath, snippet.name)
-    snippet.build = BuildFactory.fromSnippet(snippet)
-    snippet.files = await FilesFactory.fromSnippetFolder(snippet.rootFolder)
 
-    // Prepare Snippet liquid code
+    if (!await FileUtils.isReadable(snippet.rootFolder)) {
+      logger.error(`Snippet Factory Abort: ${snippet.name} was not found at any expected location: "${snippet.rootFolder}".`)
+      throw new FileAccessError(`Unable to access the "${snippet.name}" section on disk. Tips: Is it spelled properly? Is the collection installed?`)
+    }
+
+    // Generate build elements
+    snippet.build = BuildFactory.fromSnippet(snippet)
+    // Find snippet files
+    snippet.files = await FilesFactory.fromSnippetFolder(snippet.rootFolder)
+    console.log(snippet.rootFolder)
+    console.log(snippet.files.snippetFiles)
+
+    // Abort if no liquid file was found
+    if (snippet.files.liquidFiles.length === 0) {
+      throw new FileAccessError(`Snippet Factory: No liquid files file found for the "${snippet.name}" snippet`)
+    }
+
+    // Load liquid code from files
     const pluralForm = snippet.files.liquidFiles.length > 1 ? 's' : ''
     logger.debug(`${snippet.name}: ${snippet.files.liquidFiles.length} liquid file${pluralForm} found`)
     snippet.liquidCode = await FileUtils.getMergedFilesContent(snippet.files.liquidFiles)
 
-    // Prepare Snippet Schema
+    // Load Schema file content
     if (snippet.files.schemaFile) {
       snippet.schema = JSON.parse(await FileUtils.getFileContents(snippet.files.schemaFile))
+      // Copy locales content content from schema file
+      if (snippet.schema.locales) {
+        snippet.locales = snippet.schema.locales
+      }
     }
 
-    // Prepare Snippet Locales
+    // Load locale files content
     if (snippet.files.localeFiles && snippet.files.localeFiles.length > 0) {
-      snippet.locales = await ComponentUtils.parseLocaleFilesContent(snippet.files.localeFiles)
+      snippet.locales = merge(snippet.locales, await ComponentUtils.parseLocaleFilesContent(snippet.files.localeFiles))
+      snippet.schemaLocales = await ComponentUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
     }
+
+    // Create Render Models form Liquid Code
+    snippet.renders = RenderFactory.fromComponent(snippet)
+    // Create Child Snippet Models Within Render Models
+    snippet.renders = await SnippetFactory.fromRenders(snippet.renders, snippet.files.snippetFiles, snippetsPath)
 
     return snippet
   }

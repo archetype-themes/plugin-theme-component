@@ -30,7 +30,7 @@ class SectionFactory {
     if (collection && collection.rootFolder) {
       section.rootFolder = path.join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
     } else {
-      section.rootFolder = ComponentUtils.getRootFolder(section)
+      section.rootFolder = ComponentUtils.findRootFolder(section)
     }
 
     if (!await FileUtils.isReadable(section.rootFolder)) {
@@ -48,7 +48,7 @@ class SectionFactory {
       throw new FileAccessError(`Section Factory: No liquid files file found for the "${section.name}" section`)
     }
 
-    // Load liquid files' content
+    // Load liquid code from files
     const pluralForm = section.files.liquidFiles.length > 1 ? 's' : ''
     logger.debug(`${section.name}: ${section.files.liquidFiles.length} liquid file${pluralForm} found`)
     section.liquidCode = await FileUtils.getMergedFilesContent(section.files.liquidFiles)
@@ -56,7 +56,7 @@ class SectionFactory {
     // Load Schema file content
     if (section.files.schemaFile) {
       section.schema = JSON.parse(await FileUtils.getFileContents(section.files.schemaFile))
-      // Copy locales content as a separate entity
+      // Copy locales content from schema file
       if (section.schema.locales) {
         section.locales = section.schema.locales
       }
@@ -68,9 +68,8 @@ class SectionFactory {
       section.schemaLocales = await ComponentUtils.parseLocaleFilesContent(section.files.schemaLocaleFiles)
     }
 
-    // Parse and prepare Render models from liquid code
-    const snippetsPath = path.join(collection.rootFolder, Collection.SNIPPETS_SUB_FOLDER)
     // Create Render Models form Liquid Code
+    const snippetsPath = path.join(collection.rootFolder, Collection.SNIPPETS_SUB_FOLDER)
     section.renders = RenderFactory.fromComponent(section)
     // Create Child Snippet Models Within Render Models
     section.renders = await SnippetFactory.fromRenders(section.renders, section.files.snippetFiles, snippetsPath)
