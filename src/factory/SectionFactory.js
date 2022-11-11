@@ -13,6 +13,7 @@ import Section from '../models/Section.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import { env } from 'node:process'
 
 class SectionFactory {
 
@@ -30,7 +31,7 @@ class SectionFactory {
     if (collection && collection.rootFolder) {
       section.rootFolder = path.join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
     } else {
-      section.rootFolder = ComponentUtils.findRootFolder(section)
+      section.rootFolder = path.dirname(env.npm_package_json)
     }
 
     if (!await FileUtils.isReadable(section.rootFolder)) {
