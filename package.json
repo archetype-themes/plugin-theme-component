@@ -10,9 +10,11 @@
   "dependencies": {
     "chokidar": "^3.5.3",
     "deepmerge": "^4.2.2",
-    "esbuild": "^0.15.12",
+    "esbuild": "^0.15.14",
     "esbuild-plugin-less": "^1.1.9",
     "esbuild-sass-plugin": "^2.4.0",
+    "esm": "^3.2.25",
+    "lodash-es": "^4.17.21",
     "pino": "^8.7.0",
     "pino-pretty": "^9.1.1"
   },
