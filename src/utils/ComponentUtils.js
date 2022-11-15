@@ -4,6 +4,7 @@ import { mkdir } from 'node:fs/promises'
 
 // External Modules imports
 import merge from 'deepmerge'
+import { union } from 'lodash-es'
 
 // Internal Modules
 import FileUtils from './FileUtils.js'
@@ -132,10 +133,16 @@ class ComponentUtils {
    * @return {string[]}
    */
   static getSnippetRootFoldersFromRenders (renders) {
-    const snippetRootFolders = []
+    let snippetRootFolders = []
     for (const render of renders) {
-      if (render.snippet && render.snippet.rootFolder && !snippetRootFolders.includes(render.snippet.rootFolder)) {
-        snippetRootFolders.push(render.snippet.rootFolder)
+      if (render.snippet) {
+        if (render.snippet.rootFolder && !snippetRootFolders.includes(render.snippet.rootFolder)) {
+          snippetRootFolders.push(render.snippet.rootFolder)
+        }
+        if (render.snippet.renders && render.snippet.renders.length > 0) {
+          const childSnippetRootFolders = this.getSnippetRootFoldersFromRenders(render.snippet.renders)
+          snippetRootFolders = union(snippetRootFolders, childSnippetRootFolders)
+        }
       }
     }
     return snippetRootFolders
