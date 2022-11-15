@@ -91,7 +91,6 @@ yarn build-section --quiet
 
 ## Limitations Being Worked On
 
-* Snippets can't include another snippet.
 * Stylesheets with a shared core are not handled at the moment.
 * No Stylesheet Merge or optimisation is being performed.
 * Installing multiple collections in a theme is not handled at the moment.
