@@ -36,8 +36,6 @@ class SnippetFactory {
     snippet.build = BuildFactory.fromSnippet(snippet)
     // Find snippet files
     snippet.files = await FilesFactory.fromSnippetFolder(snippet.rootFolder)
-    console.log(snippet.rootFolder)
-    console.log(snippet.files.snippetFiles)
 
     // Abort if no liquid file was found
     if (snippet.files.liquidFiles.length === 0) {
