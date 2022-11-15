@@ -1,8 +1,8 @@
-class FileAccessError extends Error {
+class RecursionError extends Error {
   constructor (message) {
     super(message)
     this.name = this.constructor.name
   }
 }
 
-export default FileAccessError
+export default RecursionError
