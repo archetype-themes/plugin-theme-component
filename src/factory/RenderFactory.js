@@ -1,5 +1,8 @@
+import RecursionError from '../errors/RecursionError.js'
 import Render from '../models/Render.js'
+import Snippet from '../models/Snippet.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
+import logger from '../utils/Logger.js'
 
 class RenderFactory {
 
@@ -13,8 +16,13 @@ class RenderFactory {
     const renderTags = LiquidUtils.findRenderTags(component.liquidCode)
 
     if (renderTags.length > 0) {
+      if (component instanceof Snippet) {
+        this.validateSnippetRecursion(component.name, renderTags)
+      }
+
       return this.fromRenderTags(renderTags)
     }
+
     return []
   }
 
@@ -34,7 +42,7 @@ class RenderFactory {
   }
 
   /**
-   *
+   * Create a Render Model instance from a render liquid tag
    * @param {string} matchText
    * @param {Object} matchGroups
    * @return {Render}
@@ -70,6 +78,19 @@ class RenderFactory {
     return render
   }
 
+  /**
+   * Validate Snippet Recursion
+   * @param {string} snippetName
+   * @param {RegExpMatchArray[]} renderTags
+   */
+  static validateSnippetRecursion (snippetName, renderTags) {
+    for (const renderTag of renderTags) {
+      if (renderTag.groups.snippet && renderTag.groups.snippet === snippetName) {
+        logger.debug(renderTag)
+        throw new RecursionError(`Snippet ${snippetName} is trying to render itself. Please verify your source code.`)
+      }
+    }
+  }
 }
 
 export default RenderFactory
