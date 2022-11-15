@@ -1,6 +1,6 @@
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
-import { basename, join } from 'path'
+import path from 'path'
 
 import logger from './Logger.js'
 import NodeUtils from './NodeUtils.js'
@@ -20,7 +20,7 @@ class FileUtils {
     files = (typeof files === 'string' || files instanceof String) ? [files] : files
 
     return Promise.all(files.map((file) => {
-      copyFile(file, `${file}.${NodeUtils.getReadableTimestamp()}`)
+      copyFile(file, `${file.replace(/\.[^/.]+$/, '')}.${NodeUtils.getReadableTimestamp()}${path.extname(file)}`)
     }))
   }
 
@@ -41,7 +41,7 @@ class FileUtils {
   static async copy (files) {
     const copyPromises = []
     for (const sourceFile in files) {
-      logger.debug(`Copying ${basename(sourceFile)}`)
+      logger.debug(`Copying ${path.basename(sourceFile)}`)
       copyPromises.push(copyFile(sourceFile, files[sourceFile]))
     }
 
@@ -61,11 +61,11 @@ class FileUtils {
 
     for (const dirent of folderContent) {
       if (dirent.isFile()) {
-        promises.push(copyFile(join(sourceFolder, dirent.name), join(targetFolder, dirent.name)))
+        promises.push(copyFile(path.join(sourceFolder, dirent.name), path.join(targetFolder, dirent.name)))
       } else if (dirent.isDirectory() && recursive) {
-        const newTargetFolder = join(targetFolder, dirent.name)
+        const newTargetFolder = path.join(targetFolder, dirent.name)
         await mkdir(newTargetFolder, { recursive: true })
-        promises.push(this.copyFolder(join(sourceFolder, dirent.name), newTargetFolder, recursive))
+        promises.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, recursive))
       }
     }
     return Promise.all(promises)
@@ -123,7 +123,7 @@ class FileUtils {
     const entries = await readdir(folder, { withFileTypes: true })
     const files = []
     for (const entry of entries) {
-      const absolutePath = join(folder, entry.name)
+      const absolutePath = path.join(folder, entry.name)
       if (entry.isDirectory()) {
         if (!this.#EXCLUDED_FOLDERS.includes(entry.name)) {
           files.push(...(await this.getFolderFilesRecursively(absolutePath)))

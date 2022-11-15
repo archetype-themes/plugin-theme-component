@@ -47,7 +47,8 @@ class CollectionInstaller {
 
     for (const sectionsEntry of sectionsContents) {
       if (sectionsEntry.isFile() && sectionsEntry.name.toLowerCase().endsWith('.liquid')) {
-        filesToCopy[join(collection.build.sectionsFolder, sectionsEntry.name)] = join(theme.sectionsFolder, sectionsEntry.name)
+        filesToCopy[join(collection.build.sectionsFolder, sectionsEntry.name)] =
+          join(theme.sectionsFolder, sectionsEntry.name)
       }
     }
 
@@ -57,7 +58,8 @@ class CollectionInstaller {
 
     for (const snippetsEntry of snippetsContents) {
       if (snippetsEntry.isFile() && snippetsEntry.name.toLowerCase().endsWith('.liquid')) {
-        filesToCopy[join(collection.build.snippetsFolder, snippetsEntry.name)] = join(theme.snippetsFolder, snippetsEntry.name)
+        filesToCopy[join(collection.build.snippetsFolder, snippetsEntry.name)] =
+          join(theme.snippetsFolder, snippetsEntry.name)
       }
     }
 
@@ -80,10 +82,16 @@ class CollectionInstaller {
     console.log('\n')
   }
 
+  /**
+   *
+   * @param {string[]} filesToCopy
+   * @return {Promise<void>}
+   */
   static async backupFiles (filesToCopy) {
     const filesToBackup = []
 
-    for (const fileToCopy of filesToCopy) {
+    for (const sourceFile in filesToCopy) {
+      const fileToCopy = filesToCopy[sourceFile]
       if (await FileUtils.exists(fileToCopy)) {
         logger.debug(`File "${basename(fileToCopy)}" exists - backup requested.`)
         filesToBackup.push(fileToCopy)
@@ -106,7 +114,9 @@ class CollectionInstaller {
     let injections = []
 
     const themeLiquidFile = join(theme.rootFolder, 'layout', 'theme.liquid')
-    let themeLiquid = (await FileUtils.isReadable(themeLiquidFile)) ? await FileUtils.getFileContents(themeLiquidFile) : ''
+    let themeLiquid = (await FileUtils.isReadable(themeLiquidFile))
+      ? await FileUtils.getFileContents(themeLiquidFile)
+      : ''
 
     if (options.injectJavascript) {
       if (themeLiquid.includes(javascriptFileBasename)) {
