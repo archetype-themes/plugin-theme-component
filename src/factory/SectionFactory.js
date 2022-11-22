@@ -1,4 +1,5 @@
 // Node JS Internal imports
+import { env } from 'node:process'
 import path from 'path'
 // External Node JS Modules
 import merge from 'deepmerge'
@@ -7,13 +8,13 @@ import BuildFactory from './BuildFactory.js'
 import FilesFactory from './FilesFactory.js'
 import RenderFactory from './RenderFactory.js'
 import SnippetFactory from './SnippetFactory.js'
+import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import Collection from '../models/Collection.js'
 import Section from '../models/Section.js'
 import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
-import { env } from 'node:process'
 
 class SectionFactory {
 
@@ -30,7 +31,9 @@ class SectionFactory {
     // Set Section folders
     if (collection && collection.rootFolder) {
       section.rootFolder = path.join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
-    } else {
+    } else if (ArchieNodeConfig.isCollection()) {
+      section.rootFolder = path.join(path.dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, section.name)
+    } else if (ArchieNodeConfig.isSection()) {
       section.rootFolder = path.dirname(env.npm_package_json)
     }
 
@@ -70,7 +73,7 @@ class SectionFactory {
     }
 
     // Create Render Models form Liquid Code
-    const snippetsPath = path.join(collection.rootFolder, Collection.SNIPPETS_SUB_FOLDER)
+    const snippetsPath = path.join(section.rootFolder, '../../', Collection.SNIPPETS_SUB_FOLDER)
     section.renders = RenderFactory.fromComponent(section)
     // Create Child Snippet Models Within Render Models
     section.renders = await SnippetFactory.fromRenders(section.renders, section.files.snippetFiles, snippetsPath)
