@@ -3,6 +3,7 @@ import logger from '../utils/Logger.js'
 import EsbuildProcessor from './EsbuildProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import FileAccessError from '../errors/FileAccessError.js'
+import path from 'path'
 
 const { BuildResult } = esbuild
 
@@ -59,6 +60,29 @@ class StylesProcessor {
     }
     logger.debug(matches)
     throw new FileAccessError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
+  }
+
+  /**
+   * Create Master Sass File
+   * @param {string[]} stylesheets
+   * @param {string} targetFileLocation
+   * @return {Promise<string>}
+   */
+  static async createMasterSassFile (stylesheets, targetFileLocation) {
+    const masterSassFile = path.join(targetFileLocation, 'tmp.sass')
+    let masterSassFileContent = ''
+
+    for (const stylesheet of stylesheets) {
+      console.log(stylesheet)
+      const stylesheetRelativePath = path.relative(targetFileLocation, path.dirname(stylesheet))
+      console.log(stylesheetRelativePath)
+      const sassFile = path.join(stylesheetRelativePath, path.basename(stylesheet))
+      console.log(sassFile)
+      masterSassFileContent += `@use '${sassFile} as *'\n`
+    }
+
+    await FileUtils.writeFile(masterSassFile, masterSassFileContent)
+    return masterSassFile
   }
 }
 
