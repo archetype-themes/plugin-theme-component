@@ -1,5 +1,5 @@
-import { mkdir, writeFile } from 'node:fs/promises'
-import { basename, join } from 'path'
+import { mkdir, unlink, writeFile } from 'node:fs/promises'
+import path from 'path'
 import merge from 'deepmerge'
 
 // Archie Components
@@ -9,10 +9,11 @@ import ArchieCLI from '../cli/models/ArchieCLI.js'
 import Section from '../models/Section.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
+import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
-import ComponentUtils from '../utils/ComponentUtils.js'
+import RenderUtils from '../utils/RenderUtils.js'
 
 class SectionBuilder extends ComponentBuilder {
 
@@ -96,7 +97,7 @@ class SectionBuilder extends ComponentBuilder {
     }
     if (ArchieCLI.commandOption === Section.COMPONENT_NAME) {
       section.liquidCode =
-        `<script src="{{ '${basename(section.build.javascriptFile)}' | asset_url }}" async></script>\n${section.liquidCode}`
+        `<script src="{{ '${path.basename(section.build.javascriptFile)}' | asset_url }}" async></script>\n${section.liquidCode}`
     }
   }
 
@@ -138,7 +139,7 @@ class SectionBuilder extends ComponentBuilder {
     }
 
     for (const schemaLocale in section.schemaLocales) {
-      const schemaLocaleFileName = join(section.build.localesFolder, `${schemaLocale}.schema.json`)
+      const schemaLocaleFileName = path.join(section.build.localesFolder, `${schemaLocale}.schema.json`)
       const localeJson = {}
       localeJson['sections'] = {}
       localeJson['sections'][section.name] = section.schemaLocales[schemaLocale]
@@ -183,27 +184,62 @@ class SectionBuilder extends ComponentBuilder {
   static async buildStylesheets (section) {
     await StylesProcessor.buildStyles(section.build.stylesheet, section.files.mainStylesheet)
 
-    const processedSnippets = []
-    const stylesheets = [section.build.stylesheet]
+    let stylesheets = [section.files.mainStylesheet]
 
     if (section.renders) {
-      for (const render of section.renders) {
-        if (render.snippet.files.mainStylesheet && !processedSnippets.includes(render.snippetName)) {
-          await SnippetBuilder.buildStylesheets(render.snippet)
+      stylesheets = stylesheets.concat(await RenderUtils.getMainStylesheets(section.renders))
+    }
 
-          stylesheets.push(render.snippet.build.stylesheet)
-          processedSnippets.push(render.snippetName)
-        }
+    let useMasterSassFile = true
+
+    for (const stylesheet of stylesheets) {
+      if (!['.css', '.scss', '.sass'].includes(path.extname(stylesheet))) {
+        useMasterSassFile = false
+        break
       }
     }
 
-    const styles = await FileUtils.getMergedFilesContent(stylesheets)
-    await FileUtils.writeFile(section.build.stylesheet, styles)
-    if (ArchieCLI.commandOption === Section.COMPONENT_NAME) {
-      section.liquidCode =
-        `<link type="text/css" href="{{ '${basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
+    if (useMasterSassFile) {
+      logger.debug('Using Sass to merge CSS')
+      const masterSassFile = await StylesProcessor.createMasterSassFile(stylesheets, section.rootFolder)
+      await StylesProcessor.buildStyles(section.build.stylesheet, masterSassFile)
+      await unlink(masterSassFile)
+    } else {
+      logger.debug('Using Collate to merge CSS')
+      const styles = await FileUtils.getMergedFilesContent(stylesheets)
+      await FileUtils.writeFile(section.build.stylesheet, styles)
     }
 
+    if (ArchieCLI.commandOption === Section.COMPONENT_NAME) {
+      section.liquidCode =
+        `<link type="text/css" href="{{ '${path.basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
+    }
+
+  }
+
+  /**
+   * Get Stylesheets From Render
+   * @param {Render[]} renders
+   * @param {string[]} processedSnippets
+   * @return {Promise<string[]>}
+   */
+  static async getStylesheets (renders, processedSnippets = []) {
+
+    let stylesheets = []
+    for (const render of renders) {
+      if (render.snippet.files.mainStylesheet && !processedSnippets.includes(render.snippetName)) {
+        await SnippetBuilder.buildStylesheets(render.snippet)
+        stylesheets.push(render.snippet.files.mainStylesheet)
+        processedSnippets.push(render.snippetName)
+
+        if (render.snippet.renders) {
+          stylesheets =
+            stylesheets.concat(await RenderUtils.getMainStylesheets(render.snippet.renders, processedSnippets))
+        }
+
+      }
+    }
+    return stylesheets
   }
 }
 

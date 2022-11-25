@@ -73,12 +73,7 @@ class StylesProcessor {
     let masterSassFileContent = ''
 
     for (const stylesheet of stylesheets) {
-      console.log(stylesheet)
-      const stylesheetRelativePath = path.relative(targetFileLocation, path.dirname(stylesheet))
-      console.log(stylesheetRelativePath)
-      const sassFile = path.join(stylesheetRelativePath, path.basename(stylesheet))
-      console.log(sassFile)
-      masterSassFileContent += `@use '${sassFile} as *'\n`
+      masterSassFileContent += `@use '${stylesheet}' as *\n`
     }
 
     await FileUtils.writeFile(masterSassFile, masterSassFileContent)
