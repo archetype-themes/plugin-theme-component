@@ -182,17 +182,15 @@ class SectionBuilder extends ComponentBuilder {
    * @returns {Promise<void>}
    */
   static async buildStylesheets (section) {
-    await StylesProcessor.buildStyles(section.build.stylesheet, section.files.mainStylesheet)
-
-    let stylesheets = [section.files.mainStylesheet]
+    let mainStylesheets = [section.files.mainStylesheet]
 
     if (section.renders) {
-      stylesheets = stylesheets.concat(await RenderUtils.getMainStylesheets(section.renders))
+      mainStylesheets = mainStylesheets.concat(await RenderUtils.getMainStylesheets(section.renders))
     }
 
     let useMasterSassFile = true
 
-    for (const stylesheet of stylesheets) {
+    for (const stylesheet of mainStylesheets) {
       if (!['.css', '.scss', '.sass'].includes(path.extname(stylesheet))) {
         useMasterSassFile = false
         break
@@ -201,12 +199,14 @@ class SectionBuilder extends ComponentBuilder {
 
     if (useMasterSassFile) {
       logger.debug('Using Sass to merge CSS')
-      const masterSassFile = await StylesProcessor.createMasterSassFile(stylesheets, section.rootFolder)
+      const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, section.rootFolder)
       await StylesProcessor.buildStyles(section.build.stylesheet, masterSassFile)
       await unlink(masterSassFile)
     } else {
+      await StylesProcessor.buildStyles(section.build.stylesheet, section.files.mainStylesheet)
       logger.debug('Using Collate to merge CSS')
-      const styles = await FileUtils.getMergedFilesContent(stylesheets)
+      const buildStylesheets = await RenderUtils.getBuildStylesheets(section.renders)
+      const styles = await FileUtils.getMergedFilesContent(buildStylesheets)
       await FileUtils.writeFile(section.build.stylesheet, styles)
     }
 
@@ -217,30 +217,6 @@ class SectionBuilder extends ComponentBuilder {
 
   }
 
-  /**
-   * Get Stylesheets From Render
-   * @param {Render[]} renders
-   * @param {string[]} processedSnippets
-   * @return {Promise<string[]>}
-   */
-  static async getStylesheets (renders, processedSnippets = []) {
-
-    let stylesheets = []
-    for (const render of renders) {
-      if (render.snippet.files.mainStylesheet && !processedSnippets.includes(render.snippetName)) {
-        await SnippetBuilder.buildStylesheets(render.snippet)
-        stylesheets.push(render.snippet.files.mainStylesheet)
-        processedSnippets.push(render.snippetName)
-
-        if (render.snippet.renders) {
-          stylesheets =
-            stylesheets.concat(await RenderUtils.getMainStylesheets(render.snippet.renders, processedSnippets))
-        }
-
-      }
-    }
-    return stylesheets
-  }
 }
 
 export default SectionBuilder
