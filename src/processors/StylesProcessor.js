@@ -79,6 +79,15 @@ class StylesProcessor {
     await FileUtils.writeFile(masterSassFile, masterSassFileContent)
     return masterSassFile
   }
+
+  static canWeUseMasterSassFile (stylesheets) {
+    for (const stylesheet of stylesheets) {
+      if (!['.css', '.scss', '.sass'].includes(path.extname(stylesheet))) {
+        return false
+      }
+    }
+    return true
+  }
 }
 
 export default StylesProcessor

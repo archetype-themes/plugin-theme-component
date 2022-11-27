@@ -182,20 +182,16 @@ class SectionBuilder extends ComponentBuilder {
    * @returns {Promise<void>}
    */
   static async buildStylesheets (section) {
-    let mainStylesheets = [section.files.mainStylesheet]
+    let mainStylesheets = []
+    if (section.files && section.files.mainStylesheet) {
+      mainStylesheets.push(section.files.mainStylesheet)
+    }
 
     if (section.renders) {
       mainStylesheets = mainStylesheets.concat(await RenderUtils.getMainStylesheets(section.renders))
     }
 
-    let useMasterSassFile = true
-
-    for (const stylesheet of mainStylesheets) {
-      if (!['.css', '.scss', '.sass'].includes(path.extname(stylesheet))) {
-        useMasterSassFile = false
-        break
-      }
-    }
+    let useMasterSassFile = StylesProcessor.canWeUseMasterSassFile(mainStylesheets)
 
     if (useMasterSassFile) {
       logger.debug('Using Sass to merge CSS')
@@ -210,6 +206,7 @@ class SectionBuilder extends ComponentBuilder {
       await FileUtils.writeFile(section.build.stylesheet, styles)
     }
 
+    // Add CSS stylesheet reference to section liquid code only if we are building an individual section
     if (ArchieCLI.commandOption === Section.COMPONENT_NAME) {
       section.liquidCode =
         `<link type="text/css" href="{{ '${path.basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`

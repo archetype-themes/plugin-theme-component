@@ -1,12 +1,14 @@
 //Node imports
-import { access, constants, mkdir, rm, writeFile } from 'node:fs/promises'
+import { access, constants, mkdir, rm, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'path'
 
 //Archie imports
 import SectionBuilder from './SectionBuilder.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import RenderUtils from '../utils/RenderUtils.js'
 
 class CollectionBuilder {
   static backupFiles
@@ -55,20 +57,36 @@ class CollectionBuilder {
    */
   static async buildStylesheets (collection) {
 
-    const stylesheets = []
-    for (const section of collection.sections) {
-      if (section.build.stylesheet) {
-        try {
-          await access(section.build.stylesheet, constants.R_OK)
-          stylesheets.push(section.build.stylesheet)
-        } catch {
-          // Error is expected if the stylesheet was not created
-        }
+    let mainStylesheets = []
 
+    for (const section of collection.sections) {
+      if (section.files.mainStylesheet) {
+        mainStylesheets.push(section.files.mainStylesheet)
       }
+      if (section.renders) {
+        mainStylesheets = mainStylesheets.concat(await RenderUtils.getMainStylesheets(section.renders))
+      }
+
     }
-    const mergedStylesheets = await FileUtils.getMergedFilesContent(stylesheets)
-    await FileUtils.writeFile(collection.build.stylesheet, mergedStylesheets)
+    const useMasterSassFile = StylesProcessor.canWeUseMasterSassFile(mainStylesheets)
+
+    if (useMasterSassFile) {
+      logger.debug('Using Sass to merge CSS')
+      const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, collection.rootFolder)
+      await StylesProcessor.buildStyles(collection.build.stylesheet, masterSassFile)
+      await unlink(masterSassFile)
+    } else {
+      const buildStylesheets = []
+      for (const section of collection.sections) {
+        if (section.files && section.files.mainStylesheet) {
+          await access(section.build.stylesheet, constants.R_OK)
+          buildStylesheets.push(section.build.stylesheet)
+        }
+      }
+      const mergedStylesheets = await FileUtils.getMergedFilesContent(buildStylesheets)
+      await FileUtils.writeFile(collection.build.stylesheet, mergedStylesheets)
+    }
+
   }
 
   /**
