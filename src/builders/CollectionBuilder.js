@@ -1,6 +1,6 @@
 //Node imports
 import { access, constants, mkdir, rm, unlink, writeFile } from 'node:fs/promises'
-import { join } from 'path'
+import path from 'path'
 
 //Archie imports
 import SectionBuilder from './SectionBuilder.js'
@@ -72,7 +72,7 @@ class CollectionBuilder {
 
     if (useMasterSassFile) {
       logger.debug('Using Sass to merge CSS')
-      const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, collection.rootFolder)
+      const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, path.join(collection.rootFolder, collection.name))
       await StylesProcessor.buildStyles(collection.build.stylesheet, masterSassFile)
       await unlink(masterSassFile)
     } else {
@@ -164,7 +164,7 @@ class CollectionBuilder {
   static async writeSchemaLocales (collection) {
 
     for (const schemaLocale in collection.schemaLocales) {
-      const schemaLocaleFileName = join(collection.build.localesFolder, `${schemaLocale}.schema.json`)
+      const schemaLocaleFileName = path.join(collection.build.localesFolder, `${schemaLocale}.schema.json`)
       const localeJsonString = JSON.stringify(collection.schemaLocales[schemaLocale], null, 2)
       await writeFile(schemaLocaleFileName, localeJsonString)
     }

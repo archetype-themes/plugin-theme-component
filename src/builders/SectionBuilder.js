@@ -195,7 +195,7 @@ class SectionBuilder extends ComponentBuilder {
 
     if (useMasterSassFile) {
       logger.debug('Using Sass to merge CSS')
-      const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, section.rootFolder)
+      const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, path.join(section.rootFolder, section.name))
       await StylesProcessor.buildStyles(section.build.stylesheet, masterSassFile)
       await unlink(masterSassFile)
     } else {

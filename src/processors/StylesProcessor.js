@@ -65,11 +65,11 @@ class StylesProcessor {
   /**
    * Create Master Sass File
    * @param {string[]} stylesheets
-   * @param {string} targetFileLocation
+   * @param {string} targetFile
    * @return {Promise<string>}
    */
-  static async createMasterSassFile (stylesheets, targetFileLocation) {
-    const masterSassFile = path.join(targetFileLocation, 'tmp.sass')
+  static async createMasterSassFile (stylesheets, targetFile) {
+    const masterSassFile = targetFile + '.sass'
     let masterSassFileContent = ''
 
     for (const stylesheet of stylesheets) {
