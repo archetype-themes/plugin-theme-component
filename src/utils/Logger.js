@@ -1,3 +1,4 @@
+import { argv } from 'node:process'
 import pino from 'pino'
 import PinoPretty from 'pino-pretty'
 import NodeUtils from './NodeUtils.js'
@@ -29,9 +30,9 @@ function traceCaller (pinoInstance) {
 
 let loglevel = 'info'
 
-if (process.argv.includes('--quiet')) {
+if (argv.includes('--quiet')) {
   loglevel = 'error'
-} else if (process.argv.includes('--verbose') || process.argv.includes('--debug')) {
+} else if (argv.includes('--verbose') || argv.includes('--debug')) {
   loglevel = 'debug'
 }
 

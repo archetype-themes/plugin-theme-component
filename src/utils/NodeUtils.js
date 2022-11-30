@@ -1,4 +1,4 @@
-import { env, exit } from 'node:process'
+import { argv, env, exit } from 'node:process'
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 import { dirname } from 'path'
@@ -12,7 +12,7 @@ class NodeUtils {
    * @return {string[]}
    */
   static getArgs () {
-    const args = process.argv.slice(2)
+    const args = argv.slice(2)
     const filteredArgs = []
 
     for (const arg of args) {
