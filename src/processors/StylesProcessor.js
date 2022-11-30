@@ -1,23 +1,37 @@
-import esbuild from 'esbuild'
-import logger from '../utils/Logger.js'
-import EsbuildProcessor from './EsbuildProcessor.js'
-import FileUtils from '../utils/FileUtils.js'
-import FileAccessError from '../errors/FileAccessError.js'
+// Node JS internal imports
 import path from 'path'
-
-const { BuildResult } = esbuild
+import { unlink } from 'node:fs/promises'
+// Archie Internal imports
+import PostCssProcessor from './PostCssProcessor.js'
+import SassPreProcessor from './SassPreProcessor.js'
+import FileAccessError from '../errors/FileAccessError.js'
+import FileUtils from '../utils/FileUtils.js'
+import logger from '../utils/Logger.js'
 
 class StylesProcessor {
-
   /**
-   * This is simply a wrapper for the EsbuildProcessor for now
+   * Process Styles by using all appropriate style preprocessors
    * @param {string} outputFile
    * @param {string} mainStyleSheet
    * @param {string[]} additionalFiles
-   * @returns {Promise<BuildResult>}
+   * @returns {Promise<string>} Final styles
    */
-  static buildStyles (outputFile, mainStyleSheet, additionalFiles = []) {
-    return EsbuildProcessor.buildStyleSheets(outputFile, mainStyleSheet, additionalFiles)
+  static async buildStyles (outputFile, mainStyleSheet, additionalFiles = []) {
+    const mainStyleSheetExtension = path.extname(mainStyleSheet)
+
+    if (['.scss', '.sass'].includes(mainStyleSheetExtension)) {
+      const css = SassPreProcessor.processStyleSheet(mainStyleSheet)
+      const tmpCssOutputFile = mainStyleSheet.replace(mainStyleSheetExtension, '.css')
+      await FileUtils.writeFile(tmpCssOutputFile, css)
+      const finalCss = await PostCssProcessor.processStyles(css, tmpCssOutputFile, outputFile)
+      await unlink(tmpCssOutputFile)
+
+      return finalCss
+    } else if ('.css' === mainStyleSheetExtension) {
+      const css = await FileUtils.getFileContents(mainStyleSheet)
+
+      return PostCssProcessor.processStyles(css, mainStyleSheet, outputFile)
+    }
   }
 
   /**
