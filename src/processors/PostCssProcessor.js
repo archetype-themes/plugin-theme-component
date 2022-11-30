@@ -8,6 +8,7 @@ import postcssPresetEnv from 'postcss-preset-env'
 import postcss_scss from 'postcss-scss'
 import postcss_shopify_settings_variables from 'postcss-shopify-settings-variables'
 import postcss_simple_vars from 'postcss-simple-vars'
+import tailwindcss from 'tailwindcss'
 
 class PostCssProcessor {
   /**
@@ -30,6 +31,13 @@ class PostCssProcessor {
         stage: 1,
       }),
       postcss_shopify_settings_variables,
+      tailwindcss({
+        content: ['./**/*.{liquid,json}'],
+        theme: {
+          extend: {},
+        },
+        plugins: [],
+      }),
       autoprefixer,
       cssnanoPlugin({
         preset: ['default', {

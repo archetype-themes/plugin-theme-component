@@ -53,7 +53,7 @@ class CollectionBuilder {
   /**
    * Build Main Stylesheet
    * @param {module:models/Collection} collection
-   * @returns {Promise<void>}
+   * @return {Promise<void|Awaited<unknown>[]>}
    */
   static async buildStylesheets (collection) {
 
@@ -73,8 +73,10 @@ class CollectionBuilder {
     if (useMasterSassFile) {
       logger.debug('Using Sass to merge CSS')
       const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, path.join(collection.rootFolder, collection.name))
-      await StylesProcessor.buildStyles(collection.build.stylesheet, masterSassFile)
-      await unlink(masterSassFile)
+      const styles = await StylesProcessor.buildStyles(collection.build.stylesheet, masterSassFile)
+      return Promise.all([
+        FileUtils.writeFile(collection.build.stylesheet, styles),
+        unlink(masterSassFile)])
     } else {
       const buildStylesheets = []
       for (const section of collection.sections) {
@@ -84,7 +86,7 @@ class CollectionBuilder {
         }
       }
       const mergedStylesheets = await FileUtils.getMergedFilesContent(buildStylesheets)
-      await FileUtils.writeFile(collection.build.stylesheet, mergedStylesheets)
+      return FileUtils.writeFile(collection.build.stylesheet, mergedStylesheets)
     }
 
   }

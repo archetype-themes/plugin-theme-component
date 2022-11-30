@@ -196,13 +196,19 @@ class SectionBuilder extends ComponentBuilder {
     if (useMasterSassFile) {
       logger.debug('Using Sass to merge CSS')
       const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, path.join(section.rootFolder, section.name))
-      await StylesProcessor.buildStyles(section.build.stylesheet, masterSassFile)
-      await unlink(masterSassFile)
+      const styles = await StylesProcessor.buildStyles(section.build.stylesheet, masterSassFile)
+      await Promise.all([
+        FileUtils.writeFile(section.build.stylesheet, styles),
+        unlink(masterSassFile)
+      ])
     } else {
-      await StylesProcessor.buildStyles(section.build.stylesheet, section.files.mainStylesheet)
       logger.debug('Using Collate to merge CSS')
-      const buildStylesheets = await RenderUtils.getBuildStylesheets(section.renders)
+      const sectionStyles = await StylesProcessor.buildStyles(section.build.stylesheet, section.files.mainStylesheet)
+      await FileUtils.writeFile(section.build.stylesheet, sectionStyles)
+      const buildStylesheets = [section.build.stylesheet]
+      buildStylesheets.concat(await RenderUtils.getBuildStylesheets(section.renders))
       const styles = await FileUtils.getMergedFilesContent(buildStylesheets)
+      await unlink(section.build.stylesheet)
       await FileUtils.writeFile(section.build.stylesheet, styles)
     }
 
