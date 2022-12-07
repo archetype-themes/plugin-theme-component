@@ -38,7 +38,6 @@ class RenderUtils {
     let stylesheets = []
     for (const render of renders) {
       if (render.snippet.files.mainStylesheet && !processedSnippets.includes(render.snippetName)) {
-        await SnippetBuilder.buildStylesheets(render.snippet)
         stylesheets.push(render.snippet.files.mainStylesheet)
         processedSnippets.push(render.snippetName)
 
