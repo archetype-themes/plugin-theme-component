@@ -14,6 +14,58 @@ class CollectionBuilder {
   static backupFiles
 
   /**
+   * Build Collection
+   * @param {module:models/Collection} collection
+   * @return {Promise<void>}
+   */
+  static async build (collection) {
+    logger.info(`Building ${collection.name} Collection ...`)
+    console.time(`Building "${collection.name}" collection`)
+
+    logger.info(`We will bundle the following sections: ${collection.sectionNames.join(', ')}`)
+
+    for (const section of collection.sections) {
+      await SectionBuilder.build(section)
+
+      for (const schemaLocale in section.schemaLocales) {
+        if (!collection.schemaLocales[schemaLocale]) {
+          collection.schemaLocales[schemaLocale] = {}
+          collection.schemaLocales[schemaLocale]['sections'] = {}
+        }
+
+        collection.schemaLocales[schemaLocale]['sections'][section.name] = section.schemaLocales[schemaLocale]
+      }
+    }
+
+    await this.#resetBuildFolders(collection)
+
+    for (const section of collection.sections) {
+      try {
+        await FileUtils.copyFolder(section.build.rootFolder, collection.build.sectionsFolder)
+      } catch {
+        //Errors ignored as some sections folders might not exist if there is no particular content for that section
+      }
+      try {
+        await FileUtils.copyFolder(section.build.snippetsFolder, collection.build.snippetsFolder)
+      } catch {
+        //Errors ignored as some sections folders might not exist if there is no particular content for that section
+      }
+
+    }
+
+    await Promise.all([
+      this.buildJavascript(collection),
+      this.buildStylesheets(collection),
+      this.writeSchemaLocales(collection)]
+    ).then(() => {
+      logger.info(`${collection.name}: Build Complete`)
+      console.timeEnd(`Building "${collection.name}" collection`)
+      console.log('\n')
+    })
+
+  }
+
+  /**
    * Build Collection Javascript
    * @param {module:models/Collection} collection
    * @returns {Promise<void>}
@@ -88,58 +140,6 @@ class CollectionBuilder {
       const mergedStylesheets = await FileUtils.getMergedFilesContent(buildStylesheets)
       return FileUtils.writeFile(collection.build.stylesheet, mergedStylesheets)
     }
-
-  }
-
-  /**
-   *
-   * @param {module:models/Collection} collection
-   * @return {Promise<void>}
-   */
-  static async build (collection) {
-    logger.info(`Building ${collection.name} Collection ...`)
-    console.time(`Building "${collection.name}" collection`)
-
-    logger.info(`We will bundle the following sections: ${collection.sectionNames.join(', ')}`)
-
-    for (const section of collection.sections) {
-      await SectionBuilder.build(section)
-
-      for (const schemaLocale in section.schemaLocales) {
-        if (!collection.schemaLocales[schemaLocale]) {
-          collection.schemaLocales[schemaLocale] = {}
-          collection.schemaLocales[schemaLocale]['sections'] = {}
-        }
-
-        collection.schemaLocales[schemaLocale]['sections'][section.name] = section.schemaLocales[schemaLocale]
-      }
-    }
-
-    await this.#resetBuildFolders(collection)
-
-    for (const section of collection.sections) {
-      try {
-        await FileUtils.copyFolder(section.build.rootFolder, collection.build.sectionsFolder)
-      } catch {
-        //Errors ignored as some sections folders might not exist if there is no particular content for that section
-      }
-      try {
-        await FileUtils.copyFolder(section.build.snippetsFolder, collection.build.snippetsFolder)
-      } catch {
-        //Errors ignored as some sections folders might not exist if there is no particular content for that section
-      }
-
-    }
-
-    await Promise.all([
-      this.buildJavascript(collection),
-      this.buildStylesheets(collection),
-      this.writeSchemaLocales(collection)]
-    ).then(() => {
-      logger.info(`${collection.name}: Build Complete`)
-      console.timeEnd(`Building "${collection.name}" collection`)
-      console.log('\n')
-    })
 
   }
 
