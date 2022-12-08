@@ -1,4 +1,3 @@
-import autoprefixer from 'autoprefixer'
 import cssnanoPlugin from 'cssnano'
 import postcss from 'postcss'
 import postcss_for from 'postcss-for'
@@ -38,7 +37,6 @@ class PostCssProcessor {
         },
         plugins: [],
       }),
-      autoprefixer,
       cssnanoPlugin({
         preset: ['default', {
           convertValues: false, // so liquid color filters work
