@@ -79,19 +79,31 @@ class StylesProcessor {
   /**
    * Create Master Sass File
    * @param {string[]} stylesheets
-   * @param {string} targetFile
-   * @return {Promise<string>}
+   * @return {string}
    */
-  static async createMasterSassFile (stylesheets, targetFile) {
-    const masterSassFile = targetFile + '.sass'
+  static createMasterSassFile (stylesheets) {
     let masterSassFileContent = ''
 
     for (const stylesheet of stylesheets) {
       masterSassFileContent += `@use '${stylesheet}' as *\n`
     }
 
-    await FileUtils.writeFile(masterSassFile, masterSassFileContent)
-    return masterSassFile
+    return masterSassFileContent
+  }
+
+  /**
+   * Create Master Stylesheet
+   * @param stylesheets
+   * @return {string}
+   */
+  static createMasterStylesheet (stylesheets) {
+    let masterStylesheetContents = ''
+
+    for (const stylesheet of stylesheets) {
+      masterStylesheetContents += `@import url('${stylesheet}');\n`
+    }
+
+    return masterStylesheetContents
   }
 
   static canWeUseMasterSassFile (stylesheets) {
