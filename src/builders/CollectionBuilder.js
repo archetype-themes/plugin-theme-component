@@ -124,7 +124,9 @@ class CollectionBuilder {
 
     if (useMasterSassFile) {
       logger.debug('Using Sass to merge CSS')
-      const masterSassFile = await StylesProcessor.createMasterSassFile(mainStylesheets, path.join(collection.rootFolder, collection.name))
+      const masterSassFile = path.join(collection.rootFolder, 'masterSassFile.tmp.sass')
+      const masterSassFileContent = StylesProcessor.createMasterSassFile(mainStylesheets)
+      await FileUtils.writeFile(masterSassFile, masterSassFileContent)
       const styles = await StylesProcessor.buildStyles(collection.build.stylesheet, masterSassFile)
       return Promise.all([
         FileUtils.writeFile(collection.build.stylesheet, styles),
