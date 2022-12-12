@@ -14,7 +14,7 @@ class Component {
   /** @type {string} **/
   #rootFolder
 
-  /** @type {object} **/
+  /** @type {SectionSchema} **/
   #schema
 
   /** @type {Object[]} **/
@@ -108,7 +108,7 @@ class Component {
 
   /**
    * Get Schema Object Representation
-   * @returns {object}
+   * @returns {SectionSchema}
    */
   get schema () {
     return this.#schema
@@ -116,7 +116,7 @@ class Component {
 
   /**
    * Get Schema Object Representation
-   * @param {object} value
+   * @param {SectionSchema} value
    */
   set schema (value) {
     this.#schema = value
