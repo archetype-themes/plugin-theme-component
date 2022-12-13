@@ -11,7 +11,7 @@ class ConfigUtils {
   static async initConfig () {
     ArchieNodeConfig.componentType = await this.findComponentType()
     ArchieNodeConfig.collections = await this.findCollections()
-    ArchieNodeConfig.mixins = await this.getMixinsConfig()
+    ArchieNodeConfig.gridSize = await this.getGridSize()
   }
 
   /**
@@ -51,14 +51,16 @@ class ConfigUtils {
 
   /**
    *
-   * @return {Promise<MixinsConfig>}
+   * @return {Promise<number>}
    */
-  static async getMixinsConfig () {
+  static async getGridSize () {
     const packageJson = await NodeUtils.getPackageJson()
-    /** @var {MixinsConfig} packageJson.mixinsConfig **/
-    if (packageJson.archie && packageJson.archie.mixinsConfig) {
-      return packageJson.archie.mixinsConfig
+    /** @var {number} packageJson.archie.gridSize **/
+    if (packageJson.archie && packageJson.archie.gridSize) {
+      return packageJson.archie.gridSize
     }
+    logger.warn('GridSize is missing!')
+    logger.warn('If you are using PostCSS and intend to use custom mixins, you need to specify the Grid Size in package.json. ie: {archie: {"gridSize": 6}}.')
 
     return null
   }
