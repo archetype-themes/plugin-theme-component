@@ -5,6 +5,7 @@ import postcss_for from 'postcss-for'
 import postcss_import from 'postcss-import'
 import postcss_mixins from 'postcss-mixins'
 import postcssPresetEnv from 'postcss-preset-env'
+import postcss_sass from '@csstools/postcss-sass'
 import postcss_scss from 'postcss-scss'
 import postcss_shopify_settings_variables from 'postcss-shopify-settings-variables'
 import postcss_simple_vars from 'postcss-simple-vars'
@@ -20,6 +21,7 @@ class PostCssProcessor {
    */
   static async processStyles (styles, sourceFile, targetFile) {
     const processor = postcss([
+      postcss_sass,
       postcss_import,
       postcss_mixins({
         // PostCSS plugin for mixins. -- Note, that you must set this plugin before postcss-simple-vars and postcss-nested.
