@@ -150,7 +150,7 @@ class ComponentUtils {
 
   /**
    *
-   * @param {Section|Snippet} component
+   * @param {Component} component
    * @param {Snippet} snippet
    * @return {Promise<void>}
    */

@@ -1,4 +1,5 @@
 import cssnanoPlugin from 'cssnano'
+import custom_mixins from './postcss/custom-mixins.js'
 import postcss from 'postcss'
 import postcss_for from 'postcss-for'
 import postcss_import from 'postcss-import'
@@ -20,7 +21,10 @@ class PostCssProcessor {
   static async processStyles (styles, sourceFile, targetFile) {
     const processor = postcss([
       postcss_import,
-      postcss_mixins,
+      postcss_mixins({
+        // PostCSS plugin for mixins. -- Note, that you must set this plugin before postcss-simple-vars and postcss-nested.
+        mixins: custom_mixins
+      }),
       postcss_for,
       postcss_simple_vars,
       postcssPresetEnv({

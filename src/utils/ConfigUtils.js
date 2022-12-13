@@ -11,6 +11,7 @@ class ConfigUtils {
   static async initConfig () {
     ArchieNodeConfig.componentType = await this.findComponentType()
     ArchieNodeConfig.collections = await this.findCollections()
+    ArchieNodeConfig.mixins = await this.getMixinsConfig()
   }
 
   /**
@@ -46,6 +47,20 @@ class ConfigUtils {
     }
 
     return []
+  }
+
+  /**
+   *
+   * @return {Promise<MixinsConfig>}
+   */
+  static async getMixinsConfig () {
+    const packageJson = await NodeUtils.getPackageJson()
+    /** @var {MixinsConfig} packageJson.mixinsConfig **/
+    if (packageJson.archie && packageJson.archie.mixinsConfig) {
+      return packageJson.archie.mixinsConfig
+    }
+
+    return null
   }
 }
 

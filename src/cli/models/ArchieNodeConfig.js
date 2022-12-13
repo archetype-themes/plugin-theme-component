@@ -4,6 +4,15 @@ import Section from '../../models/Section.js'
 import Snippet from '../../models/Snippet.js'
 import Theme from '../../models/Theme.js'
 
+/** @typedef {Object} MixinsConfig
+ * @property {number} grid
+ * @property {Object<string,number>} bp
+ * @property {Object<string,string>} bpHolder
+ * @property {string} bodyClasses
+ * @property {string} bodyClassList
+ * @property {string} filterTagHolder
+ * @property {string} filterTags
+ */
 class ArchieNodeConfig {
   /** @type {string}  **/
   static DEFAULT_PACKAGE_SCOPE = '@archetype-themes'
@@ -25,6 +34,9 @@ class ArchieNodeConfig {
     return this.#componentType
   }
 
+  /** @type {MixinsConfig} **/
+  static #mixins
+
   static set componentType (value) {
     this.#componentType = value
   }
@@ -35,6 +47,22 @@ class ArchieNodeConfig {
 
   static set collections (value) {
     this.#collections = value
+  }
+
+  /**
+   * Get mixins config
+   * @return {MixinsConfig}
+   */
+  static get mixins () {
+    return this.#mixins
+  }
+
+  /**
+   * Set mixins config
+   * @param {MixinsConfig} value
+   */
+  static set mixins (value) {
+    this.#mixins = value
   }
 
   /**
