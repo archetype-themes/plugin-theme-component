@@ -63,7 +63,7 @@ class SnippetFactory {
     }
 
     // Create Render Models form Liquid Code
-    snippet.renders = RenderFactory.fromComponent(snippet)
+    snippet.renders = RenderFactory.fromLiquidCode(snippet.liquidCode, snippet.name)
     // Create Child Snippet Models Within Render Models
     snippet.renders = await SnippetFactory.fromRenders(snippet.renders, snippet.files.snippetFiles, snippetsPath)
 

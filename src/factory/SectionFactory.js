@@ -72,9 +72,9 @@ class SectionFactory {
       section.schemaLocales = await ComponentUtils.parseLocaleFilesContent(section.files.schemaLocaleFiles)
     }
 
-    // Create Render Models form Liquid Code
+    // Create Render Models from render tags in  Liquid Code
     const snippetsPath = path.join(section.rootFolder, '../../', Collection.SNIPPETS_SUB_FOLDER)
-    section.renders = RenderFactory.fromComponent(section)
+    section.renders = RenderFactory.fromLiquidCode(section.liquidCode)
     // Create Child Snippet Models Within Render Models
     section.renders = await SnippetFactory.fromRenders(section.renders, section.files.snippetFiles, snippetsPath)
 
