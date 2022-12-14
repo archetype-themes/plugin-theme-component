@@ -1,6 +1,5 @@
 import RecursionError from '../errors/RecursionError.js'
 import Render from '../models/Render.js'
-import Snippet from '../models/Snippet.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
 
@@ -8,16 +7,17 @@ class RenderFactory {
 
   /**
    * Create Render Models From Component By Searching Through The Liquid Code For Render Tags
-   * @param {Component} component
+   * @param {string} liquidCode
+   * @param {string} [sourceSnippetName]
    * @return {Render[]}
    */
-  static fromComponent (component) {
+  static fromLiquidCode (liquidCode, sourceSnippetName) {
     // Parse and prepare Render models from liquid code
-    const renderTags = LiquidUtils.findRenderTags(component.liquidCode)
+    const renderTags = LiquidUtils.findRenderTags(liquidCode)
 
     if (renderTags.length > 0) {
-      if (component instanceof Snippet) {
-        this.validateSnippetRecursion(component.name, renderTags)
+      if (sourceSnippetName) {
+        this.validateSnippetRecursion(sourceSnippetName, renderTags)
       }
 
       return this.fromRenderTags(renderTags)
