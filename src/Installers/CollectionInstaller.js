@@ -5,6 +5,11 @@ import { basename, join } from 'node:path'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 
+/**
+ * @typedef {Object} InjectionOptions
+ * @property {boolean} injectJavascript
+ * @property {boolean} injectStylesheet
+ */
 class CollectionInstaller {
 
   /**
@@ -107,6 +112,13 @@ class CollectionInstaller {
     }
   }
 
+  /**
+   *
+   * @param {module:models/Collection} collection
+   * @param {Theme} theme
+   * @param {InjectionOptions} options
+   * @return {Promise<void>}
+   */
   static async injectAssetReferences (collection, theme, options) {
     const javascriptFileBasename = basename(collection.build.javascriptFile)
     const stylesheetBasename = basename(collection.build.stylesheet)
@@ -144,6 +156,13 @@ class CollectionInstaller {
     }
   }
 
+  /**
+   *
+   * @param {string[]} injections
+   * @param {string} themeLiquid
+   * @param {string} themeLiquidFile
+   * @return {Promise<void>}
+   */
   static async writeAssetReferencesToThemeLiquidFile (injections, themeLiquid, themeLiquidFile) {
     const headTagClosureCount = (themeLiquid.match(/<\/head>/g) || []).length
     if (headTagClosureCount === 1) {
