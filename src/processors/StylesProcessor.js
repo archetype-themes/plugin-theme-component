@@ -29,7 +29,7 @@ class StylesProcessor {
    * Create Styles Bundle
    * @param {string[]} stylesheets
    * @param {string} outputFile
-   * @return {Promise<void>}
+   * @return {Promise<string>}
    */
   static async buildStylesBundle (stylesheets, outputFile) {
     const masterStylesheet = path.join(os.tmpdir(), 'masterStylesheet.css')
@@ -37,8 +37,9 @@ class StylesProcessor {
 
     await FileUtils.writeFile(masterStylesheet, masterStylesheetContents)
 
-    await PostCssProcessor.processStyles(masterStylesheetContents, masterStylesheet, outputFile)
+    const css = await PostCssProcessor.processStyles(masterStylesheetContents, masterStylesheet, outputFile)
     await unlink(masterStylesheet)
+    return css
   }
 
   /**

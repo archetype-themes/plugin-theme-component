@@ -148,29 +148,6 @@ class ComponentUtils {
     return snippetRootFolders
   }
 
-  /**
-   *
-   * @param {Component} component
-   * @param {Snippet} snippet
-   * @return {Promise<void>}
-   */
-  static mergeSnippetData (component, snippet) {
-
-    // Merge snippet schema data into section
-    if (snippet.schema && component.schema) {
-      component.schema = merge(component.schema, snippet.schema)
-    } else if (snippet.schema) {
-      component.schema = snippet.schema
-    }
-
-    // Merge snippet locale data into section
-    if (snippet.locales && component.locales) {
-      component.locales = merge(component.locales, snippet.locales)
-    } else if (snippet.locales) {
-      component.locales = snippet.locales
-    }
-  }
-
 }
 
 export default ComponentUtils
