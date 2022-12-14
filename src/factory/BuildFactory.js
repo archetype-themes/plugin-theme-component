@@ -32,6 +32,7 @@ class BuildFactory {
     build.liquidFile = `${build.rootFolder}/${section.name}.liquid`
     build.javascriptFile = `${build.assetsFolder}/${section.name}.js`
     build.stylesheet = `${build.assetsFolder}/${section.name}.css`
+    build.stylesBundleFile = `${build.assetsFolder}/${section.name}.bundle.css`
     return build
   }
 
