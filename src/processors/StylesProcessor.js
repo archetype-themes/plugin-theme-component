@@ -1,37 +1,44 @@
 // Node JS internal imports
-import path from 'path'
 import { unlink } from 'node:fs/promises'
+import path from 'path'
 // Archie Internal imports
 import PostCssProcessor from './PostCssProcessor.js'
 import SassPreProcessor from './SassPreProcessor.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import os from 'os'
 
 class StylesProcessor {
   /**
    * Process Styles by using all appropriate style preprocessors
+   * @param {string} sourceFile
    * @param {string} outputFile
-   * @param {string} mainStyleSheet
-   * @param {string[]} additionalFiles
    * @returns {Promise<string>} Final styles
    */
-  static async buildStyles (outputFile, mainStyleSheet, additionalFiles = []) {
-    const mainStyleSheetExtension = path.extname(mainStyleSheet)
-
-    if (['.scss', '.sass'].includes(mainStyleSheetExtension)) {
-      const css = SassPreProcessor.processStyleSheet(mainStyleSheet)
-      const tmpCssOutputFile = mainStyleSheet.replace(mainStyleSheetExtension, '.css')
-      await FileUtils.writeFile(tmpCssOutputFile, css)
-      const finalCss = await PostCssProcessor.processStyles(css, tmpCssOutputFile, outputFile)
-      await unlink(tmpCssOutputFile)
-
-      return finalCss
-    } else if ('.css' === mainStyleSheetExtension) {
-      const css = await FileUtils.getFileContents(mainStyleSheet)
-
-      return PostCssProcessor.processStyles(css, mainStyleSheet, outputFile)
+  static async buildStyles (sourceFile, outputFile) {
+    if (this.isSassFile(sourceFile)) {
+      return SassPreProcessor.processStyleSheet(sourceFile)
+    } else {
+      const css = await FileUtils.getFileContents(sourceFile)
+      return PostCssProcessor.processStyles(css, sourceFile, outputFile)
     }
+  }
+
+  /**
+   * Create Styles Bundle
+   * @param {string[]} stylesheets
+   * @param {string} outputFile
+   * @return {Promise<void>}
+   */
+  static async buildStylesBundle (stylesheets, outputFile) {
+    const masterStylesheet = path.join(os.tmpdir(), 'masterStylesheet.css')
+    const masterStylesheetContents = this.createMasterStylesheet(stylesheets)
+
+    await FileUtils.writeFile(masterStylesheet, masterStylesheetContents)
+
+    await PostCssProcessor.processStyles(masterStylesheetContents, masterStylesheet, outputFile)
+    await unlink(masterStylesheet)
   }
 
   /**
@@ -77,21 +84,6 @@ class StylesProcessor {
   }
 
   /**
-   * Create Master Sass File
-   * @param {string[]} stylesheets
-   * @return {string}
-   */
-  static createMasterSassFile (stylesheets) {
-    let masterSassFileContent = ''
-
-    for (const stylesheet of stylesheets) {
-      masterSassFileContent += `@use '${stylesheet}' as *\n`
-    }
-
-    return masterSassFileContent
-  }
-
-  /**
    * Create Master Stylesheet
    * @param stylesheets
    * @return {string}
@@ -106,13 +98,8 @@ class StylesProcessor {
     return masterStylesheetContents
   }
 
-  static canWeUseMasterSassFile (stylesheets) {
-    for (const stylesheet of stylesheets) {
-      if (!['.css', '.scss', '.sass'].includes(path.extname(stylesheet))) {
-        return false
-      }
-    }
-    return true
+  static isSassFile (filename) {
+    return ['.scss', '.sass'].includes(path.extname(filename))
   }
 }
 
