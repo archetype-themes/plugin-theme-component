@@ -72,7 +72,7 @@ class InstallCommand {
 
   /**
    * Build and Install Collection in Current Theme on File Change
-   * @param {Collection} collection
+   * @param {module:models/Collection} collection
    * @return {Promise<module: models/Collection>}
    */
   static async watch (collection) {
