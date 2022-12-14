@@ -15,6 +15,15 @@ class ComponentBuild {
   #rootFolder
 
   /** @type {string} **/
+  #styles
+
+  /** @type {string} **/
+  #stylesBundle
+
+  /** @type {string} **/
+  #stylesBundleFile
+
+  /** @type {string} **/
   #stylesheet
 
   constructor () {
@@ -101,6 +110,54 @@ class ComponentBuild {
    */
   set rootFolder (value) {
     this.#rootFolder = value
+  }
+
+  /**
+   * Get build styles
+   * @return {string}
+   */
+  get styles () {
+    return this.#styles
+  }
+
+  /**
+   * Set build styles
+   * @param {string} value
+   */
+  set styles (value) {
+    this.#styles = value
+  }
+
+  /**
+   * Get styles bundle content
+   * @return {string}
+   */
+  get stylesBundle () {
+    return this.#stylesBundle
+  }
+
+  /**
+   * Set styles bundle content
+   * @param {string} value
+   */
+  set stylesBundle (value) {
+    this.#stylesBundle = value
+  }
+
+  /**
+   * Get styles bundle filename
+   * @return {string}
+   */
+  get stylesBundleFile () {
+    return this.#stylesBundleFile
+  }
+
+  /**
+   * Set styles bundle filename
+   * @param value
+   */
+  set stylesBundleFile (value) {
+    this.#stylesBundleFile = value
   }
 
   /**
