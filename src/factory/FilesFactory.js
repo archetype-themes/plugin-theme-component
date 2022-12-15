@@ -3,7 +3,7 @@ import ComponentUtils from '../utils/ComponentUtils.js'
 import SectionFiles from '../models/SectionFiles.js'
 import SnippetFiles from '../models/SnippetFiles.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
-import StylesProcessor from '../processors/StylesProcessor.js'
+import StylesUtils from '../utils/StylesUtils.js'
 
 class FilesFactory {
   /**
@@ -21,7 +21,7 @@ class FilesFactory {
     }
 
     if (sectionFiles.stylesheets.length > 0) {
-      sectionFiles.mainStylesheet = StylesProcessor.getMainStyleSheet(sectionFiles.stylesheets)
+      sectionFiles.mainStylesheet = StylesUtils.getMainStyleSheet(sectionFiles.stylesheets)
     }
 
     return sectionFiles
@@ -42,7 +42,7 @@ class FilesFactory {
     }
 
     if (snippetFiles.stylesheets.length > 0) {
-      snippetFiles.mainStylesheet = StylesProcessor.getMainStyleSheet(snippetFiles.stylesheets)
+      snippetFiles.mainStylesheet = StylesUtils.getMainStyleSheet(snippetFiles.stylesheets)
     }
 
     return snippetFiles

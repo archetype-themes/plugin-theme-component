@@ -1,6 +1,6 @@
 import SnippetBuilder from '../builders/SnippetBuilder.js'
-import StylesProcessor from '../processors/StylesProcessor.js'
 import merge from 'deepmerge'
+import StylesUtils from './StylesUtils.js'
 
 class RenderUtils {
   /**
@@ -14,7 +14,7 @@ class RenderUtils {
     let stylesheets = []
     for (const render of renders) {
       if (render.snippet.files.mainStylesheet && !processedSnippets.includes(render.snippetName)) {
-        if (StylesProcessor.isSassFile(render.snippet.files.mainStylesheet)) {
+        if (StylesUtils.isSassFile(render.snippet.files.mainStylesheet)) {
           // If the main stylesheet is a sass file, it will be rendered and the build file will be used instead.
           // This is because PostCSS and Sass do not play well together
           await SnippetBuilder.buildStylesheets(render.snippet)
@@ -61,8 +61,7 @@ class RenderUtils {
     }
 
     if (snippet.renders) {
-      for (const render of snippet.renders)
-        this.mergeSnippetData(section, render.snippet)
+      for (const render of snippet.renders) this.mergeSnippetData(section, render.snippet)
     }
 
   }
