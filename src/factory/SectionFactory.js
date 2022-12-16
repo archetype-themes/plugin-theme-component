@@ -52,6 +52,11 @@ class SectionFactory {
       throw new FileAccessError(`Section Factory: No liquid files file found for the "${section.name}" section`)
     }
 
+    // Load main stylesheet file contents
+    if (section.files.mainStylesheet) {
+      section.mainStyles = FileUtils.getFileContents(section.files.mainStylesheet)
+    }
+
     // Load liquid code from files
     const pluralForm = section.files.liquidFiles.length > 1 ? 's' : ''
     logger.debug(`${section.name}: ${section.files.liquidFiles.length} liquid file${pluralForm} found`)

@@ -6,6 +6,9 @@ class Component {
   #locales = {}
 
   /** @type {string} **/
+  #mainStyles
+
+  /** @type {string} **/
   #name
 
   /** @type {Render[]} **/
@@ -56,6 +59,22 @@ class Component {
    */
   set locales (value) {
     this.#locales = value
+  }
+
+  /**
+   * Get main stylesheet file contents
+   * @return {string}
+   */
+  get mainStyles () {
+    return this.#mainStyles
+  }
+
+  /**
+   * Set main stylesheet file contents
+   * @param {string} value
+   */
+  set mainStyles (value) {
+    this.#mainStyles = value
   }
 
   /**

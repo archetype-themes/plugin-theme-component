@@ -20,7 +20,7 @@ class SnippetFactory {
    * @param {string} snippetsPath
    * @returns {Promise<Snippet>}
    */
-  static async externalToSection (snippetName, snippetsPath) {
+  static async fromSnippetFolder (snippetName, snippetsPath) {
     const snippet = new Snippet()
     snippet.name = snippetName
 
@@ -40,6 +40,11 @@ class SnippetFactory {
     // Abort if no liquid file was found
     if (snippet.files.liquidFiles.length === 0) {
       throw new FileAccessError(`Snippet Factory: No liquid files file found for the "${snippet.name}" snippet`)
+    }
+
+    // Load main stylesheet file contents
+    if (section.files.mainStylesheet) {
+      section.mainStyles = FileUtils.getFileContents(section.files.mainStylesheet)
     }
 
     // Load liquid code from files
@@ -76,7 +81,7 @@ class SnippetFactory {
    * @param {string} snippetFile
    * @returns {Promise<Snippet>}
    */
-  static async internalToSection (snippetName, snippetFile) {
+  static async fromSingleFile (snippetName, snippetFile) {
     const snippet = new Snippet()
     snippet.name = snippetName
     snippet.files = new SnippetFiles()
@@ -89,20 +94,20 @@ class SnippetFactory {
   /**
    *
    * @param {Render} render
-   * @param {string[]} sectionSnippetFiles
+   * @param {string[]} componentInternalSnippetFiles
    * @param {string} snippetsPath
    * @return {Promise<Snippet>}
    */
-  static async fromRender (render, sectionSnippetFiles, snippetsPath) {
+  static async fromRender (render, componentInternalSnippetFiles, snippetsPath) {
 
     // Look within the section's local snippets first
-    for (const snippetFile of sectionSnippetFiles) {
+    for (const snippetFile of componentInternalSnippetFiles) {
       if (render.snippetName === path.parse(snippetFile).name) {
-        return await this.internalToSection(render.snippetName, snippetFile)
+        return await this.fromSingleFile(render.snippetName, snippetFile)
       }
     }
 
-    return this.externalToSection(render.snippetName, snippetsPath)
+    return this.fromSnippetFolder(render.snippetName, snippetsPath)
   }
 
   /**

@@ -6,6 +6,9 @@ class ComponentBuild {
   #javascriptFile
 
   /** @type {string} **/
+  #liquidCode
+
+  /** @type {string} **/
   #liquidFile
 
   /** @type {string} **/
@@ -62,6 +65,22 @@ class ComponentBuild {
    */
   set javascriptFile (value) {
     this.#javascriptFile = value
+  }
+
+  /**
+   * Get liquid code
+   * @return {string}
+   */
+  get liquidCode () {
+    return this.#liquidCode
+  }
+
+  /**
+   * Set liquid code
+   * @param {string} value
+   */
+  set liquidCode (value) {
+    this.#liquidCode = value
   }
 
   /**
