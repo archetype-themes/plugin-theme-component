@@ -42,11 +42,6 @@ class SnippetFactory {
       throw new FileAccessError(`Snippet Factory: No liquid files file found for the "${snippet.name}" snippet`)
     }
 
-    // Load main stylesheet file contents
-    if (section.files.mainStylesheet) {
-      section.mainStyles = FileUtils.getFileContents(section.files.mainStylesheet)
-    }
-
     // Load liquid code from files
     const pluralForm = snippet.files.liquidFiles.length > 1 ? 's' : ''
     logger.debug(`${snippet.name}: ${snippet.files.liquidFiles.length} liquid file${pluralForm} found`)
