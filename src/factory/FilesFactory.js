@@ -1,5 +1,7 @@
+// Node JS Internal imports
 import path from 'path'
 
+// Archie Internal JS imports
 import SectionFiles from '../models/SectionFiles.js'
 import SnippetFiles from '../models/SnippetFiles.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
