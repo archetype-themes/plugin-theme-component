@@ -26,7 +26,7 @@ class ComponentUtils {
   /**
    * Parse Locale Files into an object
    * @param {string[]} localeFiles
-   * @return {Promise<string[]|Object>}
+   * @return {Promise<string[]|Object<string, Object<string, string>>>}
    */
   static async parseLocaleFilesContent (localeFiles) {
     let locales
