@@ -1,9 +1,8 @@
+import SectionSchema from '../SectionSchema.js'
+
 class Component {
   /** @type {string} **/
   #liquidCode
-
-  /** @type {Object} **/
-  #locales = {}
 
   /** @type {string} **/
   #name
@@ -47,7 +46,10 @@ class Component {
    * @returns {Object}
    */
   get locales () {
-    return this.#locales
+    if (this.schema && this.schema.locales) {
+      return this.schema.locales
+    }
+    return null
   }
 
   /**
@@ -55,9 +57,16 @@ class Component {
    * @param {Object} value
    */
   set locales (value) {
-    this.#locales = value
-  }
+    if (this.schema) {
+      this.schema.locales = value
+    } else if (this.schema) {
+      this.schema.locales = value
+    } else {
+      this.schema = new SectionSchema()
+      this.schema.locales = value
+    }
 
+  }
 
   /**
    * Get Name
