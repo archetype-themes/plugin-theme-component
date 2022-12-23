@@ -17,13 +17,7 @@ class LiquidUtils {
    * @param {Render} render
    * @returns {Promise<string>}
    */
-  static async getSnippetInlineLiquidCode (render) {
-    let snippetLiquidCode
-    if (render.snippet.liquidCode) {
-      snippetLiquidCode = render.snippet.liquidCode
-    } else {
-      snippetLiquidCode = await FileUtils.getMergedFilesContent(render.snippet.files.liquidFiles)
-    }
+  static async getSnippetInlineLiquidCode (snippetLiquidCode, render) {
 
     // Process "With" clause variable
     if (render.hasWithClause() && render.clauseSourceVariable !== render.clauseTargetVariable) {

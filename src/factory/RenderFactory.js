@@ -13,29 +13,18 @@ class RenderFactory {
    */
   static fromLiquidCode (liquidCode, sourceSnippetName) {
     // Parse and prepare Render models from liquid code
-    const renderTags = LiquidUtils.findRenderTags(liquidCode)
-
-    if (renderTags.length > 0) {
-      if (sourceSnippetName) {
-        this.validateSnippetRecursion(sourceSnippetName, renderTags)
-      }
-
-      return this.fromRenderTags(renderTags)
-    }
-
-    return []
-  }
-
-  /**
-   * Create Renders from Liquid Code
-   * @param {RegExpMatchArray[]} renderTags
-   * @return {Render[]}
-   */
-  static fromRenderTags (renderTags) {
+    const regexMatches = LiquidUtils.findRenderTags(liquidCode)
     const renders = []
 
-    for (const match of renderTags) {
-      renders.push(this.fromRenderTag(match[0], match.groups))
+    if (regexMatches.length > 0) {
+      // Validation: Make sure a snippet doesn't include itself, therefore creating an infinite loop
+      if (sourceSnippetName) {
+        this.validateSnippetRecursion(sourceSnippetName, regexMatches)
+      }
+      //
+      for (const regexMatch of regexMatches) {
+        renders.push(this.fromRenderTag(regexMatch[0], regexMatch.groups))
+      }
     }
 
     return renders
