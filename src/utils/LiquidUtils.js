@@ -13,11 +13,13 @@ class LiquidUtils {
   }
 
   /**
-   *
+   * Get Snippet Inline Liquid Code
+   * Adds appropriate variables when necessary ahead of the liquid code
+   * @param {string} snippetLiquidCode
    * @param {Render} render
    * @returns {Promise<string>}
    */
-  static async getSnippetInlineLiquidCode (snippetLiquidCode, render) {
+  static async prepareSnippetInlineLiquidCode (snippetLiquidCode, render) {
 
     // Process "With" clause variable
     if (render.hasWithClause() && render.clauseSourceVariable !== render.clauseTargetVariable) {
