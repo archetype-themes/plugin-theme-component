@@ -15,26 +15,26 @@ class LiquidUtils {
   /**
    * Get Snippet Inline Liquid Code
    * Adds appropriate variables when necessary ahead of the liquid code
-   * @param {string} snippetLiquidCode
+   * @param {string} sourceLiquidCode
    * @param {Render} render
    * @returns {Promise<string>}
    */
-  static async prepareSnippetInlineLiquidCode (snippetLiquidCode, render) {
-
+  static async prepareSnippetInlineLiquidCode (sourceLiquidCode, render) {
+    let buildLiquidCode = sourceLiquidCode
     // Process "With" clause variable
     if (render.hasWithClause() && render.clauseSourceVariable !== render.clauseTargetVariable) {
-      snippetLiquidCode =
-        `{% assign ${render.clauseTargetVariable} = ${render.clauseSourceVariable} %}\n${snippetLiquidCode}`
+      buildLiquidCode =
+        `{% assign ${render.clauseTargetVariable} = ${render.clauseSourceVariable} %}\n${buildLiquidCode}`
     }
 
     // Process additional variables
     for (const renderVariable in render.variables) {
       if (renderVariable !== render.variables[renderVariable]) {
-        snippetLiquidCode = `{% assign ${renderVariable} = ${render.variables[renderVariable]} %}\n${snippetLiquidCode}`
+        buildLiquidCode = `{% assign ${renderVariable} = ${render.variables[renderVariable]} %}\n${buildLiquidCode}`
       }
     }
 
-    return snippetLiquidCode
+    return buildLiquidCode
   }
 }
 
