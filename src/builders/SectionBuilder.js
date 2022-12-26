@@ -26,7 +26,7 @@ class SectionBuilder extends ComponentBuilder {
     logger.info(`Building "${section.name}" section`)
     console.time(`Building "${section.name}" section`)
 
-    await this.resetBuildFolders(section)
+    await this.resetBuildFolders(section.files, section.build)
 
     //  Fill renders with the proper snippet object
     if (section.renders.length > 0) {
