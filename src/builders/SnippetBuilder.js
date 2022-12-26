@@ -39,7 +39,7 @@ class SnippetBuilder extends ComponentBuilder {
    * @returns {Promise<void>}
    */
   static async buildStylesheets (snippet) {
-    const styles = await StylesProcessor.buildStyles(snippet.build.stylesheet, snippet.files.mainStylesheet)
+    const styles = await StylesProcessor.buildStyles(snippet.files.mainStylesheet, snippet.build.stylesheet)
     return FileUtils.writeFile(snippet.build.stylesheet, styles)
   }
 
@@ -61,16 +61,18 @@ class SnippetBuilder extends ComponentBuilder {
     logger.debug(`Processing section's "render" tags`)
 
     for (const render of snippet.renders) {
+
+      // Recursively Process Renders
       if (render.snippet.renders) {
         await this.processRenders(render.snippet, snippetsFolder)
       }
 
       if (render.hasForClause()) {
         // Copy snippet liquid files since we can't inline a for loop
-        await FileUtils.writeFile(`${snippetsFolder}/${render.snippet.name}.liquid`, render.snippet.liquidCode)
+        await FileUtils.writeFile(path.join(snippetsFolder, `${render.snippet.name}.liquid`), render.snippet.liquidCode)
       } else {
         // Prepends variables creation to accompany liquid code injection
-        let snippetLiquidCode = await LiquidUtils.getSnippetInlineLiquidCode(render)
+        let snippetLiquidCode = await LiquidUtils.prepareSnippetInlineLiquidCode(render.snippet.liquidCode, render)
         snippet.liquidCode = snippet.liquidCode.replace(render.liquidTag, snippetLiquidCode)
       }
 
