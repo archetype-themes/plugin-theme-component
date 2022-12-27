@@ -2,6 +2,7 @@ import { argv, env, exit } from 'node:process'
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 import { dirname } from 'path'
+import merge from 'deepmerge'
 
 class NodeUtils {
 
@@ -93,6 +94,28 @@ class NodeUtils {
     }
     exit(1)
   }
+
+  /**
+   *
+   * @param {Object[]} sourceArray
+   * @param {Object[]} newArray
+   * @return {Object[]}
+   */
+  static mergeObjectArrays (sourceArray, newArray) {
+    const finalArray = sourceArray
+
+    for (const [key, value] of Object.entries(newArray)) {
+      console.log(key, value)
+      if (finalArray.hasOwnProperty(key)) {
+        finalArray[key] = merge(finalArray[key], newArray[key])
+      } else {
+        finalArray[key] = newArray[key]
+      }
+    }
+
+    return finalArray
+  }
+
 }
 
 export default NodeUtils
