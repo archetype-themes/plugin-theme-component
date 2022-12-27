@@ -60,45 +60,51 @@ class FilesFactory {
   static #filterFiles (files, componentFiles) {
     // Categorize files for the build steps
     for (const file of files) {
-      const extension = path.extname(file)
+      const extension = path.extname(file).toLowerCase()
+      const folder = path.dirname(file).toLowerCase()
 
-      switch (extension) {
-        case '.css':
-        case '.less':
-        case '.sass':
-        case '.scss':
-          componentFiles.stylesheets.push(file)
-          break
-        case '.js':
-        case '.mjs':
-          componentFiles.javascriptFiles.push(file)
-          break
-        case '.liquid':
-          if (path.dirname(file).endsWith('/snippets')) {
-            componentFiles.snippetFiles.push(file)
-          } else {
-            componentFiles.liquidFiles.push(file)
-          }
+      if (folder.endsWith('/assets')) {
+        componentFiles.assetFiles.push(file)
+      } else {
 
-          break
-        case '.json':
-          const filename = path.basename(file).toLowerCase()
-          if (filename === 'package.json') {
-            componentFiles.packageJson = file
-          } else if (filename === 'schema.json') {
-            componentFiles.schemaFile = file
-          } else if (filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/) ||
-            filename.match(/^locales?\.json$/)) {
-            componentFiles.localeFiles.push(file)
-          } else if (filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.schema\.json$/) ||
-            filename.match(/^locales?\.schema\.json$/)) {
-            componentFiles.schemaLocaleFiles.push(file)
-          }
+        switch (extension) {
+          case '.css':
+          case '.less':
+          case '.sass':
+          case '.scss':
+            componentFiles.stylesheets.push(file)
+            break
+          case '.js':
+          case '.mjs':
+            componentFiles.javascriptFiles.push(file)
+            break
+          case '.liquid':
+            if (folder.endsWith('/snippets')) {
+              componentFiles.snippetFiles.push(file)
+            } else {
+              componentFiles.liquidFiles.push(file)
+            }
 
-          break
-        default:
-          logger.debug(`Filter Files: Unrecognised JSON file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
-          break
+            break
+          case '.json':
+            const filename = path.basename(file).toLowerCase()
+            if (filename === 'package.json') {
+              componentFiles.packageJson = file
+            } else if (filename === 'schema.json') {
+              componentFiles.schemaFile = file
+            } else if (filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/) ||
+              filename.match(/^locales?\.json$/)) {
+              componentFiles.localeFiles.push(file)
+            } else if (filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.schema\.json$/) ||
+              filename.match(/^locales?\.schema\.json$/)) {
+              componentFiles.schemaLocaleFiles.push(file)
+            }
+
+            break
+          default:
+            logger.debug(`Filter Files: Unrecognised JSON file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
+            break
+        }
       }
     }
   }
