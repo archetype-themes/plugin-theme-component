@@ -1,4 +1,7 @@
 class ComponentFiles {
+  /** @type {string[]} */
+  #assetFiles = []
+
   /** @type {string[]}
    * @default **/
   #javascriptFiles = []
@@ -34,6 +37,22 @@ class ComponentFiles {
     if (new.target === ComponentFiles) {
       throw new TypeError('Cannot construct ComponentFiles instances directly')
     }
+  }
+
+  /**
+   * Get Asset Files
+   * @return {string[]}
+   */
+  get assetFiles () {
+    return this.#assetFiles
+  }
+
+  /**
+   * Set Asset Files
+   * @param {string[]} value
+   */
+  set assetFiles (value) {
+    this.#assetFiles = value
   }
 
   /**
