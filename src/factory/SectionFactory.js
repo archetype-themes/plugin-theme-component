@@ -23,16 +23,16 @@ class SectionFactory {
   /**
    * Builds a new Section and sets its basic parameters
    * @param {string} name - Section name
-   * @param {module:models/Collection} [collection] - Parent Collection
+   * @param {string} [collectionRootFolder] - Parent Collection Root Folder
    * @returns {Promise<Section>}
    */
-  static async fromName (name, collection) {
+  static async fromName (name, collectionRootFolder) {
     const section = new Section()
     section.name = name
 
     // Set root folder
-    if (collection && collection.rootFolder) {
-      section.rootFolder = path.join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
+    if (collectionRootFolder) {
+      section.rootFolder = path.join(collectionRootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
     } else if (ArchieNodeConfig.isCollection()) {
       section.rootFolder = path.join(path.dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, section.name)
     } else if (ArchieNodeConfig.isSection()) {
@@ -95,14 +95,15 @@ class SectionFactory {
 
   /**
    * Create Sections from a Collection
-   * @param collection
+   * @param {string[]} sectionNames
+   * @param {string} collectionRootFolder
    * @return {Promise<Section[]>}
    */
-  static async fromCollection (collection) {
+  static async fromCollection (sectionNames, collectionRootFolder) {
     const sections = []
     // Create sections
-    for (const sectionName of collection.sectionNames) {
-      const section = await SectionFactory.fromName(sectionName, collection)
+    for (const sectionName of sectionNames) {
+      const section = await SectionFactory.fromName(sectionName, collectionRootFolder)
       sections.push(section)
     }
     return sections
