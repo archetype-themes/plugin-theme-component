@@ -6,20 +6,22 @@ import ComponentUtils from './ComponentUtils.js'
 class CollectionUtils {
   /**
    * Find Section Names
-   * @param {module:models/Collection} collection
-   * @return {Promise<void>}
+   * @param {string} sectionsFolder
+   * @return {Promise<string[]>}
    */
-  static async findSectionNames (collection) {
-    const entries = await readdir(collection.sectionsFolder, { withFileTypes: true })
+  static async findSectionNames (sectionsFolder) {
+    const sectionNames = []
+    const entries = await readdir(sectionsFolder, { withFileTypes: true })
     for (const entry of entries) {
       if (entry.isDirectory()) {
         try {
-          const sectionFolder = path.join(collection.sectionsFolder, entry.name)
+          const sectionFolder = path.join(sectionsFolder, entry.name)
           await access(sectionFolder + '/package.json', constants.R_OK)
-          collection.sectionNames.push(entry.name)
+          sectionNames.push(entry.name)
         } catch {}
       }
     }
+    return sectionNames
   }
 
   /**
