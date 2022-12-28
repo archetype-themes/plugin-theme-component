@@ -12,9 +12,15 @@ class StylesUtils {
    */
   static createMasterStylesheet (stylesheets) {
     let masterStylesheetContents = ''
+    const processedStylesheets = []
 
     for (const stylesheet of stylesheets) {
-      masterStylesheetContents += `@import url('${stylesheet}');\n`
+      // When building a Collection, multiple Sections might include the same snippet,
+      // Therefore we check for duplicates
+      if (!processedStylesheets.includes(stylesheet)) {
+        masterStylesheetContents += `@import url('${stylesheet}');\n`
+        processedStylesheets.push(stylesheet)
+      }
     }
 
     return masterStylesheetContents
