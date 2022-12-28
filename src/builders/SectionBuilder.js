@@ -1,5 +1,5 @@
 // NodeJs imports
-import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
 
 // External Libraries imports
@@ -17,6 +17,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
 import logger from '../utils/Logger.js'
+import LocaleUtils from '../utils/LocaleUtils.js'
 
 class SectionBuilder {
 
@@ -77,7 +78,7 @@ class SectionBuilder {
         section.build.liquidCode
 
       // Write Schema Locales to disk
-      fileOperationPromises.push(this.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder))
+      fileOperationPromises.push(LocaleUtils.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder))
 
       // Copy Assets
       const assetFiles = section.files.assetFiles
@@ -206,23 +207,6 @@ class SectionBuilder {
       await mkdir(sectionBuild.assetsFolder, { recursive: true })
     }
   }
-
-  /**
-   * Write Schema Locales
-   * @param {Object[]} schemaLocales
-   * @param {string} localesFolder
-   * @return {Promise<Awaited<undefined>[]>}
-   */
-  static async writeSchemaLocales (schemaLocales, localesFolder) {
-    const promises = []
-    for (const [locale, json] of schemaLocales) {
-      const schemaLocaleFilename = path.join(localesFolder, `${locale}.schema.json`)
-      const localeJsonString = JSON.stringify(json, null, 2)
-      promises.push(writeFile(schemaLocaleFilename, localeJsonString))
-    }
-    return Promise.all(promises)
-  }
-
 }
 
 export default SectionBuilder

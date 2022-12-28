@@ -14,7 +14,7 @@ class FileUtils {
   /**
    *
    * @param {string[]|string} files
-   * @return {Promise<undefined[]>}
+   * @return {Promise<void[]>}
    */
   static async backup (files) {
     files = (typeof files === 'string' || files instanceof String) ? [files] : files
@@ -52,7 +52,7 @@ class FileUtils {
    * Copy All Files to a Specified Folder
    * @param files
    * @param targetFolder
-   * @return {Promise<Awaited<undefined>[]>}
+   * @return {Promise<Awaited<void>[]>}
    */
   static async copyFilesToFolder (files, targetFolder) {
     const copyPromises = []

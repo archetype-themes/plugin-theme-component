@@ -52,6 +52,22 @@ class LocaleUtils {
 
     return locales
   }
+
+  /**
+   * Write Schema Locales
+   * @param {Object[]} schemaLocales
+   * @param {string} localesFolder
+   * @return {Promise<Awaited<void>[]>}
+   */
+  static async writeSchemaLocales (schemaLocales, localesFolder) {
+    const promises = []
+    for (const [locale, json] of schemaLocales) {
+      const schemaLocaleFilename = path.join(localesFolder, `${locale}.schema.json`)
+      const localeJsonString = JSON.stringify(json, null, 2)
+      promises.push(writeFile(schemaLocaleFilename, localeJsonString))
+    }
+    return Promise.all(promises)
+  }
 }
 
 export default LocaleUtils
