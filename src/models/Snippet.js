@@ -4,7 +4,10 @@ class Snippet extends Component {
   /** @type {string} **/
   static COMPONENT_NAME = 'snippet'
 
-  /** @type {SnippetBuild} **/
+  /**
+   * @override
+   * @type {SnippetBuild}
+   */
   #build
   /**
    * @override
@@ -13,7 +16,8 @@ class Snippet extends Component {
   #files
 
   /**
-   *  Get Build
+   * Get Build
+   * @override
    * @returns {SnippetBuild}
    */
   get build () {
@@ -22,6 +26,7 @@ class Snippet extends Component {
 
   /**
    * Set Build
+   * @override
    * @param {SnippetBuild} value
    */
   set build (value) {

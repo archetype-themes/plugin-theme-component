@@ -4,7 +4,10 @@ class Section extends Component {
   /** @type {string} **/
   static COMPONENT_NAME = 'section'
 
-  /** @type {SectionBuild} **/
+  /**
+   * @override
+   * @type {SectionBuild}
+   */
   #build
 
   /**
@@ -15,6 +18,7 @@ class Section extends Component {
 
   /**
    *  Get Build
+   * @override
    * @returns {SectionBuild}
    */
   get build () {
@@ -23,6 +27,7 @@ class Section extends Component {
 
   /**
    * Set Build
+   * @override
    * @param {SectionBuild} value
    */
   set build (value) {

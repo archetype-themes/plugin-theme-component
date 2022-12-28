@@ -1,6 +1,8 @@
 import SectionSchema from '../SectionSchema.js'
 
 class Component {
+  /** @type {ComponentBuild} */
+  #build
   /** @type {ComponentFiles} **/
   #files
 
@@ -26,6 +28,22 @@ class Component {
     if (new.target === Component) {
       throw new TypeError('Cannot construct Component instances directly')
     }
+  }
+
+  /**
+   * Get Component Build
+   * @return {ComponentBuild}
+   */
+  get build () {
+    return this.#build
+  }
+
+  /**
+   * Set Component Build
+   * @param {ComponentBuild} value
+   */
+  set build (value) {
+    this.#build = value
   }
 
   /**
