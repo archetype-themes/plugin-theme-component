@@ -1,7 +1,7 @@
 import merge from 'deepmerge'
-import StylesUtils from './StylesUtils.js'
 import NodeUtils from './NodeUtils.js'
 import SnippetBuilder from '../builders/SnippetBuilder.js'
+import ComponentUtils from './ComponentUtils.js'
 
 class RenderUtils {
 
@@ -116,10 +116,9 @@ class RenderUtils {
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         if (render.snippet.files.mainStylesheet) {
-          if (StylesUtils.isSassFile(render.snippet.files.mainStylesheet)) {
-            stylesheets.push(render.snippet.build.stylesheet)
-          } else {
-            stylesheets.push(render.snippet.files.mainStylesheet)
+          const mainStylesheet = ComponentUtils.getMainStylesheet(render.snippet)
+          if (mainStylesheet) {
+            stylesheets.push(mainStylesheet)
           }
 
           if (render.snippet.renders) {
