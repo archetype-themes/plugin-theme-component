@@ -9,10 +9,10 @@ import SectionFactory from '../../factory/SectionFactory.js'
 import Collection from '../../models/Collection.js'
 import Section from '../../models/Section.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
-import ComponentUtils from '../../utils/ComponentUtils.js'
 import logger from '../../utils/Logger.js'
 import Watcher from '../../utils/Watcher.js'
 import NodeUtils from '../../utils/NodeUtils.js'
+import RenderUtils from '../../utils/RenderUtils.js'
 
 class BuildCommand {
   /** @type {string} **/
@@ -106,7 +106,7 @@ class BuildCommand {
    * @return {Promise<void>}
    */
   static async watchSection (section) {
-    const snippetRootFolders = ComponentUtils.getSnippetRootFoldersFromRenders(section.renders)
+    const snippetRootFolders = RenderUtils.getSnippetRootFolders(section.renders)
     const watchFolders = [section.rootFolder].concat(snippetRootFolders).map(folder => path.join(folder, 'src'))
 
     const watcher = Watcher.getWatcher(watchFolders)
