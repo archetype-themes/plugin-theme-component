@@ -7,7 +7,7 @@ class Watcher {
    * Watch target files and folders
    * @param {string[]} targets target paths
    * @param {string} [rootFolder] Use if target paths are relative
-   * @return {FSWatcher}
+   * @return {chokidar.FSWatcher}
    */
   static getWatcher (targets, rootFolder) {
     const watchOptions = {
@@ -26,9 +26,9 @@ class Watcher {
 
   /**
    * Apply watch action to all files
-   * @param {FSWatcher} watcher
+   * @param {chokidar.FSWatcher} watcher
    * @param {function} action
-   * @return {FSWatcher}
+   * @return {chokidar.FSWatcher}
    */
   static watch (watcher, action) {
     return watcher.on('all', action)

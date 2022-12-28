@@ -116,7 +116,7 @@ class BuildCommand {
 
   /**
    *
-   * @param {FSWatcher} watcher
+   * @param {chokidar.FSWatcher} watcher
    * @param {string} event
    * @param {string} eventPath
    * @return {Promise<void>}
@@ -135,7 +135,7 @@ class BuildCommand {
   /**
    *
    * @param {string} sectionName
-   * @param {FSWatcher} watcher
+   * @param {chokidar.FSWatcher} watcher
    * @param {string} event
    * @param {string} eventPath
    * @return {Promise<void>}
