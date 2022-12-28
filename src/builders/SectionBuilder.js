@@ -16,6 +16,7 @@ import LiquidUtils from '../utils/LiquidUtils.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
+import logger from '../utils/Logger.js'
 
 class SectionBuilder {
 
@@ -86,6 +87,23 @@ class SectionBuilder {
     fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
 
     return Promise.all(fileOperationPromises)
+  }
+
+  /**
+   * Build multiple Sections
+   * @param {Section[]} sections
+   * @return {Promise<void>}
+   */
+  static async buildMany (sections) {
+    for (const section of sections) {
+      logger.info(`Building "${section.name}" section`)
+      console.time(`Building "${section.name}" section`)
+
+      await SectionBuilder.build(section)
+
+      logger.info(`${section.name}: Build Complete`)
+      console.timeEnd(`Building "${section.name}" section`)
+    }
   }
 
   /**
