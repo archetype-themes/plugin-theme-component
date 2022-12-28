@@ -3,9 +3,9 @@ import merge from 'deepmerge'
 import { union } from 'lodash-es'
 
 // Archie imports
-import ComponentUtils from './ComponentUtils.js'
 import NodeUtils from './NodeUtils.js'
 import SnippetBuilder from '../builders/SnippetBuilder.js'
+import StylesUtils from './StylesUtils.js'
 
 class RenderUtils {
 
@@ -92,9 +92,9 @@ class RenderUtils {
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         if (render.snippet.files.mainStylesheet) {
-          const mainStylesheet = ComponentUtils.getMainStylesheet(render.snippet)
-          if (mainStylesheet) {
-            stylesheets.push(mainStylesheet)
+          const mainCssFile = StylesUtils.getComponentMainCssFile(render.snippet)
+          if (mainCssFile) {
+            stylesheets.push(mainCssFile)
           }
 
           if (render.snippet.renders) {

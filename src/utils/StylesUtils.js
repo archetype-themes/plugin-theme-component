@@ -53,6 +53,21 @@ class StylesUtils {
   }
 
   /**
+   * Get Component Main CSS File (excludes sass files)
+   * @param {Component} component
+   */
+  static getComponentMainCssFile (component) {
+    if (component.files.mainStylesheet) {
+      if (this.isSassFile(component.files.mainStylesheet)) {
+        return component.build.stylesheet
+      } else {
+        return component.files.mainStylesheet
+      }
+    }
+
+  }
+
+  /**
    *
    * @param {string[]} styleSheets
    * @return {string}
