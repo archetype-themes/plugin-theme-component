@@ -1,7 +1,11 @@
+// External Librairy imports
 import merge from 'deepmerge'
+import { union } from 'lodash-es'
+
+// Archie imports
+import ComponentUtils from './ComponentUtils.js'
 import NodeUtils from './NodeUtils.js'
 import SnippetBuilder from '../builders/SnippetBuilder.js'
-import ComponentUtils from './ComponentUtils.js'
 
 class RenderUtils {
 
@@ -101,6 +105,27 @@ class RenderUtils {
       }
     }
     return stylesheets
+  }
+
+  /**
+   * Get Snippet Root Folders From Section/Snippet Renders
+   * @param {Render[]} renders
+   * @return {string[]}
+   */
+  static getSnippetRootFolders (renders) {
+    let snippetRootFolders = []
+    for (const render of renders) {
+      if (render.snippet) {
+        if (render.snippet.rootFolder && !snippetRootFolders.includes(render.snippet.rootFolder)) {
+          snippetRootFolders.push(render.snippet.rootFolder)
+        }
+        if (render.snippet.renders && render.snippet.renders.length > 0) {
+          const childSnippetRootFolders = this.getSnippetRootFolders(render.snippet.renders)
+          snippetRootFolders = union(snippetRootFolders, childSnippetRootFolders)
+        }
+      }
+    }
+    return snippetRootFolders
   }
 
   /**

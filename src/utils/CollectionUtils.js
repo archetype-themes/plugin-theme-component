@@ -1,7 +1,9 @@
-import { access, readdir } from 'node:fs/promises'
+// NodeJS imports
+import { access, constants, readdir } from 'node:fs/promises'
 import path from 'path'
-import { constants } from 'node:fs'
-import ComponentUtils from './ComponentUtils.js'
+
+// Archie imports
+import RenderUtils from './RenderUtils.js'
 
 class CollectionUtils {
   /**
@@ -34,7 +36,7 @@ class CollectionUtils {
 
     for (const section of collection.sections) {
       watchFolders.push(section.rootFolder)
-      for (const snippetRootFolder of ComponentUtils.getSnippetRootFoldersFromRenders(section.renders)) {
+      for (const snippetRootFolder of RenderUtils.getSnippetRootFolders(section.renders)) {
         if (!watchFolders.includes(snippetRootFolder)) {
           watchFolders.push(snippetRootFolder)
         }
