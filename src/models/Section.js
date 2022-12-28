@@ -6,7 +6,11 @@ class Section extends Component {
 
   /** @type {SectionBuild} **/
   #build
-  /** @type {SectionFiles} **/
+
+  /**
+   * @override
+   * @type {SectionFiles}
+   */
   #files
 
   /**
@@ -27,6 +31,7 @@ class Section extends Component {
 
   /**
    * Get Files Model Reference
+   * @override
    * @returns {SectionFiles}
    */
   get files () {
@@ -35,6 +40,7 @@ class Section extends Component {
 
   /**
    * Set Files Model Reference
+   * @override
    * @param {SectionFiles} value
    */
   set files (value) {

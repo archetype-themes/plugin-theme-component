@@ -1,6 +1,9 @@
 import SectionSchema from '../SectionSchema.js'
 
 class Component {
+  /** @type {ComponentFiles} **/
+  #files
+
   /** @type {string} **/
   #liquidCode
 
@@ -23,6 +26,22 @@ class Component {
     if (new.target === Component) {
       throw new TypeError('Cannot construct Component instances directly')
     }
+  }
+
+  /**
+   * Get Component Files
+   * @return {ComponentFiles}
+   */
+  get files () {
+    return this.#files
+  }
+
+  /**
+   * Set Component Files
+   * @param {ComponentFiles} value
+   */
+  set files (value) {
+    this.#files = value
   }
 
   /**

@@ -6,7 +6,10 @@ class Snippet extends Component {
 
   /** @type {SnippetBuild} **/
   #build
-  /** @type {SnippetFiles} **/
+  /**
+   * @override
+   * @type {SnippetFiles}
+   */
   #files
 
   /**
@@ -27,6 +30,7 @@ class Snippet extends Component {
 
   /**
    * Get Files Model Reference
+   * @override
    * @returns {SnippetFiles}
    */
   get files () {
@@ -35,6 +39,7 @@ class Snippet extends Component {
 
   /**
    * Set Files Model Reference
+   * @override
    * @param {SnippetFiles} value
    */
   set files (value) {
