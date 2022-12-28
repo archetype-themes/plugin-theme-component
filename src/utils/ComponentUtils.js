@@ -8,6 +8,7 @@ import { union } from 'lodash-es'
 
 // Internal Modules
 import FileUtils from './FileUtils.js'
+import StylesUtils from './StylesUtils.js'
 
 class ComponentUtils {
 
@@ -92,6 +93,21 @@ class ComponentUtils {
       }
     }
     return snippetRootFolders
+  }
+
+  /**
+   * Get Component Main Stylesheet
+   * @param {Component} component
+   */
+  static getMainStylesheet (component) {
+    if (component.files.mainStylesheet) {
+      if (StylesUtils.isSassFile(component.files.mainStylesheet)) {
+        return component.build.stylesheet
+      } else {
+        return component.files.mainStylesheet
+      }
+    }
+
   }
 
 }
