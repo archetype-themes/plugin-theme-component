@@ -49,6 +49,10 @@ class SectionBuilder {
     section.build.liquidCode =
       await this.buildLiquid(section.liquidCode, section.build.schema, section.renders, section.build.snippetsFolder)
 
+    // Assemble Schema Locales
+    const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
+    section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
+
     if (sectionBuild) {
       // Bundle CSS
       section.build.stylesBundle =
@@ -72,9 +76,7 @@ class SectionBuilder {
         LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) +
         section.build.liquidCode
 
-      // Assemble Schema Locales
-      const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
-      section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
+      // Write Schema Locales to disk
       fileOperationPromises.push(this.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder))
 
       // Copy Assets
@@ -134,24 +136,15 @@ class SectionBuilder {
   /**
    *
    * @param {string} sectionName
-   * @param {Object[]} sectionSchemaLocales
-   * @param {Object[]} snippetSchemaLocales
+   * @param {Object[]} [sectionSchemaLocales=[]]
+   * @param {Object[]} [snippetSchemaLocales=[]]
    * @return {Object[]}
    */
-  static buildSchemaLocales (sectionName, sectionSchemaLocales, snippetSchemaLocales) {
+  static buildSchemaLocales (sectionName, sectionSchemaLocales = [], snippetSchemaLocales = []) {
     let buildSchemaLocales = []
 
-    if (sectionSchemaLocales && sectionSchemaLocales.length > 0) {
-      buildSchemaLocales = sectionSchemaLocales
-    }
-
-    if (snippetSchemaLocales && snippetSchemaLocales.length > 0) {
-      if (buildSchemaLocales.length > 0) {
-        buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, snippetSchemaLocales)
-      } else {
-        buildSchemaLocales = snippetSchemaLocales
-      }
-    }
+    buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, sectionSchemaLocales)
+    buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, snippetSchemaLocales)
 
     // Make sure all Schema Locales are in the appropriate section namespace
     for (const [locale, json] of buildSchemaLocales) {
