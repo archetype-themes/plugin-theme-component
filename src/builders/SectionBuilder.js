@@ -1,225 +1,191 @@
-import { mkdir, unlink, writeFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import path from 'path'
 import merge from 'deepmerge'
 
 // Archie Components
 import ComponentBuilder from './ComponentBuilder.js'
-import SnippetBuilder from './SnippetBuilder.js'
 import ArchieCLI from '../cli/models/ArchieCLI.js'
+import BuildFactory from '../factory/BuildFactory.js'
 import Section from '../models/Section.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
-import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
-import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
+import StylesUtils from '../utils/StylesUtils.js'
 
 class SectionBuilder extends ComponentBuilder {
 
   /**
    * Build Section
    * @param {Section} section
-   * @returns {Promise<Section>}
+   * @returns {Promise<Awaited<unknown>[]>} - disk write operations array
    */
   static async build (section) {
-    logger.info(`Building "${section.name}" section`)
-    console.time(`Building "${section.name}" section`)
+    const sectionBuild = (ArchieCLI.commandOption === Section.COMPONENT_NAME)
+    const fileOperationPromises = []
 
+    // Create build model and prepare folders
+    section.build = BuildFactory.fromSection(section)
     await this.resetBuildFolders(section.files, section.build)
 
-    //  Fill renders with the proper snippet object
-    if (section.renders.length > 0) {
-      await mkdir(section.build.snippetsFolder, { recursive: true })
-      await this.processRenders(section)
-    } else {
-      logger.debug(`${section.name}: No "Render" tags found`)
+    await RenderUtils.buildSnippets(section.renders)
+
+    // Build Section CSS if it is a Sass file because it doesn't play well with PostCSS style bundles
+    // This excludes snippets recursive CSS
+    if (section.files.mainStylesheet && StylesUtils.isSassFile(section.files.mainStylesheet)) {
+      section.build.styles = await StylesProcessor.buildStyles(section.files.mainStylesheet, section.build.stylesheet)
+      fileOperationPromises.push(FileUtils.writeFile(section.build.stylesheet, section.build.styles))
     }
 
-    // Process JavaScript files
-    if (section.files.javascriptIndex) {
-      logger.debug(`${section.name}: Processing JavaScript`)
-      await SectionBuilder.buildJavascript(section)
-      logger.debug(`${section.name}: Javascript build complete`)
-    } else {
-      logger.debug(`${section.name}: No external javaScript found`)
+    // Recursively check for Snippet Schema
+    const snippetsSchema = RenderUtils.getSnippetsSchema(section.renders)
+    section.build.schema = merge(section.schema, snippetsSchema)
+
+    section.build.liquidCode =
+      await this.buildLiquid(section.liquidCode, section.build.schema, section.renders, section.build.snippetsFolder)
+
+    if (sectionBuild) {
+      // Bundle CSS
+      section.build.stylesBundle =
+        await this.bundleStyles(section.files.mainStylesheet, section.build.stylesheet, section.renders, section.build.stylesBundleFile)
+      fileOperationPromises.push(FileUtils.writeFile(section.build.stylesBundleFile, section.build.stylesBundle))
+
+      //Attach CSS bundle file reference to liquid code
+      section.build.liquidCode =
+        LiquidUtils.generateStylesheetReference(path.basename(section.build.stylesBundle)) + section.build.liquidCode
+
+      // Build JS
+      const rendersJavascriptIndexes = RenderUtils.getSnippetsJavascriptIndex(section.renders)
+      if (section.files.javascriptIndex) {
+        await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex, rendersJavascriptIndexes)
+      } else if (rendersJavascriptIndexes.length > 0) {
+        await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, rendersJavascriptIndexes.shift(), rendersJavascriptIndexes)
+      }
+
+      //Attach Javascript bundle file reference to liquid code
+      section.build.liquidCode =
+        LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) +
+        section.build.liquidCode
+
+      // Assemble Schema Locales
+      const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
+      section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
+      fileOperationPromises.push(this.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder))
+
+      // Copy Assets
+      const assetFiles = section.files.assetFiles
+      assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
+      fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
+
     }
 
-    // Process CSS files
-    if (section.files.mainStylesheet) {
-      logger.debug(`${section.name}: Processing CSS files`)
-      await this.buildStylesheets(section)
-      logger.debug(`${section.name}: CSS build complete`)
-    } else {
-      logger.debug(`${section.name}: No external CSS`)
-    }
+    fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
 
-    logger.debug(`${section.name}: Finalizing Liquid file`)
-    await SectionBuilder.buildLocales(section)
-    await SectionBuilder.buildLiquid(section)
-
-    // Process Schema Locale Files
-    if (section.schemaLocales) {
-      logger.debug(`${section.name}: Processing Schema Locale files`)
-      await mkdir(section.build.localesFolder, { recursive: true })
-      await SectionBuilder.writeSchemaLocales(section)
-    }
-
-    logger.info(`${section.name}: Build Complete`)
-    console.timeEnd(`Building "${section.name}" section`)
-    console.log('\n')
-
-    return section
+    return Promise.all(fileOperationPromises)
   }
 
   /**
-   * Build Section Javascript with snippet's JS as well
-   * @param {Section} section
-   * @returns {Promise<void>}
+   * Build Liquid
+   * @override
+   * @param {string} liquidCode
+   * @param {SectionSchema} schema
+   * @param {Render[]} renders
+   * @param {string} snippetsFolder
+   * @return {Promise<string>}
    */
-  static async buildJavascript (section) {
-    const includedSnippets = []
-    const injectedFiles = []
+  static async buildLiquid (liquidCode, schema, renders, snippetsFolder) {
+    let buildLiquidCode = liquidCode
 
-    if (section.renders) {
-      for (const render of section.renders) {
-        if (!includedSnippets.includes(render.snippetName) && render.snippet.files.javascriptIndex) {
-          injectedFiles.push(render.snippet.files.javascriptIndex)
-          includedSnippets.push(render.snippetName)
+    //  Replace renders tags with the proper snippet liquid code recursively
+    if (renders.length > 0) {
+      buildLiquidCode = await LiquidUtils.inlineOrCopySnippets(buildLiquidCode, renders, snippetsFolder)
+    }
+
+    // Append section schema to liquid code
+    if (schema) {
+      buildLiquidCode += `\n{% schema %}\n${JSON.stringify(schema, null, 2)}\n{% endschema %}`
+    }
+
+    return buildLiquidCode
+  }
+
+  /**
+   *
+   * @param {string} sectionName
+   * @param {Object[]} sectionSchemaLocales
+   * @param {Object[]} snippetSchemaLocales
+   * @return {Object[]}
+   */
+  static buildSchemaLocales (sectionName, sectionSchemaLocales, snippetSchemaLocales) {
+    let buildSchemaLocales = []
+
+    if (sectionSchemaLocales && sectionSchemaLocales.length > 0) {
+      buildSchemaLocales = sectionSchemaLocales
+    }
+
+    if (snippetSchemaLocales && snippetSchemaLocales.length > 0) {
+      if (buildSchemaLocales.length > 0) {
+        buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, snippetSchemaLocales)
+      } else {
+        buildSchemaLocales = snippetSchemaLocales
+      }
+    }
+
+    // Make sure all Schema Locales are in the appropriate section namespace
+    for (const [locale, json] of buildSchemaLocales) {
+      buildSchemaLocales[locale] = {
+        sections: {
+          [sectionName]: json
         }
       }
     }
 
-    if (injectedFiles.length > 0) {
-      await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex, injectedFiles)
-    } else {
-      await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex)
-    }
-    if (ArchieCLI.commandOption === Section.COMPONENT_NAME) {
-      section.liquidCode =
-        `<script src="{{ '${path.basename(section.build.javascriptFile)}' | asset_url }}" async></script>\n${section.liquidCode}`
-    }
+    return buildSchemaLocales
   }
 
   /**
-   * Build Section Locales
-   * @param {Section} section
+   * Bundle Styles
+   * Create a CSS bundle file for the section and all its snippets
+   * @param {string} sectionMainStylesheet
+   * @param {string} sectionBuildStylesheet
+   * @param {Render[]} sectionRenders
+   * @param {string} targetBundleStylesheet
+   * @return {Promise<string>}
    */
-  static async buildLocales (section) {
-    const rendersProcessed = []
-    for (const render of section.renders) {
-      if (render.snippet && render.snippet.locales && !rendersProcessed.includes(render.snippet.name)) {
-        section.locales = merge(section.locales, render.snippet.locales)
-        rendersProcessed.push(render.snippet.name)
+  static async bundleStyles (sectionMainStylesheet, sectionBuildStylesheet, sectionRenders, targetBundleStylesheet) {
+    let mainStylesheets = []
+
+    if (sectionMainStylesheet) {
+      if (StylesUtils.isSassFile(sectionMainStylesheet)) {
+        mainStylesheets.push(sectionBuildStylesheet)
+      } else {
+        mainStylesheets.push(sectionMainStylesheet)
       }
     }
 
-    if (section.locales) {
-      if (section.schema.locales) {
-        section.schema.locales = merge(section.schema.locales, section.locales)
-      } else {
-        section.schema.locales = section.locales
-      }
-      section.locales = section.schema.locales
+    if (sectionRenders) {
+      mainStylesheets = mainStylesheets.concat(RenderUtils.getSnippetsMainStylesheet(sectionRenders))
     }
+
+    return StylesProcessor.buildStylesBundle(mainStylesheets, targetBundleStylesheet)
   }
 
   /**
    * Write Schema Locales
-   * @param {Section} section
-   * @return {Promise<void>}
+   * @param {Object[]} schemaLocales
+   * @param {string} localesFolder
+   * @return {Promise<Awaited<undefined>[]>}
    */
-  static async writeSchemaLocales (section) {
-    const rendersProcessed = []
-    for (const render of section.renders) {
-      if (render.snippet && render.snippet.schemaLocales && !rendersProcessed.includes(render.snippet.name)) {
-        section.schemaLocales = merge(section.schemaLocales, render.snippet.schemaLocales)
-        rendersProcessed.push(render.snippet.name)
-      }
+  static async writeSchemaLocales (schemaLocales, localesFolder) {
+    const promises = []
+    for (const [locale, json] of schemaLocales) {
+      const schemaLocaleFilename = path.join(localesFolder, `${locale}.schema.json`)
+      const localeJsonString = JSON.stringify(json, null, 2)
+      promises.push(writeFile(schemaLocaleFilename, localeJsonString))
     }
-
-    for (const schemaLocale in section.schemaLocales) {
-      const schemaLocaleFileName = path.join(section.build.localesFolder, `${schemaLocale}.schema.json`)
-      const localeJson = {}
-      localeJson['sections'] = {}
-      localeJson['sections'][section.name] = section.schemaLocales[schemaLocale]
-      const localeJsonString = JSON.stringify(localeJson, null, 2)
-      await writeFile(schemaLocaleFileName, localeJsonString)
-    }
-  }
-
-  /**
-   * Build Section Snippets
-   * @param {Section} section
-   * @returns {Promise<void>}
-   */
-  static async processRenders (section) {
-
-    logger.debug(`Processing section's "render" tags`)
-
-    for (const render of section.renders) {
-
-      if (render.snippet.renders) {
-        await SnippetBuilder.processRenders(render.snippet, section.build.snippetsFolder)
-      }
-
-      if (render.hasForClause()) {
-        // Copy snippet liquid files since we can't inline a for loop
-        await FileUtils.writeFile(`${section.build.snippetsFolder}/${render.snippet.name}.liquid`, render.snippet.liquidCode)
-      } else {
-        // Prepends variables creation to accompany liquid code injection
-        let snippetLiquidCode = await LiquidUtils.getSnippetInlineLiquidCode(render)
-        section.liquidCode = section.liquidCode.replace(render.liquidTag, snippetLiquidCode)
-      }
-
-      await ComponentUtils.mergeSnippetData(section, render.snippet)
-    }
-  }
-
-  /**
-   * Build Main Stylesheet
-   * @param {Section} section
-   * @returns {Promise<void>}
-   */
-  static async buildStylesheets (section) {
-    let mainStylesheets = []
-    if (section.files && section.files.mainStylesheet) {
-      mainStylesheets.push(section.files.mainStylesheet)
-    }
-
-    if (section.renders) {
-      mainStylesheets = mainStylesheets.concat(await RenderUtils.getMainStylesheets(section.renders))
-    }
-
-    let useMasterSassFile = StylesProcessor.canWeUseMasterSassFile(mainStylesheets)
-
-    if (useMasterSassFile) {
-      logger.debug('Using Sass to merge CSS')
-      const masterSassFile = path.join(path.dirname(section.files.mainStylesheet), 'masterSassFile.tmp.sass')
-      const masterSassFileContent = StylesProcessor.createMasterSassFile(mainStylesheets)
-      await FileUtils.writeFile(masterSassFile, masterSassFileContent)
-      const styles = await StylesProcessor.buildStyles(section.build.stylesheet, masterSassFile)
-      await Promise.all([
-        FileUtils.writeFile(section.build.stylesheet, styles),
-        unlink(masterSassFile)
-      ])
-    } else {
-      logger.debug('Using Collate to merge CSS')
-      const sectionStyles = await StylesProcessor.buildStyles(section.build.stylesheet, section.files.mainStylesheet)
-      await FileUtils.writeFile(section.build.stylesheet, sectionStyles)
-      const buildStylesheets = [section.build.stylesheet]
-      buildStylesheets.concat(await RenderUtils.getBuildStylesheets(section.renders))
-      const styles = await FileUtils.getMergedFilesContent(buildStylesheets)
-      await unlink(section.build.stylesheet)
-      await FileUtils.writeFile(section.build.stylesheet, styles)
-    }
-
-    // Add CSS stylesheet reference to section liquid code only if we are building an individual section
-    if (ArchieCLI.commandOption === Section.COMPONENT_NAME) {
-      section.liquidCode =
-        `<link type="text/css" href="{{ '${path.basename(section.build.stylesheet)}' | asset_url }}" rel="stylesheet">\n${section.liquidCode}`
-    }
-
+    return Promise.all(promises)
   }
 
 }
