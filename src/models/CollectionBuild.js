@@ -18,6 +18,9 @@ class CollectionBuild {
   #snippetsFolder
 
   /** @type {string} **/
+  #styles
+
+  /** @type {string} **/
   #stylesheet
 
   /**
@@ -114,6 +117,22 @@ class CollectionBuild {
    */
   set snippetsFolder (value) {
     this.#snippetsFolder = value
+  }
+
+  /**
+   * Get Styles
+   * @return {string}
+   */
+  get styles () {
+    return this.#styles
+  }
+
+  /**
+   * Set Styles
+   * @param {string} value
+   */
+  set styles (value) {
+    this.#styles = value
   }
 
   /**
