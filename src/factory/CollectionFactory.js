@@ -1,7 +1,6 @@
 import Collection from '../models/Collection.js'
 import { env } from 'node:process'
 import { dirname, join } from 'path'
-import BuildFactory from './BuildFactory.js'
 import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
 import logger from '../utils/Logger.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
@@ -22,9 +21,6 @@ class CollectionFactory {
     // Set folder names
     collection.rootFolder = dirname(env.npm_package_json)
     collection.sectionsFolder = join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER)
-
-    // Prepare build object
-    collection.build = BuildFactory.fromCollection(collection)
 
     // Fetch Section Names
     collection.sectionNames = ArchieNodeConfig.getCollectionSections(collection.name)
@@ -49,9 +45,6 @@ class CollectionFactory {
     //Folders
     collection.rootFolder = await ThemeUtils.findCollectionPackageRootFolder(collection.name)
     collection.sectionsFolder = join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER)
-
-    // Prepare build object
-    collection.build = BuildFactory.fromCollection(collection)
 
     // Fetch Section Names
     collection.sectionNames = ArchieNodeConfig.getCollectionSections(collection.name)
