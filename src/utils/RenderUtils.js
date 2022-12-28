@@ -77,34 +77,6 @@ class RenderUtils {
   }
 
   /**
-   * Get Schema Locales from Render Snippets Recursively
-   * @param {Render[]} renders
-   * @param {string[]} [processedSnippets=[]]
-   * @return {Object[]}
-   */
-  static getSnippetsSchemaLocales (renders, processedSnippets) {
-    let schemaLocales = []
-
-    for (const render of renders) {
-      if (!processedSnippets.includes(render.snippetName)) {
-
-        if (render.snippet.schemaLocales) {
-          schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, render.snippet.schemaLocales)
-        }
-
-        // Recursively merge child Schema Locales
-        if (render.snippet.renders) {
-          schemaLocales =
-            NodeUtils.mergeObjectArrays(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
-        }
-
-        processedSnippets.push(render.snippetName)
-      }
-    }
-    return schemaLocales
-  }
-
-  /**
    * Get Main Stylesheets From Renders Recursively
    * @param {Render[]} renders
    * @param {string[]} [processedSnippets=[]]
@@ -156,6 +128,34 @@ class RenderUtils {
       }
     }
     return schema
+  }
+
+  /**
+   * Get Schema Locales from Render Snippets Recursively
+   * @param {Render[]} renders
+   * @param {string[]} [processedSnippets=[]]
+   * @return {Object[]}
+   */
+  static getSnippetsSchemaLocales (renders, processedSnippets) {
+    let schemaLocales = []
+
+    for (const render of renders) {
+      if (!processedSnippets.includes(render.snippetName)) {
+
+        if (render.snippet.schemaLocales) {
+          schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, render.snippet.schemaLocales)
+        }
+
+        // Recursively merge child Schema Locales
+        if (render.snippet.renders) {
+          schemaLocales =
+            NodeUtils.mergeObjectArrays(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
+        }
+
+        processedSnippets.push(render.snippetName)
+      }
+    }
+    return schemaLocales
   }
 
 }
