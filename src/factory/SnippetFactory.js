@@ -1,18 +1,19 @@
 // NodeJS imports
 import path from 'path'
 
+// External Module imports
+import merge from 'deepmerge'
+
 // Archie module imports
-import BuildFactory from './BuildFactory.js'
 import FilesFactory from './FilesFactory.js'
+import RenderFactory from './RenderFactory.js'
+import FileAccessError from '../errors/FileAccessError.js'
+import SectionSchema from '../models/SectionSchema.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
-import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
+import LocaleUtils from '../utils/LocaleUtils.js'
 import logger from '../utils/Logger.js'
-import FileAccessError from '../errors/FileAccessError.js'
-import merge from 'deepmerge'
-import RenderFactory from './RenderFactory.js'
-import SectionSchema from '../models/SectionSchema.js'
 
 class SnippetFactory {
   /**
@@ -56,7 +57,7 @@ class SnippetFactory {
 
     // Load Locales
     if (snippet.files.localeFiles && snippet.files.localeFiles.length > 0) {
-      const locales = await ComponentUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
+      const locales = await LocaleUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
 
       if (!snippet.schema) {
         snippet.schema = new SectionSchema()
@@ -70,7 +71,7 @@ class SnippetFactory {
 
     // Load Schema Locales
     if (snippet.files.schemaLocaleFiles && snippet.files.schemaLocaleFiles.length > 0) {
-      snippet.schemaLocales = await ComponentUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
+      snippet.schemaLocales = await LocaleUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
     }
 
     // Create Renders
