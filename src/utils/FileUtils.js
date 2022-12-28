@@ -49,6 +49,20 @@ class FileUtils {
   }
 
   /**
+   * Copy All Files to a Specified Folder
+   * @param files
+   * @param targetFolder
+   * @return {Promise<Awaited<undefined>[]>}
+   */
+  static async copyFilesToFolder (files, targetFolder) {
+    const copyPromises = []
+    for (const file of files) {
+      copyPromises.push(copyFile(file, path.join(targetFolder, path.basename(file))))
+    }
+    return Promise.all(copyPromises)
+  }
+
+  /**
    * Copy Folder Contents
    * @param {string} sourceFolder
    * @param {string} targetFolder
