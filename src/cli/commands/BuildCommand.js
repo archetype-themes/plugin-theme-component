@@ -39,7 +39,13 @@ class BuildCommand {
     }
     // Build/Watch Section
     else if (commandOption === Section.COMPONENT_NAME) {
+      logger.info(`Building "${targetComponentName}" section`)
+      console.time(`Building "${targetComponentName}" section`)
+
       const section = await this.buildSection(targetComponentName)
+
+      logger.info(`${targetComponentName}: Build Complete`)
+      console.timeEnd(`Building "${targetComponentName}" section`)
 
       if (watchMode) {
         await this.watchSection(section)
@@ -108,11 +114,11 @@ class BuildCommand {
   static async onCollectionWatchEvent (watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${eventPath} detected`)
-    const collection = await BuildCommand.buildCollection()
+    const collection = await this.buildCollection()
     // Restart Watcher on liquid file change to make sure we do refresh watcher snippet folders
     if (filename.endsWith('.liquid')) {
       await watcher.close()
-      return BuildCommand.watchCollection(collection)
+      return this.watchCollection(collection)
     }
   }
 
@@ -127,11 +133,18 @@ class BuildCommand {
   static async onSectionWatchEvent (sectionName, watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.info(`Watcher Event: "${event}" on file: ${filename} detected`)
-    const section = await BuildCommand.buildSection(sectionName)
+
+    logger.info(`Building "${sectionName}" section`)
+    console.time(`Building "${sectionName}" section`)
+
+    const section = await this.buildSection(sectionName)
+
+    logger.info(`${sectionName}: Build Complete`)
+    console.timeEnd(`Building "${sectionName}" section`)
     // Restart Watcher on liquid file change to make sure we do refresh watcher snippet folders
     if (filename.endsWith('.liquid')) {
       await watcher.close()
-      return BuildCommand.watchSection(section)
+      return this.watchSection(section)
     }
   }
 }
