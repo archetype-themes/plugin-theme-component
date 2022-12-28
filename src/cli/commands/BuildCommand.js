@@ -1,5 +1,5 @@
 //Node imports
-import path from 'path'
+import path, { dirname } from 'path'
 
 // Archie imports
 import CollectionBuilder from '../../builders/CollectionBuilder.js'
@@ -62,11 +62,12 @@ class BuildCommand {
    */
   static async buildCollection () {
     const collectionName = NodeUtils.getPackageName()
+    const collectRootFolder = dirname(env.npm_package_json)
 
     logger.info(`Building ${collectionName} Collection ...`)
     console.time(`Building "${collectionName}" collection`)
 
-    const collection = await CollectionFactory.fromCollectionBuildCommand(collectionName)
+    const collection = await CollectionFactory.fromNameAndFolder(collectionName, collectRootFolder)
     await CollectionBuilder.build(collection)
 
     logger.info(`${collectionName}: Build Complete`)

@@ -1,67 +1,57 @@
-import Collection from '../models/Collection.js'
-import { env } from 'node:process'
-import { dirname, join } from 'path'
+// Node JS imports
+import { join } from 'path'
+
+// Archie imports
+import SectionFactory from './SectionFactory.js'
 import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
-import logger from '../utils/Logger.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
-import NodeUtils from '../utils/NodeUtils.js'
-import ThemeUtils from '../utils/ThemeUtils.js'
 import FileAccessError from '../errors/FileAccessError.js'
+import Collection from '../models/Collection.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
+import logger from '../utils/Logger.js'
 
 class CollectionFactory {
   /**
    * From Collection Build Script
+   * @param {string} collectionName - Collection name
+   * @param {string} rootFolder - Collection root folder
    * @return {Promise<Collection>}
    */
-  static async fromCollectionBuildCommand () {
-
+  static async fromNameAndFolder (collectionName, rootFolder) {
     const collection = new Collection()
 
-    collection.name = NodeUtils.getPackageName()
+    // Set Collection name
+    collection.name = collectionName
+
     // Set folder names
-    collection.rootFolder = dirname(env.npm_package_json)
+    collection.rootFolder = rootFolder
     collection.sectionsFolder = join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER)
 
-    // Fetch Section Names
-    collection.sectionNames = ArchieNodeConfig.getCollectionSections(collection.name)
-
-    if (collection.sectionNames.length === 0) {
-      logger.info(`No section list found for ${collection.name}; all sections will be processed.`)
-      await CollectionUtils.findSectionNames(collection)
-    }
+    // Get Section Names and create Sections
+    collection.sectionNames = await this.getSectionNames(collection.name, collection.sectionsFolder)
+    collection.sections = SectionFactory.fromCollection(collection.sectionNames, collection.rootFolder)
 
     return collection
   }
 
   /**
-   *
    * @param {string} collectionName
-   * @return {Promise<Collection>}
+   * @param {string} sectionsFolder
+   * @return {Promise<string[]>}
    */
-  static async fromThemeInstallCommand (collectionName) {
-    const collection = new Collection()
+  static async getSectionNames (collectionName, sectionsFolder) {
 
-    collection.name = collectionName
-    //Folders
-    collection.rootFolder = await ThemeUtils.findCollectionPackageRootFolder(collection.name)
-    collection.sectionsFolder = join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER)
+    let sectionNames = ArchieNodeConfig.getCollectionSections(collectionName)
 
-    // Fetch Section Names
-    collection.sectionNames = ArchieNodeConfig.getCollectionSections(collection.name)
-
-    if (collection.sectionNames.length === 0) {
-      logger.info(`No section list found for ${collection.name}; all sections will be processed.`)
+    if (sectionNames.length === 0) {
+      logger.info(`No section list found for Collection; all sections will be processed.`)
       try {
-        await CollectionUtils.findSectionNames(collection)
+        sectionNames = await CollectionUtils.findSectionNames(sectionsFolder)
       } catch (error) {
-        throw new FileAccessError(`Couldn't find the ${collection.name} collection on disk. Is it installed?`)
+        throw new FileAccessError(`Couldn't find the ${collectionName} collection on disk. Is it installed?`)
       }
-
     }
-
-    return collection
+    return sectionNames
   }
-
 }
 
 export default CollectionFactory
