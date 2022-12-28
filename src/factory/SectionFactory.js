@@ -14,8 +14,8 @@ import FileAccessError from '../errors/FileAccessError.js'
 import Collection from '../models/Collection.js'
 import Section from '../models/Section.js'
 import SectionSchema from '../models/SectionSchema.js'
-import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
+import LocaleUtils from '../utils/LocaleUtils.js'
 import logger from '../utils/Logger.js'
 
 class SectionFactory {
@@ -67,7 +67,7 @@ class SectionFactory {
 
     // Load Locales
     if (section.files.localeFiles && section.files.localeFiles.length > 0) {
-      const locales = await ComponentUtils.parseLocaleFilesContent(section.files.localeFiles)
+      const locales = await LocaleUtils.parseLocaleFilesContent(section.files.localeFiles)
       if (!section.schema) {
         section.schema = new SectionSchema()
       }
@@ -80,7 +80,7 @@ class SectionFactory {
 
     // Load Schema Locales
     if (section.files.schemaLocaleFiles && section.files.schemaLocaleFiles.length > 0) {
-      section.schemaLocales = await ComponentUtils.parseLocaleFilesContent(section.files.schemaLocaleFiles)
+      section.schemaLocales = await LocaleUtils.parseLocaleFilesContent(section.files.schemaLocaleFiles)
     }
 
     // Create Renders
