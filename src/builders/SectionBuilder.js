@@ -1,9 +1,11 @@
-import { writeFile } from 'node:fs/promises'
+// NodeJs imports
+import { mkdir, rm, writeFile } from 'node:fs/promises'
 import path from 'path'
+
+// External Libraries imports
 import merge from 'deepmerge'
 
-// Archie Components
-import ComponentBuilder from './ComponentBuilder.js'
+// Archie Component imports
 import ArchieCLI from '../cli/models/ArchieCLI.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import Section from '../models/Section.js'
@@ -15,7 +17,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
 
-class SectionBuilder extends ComponentBuilder {
+class SectionBuilder {
 
   /**
    * Build Section
@@ -170,6 +172,28 @@ class SectionBuilder extends ComponentBuilder {
     }
 
     return StylesProcessor.buildStylesBundle(mainStylesheets, targetBundleStylesheet)
+  }
+
+  /**
+   *
+   * @param {SectionFiles} sectionFiles
+   * @param {SectionBuild} sectionBuild
+   */
+  static async resetBuildFolders (sectionFiles, sectionBuild) {
+    await rm(sectionBuild.rootFolder, { force: true, recursive: true })
+    await mkdir(sectionBuild.rootFolder, { recursive: true })
+
+    if (sectionFiles.schemaLocaleFiles.length > 0) {
+      await mkdir(sectionBuild.localesFolder, { recursive: true })
+    }
+
+    if (sectionFiles.snippetFiles.length > 0) {
+      await mkdir(sectionBuild.snippetsFolder, { recursive: true })
+    }
+
+    if (sectionFiles.javascriptFiles.length > 0 || sectionFiles.stylesheets.length > 0) {
+      await mkdir(sectionBuild.assetsFolder, { recursive: true })
+    }
   }
 
   /**
