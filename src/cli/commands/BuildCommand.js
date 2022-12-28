@@ -12,6 +12,7 @@ import CollectionUtils from '../../utils/CollectionUtils.js'
 import ComponentUtils from '../../utils/ComponentUtils.js'
 import logger from '../../utils/Logger.js'
 import Watcher from '../../utils/Watcher.js'
+import NodeUtils from '../../utils/NodeUtils.js'
 
 class BuildCommand {
   /** @type {string} **/
@@ -60,9 +61,17 @@ class BuildCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async buildCollection () {
-    const collection = await CollectionFactory.fromCollectionBuildCommand()
-    collection.sections = await SectionFactory.fromCollection(collection)
+    const collectionName = NodeUtils.getPackageName()
+
+    logger.info(`Building ${collectionName} Collection ...`)
+    console.time(`Building "${collectionName}" collection`)
+
+    const collection = await CollectionFactory.fromCollectionBuildCommand(collectionName)
     await CollectionBuilder.build(collection)
+
+    logger.info(`${collectionName}: Build Complete`)
+    console.timeEnd(`Building "${collectionName}" collection`)
+
     return Promise.resolve(collection)
   }
 
