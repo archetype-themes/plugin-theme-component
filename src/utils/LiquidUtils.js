@@ -1,4 +1,6 @@
 import FileUtils from './FileUtils.js'
+import { mkdir } from 'node:fs/promises'
+import path from 'path'
 
 class LiquidUtils {
 
@@ -39,27 +41,48 @@ class LiquidUtils {
   }
 
   /**
-   * Get Snippet Inline Liquid Code
-   * Adds appropriate variables when necessary ahead of the liquid code
-   * @param {string} sourceLiquidCode
-   * @param {Render} render
+   * Recursively Process renders by inlining them whenever possible
+   * @param {string} liquidCode
+   * @param {Render[]} renders
+   * @param {string} snippetsFolder
    * @returns {Promise<string>}
    */
-  static async prepareSnippetInlineLiquidCode (sourceLiquidCode, render) {
-    let buildLiquidCode = sourceLiquidCode
-    // Process "With" clause variable
-    if (render.hasWithClause() && render.clauseSourceVariable !== render.clauseTargetVariable) {
-      buildLiquidCode =
-        `{% assign ${render.clauseTargetVariable} = ${render.clauseSourceVariable} %}\n${buildLiquidCode}`
-    }
+  static async inlineOrCopySnippets (liquidCode, renders, snippetsFolder) {
+    let buildLiquidCode = liquidCode
+    for (const render of renders) {
 
-    // Process additional variables
-    for (const renderVariable in render.variables) {
-      if (renderVariable !== render.variables[renderVariable]) {
-        buildLiquidCode = `{% assign ${renderVariable} = ${render.variables[renderVariable]} %}\n${buildLiquidCode}`
+      if (render.snippet.renders) {
+        render.snippet.build.liquidCode =
+          await this.inlineOrCopySnippets(render.snippet.liquidCode, render.snippet.renders, snippetsFolder)
+      }
+
+      // Simply copy file if we have a for loop.
+      if (render.hasForClause()) {
+        if (!await FileUtils.isWritable(snippetsFolder)) {
+          await mkdir(snippetsFolder, { recursive: true })
+        }
+
+        // Copy snippet liquid files since we can't inline a for loop
+        await FileUtils.writeFile(path.join(snippetsFolder, `${render.snippet.name}.liquid`), render.snippet.build.liquidCode)
+      } else {
+        // Prepends variables creation to accompany liquid code injection
+        // Process "With" clause variable
+        if (render.hasWithClause() && render.clauseSourceVariable !== render.clauseTargetVariable) {
+          render.snippet.build.liquidCode =
+            `{% assign ${render.clauseTargetVariable} = ${render.clauseSourceVariable} %}\n${render.snippet.build.liquidCode}`
+        }
+
+        // Process additional variables
+        for (const renderVariable in render.variables) {
+          if (renderVariable !== render.variables[renderVariable]) {
+            render.snippet.build.liquidCode =
+              `{% assign ${renderVariable} = ${render.variables[renderVariable]} %}\n${render.snippet.build.liquidCode}`
+          }
+        }
+
+        buildLiquidCode = buildLiquidCode.replace(render.liquidTag, render.snippet.build.liquidCode)
       }
     }
-
     return buildLiquidCode
   }
 }
