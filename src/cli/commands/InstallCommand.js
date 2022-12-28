@@ -4,7 +4,6 @@ import path from 'path'
 //Archie imports
 import CollectionBuilder from '../../builders/CollectionBuilder.js'
 import CollectionFactory from '../../factory/CollectionFactory.js'
-import SectionFactory from '../../factory/SectionFactory.js'
 import ThemeFactory from '../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../Installers/CollectionInstaller.js'
 import Collection from '../../models/Collection.js'
@@ -47,12 +46,20 @@ class InstallCommand {
   static async installOne (collectionName) {
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
+
+    // Log & timer
+    logger.info(`Building ${collectionName} Collection ...`)
+    console.time(`Building "${collectionName}" collection`)
+
     // Creating Collection and its children
     const collection = await CollectionFactory.fromThemeInstallCommand(collectionName)
-    collection.sections = await SectionFactory.fromCollection(collection)
-
     // Build and install Collection
     await CollectionBuilder.build(collection)
+
+    // Log & timer
+    logger.info(`${collectionName}: Build Complete`)
+    console.timeEnd(`Building "${collectionName}" collection`)
+
     await CollectionInstaller.install(theme, collection)
 
     return collection
