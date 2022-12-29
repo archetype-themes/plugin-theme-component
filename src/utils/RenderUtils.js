@@ -131,7 +131,7 @@ class RenderUtils {
   /**
    * Get Snippet Schema Recursively
    * @param {Render[]} renders
-   * @param {string[]} [processedSnippets]
+   * @param {string[]} [processedSnippets=[]]
    * @return {Object}
    */
   static getSnippetsSchema (renders, processedSnippets = []) {
@@ -161,7 +161,7 @@ class RenderUtils {
    * @param {string[]} [processedSnippets=[]]
    * @return {Object[]}
    */
-  static getSnippetsSchemaLocales (renders, processedSnippets) {
+  static getSnippetsSchemaLocales (renders, processedSnippets = []) {
     let schemaLocales = []
 
     for (const render of renders) {
