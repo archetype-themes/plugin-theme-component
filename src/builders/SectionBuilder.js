@@ -81,8 +81,8 @@ class SectionBuilder {
       fileOperationPromises.push(LocaleUtils.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder))
 
       // Copy Assets
-      const assetFiles = section.files.assetFiles
-      assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
+      let assetFiles = section.files.assetFiles
+      assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
       fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
 
     }

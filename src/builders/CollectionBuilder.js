@@ -103,14 +103,14 @@ class CollectionBuilder {
    * @return {string[]}
    */
   static getAssetFiles (sections) {
-    const assetFiles = []
+    let assetFiles = []
 
     for (const section of sections) {
       if (section.files.assetFiles) {
-        assetFiles.concat(section.files.assetFiles)
+        assetFiles = assetFiles.concat(section.files.assetFiles)
       }
       if (section.renders) {
-        assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
+        assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
       }
     }
 
@@ -123,7 +123,7 @@ class CollectionBuilder {
    * @return {string[]}
    */
   static getJsFiles (collection) {
-    const jsFiles = []
+    let jsFiles = []
 
     for (const section of collection.sections) {
       // Add Section file
@@ -133,7 +133,7 @@ class CollectionBuilder {
 
       // Add Section snippet files
       if (section.renders) {
-        jsFiles.concat(RenderUtils.getSnippetsJavascriptIndex(section.renders))
+        jsFiles = jsFiles.concat(RenderUtils.getSnippetsJavascriptIndex(section.renders))
       }
     }
 
