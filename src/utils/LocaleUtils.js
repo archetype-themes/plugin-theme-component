@@ -1,4 +1,6 @@
+import { writeFile } from 'node:fs/promises'
 import path from 'path'
+
 import FileUtils from './FileUtils.js'
 import merge from 'deepmerge'
 
@@ -6,7 +8,7 @@ class LocaleUtils {
   /**
    * Parse Locale Files into an object
    * @param {string[]} localeFiles
-   * @return {Promise<string[]|Object<string, Object<string, string>>>}
+   * @return {Promise<Object[]|Object<string, Object<string, string>>>}
    */
   static async parseLocaleFilesContent (localeFiles) {
     let locales

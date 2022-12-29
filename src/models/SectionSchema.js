@@ -75,7 +75,7 @@ class SectionSchema {
   /** @type {Preset} **/
   #default
 
-  /** @type {Object.<string, Object.<string,string>>} **/
+  /** @type {Object<string, Object<string, string>>} **/
   #locales
 
   /** @type {string[]} **/
