@@ -102,7 +102,7 @@ class FilesFactory {
 
             break
           default:
-            logger.debug(`Filter Files: Unrecognised JSON file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
+            logger.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
             break
         }
       }
