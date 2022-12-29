@@ -148,10 +148,10 @@ class SectionBuilder {
     buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, snippetSchemaLocales)
 
     // Make sure all Schema Locales are in the appropriate section namespace
-    for (const [locale, json] of buildSchemaLocales) {
+    for (const locale in buildSchemaLocales) {
       buildSchemaLocales[locale] = {
         sections: {
-          [sectionName]: json
+          [sectionName]: buildSchemaLocales[locale]
         }
       }
     }
