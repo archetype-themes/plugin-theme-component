@@ -104,9 +104,8 @@ class NodeUtils {
   static mergeObjectArrays (sourceArray, newArray) {
     const finalArray = sourceArray
 
-    for (const [key, value] of Object.entries(newArray)) {
-      console.log(key, value)
-      if (finalArray.hasOwnProperty(key)) {
+    for (const key in newArray) {
+      if (finalArray[key]) {
         finalArray[key] = merge(finalArray[key], newArray[key])
       } else {
         finalArray[key] = newArray[key]
