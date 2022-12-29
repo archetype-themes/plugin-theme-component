@@ -91,7 +91,7 @@ class CollectionBuild {
   }
 
   /**
-   * Get Schemal Locales
+   * Get Schema Locales
    * @return {Object[]}
    */
   get schemaLocales () {

@@ -1,4 +1,4 @@
-// External Librairy imports
+// External Library imports
 import merge from 'deepmerge'
 import { union } from 'lodash-es'
 
