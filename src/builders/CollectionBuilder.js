@@ -1,14 +1,17 @@
 //Node imports
-import { access, constants, mkdir, rm, unlink, writeFile } from 'node:fs/promises'
-import path from 'path'
+import { mkdir, rm } from 'node:fs/promises'
 
 //Archie imports
 import SectionBuilder from './SectionBuilder.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
-import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import RenderUtils from '../utils/RenderUtils.js'
+import BuildFactory from '../factory/BuildFactory.js'
+import StylesProcessor from '../processors/StylesProcessor.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import StylesUtils from '../utils/StylesUtils.js'
+import LocaleUtils from '../utils/LocaleUtils.js'
 
 class CollectionBuilder {
   static backupFiles
@@ -19,130 +22,157 @@ class CollectionBuilder {
    * @return {Promise<void>}
    */
   static async build (collection) {
-    logger.info(`Building ${collection.name} Collection ...`)
-    console.time(`Building "${collection.name}" collection`)
+    const fileOperationPromises = []
+
+    // Create build model and prepare folders
+    collection.build = BuildFactory.fromCollection(collection)
+    await this.#resetBuildFolders(collection)
 
     logger.info(`We will bundle the following sections: ${collection.sectionNames.join(', ')}`)
 
-    for (const section of collection.sections) {
-      await SectionBuilder.build(section)
+    // Build sections (will also build inner snippets recursively)
+    await SectionBuilder.buildMany(collection.sections)
 
-      for (const schemaLocale in section.schemaLocales) {
-        if (!collection.schemaLocales[schemaLocale]) {
-          collection.schemaLocales[schemaLocale] = {}
-          collection.schemaLocales[schemaLocale]['sections'] = {}
-        }
+    // Gather and build Stylesheets
+    const mainStylesheets = this.getMainStylesheets(collection)
+    collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet)
+    fileOperationPromises.push(FileUtils.writeFile(collection.build.stylesheet, collection.build.styles))
 
-        collection.schemaLocales[schemaLocale]['sections'][section.name] = section.schemaLocales[schemaLocale]
-      }
+    // Gather and Build Collection JS Files
+    const jsFiles = this.getJsFiles(collection)
+    if (jsFiles.length > 0) {
+      await JavaScriptProcessor.buildJavaScript(collection.build.javascriptFile, jsFiles.shift(), jsFiles)
     }
 
-    await this.#resetBuildFolders(collection)
+    // Build and Write Schema Locales
+    collection.build.schemaLocales = this.buildSchemaLocales(collection.sections)
+    await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
 
-    for (const section of collection.sections) {
-      try {
-        await FileUtils.copyFolder(section.build.rootFolder, collection.build.sectionsFolder)
-      } catch {
-        //Errors ignored as some sections folders might not exist if there is no particular content for that section
-      }
-      try {
-        await FileUtils.copyFolder(section.build.snippetsFolder, collection.build.snippetsFolder)
-      } catch {
-        //Errors ignored as some sections folders might not exist if there is no particular content for that section
-      }
+    // Gather & Copy Section Liquid Files
+    const liquidFiles = this.getSectionLiquidFiles(collection.sections)
+    fileOperationPromises.push(FileUtils.copyFilesToFolder(liquidFiles, collection.build.sectionsFolder))
 
-    }
+    // Copy External Snippet Files
+    fileOperationPromises.push(this.copySnippetLiquidFiles(collection.sections, collection.build.snippetsFolder))
 
-    await Promise.all([
-      this.buildJavascript(collection),
-      this.buildStylesheets(collection),
-      this.writeSchemaLocales(collection)]
-    ).then(() => {
-      logger.info(`${collection.name}: Build Complete`)
-      console.timeEnd(`Building "${collection.name}" collection`)
-      console.log('\n')
-    })
+    // Gather & Copy Assets Files
+    const assetFiles = this.getAssetFiles(collection.sections)
+    fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, collection.build.assetsFolder))
 
+    return Promise.all(fileOperationPromises)
   }
 
   /**
-   * Build Collection Javascript
-   * @param {module:models/Collection} collection
-   * @returns {Promise<void>}
+   * Build Collection Schema Locales
+   * @param {Section[]} sections
+   * @return {Object[]}
    */
-  static async buildJavascript (collection) {
-    const includedSnippets = []
-    let mainFile
-    const injectedFiles = []
+  static buildSchemaLocales (sections) {
+    let schemaLocales = []
+
+    for (const section of sections)
+      if (section.build.schemaLocales) {
+        schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, section.build.schemaLocales)
+      }
+
+    return schemaLocales
+  }
+
+  /**
+   * Copy Snippet Liquid Files
+   * @param {Section[]} sections
+   * @param {string} snippetsFolder
+   * @return {Promise<Awaited<void>[]>}
+   */
+  static async copySnippetLiquidFiles (sections, snippetsFolder) {
+    const folderCopyPromises = []
+    for (const section of sections) {
+      if (section.renders) {
+        if (await FileUtils.isReadable(section.build.snippetsFolder)) {
+          folderCopyPromises.push(FileUtils.copyFolder(section.build.snippetsFolder, snippetsFolder))
+        }
+      }
+
+    }
+    return Promise.all(folderCopyPromises)
+  }
+
+  /**
+   *
+   * @param {Section[]} sections
+   * @return {string[]}
+   */
+  static getAssetFiles (sections) {
+    const assetFiles = []
+
+    for (const section of sections) {
+      if (section.files.assetFiles) {
+        assetFiles.concat(section.files.assetFiles)
+      }
+      if (section.renders) {
+        assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
+      }
+    }
+
+    return assetFiles
+  }
+
+  /**
+   * Get Collection JavaScript Files
+   * @param collection
+   * @return {string[]}
+   */
+  static getJsFiles (collection) {
+    const jsFiles = []
 
     for (const section of collection.sections) {
       // Add Section file
-      if (!mainFile && section.files.javascriptIndex) {
-        mainFile = section.files.javascriptIndex
-      } else if (section.files.javascriptIndex) {
-        injectedFiles.push(section.files.javascriptIndex)
+      if (section.files.javascriptIndex) {
+        jsFiles.push(section.files.javascriptIndex)
       }
 
       // Add Section snippet files
       if (section.renders) {
-        for (const render of section.renders) {
-          if (!includedSnippets.includes(render.snippetName) && render.snippet.files.javascriptIndex) {
-            injectedFiles.push(render.snippet.files.javascriptIndex)
-            includedSnippets.push(render.snippetName)
-          }
-        }
+        jsFiles.concat(RenderUtils.getSnippetsJavascriptIndex(section.renders))
       }
     }
 
-    if (mainFile && injectedFiles.length > 0) {
-      await JavaScriptProcessor.buildJavaScript(collection.build.javascriptFile, mainFile, injectedFiles)
-    } else if (mainFile) {
-      await JavaScriptProcessor.buildJavaScript(collection.build.javascriptFile, mainFile)
-    }
-
+    return jsFiles
   }
 
   /**
-   * Build Main Stylesheet
+   * Get Main Stylesheets from all sections and snippets
    * @param {module:models/Collection} collection
-   * @return {Promise<void|Awaited<unknown>[]>}
+   * @return {string[]}
    */
-  static async buildStylesheets (collection) {
+  static getMainStylesheets (collection) {
 
     let mainStylesheets = []
 
     for (const section of collection.sections) {
-      if (section.files.mainStylesheet) {
-        mainStylesheets.push(section.files.mainStylesheet)
+      const sectionMainCssFile = StylesUtils.getComponentMainCssFile(section)
+      if (sectionMainCssFile) {
+        mainStylesheets.push(sectionMainCssFile)
       }
       if (section.renders) {
-        mainStylesheets = mainStylesheets.concat(await RenderUtils.getMainStylesheets(section.renders))
+        mainStylesheets = mainStylesheets.concat(RenderUtils.getSnippetsMainStylesheet(section.renders))
       }
-
-    }
-    const useMasterSassFile = StylesProcessor.canWeUseMasterSassFile(mainStylesheets)
-
-    if (useMasterSassFile) {
-      logger.debug('Using Sass to merge CSS')
-      const masterSassFile = path.join(collection.rootFolder, 'masterSassFile.tmp.sass')
-      const masterSassFileContent = StylesProcessor.createMasterSassFile(mainStylesheets)
-      await FileUtils.writeFile(masterSassFile, masterSassFileContent)
-      const styles = await StylesProcessor.buildStyles(collection.build.stylesheet, masterSassFile)
-      return Promise.all([
-        FileUtils.writeFile(collection.build.stylesheet, styles),
-        unlink(masterSassFile)])
-    } else {
-      const buildStylesheets = []
-      for (const section of collection.sections) {
-        if (section.files && section.files.mainStylesheet) {
-          await access(section.build.stylesheet, constants.R_OK)
-          buildStylesheets.push(section.build.stylesheet)
-        }
-      }
-      const mergedStylesheets = await FileUtils.getMergedFilesContent(buildStylesheets)
-      return FileUtils.writeFile(collection.build.stylesheet, mergedStylesheets)
     }
 
+    return mainStylesheets
+  }
+
+  /**
+   * Get Section Liquid Files
+   * @param {Section[]} sections
+   * @return {string[]}
+   */
+  static getSectionLiquidFiles (sections) {
+    const sectionLiquidFiles = []
+    for (const section of sections) {
+      sectionLiquidFiles.push(section.build.liquidFile)
+    }
+    return sectionLiquidFiles
   }
 
   /**
@@ -158,20 +188,6 @@ class CollectionBuilder {
     await mkdir(collection.build.localesFolder, { recursive: true })
     await mkdir(collection.build.sectionsFolder, { recursive: true })
     await mkdir(collection.build.snippetsFolder, { recursive: true })
-  }
-
-  /**
-   * Write Schema Locales
-   * @param {module:models/Collection} collection
-   * @return {Promise<void>}
-   */
-  static async writeSchemaLocales (collection) {
-
-    for (const schemaLocale in collection.schemaLocales) {
-      const schemaLocaleFileName = path.join(collection.build.localesFolder, `${schemaLocale}.schema.json`)
-      const localeJsonString = JSON.stringify(collection.schemaLocales[schemaLocale], null, 2)
-      await writeFile(schemaLocaleFileName, localeJsonString)
-    }
   }
 
 }
