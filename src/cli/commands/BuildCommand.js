@@ -1,5 +1,9 @@
 //Node imports
+import { env } from 'node:process'
 import path, { dirname } from 'path'
+
+// External Modules imports
+import { FSWatcher } from 'chokidar'
 
 // Archie imports
 import CollectionBuilder from '../../builders/CollectionBuilder.js'
@@ -116,7 +120,7 @@ class BuildCommand {
 
   /**
    *
-   * @param {chokidar.FSWatcher} watcher
+   * @param {FSWatcher} watcher
    * @param {string} event
    * @param {string} eventPath
    * @return {Promise<void>}
@@ -135,7 +139,7 @@ class BuildCommand {
   /**
    *
    * @param {string} sectionName
-   * @param {chokidar.FSWatcher} watcher
+   * @param {FSWatcher} watcher
    * @param {string} event
    * @param {string} eventPath
    * @return {Promise<void>}

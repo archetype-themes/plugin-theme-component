@@ -1,4 +1,4 @@
-import chokidar from 'chokidar'
+import { FSWatcher, watch } from 'chokidar'
 import logger from './Logger.js'
 
 class Watcher {
@@ -7,7 +7,7 @@ class Watcher {
    * Watch target files and folders
    * @param {string[]} targets target paths
    * @param {string} [rootFolder] Use if target paths are relative
-   * @return {chokidar.FSWatcher}
+   * @return {FSWatcher}
    */
   static getWatcher (targets, rootFolder) {
     const watchOptions = {
@@ -21,14 +21,14 @@ class Watcher {
     }
     logger.debug('Chokidar will watch the following files & folders:')
     logger.debug(targets)
-    return chokidar.watch(targets, watchOptions)
+    return watch(targets, watchOptions)
   }
 
   /**
    * Apply watch action to all files
-   * @param {chokidar.FSWatcher} watcher
+   * @param {FSWatcher} watcher
    * @param {function} action
-   * @return {chokidar.FSWatcher}
+   * @return {FSWatcher}
    */
   static watch (watcher, action) {
     return watcher.on('all', action)
