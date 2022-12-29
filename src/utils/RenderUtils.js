@@ -67,7 +67,7 @@ class RenderUtils {
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         if (render.snippet.files.javascriptIndex) {
-          jsFiles.push(render.snippet.files.mainStylesheet)
+          jsFiles.push(render.snippet.files.javascriptIndex)
         }
 
         if (render.snippet.renders) {
