@@ -1,11 +1,12 @@
 // External Library imports
-import merge from 'deepmerge'
 import { union } from 'lodash-es'
 
 // Archie imports
 import NodeUtils from './NodeUtils.js'
 import SnippetBuilder from '../builders/SnippetBuilder.js'
 import StylesUtils from './StylesUtils.js'
+import SectionSchema from '../models/SectionSchema.js'
+import SectionSchemaUtils from './SectionSchemaUtils.js'
 
 class RenderUtils {
 
@@ -135,23 +136,24 @@ class RenderUtils {
    * @return {Object}
    */
   static getSnippetsSchema (renders, processedSnippets = []) {
-    let schema = {}
+    let schema = new SectionSchema()
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         // Merge Snippet schema
         if (render.snippet.schema) {
-          schema = merge(schema, render.snippet.schema)
+          schema = SectionSchemaUtils.merge(schema, render.snippet.schema)
         }
 
         // Recursively check child renders for schema
         if (render.snippet.renders) {
-          schema = merge(schema, this.getSnippetsSchema(render.snippet.renders, processedSnippets))
+          schema = SectionSchemaUtils.merge(schema, this.getSnippetsSchema(render.snippet.renders, processedSnippets))
         }
 
         processedSnippets.push(render.snippetName)
       }
     }
+
     return schema
   }
 
@@ -180,6 +182,7 @@ class RenderUtils {
         processedSnippets.push(render.snippetName)
       }
     }
+
     return schemaLocales
   }
 
