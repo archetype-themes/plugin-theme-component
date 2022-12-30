@@ -3,7 +3,7 @@ import { env } from 'node:process'
 import path from 'path'
 
 // External Node JS Modules
-import merge from 'deepmerge'
+import deepmerge from 'deepmerge'
 
 // Archie Internal JS imports
 import FilesFactory from './FilesFactory.js'
@@ -72,7 +72,7 @@ class SectionFactory {
         section.schema = new SectionSchema()
       }
       if (section.schema.locales) {
-        section.schema.locales = merge(section.schema.locales, locales)
+        section.schema.locales = deepmerge(section.schema.locales, locales)
       } else {
         section.schema.locales = locales
       }
