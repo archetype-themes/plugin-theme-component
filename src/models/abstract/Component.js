@@ -1,5 +1,3 @@
-import SectionSchema from '../SectionSchema.js'
-
 class Component {
   /** @type {ComponentBuild} */
   #build
@@ -76,33 +74,6 @@ class Component {
    */
   set liquidCode (value) {
     this.#liquidCode = value
-  }
-
-  /**
-   * Get Locales Multidimensional Array => locales[locale] = {}
-   * @returns {Object}
-   */
-  get locales () {
-    if (this.schema && this.schema.locales) {
-      return this.schema.locales
-    }
-    return null
-  }
-
-  /**
-   * Set Locales Multidimensional Array => locales[locale] = {}
-   * @param {Object} value
-   */
-  set locales (value) {
-    if (this.schema) {
-      this.schema.locales = value
-    } else if (this.schema) {
-      this.schema.locales = value
-    } else {
-      this.schema = new SectionSchema()
-      this.schema.locales = value
-    }
-
   }
 
   /**
