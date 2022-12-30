@@ -114,6 +114,9 @@ class CollectionBuilder {
       }
     }
 
+    // Remove dupes
+    assetFiles = [...new Set(assetFiles)]
+
     return assetFiles
   }
 
@@ -137,6 +140,9 @@ class CollectionBuilder {
       }
     }
 
+    // Remove dupes
+    jsFiles = [...new Set(jsFiles)]
+
     return jsFiles
   }
 
@@ -158,6 +164,9 @@ class CollectionBuilder {
         mainStylesheets = mainStylesheets.concat(RenderUtils.getSnippetsMainStylesheet(section.renders))
       }
     }
+
+    // Remove dupes
+    mainStylesheets = [...new Set(mainStylesheets)]
 
     return mainStylesheets
   }
