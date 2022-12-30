@@ -2,9 +2,6 @@
 import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
 
-// External Libraries imports
-import merge from 'deepmerge'
-
 // Archie Component imports
 import ArchieCLI from '../cli/models/ArchieCLI.js'
 import BuildFactory from '../factory/BuildFactory.js'
@@ -13,11 +10,12 @@ import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
+import LocaleUtils from '../utils/LocaleUtils.js'
+import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
+import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
-import logger from '../utils/Logger.js'
-import LocaleUtils from '../utils/LocaleUtils.js'
 
 class SectionBuilder {
 
@@ -45,7 +43,7 @@ class SectionBuilder {
 
     // Recursively check for Snippet Schema
     const snippetsSchema = RenderUtils.getSnippetsSchema(section.renders)
-    section.build.schema = merge(section.schema, snippetsSchema)
+    section.build.schema = SectionSchemaUtils.merge(section.schema, snippetsSchema)
 
     section.build.liquidCode =
       await this.buildLiquid(section.liquidCode, section.build.schema, section.renders, section.build.snippetsFolder)

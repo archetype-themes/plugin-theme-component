@@ -40,14 +40,22 @@
  */
 
 /**
- *
- */
-
-/**
  * Class representing a Section Schema as per Shopify's Documentation
  * @see https://shopify.dev/themes/architecture/sections/section-schema
  */
 class SectionSchema {
+  static SECTION_SCHEMA_PROPERTIES = ['name',
+    'tag',
+    'class',
+    'limit',
+    'settings',
+    'blocks',
+    'max_blocks',
+    'presets',
+    'default',
+    'locales',
+    'templates']
+
   /** @type {string} **/
   #name
 
@@ -255,6 +263,15 @@ class SectionSchema {
    */
   set templates (value) {
     this.#templates = value
+  }
+
+  toJSON () {
+    const jsonObject = {}
+    for (const property of SectionSchema.SECTION_SCHEMA_PROPERTIES) {
+      jsonObject[property] = this[property]
+    }
+    console.log('TO-JSON', jsonObject)
+    return jsonObject
   }
 }
 
