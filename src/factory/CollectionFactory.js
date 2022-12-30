@@ -28,7 +28,7 @@ class CollectionFactory {
 
     // Get Section Names and create Sections
     collection.sectionNames = await this.getSectionNames(collection.name, collection.sectionsFolder)
-    collection.sections = SectionFactory.fromCollection(collection.sectionNames, collection.rootFolder)
+    collection.sections = await SectionFactory.fromCollection(collection.sectionNames, collection.rootFolder)
 
     return collection
   }
