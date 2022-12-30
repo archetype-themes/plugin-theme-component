@@ -270,7 +270,7 @@ class SectionSchema {
     for (const property of SectionSchema.SECTION_SCHEMA_PROPERTIES) {
       jsonObject[property] = this[property]
     }
-    console.log('TO-JSON', jsonObject)
+
     return jsonObject
   }
 }
