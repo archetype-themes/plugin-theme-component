@@ -62,7 +62,8 @@ class SectionBuilder {
 
       //Attach CSS bundle file reference to liquid code
       section.build.liquidCode =
-        LiquidUtils.generateStylesheetReference(path.basename(section.build.stylesBundle)) + section.build.liquidCode
+        LiquidUtils.generateStylesheetReference(path.basename(section.build.stylesBundleFile)) + '\n' +
+        section.build.liquidCode
 
       // Build JS
       const rendersJavascriptIndexes = RenderUtils.getSnippetsJavascriptIndex(section.renders)
@@ -74,7 +75,7 @@ class SectionBuilder {
 
       //Attach Javascript bundle file reference to liquid code
       section.build.liquidCode =
-        LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) +
+        LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) + '\n' +
         section.build.liquidCode
 
       // Write Schema Locales to disk
