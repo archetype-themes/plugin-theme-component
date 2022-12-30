@@ -1,15 +1,24 @@
 class Theme {
   /** @type {string} **/
   static COMPONENT_NAME = 'theme'
+
   /** @type {string} **/
   static ASSETS_SUB_FOLDER = 'assets'
+
+  /** @type {string} **/
+  static LOCALES_SUB_FOLDER = 'locales'
+
   /** @type {string} **/
   static SECTIONS_SUB_FOLDER = 'sections'
+
   /** @type {string} **/
   static SNIPPETS_SUB_FOLDER = 'snippets'
 
   /** @type {string} **/
   #assetsFolder
+
+  /** @type {string} **/
+  #localesFolder
 
   /** @type {string} **/
   #name
@@ -37,6 +46,22 @@ class Theme {
    */
   set assetsFolder (value) {
     this.#assetsFolder = value
+  }
+
+  /**
+   * Get Locales Folder
+   * @return {string}
+   */
+  get localesFolder () {
+    return this.#localesFolder
+  }
+
+  /**
+   * Set Locales Folder
+   * @param {string} value
+   */
+  set localesFolder (value) {
+    this.#localesFolder = value
   }
 
   /**
