@@ -4,6 +4,7 @@ import { basename, join } from 'node:path'
 // Archie  imports
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import deepmerge from 'deepmerge'
 
 /**
  * @typedef {Object} InjectionOptions
@@ -26,24 +27,57 @@ class CollectionInstaller {
 
     let injectJavascript = false, injectStylesheet = false
 
-    // JavaScript
+    // Copy Collection Build Assets
+    const assetFolderContents = await readdir(collection.build.assetsFolder, { withFileTypes: true })
+    for (const assetFolderEntry of assetFolderContents) {
+      if (assetFolderEntry.isFile()) {
+        filesToCopy[join(collection.build.assetsFolder, assetFolderEntry.name)] =
+          join(theme.assetsFolder, assetFolderEntry.name)
+      }
+    }
+
+    // JavaScript Injection
     if (collection.build.javascriptFile && await FileUtils.exists(collection.build.javascriptFile)) {
       const javascriptFileBasename = basename(collection.build.javascriptFile)
-
       logger.debug(`Source Collection Javascript file ${javascriptFileBasename} found.`)
-
-      filesToCopy[collection.build.javascriptFile] = join(theme.assetsFolder, javascriptFileBasename)
       injectJavascript = true
     }
 
-    // Stylesheet
+    // Stylesheet Injection
     if (collection.build.stylesheet && await FileUtils.exists(collection.build.stylesheet)) {
       const stylesheetBasename = basename(collection.build.stylesheet)
-
       logger.debug(`Source Collection Stylesheet file ${stylesheetBasename} found.`)
-
-      filesToCopy[collection.build.stylesheet] = join(theme.assetsFolder, stylesheetBasename)
       injectStylesheet = true
+    }
+
+    // Merge & Copy Schema Locales
+    // TODO: REVIEW AND OPTIMIZE THIS 2AM CODING BLITZ
+    const localesFolderContents = await readdir(collection.build.localesFolder, { withFileTypes: true })
+    for (const localesFolderEntry of localesFolderContents) {
+      if (localesFolderEntry.isFile()) {
+        const localeFilename = localesFolderEntry.name
+        const targetFileArray = localesFolderEntry.name.split('.')
+        targetFileArray.splice(1, 0, 'default')
+        const defaultLocaleFilename = targetFileArray.join('.')
+
+        const sourceFile = join(collection.build.localesFolder, localeFilename)
+
+        const targetFile = join(theme.localesFolder, localeFilename)
+        const defaultTargetFile = join(theme.localesFolder, defaultLocaleFilename)
+
+        const targetFileExists = await FileUtils.exists(targetFile)
+        const defaultTargetFileExists = await FileUtils.exists(defaultTargetFile)
+
+        if (targetFileExists || defaultTargetFileExists) {
+          const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
+          const themeSchemaLocale = JSON.parse(await FileUtils.getFileContents(realTargetFile))
+          const collectionSchemaLocale = JSON.parse(await FileUtils.getFileContents(sourceFile))
+          const mergedSchemaLocale = deepmerge(collectionSchemaLocale, themeSchemaLocale)
+
+          await FileUtils.backup(realTargetFile)
+          await FileUtils.writeFile(realTargetFile, JSON.stringify(mergedSchemaLocale, null, 2))
+        }
+      }
     }
 
     // Sections

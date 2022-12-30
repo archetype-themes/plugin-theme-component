@@ -19,6 +19,7 @@ class ThemeFactory {
     // Set folder names
     theme.rootFolder = join(dirname(env.npm_package_json), 'src')
     theme.assetsFolder = join(theme.rootFolder, Theme.ASSETS_SUB_FOLDER)
+    theme.localesFolder = join(theme.rootFolder, Theme.LOCALES_SUB_FOLDER)
     theme.sectionsFolder = join(theme.rootFolder, Theme.SECTIONS_SUB_FOLDER)
     theme.snippetsFolder = join(theme.rootFolder, Theme.SNIPPETS_SUB_FOLDER)
 
