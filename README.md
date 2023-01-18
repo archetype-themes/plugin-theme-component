@@ -1,8 +1,23 @@
 # Archie
 
-Archie is Archetype's CLI (Command Line Interface). Archie is designed to segment and structure code in a way to help
-Shopify Theme development. Shared Collections of Sections can be easily integrated in ahy Shopify Theme. This reduces
-code duplication, therefore allowing for theme maintenance.
+Archie is Archetype's CLI (Command Line Interface). Archie is designed to facilitate Shopify Theme development by making
+it fast and easy to populate and maintain Themes with tons of Sections.
+
+Gone are the days of manually copying sections from one theme to another, Archie allows you to create a shareable
+Collection of Sections that we bundle as an NPM package. Simply add the dependency to install them within your Shopify
+Themes.
+
+**Main Benefits**
+
+- Bundle as many Sections and Snippets as you want within your Collection.
+- Share common JavaScript and Styles with your Sections
+- Say *"goodbye"* to duplicated code by sharing your Collection with as many Themes as you want
+- Configure your Theme to use all or a selection of Sections within a Collection
+- Fix your bug once; in the collection repository.
+  - Update the Collection dependency in your Themes repository.
+- Javascript processing through esbuild will assemble everything in a single file.
+- Optionally use Sass preprocessor for your CSS
+- Use postCSS post-processing for your CSS to assemble everything in a single file.
 
 ## Prerequisites
 
@@ -15,20 +30,28 @@ behaviour with npm and npx commands is untested and is not recommended at the ti
 
 Archie helps with multiple components: Collections, Sections & Snippets, and Themes.
 
-With Archie, you can easily create and maintain a Collection of Sections to share amongst your themes. Collections are
-structured as a NodeJS Monorepo of child repositories consisting of Sections and snippet in their respective workspaces.
+With Archie, you can easily create and maintain a Collection of Sections to share amongst your Themes. Collections are
+structured as a NodeJS Monorepo of child repositories consisting of Sections and Snippets in their respective
+workspaces.
 
-Please read the following guides to help you on your journey:
+### Please read the following guides to help you on your journey
 
-- Collections
-  - [Create your own Collection](docs/Creating-a-Collection.md)
-  - [User's Guide](docs/Using-a-Collection.md)
-- Sections & Snippets
-  - [User's Guide](docs/Sections.md)
-- Themes
-  - [Using a Collection with your Theme.](docs/Themes.md)
-- Technical Guides
-  - [Understanding the Build Process](docs/Build-process.md)
+#### Collection Guides
+
+- [Create your own Collection](docs/Creating-a-Collection.md)
+- [User's Guide](docs/Using-a-Collection.md)
+
+#### Sections & Snippets Guides
+
+- [User's Guide](docs/Sections.md)
+
+#### Theme Guides
+
+- [Using a Collection with your Theme.](docs/Themes.md)
+
+#### Technical Guides
+
+- [Understanding the Build Process](docs/Build-process.md)
 
 ## Install Archie
 
@@ -91,8 +114,9 @@ yarn build-section --quiet
 
 ## Limitations Being Worked On
 
-* Stylesheets with a shared core are not handled at the moment.
-* No Stylesheet Merge or optimisation is being performed.
+* Installing a Collection to a Theme, requires that the Theme be in a hardcoded "src" sub-folder.
+* Collections must be part of the  *@archetype-themes* namespace. Upon Theme Install, the namespace *@archetype-themes*
+  is Hardcoded when searching for collections in *node_modules* folder.
 * Installing multiple collections in a theme is not handled at the moment.
 
 ## Contributing
