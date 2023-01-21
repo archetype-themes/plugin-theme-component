@@ -114,10 +114,15 @@ yarn build-section --quiet
 
 ## Limitations Being Worked On
 
-* Installing a Collection to a Theme, requires that the Theme be in a hardcoded "src" sub-folder.
-* Collections must be part of the  *@archetype-themes* namespace. Upon Theme Install, the namespace *@archetype-themes*
+* [Issue 20](https://github.com/archetype-themes/archie/issues/20): Installing a Collection to a Theme, requires that
+  the Theme be in a hardcoded "src" sub-folder.
+* [Issue 21](https://github.com/archetype-themes/archie/issues/21): Collections must be part of the  *@archetype-themes*
+  namespace. Upon Theme Install, the namespace *@archetype-themes*
   is Hardcoded when searching for collections in *node_modules* folder.
-* Installing multiple collections in a theme is not handled at the moment.
+* [Issue 33](https://github.com/archetype-themes/archie/issues/33): Section Schema must be in an external JSON file. Any
+  section schema json in a liquid file is ignored.
+* [Issue 34](https://github.com/archetype-themes/archie/issues/34): Installing multiple collections in a theme is not
+  handled at the moment.
 
 ## Contributing
 
