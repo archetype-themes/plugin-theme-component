@@ -3,7 +3,7 @@ import { join } from 'path'
 
 // Archie imports
 import SectionFactory from './SectionFactory.js'
-import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
+import ArchieConfig from '../cli/models/ArchieConfig.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import Collection from '../models/Collection.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
@@ -40,7 +40,7 @@ class CollectionFactory {
    */
   static async getSectionNames (collectionName, sectionsFolder) {
 
-    let sectionNames = ArchieNodeConfig.getCollectionSections(collectionName)
+    let sectionNames = ArchieConfig.getCollectionSections(collectionName)
 
     if (sectionNames.length === 0) {
       logger.info(`No section list found for Collection; all sections will be processed.`)

@@ -13,23 +13,24 @@ import CreateCommand from '../commands/CreateCommand.js'
 import InstallCommand from '../commands/InstallCommand.js'
 import WatchFlag from '../flags/WatchFlag.js'
 import ArchieCLI from '../models/ArchieCLI.js'
-import ArchieNodeConfig from '../models/ArchieNodeConfig.js'
+import ArchieConfig from '../models/ArchieConfig.js'
 
 class ArchieCLIFactory {
 
   /**
    * Factory method for ArchieCLI From Command Line Input
-   * @return {Promise<void>}
+   * @param {string[]} commandLineArguments
+   * @return {ArchieCLI}
    */
-  static async fromCommandLineInput () {
-    const [commands, flags] = this.#splitArgs(NodeUtils.getArgs())
+  static fromCommandLineInput (commandLineArguments) {
+    const [commands, flags] = this.#splitArgs(commandLineArguments)
 
     if (commands.length === 0) {
       this.#sayHi()
       exit(0)
     }
 
-    const callerComponentType = ArchieNodeConfig.componentType
+    const callerComponentType = ArchieConfig.componentType
     ArchieCLI.command = commands[0].toLowerCase()
 
     this.#validateCommand(callerComponentType, ArchieCLI.command, ArchieCLI.AVAILABLE_COMMANDS)
@@ -74,6 +75,7 @@ class ArchieCLIFactory {
     })
 
     this.#validateCommandArguments(callerComponentType, ArchieCLI.command, ArchieCLI.commandOption, ArchieCLI.targetComponentName, ArchieCLI.watchMode)
+    return ArchieCLI
   }
 
   /**
@@ -161,8 +163,8 @@ class ArchieCLIFactory {
       case CreateCommand.NAME:
         return null
       case InstallCommand.NAME:
-        if (Object.keys(ArchieNodeConfig.collections).length > 0)
-          return Object.keys(ArchieNodeConfig.collections)[0]
+        if (Object.keys(ArchieConfig.collections).length > 0)
+          return Object.keys(ArchieConfig.collections)[0]
         else
           throw new Error(`No Default Collection found in configuration for install, please specify a collection name.`)
       default:

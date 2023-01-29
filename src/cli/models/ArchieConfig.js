@@ -4,7 +4,7 @@ import Section from '../../models/Section.js'
 import Snippet from '../../models/Snippet.js'
 import Theme from '../../models/Theme.js'
 
-class ArchieNodeConfig {
+class ArchieConfig {
   /** @type {string}  **/
   static DEFAULT_PACKAGE_SCOPE = '@archetype-themes'
 
@@ -91,4 +91,4 @@ class ArchieNodeConfig {
 
 }
 
-export default ArchieNodeConfig
+export default ArchieConfig

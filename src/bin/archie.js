@@ -1,38 +1,33 @@
 #!/usr/bin/env node
 
-import ArchieCLI from '../cli/models/ArchieCLI.js'
-import ArchieCLIFactory from '../cli/factories/ArchieCLIFactory.js'
-import ConfigUtils from '../utils/ConfigUtils.js'
-import NodeUtils from '../utils/NodeUtils.js'
-import InstallCommand from '../cli/commands/InstallCommand.js'
 import BuildCommand from '../cli/commands/BuildCommand.js'
 import CreateCommand from '../cli/commands/CreateCommand.js'
+import InstallCommand from '../cli/commands/InstallCommand.js'
+import ArchieCLIFactory from '../cli/factories/ArchieCLIFactory.js'
+import ArchieConfigFactory from '../cli/factories/ArchieConfigFactory.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
-//Init Config
+//Init ArchieConfig & ArchieCLI
+let archieCLI
 try {
-  await ConfigUtils.initConfig()
+  await ArchieConfigFactory.fromPackageJsonData(NodeUtils.getPackageJsonData())
+  archieCLI = ArchieCLIFactory.fromCommandLineInput(NodeUtils.getArgs())
 } catch (error) {
   NodeUtils.exitWithError(error)
 }
 
 try {
-  await ArchieCLIFactory.fromCommandLineInput()
-} catch (error) {
-  NodeUtils.exitWithError(error)
-}
-
-try {
-  switch (ArchieCLI.command) {
+  switch (archieCLI.command) {
     case BuildCommand.NAME:
-      await BuildCommand.execute(ArchieCLI.commandOption, ArchieCLI.targetComponentName, ArchieCLI.watchMode)
+      await BuildCommand.execute(archieCLI.commandOption, archieCLI.targetComponentName, archieCLI.watchMode)
       break
     case CreateCommand.NAME:
-      await CreateCommand.execute(ArchieCLI.commandOption, ArchieCLI.targetComponentName)
+      await CreateCommand.execute(archieCLI.commandOption, archieCLI.targetComponentName)
       break
     case InstallCommand.NAME:
-      await InstallCommand.execute(ArchieCLI.targetComponentName, ArchieCLI.watchMode)
+      await InstallCommand.execute(archieCLI.targetComponentName, archieCLI.watchMode)
       break
-    // There is no need for a default case - "Invalid command" was already handled in ArchieUtils.initArchie() above
+    // There is no need for a default case - "Invalid command" was already handled in ArchieCLIFactory call above
   }
 } catch (error) {
   NodeUtils.exitWithError(error)

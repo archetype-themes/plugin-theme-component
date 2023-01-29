@@ -1,6 +1,6 @@
 import { dirname, join } from 'path'
 import { env } from 'node:process'
-import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
+import ArchieConfig from '../cli/models/ArchieConfig.js'
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 
@@ -11,11 +11,11 @@ class ThemeUtils {
    * @return {Promise<string>}
    */
   static async findCollectionPackageRootFolder (collectionName) {
-    const childRepoPath = join(dirname(env.npm_package_json), 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, collectionName)
+    const childRepoPath = join(dirname(env.npm_package_json), 'node_modules', ArchieConfig.DEFAULT_PACKAGE_SCOPE, collectionName)
     if (await FileUtils.isReadable(childRepoPath))
       return childRepoPath
     else {
-      const parentRepoPath = join(env.PROJECT_CWD, 'node_modules', ArchieNodeConfig.DEFAULT_PACKAGE_SCOPE, collectionName)
+      const parentRepoPath = join(env.PROJECT_CWD, 'node_modules', ArchieConfig.DEFAULT_PACKAGE_SCOPE, collectionName)
       if (await FileUtils.isReadable(parentRepoPath)) {
         return parentRepoPath
       } else {

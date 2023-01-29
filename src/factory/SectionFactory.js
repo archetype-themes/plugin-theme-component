@@ -9,7 +9,7 @@ import deepmerge from 'deepmerge'
 import FilesFactory from './FilesFactory.js'
 import RenderFactory from './RenderFactory.js'
 import SnippetFactory from './SnippetFactory.js'
-import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
+import ArchieConfig from '../cli/models/ArchieConfig.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import Collection from '../models/Collection.js'
 import Section from '../models/Section.js'
@@ -33,9 +33,9 @@ class SectionFactory {
     // Set root folder
     if (collectionRootFolder) {
       section.rootFolder = path.join(collectionRootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
-    } else if (ArchieNodeConfig.isCollection()) {
+    } else if (ArchieConfig.isCollection()) {
       section.rootFolder = path.join(path.dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, section.name)
-    } else if (ArchieNodeConfig.isSection()) {
+    } else if (ArchieConfig.isSection()) {
       section.rootFolder = path.dirname(env.npm_package_json)
     }
 
