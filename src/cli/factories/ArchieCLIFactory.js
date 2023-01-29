@@ -1,33 +1,38 @@
+// Node JS imports
 import { exit } from 'node:process'
-import NodeUtils from './NodeUtils.js'
-import ArchieCLI from '../cli/models/ArchieCLI.js'
-import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
-import logger from './Logger.js'
-import WatchFlag from '../cli/flags/WatchFlag.js'
-import InstallCommand from '../cli/commands/InstallCommand.js'
-import BuildCommand from '../cli/commands/BuildCommand.js'
-import CreateCommand from '../cli/commands/CreateCommand.js'
-import Collection from '../models/Collection.js'
-import Section from '../models/Section.js'
 
-class ArchieUtils {
+// Archie imports
+import Collection from '../../models/Collection.js'
+import Section from '../../models/Section.js'
+import logger from '../../utils/Logger.js'
+import NodeUtils from '../../utils/NodeUtils.js'
+
+// Archie CLI imports
+import BuildCommand from '../commands/BuildCommand.js'
+import CreateCommand from '../commands/CreateCommand.js'
+import InstallCommand from '../commands/InstallCommand.js'
+import WatchFlag from '../flags/WatchFlag.js'
+import ArchieCLI from '../models/ArchieCLI.js'
+import ArchieNodeConfig from '../models/ArchieNodeConfig.js'
+
+class ArchieCLIFactory {
 
   /**
-   * Init Archie
+   * Factory method for ArchieCLI From Command Line Input
    * @return {Promise<void>}
    */
-  static async initArchie () {
-    const [commands, flags] = this.splitArgs(NodeUtils.getArgs())
+  static async fromCommandLineInput () {
+    const [commands, flags] = this.#splitArgs(NodeUtils.getArgs())
 
     if (commands.length === 0) {
-      this.sayHi()
+      this.#sayHi()
       exit(0)
     }
 
     const callerComponentType = ArchieNodeConfig.componentType
     ArchieCLI.command = commands[0].toLowerCase()
 
-    this.validateCommand(callerComponentType, ArchieCLI.command, ArchieCLI.AVAILABLE_COMMANDS)
+    this.#validateCommand(callerComponentType, ArchieCLI.command, ArchieCLI.AVAILABLE_COMMANDS)
 
     // If we have 2 further arguments, we have both the option and the target
     if (commands[1] && commands[2]) {
@@ -47,13 +52,13 @@ class ArchieUtils {
 
     // Use the default Command Option if one wasn't provided
     if (!ArchieCLI.commandOption) {
-      ArchieCLI.commandOption = this.getCommandDefaultOption(ArchieCLI.command, callerComponentType)
+      ArchieCLI.commandOption = this.#getCommandDefaultOption(ArchieCLI.command, callerComponentType)
     }
 
     // Use the default Target Component if one wasn't provided
     if (!ArchieCLI.targetComponentName) {
       ArchieCLI.targetComponentName =
-        this.getCommandDefaultTargetComponent(callerComponentType, ArchieCLI.command, ArchieCLI.commandOption, NodeUtils.getPackageName())
+        this.#getCommandDefaultTargetComponent(callerComponentType, ArchieCLI.command, ArchieCLI.commandOption, NodeUtils.getPackageName())
     }
 
     // Search for the Watch Mode flag
@@ -68,7 +73,7 @@ class ArchieUtils {
       }
     })
 
-    this.validateCommandArguments(callerComponentType, ArchieCLI.command, ArchieCLI.commandOption, ArchieCLI.targetComponentName, ArchieCLI.watchMode)
+    this.#validateCommandArguments(callerComponentType, ArchieCLI.command, ArchieCLI.commandOption, ArchieCLI.targetComponentName, ArchieCLI.watchMode)
   }
 
   /**
@@ -77,23 +82,23 @@ class ArchieUtils {
    * @param {string} command
    * @param {string[]} availableCommands
    */
-  static validateCommand (callerComponentType, command, availableCommands) {
-    if (!ArchieCLI.AVAILABLE_COMMANDS.includes(command)) {
-      this.sayHi()
+  static #validateCommand (callerComponentType, command, availableCommands) {
+    if (!availableCommands.includes(command)) {
+      this.#sayHi()
       throw new Error(`Unknown command "${command}"`)
     }
 
     // Validate that the Component is entitled to call this Command
-    const commandEnabledComponentTypes = this.getCommandEnabledComponentTypes(ArchieCLI.command)
+    const commandEnabledComponentTypes = this.#getCommandEnabledComponentTypes(command)
     if (!commandEnabledComponentTypes.includes(callerComponentType)) {
       throw new Error(`INVALID COMPONENT TYPE: "${callerComponentType}". This script can only be run from the following component(s): [${commandEnabledComponentTypes.join('/')}].`)
     }
   }
 
-  static validateCommandArguments (callerComponentType, command, commandOption, targetComponent, watchFlag) {
+  static #validateCommandArguments (callerComponentType, command, commandOption, targetComponent, watchFlag) {
     logger.debug(`Caller Component Type: ${callerComponentType}`)
 
-    const availableCommandOptions = this.getCommandAvailableOptions(command)
+    const availableCommandOptions = this.#getCommandAvailableOptions(command)
     if (!availableCommandOptions.includes(commandOption)) {
       throw new Error(`INVALID COMMAND OPTION: "${commandOption}". This command only accepts the following option(s): [${availableCommandOptions.join('/')}].`)
     }
@@ -112,7 +117,7 @@ class ArchieUtils {
    * @param {string} command
    * @return {string[]}
    */
-  static getCommandAvailableOptions (command) {
+  static #getCommandAvailableOptions (command) {
     switch (command) {
       case BuildCommand.NAME:
         return BuildCommand.AVAILABLE_OPTIONS
@@ -125,7 +130,7 @@ class ArchieUtils {
     }
   }
 
-  static getCommandDefaultOption (command, callerComponentType) {
+  static #getCommandDefaultOption (command, callerComponentType) {
     switch (command) {
       case BuildCommand.NAME:
         return callerComponentType
@@ -146,7 +151,7 @@ class ArchieUtils {
    * @param {string} packageName
    * @return {null|string|Object}
    */
-  static getCommandDefaultTargetComponent (callerComponentType, command, commandOption, packageName) {
+  static #getCommandDefaultTargetComponent (callerComponentType, command, commandOption, packageName) {
     switch (command) {
       case BuildCommand.NAME:
         if (callerComponentType === commandOption) {
@@ -170,7 +175,7 @@ class ArchieUtils {
    * @param {string} command
    * @return {string[]}
    */
-  static getCommandEnabledComponentTypes (command) {
+  static #getCommandEnabledComponentTypes (command) {
     switch (command) {
       case BuildCommand.NAME:
         return BuildCommand.ENABLED_COMPONENTS
@@ -184,27 +189,11 @@ class ArchieUtils {
   }
 
   /**
-   * Validate Command Option
-   * @param {string[]} args
-   * @param {string} command
-   * @param {string[]} availableOptions
-   */
-  static setArchieCommandOptionFromArgs (args, command, availableOptions) {
-    if (!args[1]) {
-      this.sayHi(command, availableOptions)
-      exit(0)
-    }
-
-    return args[1].toLowerCase()
-
-  }
-
-  /**
    * Archie Says Hi!
    * @param {string} [command]
    * @param {string[]} [commandOptions]
    */
-  static sayHi (command, commandOptions) {
+  static #sayHi (command, commandOptions) {
     console.log(`Archie says hi!`)
     if (command && commandOptions) {
       console.log(`Available options for the "${command}" command are [${commandOptions.join('/')}]`)
@@ -218,7 +207,7 @@ class ArchieUtils {
    * @param args
    * @return {[string[], string[]]}
    */
-  static splitArgs (args) {
+  static #splitArgs (args) {
     const commands = args.filter(arg => !arg.startsWith('-'))
     const flags = args.filter(arg => arg.startsWith('-'))
     return [commands, flags]
@@ -226,4 +215,4 @@ class ArchieUtils {
 
 }
 
-export default ArchieUtils
+export default ArchieCLIFactory
