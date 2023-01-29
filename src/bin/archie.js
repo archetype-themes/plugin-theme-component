@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import ArchieCLI from '../cli/models/ArchieCLI.js'
-import ArchieUtils from '../utils/ArchieUtils.js'
+import ArchieCLIFactory from '../cli/factories/ArchieCLIFactory.js'
 import ConfigUtils from '../utils/ConfigUtils.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import InstallCommand from '../cli/commands/InstallCommand.js'
@@ -16,7 +16,7 @@ try {
 }
 
 try {
-  await ArchieUtils.initArchie()
+  await ArchieCLIFactory.fromCommandLineInput()
 } catch (error) {
   NodeUtils.exitWithError(error)
 }
