@@ -1,0 +1,11 @@
+{
+  "en": {
+    "${componentName}": "${componentName}"
+  },
+  "es": {
+    "${componentName}": "${componentName}"
+  },
+  "fr": {
+    "${componentName}": "${componentName}"
+  }
+}

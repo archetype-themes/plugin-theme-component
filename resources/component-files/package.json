@@ -1,0 +1,16 @@
+{
+  "author": "Archetype Themes Limited Partnership",
+  "description": "${collectionName}'s ${componentName} ${componentType}",
+  "license": "UNLICENSED",
+  "main": "src/index.liquid",
+  "name": "${componentName}",
+  "version": "1.0.0",
+  "archie": {
+    "componentType": "${componentType}"
+  },
+  "standard": {
+    "ignore": [
+      "build/**"
+    ]
+  }
+}
