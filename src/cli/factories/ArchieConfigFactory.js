@@ -4,22 +4,22 @@ import logger from '../../utils/Logger.js'
 class ArchieConfigFactory {
 
   /**
-   * Init Global Config
+   * Init Archie Config
    * @param {Object} packageJsonData
    * @return {Promise<void>}
    */
-  static async fromPackageJsonData (packageJsonData) {
-    ArchieConfig.componentType = await this.#findComponentType(packageJsonData)
-    ArchieConfig.collections = await this.#findCollections(packageJsonData)
-    ArchieConfig.gridSize = await this.#getGridSize(packageJsonData)
+  static fromPackageJsonData (packageJsonData) {
+    ArchieConfig.componentType = this.#findComponentType(packageJsonData)
+    ArchieConfig.collections = this.#findCollections(packageJsonData)
+    ArchieConfig.gridSize = this.#getGridSize(packageJsonData)
   }
 
   /**
    * Get Component Type
    * @param {Object} packageJsonData
-   * @return {Promise<string>}
+   * @return {string}
    */
-  static async #findComponentType (packageJsonData) {
+  static #findComponentType (packageJsonData) {
 
     /** @var {archie} packageJson.archie **/
     if (!packageJsonData.archie || !packageJsonData.archie.componentType) {
@@ -39,9 +39,9 @@ class ArchieConfigFactory {
   /**
    * Get Component Type
    * @param {Object} packageJsonData
-   * @return {Promise<string[]>}
+   * @return {string[]}
    */
-  static async #findCollections (packageJsonData) {
+  static #findCollections (packageJsonData) {
     /** @var {archie} packageJson.archie **/
     if (packageJsonData.archie && packageJsonData.archie.collections) {
       return packageJsonData.archie.collections
@@ -52,9 +52,9 @@ class ArchieConfigFactory {
 
   /**
    * @param {Object} packageJsonData
-   * @return {Promise<number>}
+   * @return {number|null}
    */
-  static async #getGridSize (packageJsonData) {
+  static #getGridSize (packageJsonData) {
     /** @var {number} packageJson.archie.gridSize **/
     if (packageJsonData.archie && packageJsonData.archie.gridSize) {
       return packageJsonData.archie.gridSize
