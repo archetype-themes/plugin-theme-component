@@ -6,7 +6,7 @@ class ArchieConfigFactory {
   /**
    * Init Archie Config
    * @param {Object} packageJsonData
-   * @return {Promise<void>}
+   * @return {void}
    */
   static fromPackageJsonData (packageJsonData) {
     ArchieConfig.componentType = this.#findComponentType(packageJsonData)
