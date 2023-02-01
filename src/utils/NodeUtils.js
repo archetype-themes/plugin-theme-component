@@ -43,20 +43,6 @@ class NodeUtils {
   }
 
   /**
-   * Get Readable Timestamp
-   * @param {Date} [date]
-   * @return {string}
-   */
-  static getReadableTimestamp (date) {
-    if (!date) {
-      date = new Date()
-    }
-    const dateString = date.toISOString()
-
-    return dateString.substring(0, 19).replace('T', '_').replaceAll(':', '-')
-  }
-
-  /**
    * Shortcut to a method to get root folder username
    * @returns {string}
    */
