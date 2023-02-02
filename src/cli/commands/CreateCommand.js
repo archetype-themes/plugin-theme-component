@@ -1,22 +1,13 @@
-import Collection from '../../models/Collection.js'
-import Section from '../../models/Section.js'
-import Snippet from '../../models/Snippet.js'
 import SectionGenerator from '../../generators/SectionGenerator.js'
 import SnippetGenerator from '../../generators/SnippetGenerator.js'
+import Components from '../../config/Components.js'
 
 class CreateCommand {
-  /** @type {string} **/
-  static NAME = 'create'
-  /** @type {string[]} **/
-  static ENABLED_COMPONENTS = [Collection.COMPONENT_NAME]
-  /** @type {string[]} **/
-  static AVAILABLE_OPTIONS = [Section.COMPONENT_NAME, Snippet.COMPONENT_NAME]
-
   static async execute (commandOption, targetComponent) {
-    if (commandOption === Section.COMPONENT_NAME) {
+    if (commandOption === Components.SECTION_COMPONENT_NAME) {
       await SectionGenerator.generate(targetComponent)
     }
-    if (commandOption === Snippet.COMPONENT_NAME) {
+    if (commandOption === Components.SNIPPET_COMPONENT_NAME) {
       await SnippetGenerator.generate(targetComponent)
     }
   }

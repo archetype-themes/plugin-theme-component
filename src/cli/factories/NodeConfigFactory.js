@@ -1,7 +1,8 @@
-import ArchieConfig from '../models/ArchieConfig.js'
+import NodeConfig from '../models/NodeConfig.js'
 import logger from '../../utils/Logger.js'
+import CLI from '../../config/CLI.js'
 
-class ArchieConfigFactory {
+class NodeConfigFactory {
 
   /**
    * Init Archie Config
@@ -9,9 +10,9 @@ class ArchieConfigFactory {
    * @return {void}
    */
   static fromPackageJsonData (packageJsonData) {
-    ArchieConfig.componentType = this.#findComponentType(packageJsonData)
-    ArchieConfig.collections = this.#findCollections(packageJsonData)
-    ArchieConfig.gridSize = this.#getGridSize(packageJsonData)
+    NodeConfig.componentType = this.#findComponentType(packageJsonData)
+    NodeConfig.collections = this.#findCollections(packageJsonData)
+    NodeConfig.gridSize = this.#getGridSize(packageJsonData)
   }
 
   /**
@@ -28,7 +29,7 @@ class ArchieConfigFactory {
 
     const componentType = packageJsonData.archie.componentType.toLowerCase()
 
-    if (!ArchieConfig.ALLOWED_COMPONENT_TYPES.includes(componentType)) {
+    if (!CLI.AVAILABLE_COMPONENT_TYPES.includes(componentType)) {
       throw new Error(`The value for archie.componentType from package.json must be changed to one of these: theme/collection/section/snippet, "${packageJsonData.archie.componentType}" is not an allowed value`)
     }
     logger.debug(`Component Type: "${componentType}"`)
@@ -60,10 +61,11 @@ class ArchieConfigFactory {
       return packageJsonData.archie.gridSize
     }
     logger.warn('GridSize is missing!')
-    logger.warn('If you are using PostCSS and intend to use custom mixins, you need to specify the Grid Size in package.json. ie: {archie: {"gridSize": 6}}.')
+    logger.warn(
+      'If you are using PostCSS and intend to use custom mixins, you need to specify the Grid Size in package.json. ie: {archie: {"gridSize": 6}}.')
 
     return null
   }
 }
 
-export default ArchieConfigFactory
+export default NodeConfigFactory

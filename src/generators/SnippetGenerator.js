@@ -13,8 +13,8 @@ import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import Collection from '../models/Collection.js'
 import FileAccessError from '../errors/FileAccessError.js'
+import Components from '../config/Components.js'
 
 const execPromise = util.promisify(exec)
 
@@ -31,7 +31,7 @@ class SnippetGenerator {
 
     // Initialize Snippet
     snippet.name = snippetName
-    snippet.rootFolder = path.join(env.PROJECT_CWD, Collection.SNIPPETS_SUB_FOLDER, snippet.name)
+    snippet.rootFolder = path.join(env.PROJECT_CWD, Components.COLLECTION_SNIPPETS_FOLDER, snippet.name)
     snippet.files = new SnippetFiles()
     snippet.files.packageJson = path.join(snippet.rootFolder, 'package.json')
 

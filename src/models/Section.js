@@ -1,24 +1,18 @@
 import Component from './abstract/Component.js'
 
 class Section extends Component {
-  /** @type {string} **/
-  static COMPONENT_NAME = 'section'
-
   /**
-   * @override
    * @type {SectionBuild}
    */
   #build
 
   /**
-   * @override
    * @type {SectionFiles}
    */
   #files
 
   /**
    *  Get Build
-   * @override
    * @returns {SectionBuild}
    */
   get build () {
@@ -27,7 +21,6 @@ class Section extends Component {
 
   /**
    * Set Build
-   * @override
    * @param {SectionBuild} value
    */
   set build (value) {
@@ -36,7 +29,6 @@ class Section extends Component {
 
   /**
    * Get Files Model Reference
-   * @override
    * @returns {SectionFiles}
    */
   get files () {
@@ -45,7 +37,6 @@ class Section extends Component {
 
   /**
    * Set Files Model Reference
-   * @override
    * @param {SectionFiles} value
    */
   set files (value) {

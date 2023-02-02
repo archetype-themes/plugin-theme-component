@@ -3,11 +3,12 @@ import { join } from 'path'
 
 // Archie imports
 import SectionFactory from './SectionFactory.js'
-import ArchieConfig from '../cli/models/ArchieConfig.js'
+import NodeConfig from '../cli/models/NodeConfig.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import Collection from '../models/Collection.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import logger from '../utils/Logger.js'
+import Components from '../config/Components.js'
 
 class CollectionFactory {
   /**
@@ -24,7 +25,7 @@ class CollectionFactory {
 
     // Set folder names
     collection.rootFolder = rootFolder
-    collection.sectionsFolder = join(collection.rootFolder, Collection.SECTIONS_SUB_FOLDER)
+    collection.sectionsFolder = join(collection.rootFolder, Components.COLLECTION_SECTIONS_FOLDER)
 
     // Get Section Names and create Sections
     collection.sectionNames = await this.getSectionNames(collection.name, collection.sectionsFolder)
@@ -40,7 +41,7 @@ class CollectionFactory {
    */
   static async getSectionNames (collectionName, sectionsFolder) {
 
-    let sectionNames = ArchieConfig.getCollectionSections(collectionName)
+    let sectionNames = NodeConfig.getCollectionSections(collectionName)
 
     if (sectionNames.length === 0) {
       logger.info(`No section list found for Collection; all sections will be processed.`)

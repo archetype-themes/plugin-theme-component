@@ -9,14 +9,14 @@ import deepmerge from 'deepmerge'
 import FilesFactory from './FilesFactory.js'
 import RenderFactory from './RenderFactory.js'
 import SnippetFactory from './SnippetFactory.js'
-import ArchieConfig from '../cli/models/ArchieConfig.js'
+import NodeConfig from '../cli/models/NodeConfig.js'
 import FileAccessError from '../errors/FileAccessError.js'
-import Collection from '../models/Collection.js'
 import Section from '../models/Section.js'
 import SectionSchema from '../models/SectionSchema.js'
 import FileUtils from '../utils/FileUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 import logger from '../utils/Logger.js'
+import Components from '../config/Components.js'
 
 class SectionFactory {
 
@@ -32,10 +32,11 @@ class SectionFactory {
 
     // Set root folder
     if (collectionRootFolder) {
-      section.rootFolder = path.join(collectionRootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
-    } else if (ArchieConfig.isCollection()) {
-      section.rootFolder = path.join(path.dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, section.name)
-    } else if (ArchieConfig.isSection()) {
+      section.rootFolder = path.join(collectionRootFolder, Components.COLLECTION_SECTIONS_FOLDER, section.name)
+    } else if (NodeConfig.isCollection()) {
+      section.rootFolder =
+        path.join(path.dirname(env.npm_package_json), Components.COLLECTION_SECTIONS_FOLDER, section.name)
+    } else if (NodeConfig.isSection()) {
       section.rootFolder = path.dirname(env.npm_package_json)
     }
 
@@ -87,7 +88,7 @@ class SectionFactory {
     section.renders = RenderFactory.fromLiquidCode(section.liquidCode)
 
     // Create Snippets Recursively
-    const snippetsPath = path.join(section.rootFolder, '../../', Collection.SNIPPETS_SUB_FOLDER)
+    const snippetsPath = path.join(section.rootFolder, '../../', Components.COLLECTION_SNIPPETS_FOLDER)
     section.renders = await SnippetFactory.fromRenders(section.renders, section.files.snippetFiles, snippetsPath)
 
     return section

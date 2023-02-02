@@ -10,22 +10,14 @@ import CollectionBuilder from '../../builders/CollectionBuilder.js'
 import SectionBuilder from '../../builders/SectionBuilder.js'
 import CollectionFactory from '../../factory/CollectionFactory.js'
 import SectionFactory from '../../factory/SectionFactory.js'
-import Collection from '../../models/Collection.js'
-import Section from '../../models/Section.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
 import Watcher from '../../utils/Watcher.js'
 import NodeUtils from '../../utils/NodeUtils.js'
 import RenderUtils from '../../utils/RenderUtils.js'
+import Components from '../../config/Components.js'
 
 class BuildCommand {
-  /** @type {string} **/
-  static NAME = 'build'
-  /** @type {string[]} **/
-  static ENABLED_COMPONENTS = [Collection.COMPONENT_NAME, Section.COMPONENT_NAME]
-  /** @type {string[]} **/
-  static AVAILABLE_OPTIONS = [Collection.COMPONENT_NAME, Section.COMPONENT_NAME]
-
   /**
    * Execute Build Command
    * @param {string} commandOption
@@ -36,14 +28,14 @@ class BuildCommand {
   static async execute (commandOption, targetComponentName, watchMode) {
     const promises = []
 
-    if (commandOption === Collection.COMPONENT_NAME) {
+    if (commandOption === Components.COLLECTION_COMPONENT_NAME) {
       const collection = await this.buildCollection()
       if (watchMode) {
         promises.push(this.watchCollection(collection))
       }
     }
     // Build/Watch Section
-    else if (commandOption === Section.COMPONENT_NAME) {
+    else if (commandOption === Components.SECTION_COMPONENT_NAME) {
       logger.info(`Building "${targetComponentName}" section`)
       console.time(`Building "${targetComponentName}" section`)
 

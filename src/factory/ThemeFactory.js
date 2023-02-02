@@ -5,6 +5,7 @@ import { dirname, join } from 'path'
 //Archie Imports
 import Theme from '../models/Theme.js'
 import NodeUtils from '../utils/NodeUtils.js'
+import Components from '../config/Components.js'
 
 class ThemeFactory {
   /**
@@ -18,10 +19,10 @@ class ThemeFactory {
     theme.name = NodeUtils.getPackageName()
     // Set folder names
     theme.rootFolder = join(dirname(env.npm_package_json), 'src')
-    theme.assetsFolder = join(theme.rootFolder, Theme.ASSETS_SUB_FOLDER)
-    theme.localesFolder = join(theme.rootFolder, Theme.LOCALES_SUB_FOLDER)
-    theme.sectionsFolder = join(theme.rootFolder, Theme.SECTIONS_SUB_FOLDER)
-    theme.snippetsFolder = join(theme.rootFolder, Theme.SNIPPETS_SUB_FOLDER)
+    theme.assetsFolder = join(theme.rootFolder, Components.THEME_ASSETS_FOLDER)
+    theme.localesFolder = join(theme.rootFolder, Components.THEME_LOCALES_FOLDER)
+    theme.sectionsFolder = join(theme.rootFolder, Components.THEME_SECTIONS_FOLDER)
+    theme.snippetsFolder = join(theme.rootFolder, Components.THEME_SNIPPETS_FOLDER)
 
     return theme
   }
