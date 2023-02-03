@@ -3,9 +3,8 @@ import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
 
 // Archie Component imports
-import ArchieCLI from '../cli/models/ArchieCLI.js'
+import CLISession from '../cli/models/CLISession.js'
 import BuildFactory from '../factory/BuildFactory.js'
-import Section from '../models/Section.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
@@ -16,6 +15,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
+import Components from '../config/Components.js'
 
 class SectionBuilder {
 
@@ -25,7 +25,9 @@ class SectionBuilder {
    * @returns {Promise<Awaited<unknown>[]>} - disk write operations array
    */
   static async build (section) {
-    const sectionBuild = (ArchieCLI.commandOption === Section.COMPONENT_NAME)
+    const sectionBuild = (
+      CLISession.commandOption === Components.SECTION_COMPONENT_NAME
+    )
     const fileOperationPromises = []
 
     // Create build model and prepare folders
@@ -55,7 +57,12 @@ class SectionBuilder {
     if (sectionBuild) {
       // Bundle CSS
       section.build.stylesBundle =
-        await this.bundleStyles(section.files.mainStylesheet, section.build.stylesheet, section.renders, section.build.stylesBundleFile)
+        await this.bundleStyles(
+          section.files.mainStylesheet,
+          section.build.stylesheet,
+          section.renders,
+          section.build.stylesBundleFile
+        )
       fileOperationPromises.push(FileUtils.writeFile(section.build.stylesBundleFile, section.build.stylesBundle))
 
       //Attach CSS bundle file reference to liquid code
@@ -66,9 +73,17 @@ class SectionBuilder {
       // Build JS
       const rendersJavascriptIndexes = RenderUtils.getSnippetsJavascriptIndex(section.renders)
       if (section.files.javascriptIndex) {
-        await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, section.files.javascriptIndex, rendersJavascriptIndexes)
+        await JavaScriptProcessor.buildJavaScript(
+          section.build.javascriptFile,
+          section.files.javascriptIndex,
+          rendersJavascriptIndexes
+        )
       } else if (rendersJavascriptIndexes.length > 0) {
-        await JavaScriptProcessor.buildJavaScript(section.build.javascriptFile, rendersJavascriptIndexes.shift(), rendersJavascriptIndexes)
+        await JavaScriptProcessor.buildJavaScript(
+          section.build.javascriptFile,
+          rendersJavascriptIndexes.shift(),
+          rendersJavascriptIndexes
+        )
       }
 
       //Attach Javascript bundle file reference to liquid code
@@ -77,7 +92,10 @@ class SectionBuilder {
         section.build.liquidCode
 
       // Write Schema Locales to disk
-      fileOperationPromises.push(LocaleUtils.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder))
+      fileOperationPromises.push(LocaleUtils.writeSchemaLocales(
+        section.build.schemaLocales,
+        section.build.localesFolder
+      ))
 
       // Copy Assets
       let assetFiles = section.files.assetFiles

@@ -1,15 +1,4 @@
-import BuildCommand from '../commands/BuildCommand.js'
-import CreateCommand from '../commands/CreateCommand.js'
-import InstallCommand from '../commands/InstallCommand.js'
-import Collection from '../../models/Collection.js'
-import Section from '../../models/Section.js'
-import Snippet from '../../models/Snippet.js'
-import Theme from '../../models/Theme.js'
-
-class ArchieCLI {
-  static AVAILABLE_COMMANDS = [BuildCommand.NAME, CreateCommand.NAME, InstallCommand.NAME]
-  static AVAILABLE_COMMAND_OPTIONS = [Theme.COMPONENT_NAME, Collection.COMPONENT_NAME, Section.COMPONENT_NAME, Snippet.COMPONENT_NAME]
-
+class CLISession {
   /** @type {string}  **/
   static #command
 
@@ -87,4 +76,4 @@ class ArchieCLI {
   }
 }
 
-export default ArchieCLI
+export default CLISession

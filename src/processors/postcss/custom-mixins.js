@@ -1,4 +1,4 @@
-import ArchieNodeConfig from '../../cli/models/ArchieNodeConfig.js'
+import NodeConfig from '../../cli/models/NodeConfig.js'
 
 function buildGridClasses (breakpoint) {
   let result = {}
@@ -20,7 +20,7 @@ function buildGridClasses (breakpoint) {
     `] = { clear: 'both' }
   }
 
-  if (ArchieNodeConfig.gridSize >= 4) {
+  if (NodeConfig.gridSize >= 4) {
     result[`${prefix}one-quarter`] = { width: '25%' }
     result[`${prefix}two-quarters`] = { width: '50%' }
     result[`${prefix}three-quarters`] = { width: '75%' }
@@ -30,7 +30,7 @@ function buildGridClasses (breakpoint) {
     }
   }
 
-  if (ArchieNodeConfig.gridSize >= 5) {
+  if (NodeConfig.gridSize >= 5) {
     result[`${prefix}one-fifth`] = { width: '20%' }
     result[`${prefix}two-fifths`] = { width: '40%' }
     result[`${prefix}three-fifths`] = { width: '60%' }
@@ -41,7 +41,7 @@ function buildGridClasses (breakpoint) {
     }
   }
 
-  if (ArchieNodeConfig.gridSize >= 6) {
+  if (NodeConfig.gridSize >= 6) {
     result[`${prefix}one-sixth`] = { width: '16.66667%' }
     result[`${prefix}two-sixths`] = { width: '33.33333%' }
     result[`${prefix}three-sixths`] = { width: '50%' }
@@ -57,7 +57,7 @@ function buildGridClasses (breakpoint) {
     }
   }
 
-  if (ArchieNodeConfig.gridSize >= 8) {
+  if (NodeConfig.gridSize >= 8) {
     result[`${prefix}one-eighth`] = { width: '12.5%' }
     result[`${prefix}two-eighths`] = { width: '25%' }
     result[`${prefix}three-eighths`] = { width: '37.5%' }
@@ -75,7 +75,7 @@ function buildGridClasses (breakpoint) {
     }
   }
 
-  if (ArchieNodeConfig.gridSize >= 10) {
+  if (NodeConfig.gridSize >= 10) {
     result[`${prefix}one-tenth`] = { width: '10%' }
     result[`${prefix}two-tenths`] = { width: '20%' }
     result[`${prefix}three-tenths`] = { width: '30%' }
@@ -91,7 +91,7 @@ function buildGridClasses (breakpoint) {
     }
   }
 
-  if (ArchieNodeConfig.gridSize >= 12) {
+  if (NodeConfig.gridSize >= 12) {
     result[`${prefix}one-twelfth`] = { width: '8.33333%' }
     result[`${prefix}two-twelfths`] = { width: '16.66667%' }
     result[`${prefix}three-twelfths`] = { width: '25%' }
@@ -179,20 +179,20 @@ function buildPushClasses (breakpoint) {
   result[`${prefix}push-one-third`] = { left: '33.33333%' }
   result[`${prefix}push-two-thirds`] = { left: '66.66667%' }
 
-  if (ArchieNodeConfig.gridSize >= 4) {
+  if (NodeConfig.gridSize >= 4) {
     result[`${prefix}push-one-quarter`] = { left: '25%' }
     result[`${prefix}push-two-quarters`] = { left: '50%' }
     result[`${prefix}push-three-quarters`] = { left: '75%' }
   }
 
-  if (ArchieNodeConfig.gridSize >= 5) {
+  if (NodeConfig.gridSize >= 5) {
     result[`${prefix}push-one-fifth`] = { left: '20%' }
     result[`${prefix}push-two-fifths`] = { left: '40%' }
     result[`${prefix}push-three-fifths`] = { left: '60%' }
     result[`${prefix}push-four-fifths`] = { left: '80%' }
   }
 
-  if (ArchieNodeConfig.gridSize >= 6) {
+  if (NodeConfig.gridSize >= 6) {
     result[`${prefix}push-one-sixth`] = { left: '16.66667%' }
     result[`${prefix}push-two-sixths`] = { left: '33.33333%' }
     result[`${prefix}push-three-sixths`] = { left: '50%' }
@@ -200,7 +200,7 @@ function buildPushClasses (breakpoint) {
     result[`${prefix}push-five-sixths`] = { left: '83.33333%' }
   }
 
-  if (ArchieNodeConfig.gridSize >= 8) {
+  if (NodeConfig.gridSize >= 8) {
     result[`${prefix}push-one-eighth`] = { left: '12.5%' }
     result[`${prefix}push-two-eighths`] = { left: '25%' }
     result[`${prefix}push-three-eighths`] = { left: '37.5%' }
@@ -210,7 +210,7 @@ function buildPushClasses (breakpoint) {
     result[`${prefix}push-seven-eighths`] = { left: '87.5%' }
   }
 
-  if (ArchieNodeConfig.gridSize >= 10) {
+  if (NodeConfig.gridSize >= 10) {
     result[`${prefix}push-one-tenth`] = { left: '10%' }
     result[`${prefix}push-two-tenths`] = { left: '20%' }
     result[`${prefix}push-three-tenths`] = { left: '30%' }
@@ -222,7 +222,7 @@ function buildPushClasses (breakpoint) {
     result[`${prefix}push-nine-tenths`] = { left: '90%' }
   }
 
-  if (ArchieNodeConfig.gridSize >= 12) {
+  if (NodeConfig.gridSize >= 12) {
     result[`${prefix}push-one-twelfth`] = { left: '8.33333%' }
     result[`${prefix}push-two-twelfths`] = { left: '16.66667%' }
     result[`${prefix}push-three-twelfths`] = { left: '25%' }

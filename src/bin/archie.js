@@ -1,38 +1,34 @@
 #!/usr/bin/env node
 
-import ArchieCLI from '../cli/models/ArchieCLI.js'
-import ArchieCLIFactory from '../cli/factories/ArchieCLIFactory.js'
-import ConfigUtils from '../utils/ConfigUtils.js'
-import NodeUtils from '../utils/NodeUtils.js'
-import InstallCommand from '../cli/commands/InstallCommand.js'
 import BuildCommand from '../cli/commands/BuildCommand.js'
 import CreateCommand from '../cli/commands/CreateCommand.js'
+import InstallCommand from '../cli/commands/InstallCommand.js'
+import CLISessionFactory from '../cli/factories/CLISessionFactory.js'
+import NodeConfigFactory from '../cli/factories/NodeConfigFactory.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import CLICommands from '../config/CLICommands.js'
 
-//Init Config
+//Init ArchieSession & ArchieCLI
+let archieCLI
 try {
-  await ConfigUtils.initConfig()
+  await NodeConfigFactory.fromPackageJsonData(await NodeUtils.getPackageJsonData())
+  archieCLI = CLISessionFactory.fromCommandLineInput(NodeUtils.getArgs())
 } catch (error) {
   NodeUtils.exitWithError(error)
 }
 
 try {
-  await ArchieCLIFactory.fromCommandLineInput()
-} catch (error) {
-  NodeUtils.exitWithError(error)
-}
-
-try {
-  switch (ArchieCLI.command) {
-    case BuildCommand.NAME:
-      await BuildCommand.execute(ArchieCLI.commandOption, ArchieCLI.targetComponentName, ArchieCLI.watchMode)
+  switch (archieCLI.command) {
+    case CLICommands.BUILD_COMMAND_NAME:
+      await BuildCommand.execute(archieCLI.commandOption, archieCLI.targetComponentName, archieCLI.watchMode)
       break
-    case CreateCommand.NAME:
-      await CreateCommand.execute(ArchieCLI.commandOption, ArchieCLI.targetComponentName)
+    case CLICommands.CREATE_COMMAND_NAME:
+      await CreateCommand.execute(archieCLI.commandOption, archieCLI.targetComponentName)
       break
-    case InstallCommand.NAME:
-      await InstallCommand.execute(ArchieCLI.targetComponentName, ArchieCLI.watchMode)
+    case CLICommands.INSTALL_COMMAND_NAME:
+      await InstallCommand.execute(archieCLI.targetComponentName, archieCLI.watchMode)
       break
-    // There is no need for a default case - "Invalid command" was already handled in ArchieUtils.initArchie() above
+    // There is no need for a default case - "Invalid command" was already handled in ArchieCLIFactory call above
   }
 } catch (error) {
   NodeUtils.exitWithError(error)

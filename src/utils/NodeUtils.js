@@ -5,9 +5,6 @@ import { dirname } from 'path'
 import merge from 'deepmerge'
 
 class NodeUtils {
-
-  static #packageJson
-
   /**
    * Get Command Line Args
    * @return {string[]}
@@ -29,15 +26,12 @@ class NodeUtils {
    * Get Package JSON Content as an Object
    * @return {Promise<Object>}
    */
-  static async getPackageJson () {
+  static async getPackageJsonData () {
     if (!env.npm_package_json) {
       throw new Error(`Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of yarn.`)
     }
 
-    if (!this.#packageJson) {
-      this.#packageJson = JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
-    }
-    return this.#packageJson
+    return JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
   }
 
   /**
@@ -46,20 +40,6 @@ class NodeUtils {
    */
   static getPackageName () {
     return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
-  }
-
-  /**
-   * Get Readable Timestamp
-   * @param {Date} [date]
-   * @return {string}
-   */
-  static getReadableTimestamp (date) {
-    if (!date) {
-      date = new Date()
-    }
-    const dateString = date.toISOString()
-
-    return dateString.substring(0, 19).replace('T', '_').replaceAll(':', '-')
   }
 
   /**

@@ -13,8 +13,8 @@ import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import Collection from '../models/Collection.js'
 import FileAccessError from '../errors/FileAccessError.js'
+import Components from '../config/Components.js'
 
 /**
  * This callback is displayed as part of the Requester class.
@@ -37,7 +37,7 @@ class SectionGenerator {
 
     // Initialize sections
     section.name = sectionName
-    section.rootFolder = path.join(env.PROJECT_CWD, Collection.SECTIONS_SUB_FOLDER, section.name)
+    section.rootFolder = path.join(env.PROJECT_CWD, Components.COLLECTION_SECTIONS_FOLDER, section.name)
     section.files = new SectionFiles()
     section.files.packageJson = path.join(section.rootFolder, 'package.json')
 

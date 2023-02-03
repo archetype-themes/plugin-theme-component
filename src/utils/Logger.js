@@ -1,7 +1,7 @@
 import { argv } from 'node:process'
 import pino from 'pino'
 import PinoPretty from 'pino-pretty'
-import NodeUtils from './NodeUtils.js'
+import { dirname } from 'path'
 
 const STACKTRACE_OFFSET = 2
 const LINE_OFFSET = 7
@@ -15,12 +15,13 @@ const { symbols: { asJsonSym } } = pino
  */
 function traceCaller (pinoInstance) {
   const get = (target, name) => name === asJsonSym ? asJson : target[name]
+  const rootFolder = dirname(dirname(dirname(import.meta.url)).substring(7))
 
   function asJson (...args) {
     args[0] = args[0] || Object.create(null)
     args[0].caller = Error().stack.split('\n')
       .filter(s => !s.includes('node_modules/pino') && !s.includes('node_modules\\pino'))[STACKTRACE_OFFSET]
-      .substring(LINE_OFFSET).replace(`file://${NodeUtils.getRootFolderName()}`, '')
+      .substring(LINE_OFFSET).replace(`file://${rootFolder}`, '')
 
     return pinoInstance[asJsonSym].apply(this, args)
   }

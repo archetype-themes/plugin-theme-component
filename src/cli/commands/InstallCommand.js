@@ -6,21 +6,12 @@ import CollectionBuilder from '../../builders/CollectionBuilder.js'
 import CollectionFactory from '../../factory/CollectionFactory.js'
 import ThemeFactory from '../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../Installers/CollectionInstaller.js'
-import Collection from '../../models/Collection.js'
-import Theme from '../../models/Theme.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
 import Watcher from '../../utils/Watcher.js'
 import ThemeUtils from '../../utils/ThemeUtils.js'
 
 class InstallCommand {
-  /** @type {string} **/
-  static NAME = 'install'
-  /** @type {string[]} **/
-  static ENABLED_COMPONENTS = [Theme.COMPONENT_NAME]
-  /** @type {string[]} **/
-  static AVAILABLE_OPTIONS = [Collection.COMPONENT_NAME]
-
   /**
    * Execute Install command
    * @param {string} collectionName
@@ -64,7 +55,7 @@ class InstallCommand {
 
     await CollectionInstaller.install(theme, collection)
 
-    return collection
+    return Promise.resolve(collection)
   }
 
   static async onCollectionWatchEvent (collectionName, watcher, event, eventPath) {

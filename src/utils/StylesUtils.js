@@ -54,7 +54,7 @@ class StylesUtils {
 
   /**
    * Get Component Main CSS File (excludes sass files)
-   * @param {Component} component
+   * @param {Section|Snippet} component
    */
   static getComponentMainCssFile (component) {
     if (component.files.mainStylesheet) {
