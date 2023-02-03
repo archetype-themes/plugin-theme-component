@@ -11,7 +11,7 @@ import CLICommands from '../config/CLICommands.js'
 //Init ArchieSession & ArchieCLI
 let archieCLI
 try {
-  await NodeConfigFactory.fromPackageJsonData(NodeUtils.getPackageJsonData())
+  await NodeConfigFactory.fromPackageJsonData(await NodeUtils.getPackageJsonData())
   archieCLI = CLISessionFactory.fromCommandLineInput(NodeUtils.getArgs())
 } catch (error) {
   NodeUtils.exitWithError(error)
