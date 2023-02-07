@@ -1,4 +1,4 @@
-import { argv } from 'node:process'
+import { argv, env } from 'node:process'
 import pino from 'pino'
 import PinoPretty from 'pino-pretty'
 import { dirname } from 'path'
@@ -31,9 +31,22 @@ function traceCaller (pinoInstance) {
 
 let loglevel = 'info'
 
-if (argv.includes('--quiet')) {
+/****                        Setting loglevel value                                  ****/
+/*                                                                                      */
+/* YARN: argv works nicely with yarn berry                                              */
+/* NPM: argv is intercepted by npm, therefore we also check for env.npm_config_loglevel */
+
+if (argv.includes('--quiet') ||
+  (
+    env.npm_config_loglevel && ['error', 'warn', 'silent'].includes(env.npm_config_loglevel)
+  )) {
   loglevel = 'error'
-} else if (argv.includes('--verbose') || argv.includes('--debug')) {
+} else if (
+  argv.includes('--verbose') ||
+  argv.includes('--debug') ||
+  (
+    env.npm_config_loglevel && ['verbose', 'silly'].includes(env.npm_config_loglevel)
+  )) {
   loglevel = 'debug'
 }
 
