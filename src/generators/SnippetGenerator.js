@@ -1,6 +1,5 @@
 // NodeJS internal imports
 import { exec } from 'child_process'
-import { env } from 'node:process'
 import { access, constants } from 'node:fs/promises'
 import path from 'path'
 import util from 'util'
@@ -31,7 +30,11 @@ class SnippetGenerator {
 
     // Initialize Snippet
     snippet.name = snippetName
-    snippet.rootFolder = path.join(env.PROJECT_CWD, Components.COLLECTION_SNIPPETS_FOLDER, snippet.name)
+    snippet.rootFolder = path.join(
+      NodeUtils.getPackageRootFolder(),
+      Components.COLLECTION_SNIPPETS_FOLDER,
+      snippet.name
+    )
     snippet.files = new SnippetFiles()
     snippet.files.packageJson = path.join(snippet.rootFolder, 'package.json')
 
@@ -57,9 +60,8 @@ class SnippetGenerator {
     await ComponentUtils.createFolderStructure(snippet)
 
     // Initialize the repository
-    await execPromise('yarn init', { cwd: snippet.rootFolder })
-    await execPromise('yarn config set nodeLinker node-modules', { cwd: snippet.rootFolder })
-    await execPromise('yarn add standard --dev', { cwd: snippet.rootFolder })
+    await execPromise('npm init -y --scope=@archetype-themes', { cwd: snippet.rootFolder })
+    await execPromise('npm install standard --save-dev', { cwd: snippet.rootFolder })
 
     // Load package.json and add to it.
     const packageJsonDefaults = this.getPackageJsonDefaults(collectionName, snippet.name)
@@ -68,7 +70,7 @@ class SnippetGenerator {
 
     const mergedPackageJson = merge(packageJson, packageJsonDefaults)
 
-    promises.push(FileUtils.writeFile(snippet.files.packageJson, JSON.stringify(mergedPackageJson)))
+    promises.push(FileUtils.writeFile(snippet.files.packageJson, JSON.stringify(mergedPackageJson, null, 2)))
 
     const defaultFiles = this.getDefaultFiles(collectionName, snippet.name)
 
@@ -77,8 +79,8 @@ class SnippetGenerator {
       promises.push(FileUtils.writeFile(`${snippet.rootFolder}${filename}`, defaultFiles[filename]))
     }
 
-    // Run yarn install; this must be done or yarn will send error messages relating to monorepo integrity
-    promises.push(execPromise('yarn install', { cwd: snippet.rootFolder }))
+    // Run npm install; this must be done or npm will send error messages relating to monorepo integrity
+    promises.push(execPromise('npm install', { cwd: snippet.rootFolder }))
 
     return Promise.all(promises)
   }

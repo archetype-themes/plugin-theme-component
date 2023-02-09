@@ -1,6 +1,5 @@
 //Node imports
-import { env } from 'node:process'
-import path, { dirname } from 'path'
+import path from 'path'
 
 // External Modules imports
 import { FSWatcher } from 'chokidar'
@@ -58,7 +57,7 @@ class BuildCommand {
    */
   static async buildCollection () {
     const collectionName = NodeUtils.getPackageName()
-    const collectRootFolder = dirname(env.npm_package_json)
+    const collectRootFolder = NodeUtils.getPackageRootFolder()
 
     logger.info(`Building ${collectionName} Collection ...`)
     console.time(`Building "${collectionName}" collection`)

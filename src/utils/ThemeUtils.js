@@ -1,9 +1,10 @@
-import { dirname, join } from 'path'
+import { join } from 'path'
 import { env } from 'node:process'
 import Components from '../config/Components.js'
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 import FileAccessError from '../errors/FileAccessError.js'
+import NodeUtils from './NodeUtils.js'
 
 class ThemeUtils {
   /**
@@ -13,7 +14,7 @@ class ThemeUtils {
    */
   static async findCollectionPackageRootFolder (collectionName) {
     const childRepoPath = join(
-      dirname(env.npm_package_json),
+      NodeUtils.getPackageRootFolder(),
       'node_modules',
       Components.DEFAULT_PACKAGE_SCOPE,
       collectionName
