@@ -117,7 +117,7 @@ class CLISessionFactory {
     }
 
     if (!targetComponent) {
-      throw new Error(`Please specify a ${commandOption} name. ie: yarn archie ${command} ${commandOption} some-smart-${commandOption}-name`)
+      throw new Error(`Please specify a ${commandOption} name. ie: npx archie ${command} ${commandOption} some-smart-${commandOption}-name`)
     }
 
     if (watchFlag && !CLIFlags.WATCH_FLAG_COMMANDS.includes(command)) {

@@ -1,5 +1,4 @@
 // Node JS Internal imports
-import { env } from 'node:process'
 import path from 'path'
 
 // External Node JS Modules
@@ -17,6 +16,7 @@ import FileUtils from '../utils/FileUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 import logger from '../utils/Logger.js'
 import Components from '../config/Components.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
 class SectionFactory {
 
@@ -35,9 +35,9 @@ class SectionFactory {
       section.rootFolder = path.join(collectionRootFolder, Components.COLLECTION_SECTIONS_FOLDER, section.name)
     } else if (NodeConfig.isCollection()) {
       section.rootFolder =
-        path.join(path.dirname(env.npm_package_json), Components.COLLECTION_SECTIONS_FOLDER, section.name)
+        path.join(NodeUtils.getPackageRootFolder(), Components.COLLECTION_SECTIONS_FOLDER, section.name)
     } else if (NodeConfig.isSection()) {
-      section.rootFolder = path.dirname(env.npm_package_json)
+      section.rootFolder = NodeUtils.getPackageRootFolder()
     }
 
     // Validation: Make sure that the root folder is readable

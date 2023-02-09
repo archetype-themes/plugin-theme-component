@@ -4,25 +4,9 @@ Archie Theme is any standard Shopify Theme is a component type used within Archi
 Archie enhances Shopify Themes by
 enabling installation of one or more Archie Collections.
 
-## Prerequisites
-
-Please make sure you have followed the [Setup Guide](Setup.md)
-
 ## Configuring your theme to use Archie
 
 Using Archie allows you to easily install an "Archie Collection" within your Theme.
-
-### Yarn Configuration
-
-We will start by configuring a recent version of yarn as a package manager
-
-```shell
-# Set yarn to its latest stable version
-yarn set version stable
-
-# Configure its nodeLinker param to be npm compatible
-yarn config set nodeLinker node-modules
-```
 
 ### Adding a Collection
 
@@ -31,13 +15,20 @@ Collection's code within your theme files.
 
 ```shell
 # Add Archie
-yarn add @archetype-themes/archie@archetype-themes/archie --dev
+cd ~/projects/[theme-folder]
+npm install archetype-themes/archie --save-dev
 
 # Add a finalized collection from GitHub
-yarn add @archetype-themes/[my-awesome-collection]@archetype-themes/[my-awesome-collection] --dev
+cd ~/projects/[theme-folder]
+npm install archetype-themes/[my-awesome-collection] --save-dev
 
-# Add your work-in-progress local collection from a local folder (relative or absolute path accepted)
-yarn add @archetype-themes/[my-awesome-collection]@portal:[path/to/my-awesome-collection] --dev
+# ALTERNATIVELY: Add your work-in-progress local collection from a local folder
+cd ~/projects/[collection-folder]
+npm link
+
+cd ~/projects/[theme-folder]
+npm link [collection-namespace]/[collection-name]
+
 ```
 
 ### Node Package Configuration
@@ -46,6 +37,7 @@ Next, you will need to edit your package.json to add the archie configuration el
 
 * Make sure you indicate your componentType as a "theme"
 * Optionally include a list of sections from your collection for a partial install
+* Optionally create shortcuts to archie commands in the scripts section
 
 ```json
 {
@@ -56,6 +48,10 @@ Next, you will need to edit your package.json to add the archie configuration el
       "section-two",
       "section-four"
     ]
+  },
+  "scripts": {
+    "ai": "archie install",
+    "aw": "archie install --watch"
   }
 }
 ```
@@ -63,10 +59,15 @@ Next, you will need to edit your package.json to add the archie configuration el
 ### Install your collection
 
 ```shell
-archie install [my-awesome-collection]
+# If you created a shortcut script, use npm run
+npm run ai
+# If you want to use archie manually, use npx
+npx archie install
 
-# Using the watch flag to refresh the collection build on file change and install it again in your theme.
-archie install [my-awesome-collection] --watch
+# If you created a shortcut script, use npm run
+npm run aw
+# If you want to use archie manually, use npx
+npx archie install --watch
 ```
 
 This command will build a fresh brew of your collection and install it with your Theme.

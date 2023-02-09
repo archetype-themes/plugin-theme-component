@@ -60,9 +60,9 @@ rest.
 
 **Good practice:**
 
-- Include JavaScript librairies as yarn dependencies for your section.
-- If multiple Sections share some internal JS code, put that code in a Node Module in a distinct workspace or a separate
-- GitHub repo and include it with yarn with `yarn add some-shared-js-module@archetype-themes/some-shared-js-module`.
+- Include JavaScript librairies as npm dependencies for your section.
+- If multiple Sections share some internal JS code, put that code in a Node Module in the **"shared"** workspace or a
+  separate GitHub repo and include it with npm with `npm install archetype-themes/some-shared-js-module`.
 
 #### Styles
 
@@ -105,19 +105,19 @@ in another section, feel free to keep it in the appropriate snippets folder for 
 Building a section from its root folder is pretty simple with Archie, just run
 
 ```shell
-archie build section
+npx archie build section
 
 # Use the watch flag to refresh build on file change
-archie build section --watch
+npx archie build section --watch
 ```
 
 If you are one level up, that is, inside the parent Collection folder, you need to specify the section's name.
 
 ```shell
-archie build section [some-smart-section-name]
+npx archie build section [some-smart-section-name]
 
 # Use the watch flag to refresh build on file change
-archie build section [some-smart-section-name] -w
+npx archie build section [some-smart-section-name] -w
 ```
 
 **Watch Flag**

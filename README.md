@@ -1,13 +1,12 @@
 # Archie
 
 Archie is Archetype's CLI (Command Line Interface). Archie is designed to segment and structure code in a way to help
-Shopify Theme development. Shared Collections of Sections can be easily integrated in ahy Shopify Theme. This reduces
-code duplication, therefore allowing for theme maintenance.
+Shopify Theme development. Archie helps manage Collections of Sections that easily be integrated with any Shopify Theme.
+This reduces code duplication and eases the burden of theme maintenance.
 
 ## Prerequisites
 
-Archie was designed to be used in conjunction with recent yarn versions, version 3.3 at the time of this writing. Its
-behaviour with npm and npx commands is untested and is not recommended at the time.
+NodeJS needs to be installed, please follow the setup guide if needed.
 
 - [Setup Guide](docs/Setup.md)
 
@@ -36,10 +35,10 @@ This is a shortcut command to install Archie, but contextual use of this is prov
 
 ```shell
 # Defaults to the latest version
-yarn add @archetype-themes/archie@archetype-themes/archie --dev
+npm install @archetype-themes/archie@archetype-themes/archie --save-dev
 
 # Install a specific version (use a tag, a commit, or a head)
-yarn add @archetype-themes/archie@archetype-themes/archie#1.0.1 --dev
+npm install @archetype-themes/archie@archetype-themes/archie#1.0.1 --save-dev
 ```
 
 ## Archie Commands
@@ -81,17 +80,16 @@ level. To use a different log level, use the following flags when running the bu
 
 ```shell
 # Show Error, Info and Debug messages
-yarn archie build section --verbose
+npx archie build section --verbose
 ```
 
 ```shell
 # Show only Error messages
-yarn build-section --quiet
+npx build-section --quiet
 ```
 
-## Limitations Being Worked On
+## Current Limitations
 
-* Stylesheets with a shared core are not handled at the moment.
 * No Stylesheet Merge or optimisation is being performed.
 * Installing multiple collections in a theme is not handled at the moment.
 

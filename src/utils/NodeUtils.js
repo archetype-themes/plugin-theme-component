@@ -1,8 +1,11 @@
+// NodeJS imports
 import { argv, env, exit } from 'node:process'
+import { dirname } from 'path'
+// External librairies imports
+import merge from 'deepmerge'
+// Archie imports
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
-import { dirname } from 'path'
-import merge from 'deepmerge'
 
 class NodeUtils {
   /**
@@ -28,7 +31,7 @@ class NodeUtils {
    */
   static async getPackageJsonData () {
     if (!env.npm_package_json) {
-      throw new Error(`Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of yarn.`)
+      throw new Error(`Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.`)
     }
 
     return JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
@@ -43,10 +46,22 @@ class NodeUtils {
   }
 
   /**
+   * Get Package Root Folder
+   * @return {string}
+   */
+  static getPackageRootFolder () {
+    if (!env.npm_package_json) {
+      throw new Error(
+        'Environment variable npm_package_json is not set. Please make sure you are executing Archie from within a Node Package folder.')
+    }
+    return dirname(env.npm_package_json)
+  }
+
+  /**
    * Shortcut to a method to get root folder username
    * @returns {string}
    */
-  static getRootFolderName () {
+  static getArchieRootFolderName () {
     return dirname(dirname(import.meta.url)).substring(7)
   }
 

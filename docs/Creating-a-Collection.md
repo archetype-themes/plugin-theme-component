@@ -14,56 +14,75 @@ Please make sure you have followed the [Setup Guide](Setup.md)
 We will start by creating a NodeJS Package.
 
 ```shell
-# Save your collection name
+# Save your collection name to a variable
 collection="my-awesome-collection"
 
 # Create and enter its folder
 mkdir $collection && cd $collection
 
-# Create the node package and configure its nodeLinker param to be npm compatible
-yarn init -2
-yarn config set nodeLinker node-modules
+# Initialize the node package
+npm init -y --scope=@archetype-themes
+```
+
+### Installing Archie
+
+Now, let's set setup Archie
+
+**Prerequisite:** Archie is private package fetched through GitHub. Therefore, authentication to GitHub's
+@archetype-themes namespace is required.
+
+```shell
+# Install it first as a dev dependency to use it with your Collection.
+npm install archetype-themes/archie --save-dev
+# Install it as a per dependency as well. Theme owners will need archie to install your Collection
+npm install archetype-themes/archie --save-peer
 ```
 
 ### Node Package Configuration
 
-Next, you will need to edit your package.json.
+Next, you will need to edit your package.json in order to add/replace the following sections.
 
 ```json
 {
-  "name": "my-awesome-collection",
-  "packageManager": "yarn@3.2.4",
   "archie": {
-    "componentType": "collection"
+    "componentType": "collection",
+    "gridSize": 6
+  },
+  "scripts": {
+    "build": "archie build",
+    "watch": "archie build --watch"
   },
   "workspaces": [
-    "sections/*",
-    "snippets/*"
+    "./sections/*",
+    "./shared/*",
+    "./snippets/*"
   ]
 }
 ```
 
-- Adding the **archie** group with the **"collection"** component type identifies your package as a collection monorepo
-  for Archie.
-- Adding the **workspaces** group indicates that this is a monorepo with multiples child modules that can be found in
-  the **"sections"** or **"snippets"** sub-folders.
+- Add the **archie** group with
+    - The **"collection"** component type helps archie identify your package as a collection monorepo.
+    - The **"gridSize"** is for postCSS. It is a default value that Themes can override.
+- Add or change the **scripts**  groups
+    - The **"build"** script starts a Collection build with Archie CLI. This is a shortcut to the
+      full `npx archie build` command.
+    - The **"watch"** script starts a Collection build with Archie CLI and watches for file changes within the
+      Collection's source folders. It is a shortcut to the full `npx archie build --watch` command.
+    - Adding the **workspaces** group indicates that this is a monorepo with multiples child repositories split in three
+      groups.
+        - The **"sections"** is the main workspace where you can create and edit as many Sections as you need. Archie's
+          create command can help you generate files for a new Section.
+        - The **"shared"** workspace is intended for styles librairies, internal javascript libraires or other assets
+          that are shared by multiple sections.
+        - The **"snippets"** workspace can contain an unlimited amount of snippets for use in any of the sections.
+          Archie can help you create these Snippets.
 
-### Installing Archie
-
-Now, let's set Archie as a dependency.
+Once installed and configured, you can always access Archie manually in the following way:
 
 ```shell
-yarn add @archetype-themes/archie@archetype-themes/archie --dev --peer
+npx archie
 ```
 
-- It is a dev dependency and a peer dev dependency to any Theme installing your collection.
-- It is private package fetched through GitHub. Therefore, authentication to @archetype-themes is required.
-
-Once installed, the following command will be available:
-
-```shell
-yarn archie
-```
 
 ## Using your Collection
 
