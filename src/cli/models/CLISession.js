@@ -1,4 +1,7 @@
 class CLISession {
+  /** @type {boolean}  **/
+  static #backupMode = false
+
   /** @type {string}  **/
   static #command
 
@@ -6,10 +9,26 @@ class CLISession {
   static #commandOption
 
   /** @type {string|Object}  **/
-  static #targetComponent
+  static #targetComponentName
 
   /** @type {boolean}  **/
   static #watchMode = false
+
+  /**
+   * Get Backup Mode
+   * @return {boolean}
+   */
+  static get backupMode () {
+    return this.#backupMode
+  }
+
+  /**
+   * Set Backup Mode
+   * @param {boolean} value
+   */
+  static set backupMode (value) {
+    this.#backupMode = value
+  }
 
   /**
    * Get Command Name
@@ -48,7 +67,7 @@ class CLISession {
    * @return {string|Object}
    */
   static get targetComponentName () {
-    return this.#targetComponent
+    return this.#targetComponentName
   }
 
   /**
@@ -56,7 +75,7 @@ class CLISession {
    * @param {string|Object} value
    */
   static set targetComponentName (value) {
-    this.#targetComponent = value
+    this.#targetComponentName = value
   }
 
   /**

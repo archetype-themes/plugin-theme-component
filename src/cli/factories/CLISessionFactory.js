@@ -68,10 +68,14 @@ class CLISessionFactory {
     // Search for the Watch Mode flag
     CLISession.watchMode = CLIFlags.WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
 
+    // Search for the Backup Mode flag
+    CLISession.backupMode = CLIFlags.BACKUP_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
+
     logger.debug({
       'Archie CLI Computed Arguments': {
         'command': CLISession.command,
         'command option': CLISession.commandOption,
+        'command backup mode': CLISession.backupMode,
         'command watch mode': CLISession.watchMode,
         'command target component(s)': CLISession.targetComponentName
       }
