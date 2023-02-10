@@ -14,8 +14,6 @@ import StylesUtils from '../utils/StylesUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 
 class CollectionBuilder {
-  static backupFiles
-
   /**
    * Build Collection
    * @param {module:models/Collection} collection
