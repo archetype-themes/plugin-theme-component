@@ -10,6 +10,9 @@
   "scripts": {
     "test": "exit 0"
   },
+  "publishConfig": {
+    "@archetype-themes:registry": "https://npm.pkg.github.com"
+  },
   "dependencies": {
     "@csstools/postcss-sass": "^5.0.1",
     "chokidar": "^3.5.3",
