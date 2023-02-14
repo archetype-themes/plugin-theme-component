@@ -5,8 +5,14 @@
   "main": "src/bin/archie.js",
   "name": "@archetype-themes/archie",
   "type": "module",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "bin": "src/bin/archie.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "publishConfig": {
+    "@archetype-themes:registry": "https://npm.pkg.github.com"
+  },
   "dependencies": {
     "@csstools/postcss-sass": "^5.0.1",
     "chokidar": "^3.5.3",
