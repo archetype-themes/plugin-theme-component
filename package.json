@@ -7,6 +7,9 @@
   "type": "module",
   "version": "1.0.4",
   "bin": "src/bin/archie.js",
+  "scripts": {
+    "test": "exit 0"
+  },
   "dependencies": {
     "@csstools/postcss-sass": "^5.0.1",
     "chokidar": "^3.5.3",
