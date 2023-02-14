@@ -58,25 +58,43 @@ Next, you will need to edit your package.json to add the archie configuration el
 
 ### Install your collection
 
+The **"install"** command run a fresh build of your collection and installs it within your Theme.
+
 ```shell
-# If you created a shortcut script, use npm run
-npm run ai
-# If you want to use archie manually, use npx
+# If you want to use archie manually, you should use "npx"
 npx archie install
 
-# If you created a shortcut script, use npm run
-npm run aw
-# If you want to use archie manually, use npx
-npx archie install --watch
+# If you created a shortcut script, you should use "npm run"
+npm run ai
+
 ```
 
-This command will build a fresh brew of your collection and install it with your Theme.
-Archie will create a backup of all files modified.
+**Backup Flag**
+
+Using the watch flag, `--backup` or`-b`, will create backups prior to modifying files. Backup files have timestamps in
+their name to make them unique.
+
+To exclude backup files from Git, use the following filter in your .gitignore file.
+
+````gitignore
+# Archie backup files *.yyyy-mm-dd_hh-mm-ss.*
+*.[1-9][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]_[1-2][0-9]-[0-6][0-9]-[0-6][0-9].*
+````
 
 **Watch Flag**
 
 Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor the collection's source folders
 and refresh your install on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
+
+```shell
+# If you want to use archie manually, you should use "npx"
+npx archie install --backup
+npx archie install --watch
+npx archie install --watch --backup
+
+# If you created a shortcut script, you should "npm run"
+npm run aw
+```
 
 ---
 
