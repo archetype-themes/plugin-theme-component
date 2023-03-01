@@ -21,8 +21,7 @@ Themes.
 
 ## Prerequisites
 
-Archie was designed to be used in conjunction with recent yarn versions, version 3.3 at the time of this writing. Its
-behaviour with npm and npx commands is untested and is not recommended at the time.
+NodeJS needs to be installed, please follow the setup guide if needed.
 
 - [Setup Guide](docs/Setup.md)
 
@@ -59,10 +58,10 @@ This is a shortcut command to install Archie, but contextual use of this is prov
 
 ```shell
 # Defaults to the latest version
-yarn add @archetype-themes/archie@archetype-themes/archie --dev
+npm install @archetype-themes/archie@archetype-themes/archie --save-dev
 
 # Install a specific version (use a tag, a commit, or a head)
-yarn add @archetype-themes/archie@archetype-themes/archie#1.0.1 --dev
+npm install @archetype-themes/archie@archetype-themes/archie#1.0.1 --save-dev
 ```
 
 ## Archie Commands
@@ -104,15 +103,15 @@ level. To use a different log level, use the following flags when running the bu
 
 ```shell
 # Show Error, Info and Debug messages
-yarn archie build section --verbose
+npx archie build section --verbose
 ```
 
 ```shell
 # Show only Error messages
-yarn build-section --quiet
+npx build-section --quiet
 ```
 
-## Limitations Being Worked On
+## Current Limitations
 
 * [Issue 20](https://github.com/archetype-themes/archie/issues/20): Installing a Collection to a Theme, requires that
   the Theme be in a hardcoded "src" sub-folder.

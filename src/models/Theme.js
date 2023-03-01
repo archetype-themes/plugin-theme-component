@@ -1,20 +1,5 @@
 class Theme {
   /** @type {string} **/
-  static COMPONENT_NAME = 'theme'
-
-  /** @type {string} **/
-  static ASSETS_SUB_FOLDER = 'assets'
-
-  /** @type {string} **/
-  static LOCALES_SUB_FOLDER = 'locales'
-
-  /** @type {string} **/
-  static SECTIONS_SUB_FOLDER = 'sections'
-
-  /** @type {string} **/
-  static SNIPPETS_SUB_FOLDER = 'snippets'
-
-  /** @type {string} **/
   #assetsFolder
 
   /** @type {string} **/

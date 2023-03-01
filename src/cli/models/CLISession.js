@@ -1,14 +1,6 @@
-import BuildCommand from '../commands/BuildCommand.js'
-import CreateCommand from '../commands/CreateCommand.js'
-import InstallCommand from '../commands/InstallCommand.js'
-import Collection from '../../models/Collection.js'
-import Section from '../../models/Section.js'
-import Snippet from '../../models/Snippet.js'
-import Theme from '../../models/Theme.js'
-
-class ArchieCLI {
-  static AVAILABLE_COMMANDS = [BuildCommand.NAME, CreateCommand.NAME, InstallCommand.NAME]
-  static AVAILABLE_COMMAND_OPTIONS = [Theme.COMPONENT_NAME, Collection.COMPONENT_NAME, Section.COMPONENT_NAME, Snippet.COMPONENT_NAME]
+class CLISession {
+  /** @type {boolean}  **/
+  static #backupMode = false
 
   /** @type {string}  **/
   static #command
@@ -17,10 +9,26 @@ class ArchieCLI {
   static #commandOption
 
   /** @type {string|Object}  **/
-  static #targetComponent
+  static #targetComponentName
 
   /** @type {boolean}  **/
   static #watchMode = false
+
+  /**
+   * Get Backup Mode
+   * @return {boolean}
+   */
+  static get backupMode () {
+    return this.#backupMode
+  }
+
+  /**
+   * Set Backup Mode
+   * @param {boolean} value
+   */
+  static set backupMode (value) {
+    this.#backupMode = value
+  }
 
   /**
    * Get Command Name
@@ -59,7 +67,7 @@ class ArchieCLI {
    * @return {string|Object}
    */
   static get targetComponentName () {
-    return this.#targetComponent
+    return this.#targetComponentName
   }
 
   /**
@@ -67,7 +75,7 @@ class ArchieCLI {
    * @param {string|Object} value
    */
   static set targetComponentName (value) {
-    this.#targetComponent = value
+    this.#targetComponentName = value
   }
 
   /**
@@ -87,4 +95,4 @@ class ArchieCLI {
   }
 }
 
-export default ArchieCLI
+export default CLISession

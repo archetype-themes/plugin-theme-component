@@ -347,19 +347,19 @@ include the necessary files with a relative path.
 Building a section from its root folder is pretty simple with Archie, just run
 
 ```shell
-archie build section
+npx archie build section
 
 # Use the watch flag to refresh build on file change
-archie build section --watch
+npx archie build section --watch
 ```
 
 If you are one level up, that is, inside the parent Collection folder, you need to specify the section's name.
 
 ```shell
-archie build section [some-smart-section-name]
+npx archie build section [some-smart-section-name]
 
 # Use the watch flag to refresh build on file change
-archie build section [some-smart-section-name] -w
+npx archie build section [some-smart-section-name] -w
 ```
 
 **Watch Flag**

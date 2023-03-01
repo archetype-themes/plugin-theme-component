@@ -1,13 +1,13 @@
+// NodeJS imports
 import { argv, env, exit } from 'node:process'
+import { dirname } from 'path'
+// External librairies imports
+import merge from 'deepmerge'
+// Archie imports
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
-import { dirname } from 'path'
-import merge from 'deepmerge'
 
 class NodeUtils {
-
-  static #packageJson
-
   /**
    * Get Command Line Args
    * @return {string[]}
@@ -29,15 +29,12 @@ class NodeUtils {
    * Get Package JSON Content as an Object
    * @return {Promise<Object>}
    */
-  static async getPackageJson () {
+  static async getPackageJsonData () {
     if (!env.npm_package_json) {
-      throw new Error(`Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of yarn.`)
+      throw new Error(`Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.`)
     }
 
-    if (!this.#packageJson) {
-      this.#packageJson = JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
-    }
-    return this.#packageJson
+    return JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
   }
 
   /**
@@ -49,24 +46,22 @@ class NodeUtils {
   }
 
   /**
-   * Get Readable Timestamp
-   * @param {Date} [date]
+   * Get Package Root Folder
    * @return {string}
    */
-  static getReadableTimestamp (date) {
-    if (!date) {
-      date = new Date()
+  static getPackageRootFolder () {
+    if (!env.npm_package_json) {
+      throw new Error(
+        'Environment variable npm_package_json is not set. Please make sure you are executing Archie from within a Node Package folder.')
     }
-    const dateString = date.toISOString()
-
-    return dateString.substring(0, 19).replace('T', '_').replaceAll(':', '-')
+    return dirname(env.npm_package_json)
   }
 
   /**
    * Shortcut to a method to get root folder username
    * @returns {string}
    */
-  static getRootFolderName () {
+  static getArchieRootFolderName () {
     return dirname(dirname(import.meta.url)).substring(7)
   }
 

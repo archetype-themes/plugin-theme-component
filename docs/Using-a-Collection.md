@@ -12,7 +12,7 @@ generate a skeleton for you, saving you from creating some boilerplate code.
 ### Creating an Archie Section within your Collection
 
 ```shell
-archie create section [some-smart-section-name]
+npx archie create section [some-smart-section-name]
 ```
 
 Template files will be populated under the `sections/some-smart-section-name` sub-folder.
@@ -20,7 +20,7 @@ Template files will be populated under the `sections/some-smart-section-name` su
 #### Creating an Archie Snippet within your Collection
 
 ```shell
-archie create snippet [some-useful-snippet-name]
+npx archie create snippet [some-useful-snippet-name]
 ```
 
 Template files will be populated under the `snippets/some-useful-snippet-name` sub-folder.
@@ -30,10 +30,10 @@ For both Sections and Snippets, please refer to the [Sections Guide](Sections.md
 ## Building your collection
 
 ```shell
-archie build collection
+npx archie build collection
 
 # Use the watch flag to refresh build on file change
-archie build collection --watch
+npx archie build collection --watch
 ```
 
 This will package your collection's sections and snippets together inside the **build** sub-folder.

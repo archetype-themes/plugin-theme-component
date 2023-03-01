@@ -3,7 +3,6 @@ import { cwd } from 'node:process'
 import path from 'path'
 
 import logger from './Logger.js'
-import NodeUtils from './NodeUtils.js'
 
 class FileUtils {
   /** @property {string[]} **/
@@ -20,7 +19,7 @@ class FileUtils {
     files = (typeof files === 'string' || files instanceof String) ? [files] : files
 
     return Promise.all(files.map((file) => {
-      copyFile(file, `${file.replace(/\.[^/.]+$/, '')}.${NodeUtils.getReadableTimestamp()}${path.extname(file)}`)
+      copyFile(file, `${file.replace(/\.[^/.]+$/, '')}.${this.getReadableTimestamp()}${path.extname(file)}`)
     }))
   }
 
@@ -170,6 +169,20 @@ class FileUtils {
   static async getFileContents (file) {
     logger.debug(`Reading from disk: ${file}`)
     return readFile(file, this.#FILE_ENCODING_OPTION)
+  }
+
+  /**
+   * Get Readable Timestamp
+   * @param {Date} [date]
+   * @return {string}
+   */
+  static getReadableTimestamp (date) {
+    if (!date) {
+      date = new Date()
+    }
+    const dateString = date.toISOString()
+
+    return dateString.substring(0, 19).replace('T', '_').replaceAll(':', '-')
   }
 
   /**
