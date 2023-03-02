@@ -2,10 +2,6 @@
 
 All contributions are welcome. To Contribute, simply create a branch, commit your code, and create a pull request.
 
-## Prerequisites
-
-Please make sure you have followed the [Setup Guide](Setup.md)
-
 ## Install Archie
 
 First, checkout the code from [Archie repository](https://github.com/archetype-themes/archie) and make it available
@@ -65,6 +61,102 @@ the cycle plannings. Tickets should list upcoming features and backlog.
 
 Assign yourself a ticket and reach out to us if you have questions. Create a branch for your development. Create a Pull
 Request for your code to be merged into the main branch.
+
+## Code Structure
+
+Please follow the guidelines listed below.
+
+### General Structure
+
+```shell
+.
+├── README.md
+├── package.json
+└── src
+    ├── bin
+    │   ├── archie.js   [ archie entrypoint ]
+    ├── builders        [ component builders ]
+    ├── cli             
+    │   └── commands    [ CLI commands ]
+    │   └── flags        [ CLI command flags ]
+    │   └── models      [ CLI models ]
+    ├── errors          [ custom errors ]
+    ├── factory         [ component factories ]
+    ├── generators      [ component generators ]
+    ├── installers      [ component installers ]
+    ├── models          [ component models ]
+    │   └── abstract    [ abstract component models ]
+    ├── processors      [ external processors ]
+    │   └── postcss     [ external postcss processor ]
+    └── utils           [ component utilities ]
+ 
+```
+
+### Phase 1: Bin & CLI Folder
+
+CLI stands for Command Line Interface
+
+bin/archie.js is the entrypoint Archie's CLI processing
+
+The CLI Sub-folder should only contain files pertaining to Shell execution and management. It should analyze command
+input
+and call appropriate Factories, Builders and Installers when necessary.
+
+### Phase 2: Factory Folder
+
+Factories create Component instances. When creating a Component instance, a Factory should load all necessary data from
+disk expecting a "transformation" for an upcoming Build process.
+
+Factories should load items recursively. If you create a Section using the SectionFactory, it should create instances
+and load data from its children Snippet Model using the SnippetFactory through a recursive check.
+
+- Load all necessary data from disk for upcoming merge and/or transformation done during the Builder step.
+- **SHOULD NOT** transform any data.
+- **SHOULD NOT** install anything inside Themes or modify Themes in any way.
+
+### Phase 3: Builders Folder
+
+Builders are there to assemble and process file contents in order to deliver a final product.
+*This does not relate in any way to the Builder Design Pattern
+
+- Run after Factories have completed Component Model creation.
+- Transform data as necessary using external processors, such as esbuild, sass, post-css
+- Transform and merge data using internal processors, such as liquid code and locales
+- Copy files that do not need transformation to the build folder.
+- **SHOULD NOT** load data from disk that needs transformation.
+- **SHOULD NOT** install anything inside Themes or modify Themes in any way.
+
+### Phase 4: Installers Folder
+
+Installers are meant to install Collection Builds in a Shopify Theme.
+
+- Run after Factories and Builders have completed their tasks.
+- Create backup copies of existing files before modifying or overwriting them.
+- Copy necessary final Build files to a Theme.
+- Perform file merge with Theme files when necessary (i.e.: Schema-Locale files)
+- **SHOULD NOT** load data from disk that needs transformation.
+- **SHOULD NOT** transform any data.
+
+### Errors
+
+Contains custom Internal Errors used within Archie
+
+### Generators
+
+CLI **create** commands will invoke Generators to help create content within a Collection (Sections and Snippets).
+Create commands execution will not run Phase 2,3 and 4
+
+### Models
+
+Data Object models used throughout Phase 2,3 and 4.
+
+### Processors
+
+Processors transform data and should only be called during Phase 3, through Builder methods.
+
+### Utils
+
+Various Utility functions organized inside JavaScript Objects as static methods.
 
 ## Fixing Bugs
 

@@ -1,8 +1,8 @@
-name: Node.js Package
+name: Publish NPM Package On New GitHub Release
 
 on:
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   build:

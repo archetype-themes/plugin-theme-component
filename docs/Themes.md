@@ -16,11 +16,11 @@ Collection's code within your theme files.
 ```shell
 # Add Archie
 cd ~/projects/[theme-folder]
-npm install archetype-themes/archie --save-dev
+npm install @archetype-themes/archie --save-dev
 
 # Add a finalized collection from GitHub
 cd ~/projects/[theme-folder]
-npm install archetype-themes/[my-awesome-collection] --save-dev
+npm install @archetype-themes/[my-awesome-collection] --save-dev
 
 # ALTERNATIVELY: Add your work-in-progress local collection from a local folder
 cd ~/projects/[collection-folder]
