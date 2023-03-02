@@ -8,18 +8,18 @@
   "version": "1.0.5",
   "bin": "src/bin/archie.js",
   "scripts": {
-    "test": "exit 0"
+    "test": "standard && exit 0"
   },
   "publishConfig": {
     "@archetype-themes:registry": "https://npm.pkg.github.com"
   },
+  "repository": "https://github.com/archetype-themes/archie.git",
   "dependencies": {
     "@csstools/postcss-sass": "^5.0.1",
     "chokidar": "^3.5.3",
     "cssnano": "^5.1.14",
     "deepmerge": "^4.2.2",
     "esbuild": "^0.17.6",
-    "esm": "^3.2.25",
     "lodash-es": "^4.17.21",
     "pino": "^8.10.0",
     "pino-pretty": "^9.1.1",
@@ -36,9 +36,9 @@
   },
   "devDependencies": {
     "dpdm": "^3.12.0",
-    "standard": "^17.0.0"
+    "standard": "*"
   },
   "engines": {
-    "node": ">=11.0.0"
+    "node": ">=18.14.2"
   }
 }
