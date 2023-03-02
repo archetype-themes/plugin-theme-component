@@ -1,6 +1,5 @@
 // NodeJS internal imports
 import { exec } from 'child_process'
-import { env } from 'node:process'
 import { access, constants } from 'node:fs/promises'
 import path from 'path'
 import util from 'util'
@@ -13,8 +12,8 @@ import ComponentUtils from '../utils/ComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import Collection from '../models/Collection.js'
 import FileAccessError from '../errors/FileAccessError.js'
+import Components from '../config/Components.js'
 
 /**
  * This callback is displayed as part of the Requester class.
@@ -37,7 +36,11 @@ class SectionGenerator {
 
     // Initialize sections
     section.name = sectionName
-    section.rootFolder = path.join(env.PROJECT_CWD, Collection.SECTIONS_SUB_FOLDER, section.name)
+    section.rootFolder = path.join(
+      NodeUtils.getPackageRootFolder(),
+      Components.COLLECTION_SECTIONS_FOLDER,
+      section.name
+    )
     section.files = new SectionFiles()
     section.files.packageJson = path.join(section.rootFolder, 'package.json')
 
@@ -63,10 +66,9 @@ class SectionGenerator {
     await ComponentUtils.createFolderStructure(section)
 
     // Initialize the repository
-    await execPromise('yarn init', { cwd: section.rootFolder })
-    await execPromise('yarn config set nodeLinker node-modules', { cwd: section.rootFolder })
-    await execPromise('yarn add @archetype-themes/archie@archetype-themes/archie --dev', { cwd: section.rootFolder })
-    await execPromise('yarn add standard --dev', { cwd: section.rootFolder })
+    await execPromise('npm init -y --scope=@archetype-themes', { cwd: section.rootFolder })
+    await execPromise('npm install archetype-themes/archie --save-dev', { cwd: section.rootFolder })
+    await execPromise('npm install standard --save-dev', { cwd: section.rootFolder })
 
     // Load package.json and add to it.
     const packageJsonDefaults = this.getPackageJsonDefaults(collectionName, section.name)
@@ -75,7 +77,7 @@ class SectionGenerator {
 
     const mergedPackageJson = merge(packageJson, packageJsonDefaults)
 
-    promises.push(FileUtils.writeFile(section.files.packageJson, JSON.stringify(mergedPackageJson)))
+    promises.push(FileUtils.writeFile(section.files.packageJson, JSON.stringify(mergedPackageJson, null, 2)))
 
     const defaultFiles = this.getDefaultFiles(collectionName, section.name)
 
@@ -84,8 +86,8 @@ class SectionGenerator {
       promises.push(FileUtils.writeFile(`${section.rootFolder}${filename}`, defaultFiles[filename]))
     }
 
-    // Run yarn install; this must be done or yarn will send error messages relating to monorepo integrity
-    promises.push(execPromise('yarn install', { cwd: section.rootFolder }))
+    // Run npm install; this must be done or npm will send error messages relating to monorepo integrity
+    promises.push(execPromise('npm install', { cwd: section.rootFolder }))
 
     return Promise.all(promises)
   }

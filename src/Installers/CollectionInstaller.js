@@ -17,9 +17,10 @@ class CollectionInstaller {
    * Install Collection Within a Theme
    * @param {Theme} theme
    * @param {module:models/Collection} collection
+   * @param {boolean} backupMode
    * @return {Promise<void>}
    */
-  static async install (theme, collection) {
+  static async install (theme, collection, backupMode) {
     logger.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
     console.time(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
 
@@ -74,7 +75,9 @@ class CollectionInstaller {
           const collectionSchemaLocale = JSON.parse(await FileUtils.getFileContents(sourceFile))
           const mergedSchemaLocale = deepmerge(collectionSchemaLocale, themeSchemaLocale)
 
-          await FileUtils.backup(realTargetFile)
+          if (backupMode) {
+            await FileUtils.backup(realTargetFile)
+          }
           await FileUtils.writeFile(realTargetFile, JSON.stringify(mergedSchemaLocale, null, 2))
         }
       }
@@ -102,7 +105,9 @@ class CollectionInstaller {
       }
     }
 
-    await this.backupFiles(filesToCopy)
+    if (backupMode) {
+      await this.backupFiles(filesToCopy)
+    }
 
     logger.debug(`Copying ${Object.keys(filesToCopy).length} files`)
     await FileUtils.copy(filesToCopy)
@@ -113,7 +118,7 @@ class CollectionInstaller {
       await this.injectAssetReferences(collection, theme, {
         'injectJavascript': injectJavascript,
         'injectStylesheet': injectStylesheet
-      })
+      }, backupMode)
     }
 
     logger.info(`${collection.name}: Install Complete`)
@@ -151,16 +156,19 @@ class CollectionInstaller {
    * @param {module:models/Collection} collection
    * @param {Theme} theme
    * @param {InjectionOptions} options
+   * @param {boolean} backupMode
    * @return {Promise<void>}
    */
-  static async injectAssetReferences (collection, theme, options) {
+  static async injectAssetReferences (collection, theme, options, backupMode) {
     const javascriptFileBasename = basename(collection.build.javascriptFile)
     const stylesheetBasename = basename(collection.build.stylesheet)
 
     let injections = []
 
     const themeLiquidFile = join(theme.rootFolder, 'layout', 'theme.liquid')
-    let themeLiquid = (await FileUtils.isReadable(themeLiquidFile))
+    let themeLiquid = (
+      await FileUtils.isReadable(themeLiquidFile)
+    )
       ? await FileUtils.getFileContents(themeLiquidFile)
       : ''
 
@@ -182,7 +190,7 @@ class CollectionInstaller {
 
     if (await FileUtils.isWritable(themeLiquidFile)) {
       if (injections.length > 0) {
-        await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
+        await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile, backupMode)
 
       }
     } else if (injections.length > 0) {
@@ -195,22 +203,31 @@ class CollectionInstaller {
    * @param {string[]} injections
    * @param {string} themeLiquid
    * @param {string} themeLiquidFile
+   * @param {boolean} backupMode
    * @return {Promise<void>}
    */
-  static async writeAssetReferencesToThemeLiquidFile (injections, themeLiquid, themeLiquidFile) {
-    const headTagClosureCount = (themeLiquid.match(/<\/head>/g) || []).length
+  static async writeAssetReferencesToThemeLiquidFile (injections, themeLiquid, themeLiquidFile, backupMode) {
+    const headTagClosureCount = (
+      themeLiquid.match(/<\/head>/g) || []
+    ).length
     if (headTagClosureCount === 1) {
       logger.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
       themeLiquid = themeLiquid.replace(
         '</head>',
-        `${injections.join('\n')}\n</head>`)
-      await FileUtils.backup(themeLiquidFile)
+        `${injections.join('\n')}\n</head>`
+      )
+      if (backupMode) {
+        await FileUtils.backup(themeLiquidFile)
+      }
       await FileUtils.writeFile(themeLiquidFile, themeLiquid)
 
     } else if (headTagClosureCount === 0) {
       this.injectionFailureWarning(`Html head tag closure not found in "theme.liquid".`, injections)
     } else {
-      this.injectionFailureWarning(`${headTagClosureCount} Html head tag closure found in "theme.liquid". It should only be present once.`, injections)
+      this.injectionFailureWarning(
+        `${headTagClosureCount} Html head tag closure found in "theme.liquid". It should only be present once.`,
+        injections
+      )
     }
 
   }

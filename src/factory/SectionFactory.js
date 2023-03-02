@@ -1,5 +1,4 @@
 // Node JS Internal imports
-import { env } from 'node:process'
 import path from 'path'
 
 // External Node JS Modules
@@ -9,14 +8,15 @@ import deepmerge from 'deepmerge'
 import FilesFactory from './FilesFactory.js'
 import RenderFactory from './RenderFactory.js'
 import SnippetFactory from './SnippetFactory.js'
-import ArchieNodeConfig from '../cli/models/ArchieNodeConfig.js'
+import NodeConfig from '../cli/models/NodeConfig.js'
 import FileAccessError from '../errors/FileAccessError.js'
-import Collection from '../models/Collection.js'
 import Section from '../models/Section.js'
 import SectionSchema from '../models/SectionSchema.js'
 import FileUtils from '../utils/FileUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 import logger from '../utils/Logger.js'
+import Components from '../config/Components.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
 class SectionFactory {
 
@@ -32,11 +32,12 @@ class SectionFactory {
 
     // Set root folder
     if (collectionRootFolder) {
-      section.rootFolder = path.join(collectionRootFolder, Collection.SECTIONS_SUB_FOLDER, section.name)
-    } else if (ArchieNodeConfig.isCollection()) {
-      section.rootFolder = path.join(path.dirname(env.npm_package_json), Collection.SECTIONS_SUB_FOLDER, section.name)
-    } else if (ArchieNodeConfig.isSection()) {
-      section.rootFolder = path.dirname(env.npm_package_json)
+      section.rootFolder = path.join(collectionRootFolder, Components.COLLECTION_SECTIONS_FOLDER, section.name)
+    } else if (NodeConfig.isCollection()) {
+      section.rootFolder =
+        path.join(NodeUtils.getPackageRootFolder(), Components.COLLECTION_SECTIONS_FOLDER, section.name)
+    } else if (NodeConfig.isSection()) {
+      section.rootFolder = NodeUtils.getPackageRootFolder()
     }
 
     // Validation: Make sure that the root folder is readable
@@ -87,7 +88,7 @@ class SectionFactory {
     section.renders = RenderFactory.fromLiquidCode(section.liquidCode)
 
     // Create Snippets Recursively
-    const snippetsPath = path.join(section.rootFolder, '../../', Collection.SNIPPETS_SUB_FOLDER)
+    const snippetsPath = path.join(section.rootFolder, '../../', Components.COLLECTION_SNIPPETS_FOLDER)
     section.renders = await SnippetFactory.fromRenders(section.renders, section.files.snippetFiles, snippetsPath)
 
     return section

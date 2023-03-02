@@ -1,39 +1,41 @@
 # Archie Collections - User's Guide
 
-An Archie Collection is a NodeJS Monorepo that regroups multiple Shopify Theme [Sections](Sections.md) and Snippets in
-the form of child repositories in their respective namespaces.
+An Archie Collection is a NodeJS Monorepo that regroups multiple Shopify
+Theme [Sections and Snippets](Sections-and-Snippets.md)  in the form of child repositories in their respective
+namespaces.
 
 ## Child Section and Snippet modules
 
-The main goal for having a collection is to populate it with sections and snippets. Child Sections and Snippets are
-stored in their respective workspace sub-folders. You can manually create a section, or you can use **archie** to
-generate a skeleton for you, saving you from creating some boilerplate code.
+The main goal for having a collection is to populate it with [Sections and Snippets](Sections-and-Snippets.md). Child
+[Sections and Snippets](Sections-and-Snippets.md) are stored in their respective workspace sub-folders. You can manually
+create a section, or you can use **archie** to generate a skeleton for you, saving you from creating some boilerplate
+code.
 
-### Creating an Archie Section within your Collection
-
-```shell
-archie create section [some-smart-section-name]
-```
-
-Template files will be populated under the `sections/some-smart-section-name` sub-folder.
-
-#### Creating an Archie Snippet within your Collection
+### Adding a new Section
 
 ```shell
-archie create snippet [some-useful-snippet-name]
+npx archie create section [some-smart-section-name]
 ```
 
-Template files will be populated under the `snippets/some-useful-snippet-name` sub-folder.
+Template files will be populated under the `sections/some-smart-section-name` folder.
 
-For both Sections and Snippets, please refer to the [Sections Guide](Sections.md) for more information
+### Adding a new Snippet
+
+```shell
+npx archie create snippet [some-useful-snippet-name]
+```
+
+Template files will be populated under the `snippets/some-useful-snippet-name` folder.
+
+Please refer to the [Sections and Snippets](Sections-and-Snippets.md) guide for further details.
 
 ## Building your collection
 
 ```shell
-archie build collection
+npx archie build collection
 
 # Use the watch flag to refresh build on file change
-archie build collection --watch
+npx archie build collection --watch
 ```
 
 This will package your collection's sections and snippets together inside the **build** sub-folder.
