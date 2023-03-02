@@ -2,10 +2,6 @@
 
 All contributions are welcome. To Contribute, simply create a branch, commit your code, and create a pull request.
 
-## Prerequisites
-
-Please make sure you have followed the [Setup Guide](Setup.md)
-
 ## Install Archie
 
 First, checkout the code from [Archie repository](https://github.com/archetype-themes/archie) and make it available
@@ -78,21 +74,21 @@ Please follow the guidelines listed below.
 ├── package.json
 └── src
     ├── bin
-    │   ├── archie.js   [archie entrypoint]
-    ├── builders        [component builders]
+    │   ├── archie.js   [ archie entrypoint ]
+    ├── builders        [ component builders ]
     ├── cli             
-    │   └── commands    [CLI commands]
-    │   └── flags       [CLI command flags]
-    │   └── models      [CLI models]
-    ├── errors          [custom errors]
-    ├── factory         [component factories]
-    ├── generators      [component generators]
-    ├── installers      [component installers]
-    ├── models          [component models]
-    │   └── abstract    [abstract component models]
-    ├── processors      [external processors]
-    │   └── postcss     [external postcss processor]
-    └── utils           [component utilities]
+    │   └── commands    [ CLI commands ]
+    │   └── flags        [ CLI command flags ]
+    │   └── models      [ CLI models ]
+    ├── errors          [ custom errors ]
+    ├── factory         [ component factories ]
+    ├── generators      [ component generators ]
+    ├── installers      [ component installers ]
+    ├── models          [ component models ]
+    │   └── abstract    [ abstract component models ]
+    ├── processors      [ external processors ]
+    │   └── postcss     [ external postcss processor ]
+    └── utils           [ component utilities ]
  
 ```
 

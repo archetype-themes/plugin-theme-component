@@ -14,7 +14,7 @@ Themes.
 - Say *"goodbye"* to duplicated code by sharing your Collection with as many Themes as you want
 - Configure your Theme to use all or a selection of Sections within a Collection
 - Fix your bug once; in the collection repository.
-  - Update the Collection dependency in your Themes repository.
+    - Update the Collection dependency in your Themes repository.
 - Javascript processing through esbuild will assemble everything in a single file.
 - Optionally use Sass preprocessor for your CSS
 - Use postCSS post-processing for your CSS to assemble everything in a single file.
@@ -25,32 +25,36 @@ NodeJS needs to be installed, please follow the setup guide if needed.
 
 - [Setup Guide](docs/Setup.md)
 
+You need to authenticate to GitHub Packages Repository before you can install Archie and Collections.
+
+- [GitHub Package Repository](https://github.com/archetype-themes/.github-private/blob/main/Github-Package-Repository.md)
+
 ## Archie Components
 
 Archie helps with multiple components: Collections, Sections & Snippets, and Themes.
 
 With Archie, you can easily create and maintain a Collection of Sections to share amongst your Themes. Collections are
-structured as a NodeJS Monorepo of child repositories consisting of Sections and Snippets in their respective
-workspaces.
+structured as a NodeJS Monorepo of child repositories consisting of Sections and Snippets and shared elements in their
+respective workspaces.
 
 ### Please read the following guides to help you on your journey
 
 #### Collection Guides
 
-- [Create your own Collection](docs/Creating-a-Collection.md)
-- [User's Guide](docs/Using-a-Collection.md)
+- [Create a Collection](docs/Creating-a-Collection.md)
+- [Using a Collection](docs/Using-a-Collection.md)
 
-#### Sections & Snippets Guides
+#### Sections & Snippets Guide
 
-- [User's Guide](docs/Sections.md)
+- [Sections & Snippets Components](docs/Sections-and-Snippets.md)
 
 #### Theme Guides
 
-- [Using a Collection with your Theme.](docs/Themes.md)
+- Using a Collection with your [Theme](docs/Themes.md)
 
 #### Technical Guides
 
-- [Understanding the Build Process](docs/Build-process.md)
+- Understanding the [Build Process](docs/Build-process.md)
 
 ## Install Archie
 
@@ -58,33 +62,37 @@ This is a shortcut command to install Archie, but contextual use of this is prov
 
 ```shell
 # Defaults to the latest version
-npm install @archetype-themes/archie@archetype-themes/archie --save-dev
+npm install @archetype-themes/archie --save-dev
 
-# Install a specific version (use a tag, a commit, or a head)
-npm install @archetype-themes/archie@archetype-themes/archie#1.0.1 --save-dev
+# Install a specific version
+npm install @archetype-themes/archie#1.0.1 --save-dev
+
 ```
+
+Available versions are listed on the
+official [archie NPM package page](https://github.com/archetype-themes/archie/pkgs/npm/archie)
 
 ## Archie Commands
 
 ```shell
 ##### Collection Commands #####
-archie build collection
-archie build collection --watch
-archie build section [section-name]
-archie build section [section-name] --watch
+npx archie build
+npx archie build --watch
+npx archie build section [section-name]
+npx archie build section [section-name] --watch
 
-archie create section [section-name]
-archie create snippet [snippet-name]
+npx archie create section [section-name]
+npx archie create snippet [snippet-name]
 
 ##### Section Commands #####
-archie build section
-archie build section --watch
+npx archie build
+npx archie build --watch
 
 ##### Theme Commands #####
-archie install [name-of-collection]
-archie install [name-of-collection] --watch
-
-
+npx archie install
+npx archie install --watch
+npx archie install --backup
+npx archie install --watch --backup
 ```
 
 ### Watch Flag
@@ -103,12 +111,12 @@ level. To use a different log level, use the following flags when running the bu
 
 ```shell
 # Show Error, Info and Debug messages
-npx archie build section --verbose
+npx archie build --verbose
 ```
 
 ```shell
 # Show only Error messages
-npx build-section --quiet
+npx archie build --quiet
 ```
 
 ## Current Limitations
