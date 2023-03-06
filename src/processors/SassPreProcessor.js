@@ -1,7 +1,6 @@
 import sass from 'sass'
 
 class SassPreProcessor {
-
   /**
    * Process Stylesheet with SASS CSS Preprocessor
    * @param {string} stylesheet

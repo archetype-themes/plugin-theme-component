@@ -5,7 +5,6 @@ import { mkdir } from 'node:fs/promises'
 // Internal Modules
 
 class ComponentUtils {
-
   /**
    *
    * @param {Section|Snippet} component
@@ -17,7 +16,6 @@ class ComponentUtils {
     await mkdir(`${component.rootFolder}/src/styles`, { recursive: true })
     await mkdir(`${component.rootFolder}/src/snippets`, { recursive: true })
   }
-
 }
 
 export default ComponentUtils

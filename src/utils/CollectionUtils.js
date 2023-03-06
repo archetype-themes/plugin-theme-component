@@ -32,7 +32,7 @@ class CollectionUtils {
    * @return {string[]}
    */
   static getWatchFolders (collection) {
-    let watchFolders = []
+    const watchFolders = []
 
     for (const section of collection.sections) {
       watchFolders.push(section.rootFolder)

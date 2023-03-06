@@ -4,10 +4,10 @@ import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
 import FileAccessError from '../errors/FileAccessError.js'
 
+// eslint-disable-next-line no-unused-vars
 const { BuildResult } = esbuild
 
 class JavaScriptProcessor {
-
   /**
    * This is simply a wrapper for the EsbuildProcessor for now
    * @param {string} outputFile
@@ -60,7 +60,6 @@ class JavaScriptProcessor {
       return this.findMainJavaScriptFile(files)
     }
   }
-
 }
 
 export default JavaScriptProcessor

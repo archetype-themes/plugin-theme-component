@@ -1,7 +1,8 @@
-//Node imports
+// Node imports
 import path from 'path'
 
 // External Modules imports
+// eslint-disable-next-line no-unused-vars
 import { FSWatcher } from 'chokidar'
 
 // Archie imports

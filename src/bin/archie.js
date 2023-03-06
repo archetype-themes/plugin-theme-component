@@ -8,7 +8,7 @@ import NodeConfigFactory from '../cli/factories/NodeConfigFactory.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import CLICommands from '../config/CLICommands.js'
 
-//Init ArchieSession & ArchieCLI
+// Init ArchieSession & ArchieCLI
 let cliSession
 try {
   NodeConfigFactory.fromPackageJsonData(await NodeUtils.getPackageJsonData())

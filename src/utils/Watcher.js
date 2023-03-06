@@ -1,8 +1,8 @@
+// eslint-disable-next-line no-unused-vars
 import { FSWatcher, watch } from 'chokidar'
 import logger from './Logger.js'
 
 class Watcher {
-
   /**
    * Watch target files and folders
    * @param {string[]} targets target paths
@@ -12,8 +12,10 @@ class Watcher {
   static getWatcher (targets, rootFolder) {
     const watchOptions = {
       awaitWriteFinish: {
-        pollInterval: 20, stabilityThreshold: 60
-      }, ignoreInitial: true
+        pollInterval: 20,
+        stabilityThreshold: 60
+      },
+      ignoreInitial: true
     }
 
     if (rootFolder) {
@@ -33,7 +35,6 @@ class Watcher {
   static watch (watcher, action) {
     return watcher.on('all', action)
   }
-
 }
 
 export default Watcher

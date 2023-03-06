@@ -33,15 +33,15 @@ class PostCssProcessor {
         features: {
           'nesting-rules': true
         },
-        stage: 1,
+        stage: 1
       }),
       postcss_shopify_settings_variables,
       tailwindcss({
         content: ['./**/*.{liquid,json}'],
         theme: {
-          extend: {},
+          extend: {}
         },
-        plugins: [],
+        plugins: []
       }),
       cssnanoPlugin({
         preset: ['default', {
@@ -51,7 +51,7 @@ class PostCssProcessor {
           normalizeCharset: false,
           normalizeDisplayValues: false,
           normalizeWhitespace: false,
-          rawCache: true,
+          rawCache: true
         }]
       })
     ])
@@ -59,7 +59,7 @@ class PostCssProcessor {
     const result = await processor.process(styles, {
       from: sourceFile,
       syntax: postcss_scss,
-      to: targetFile,
+      to: targetFile
     })
 
     return result.css

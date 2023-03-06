@@ -9,14 +9,12 @@ import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
 class RenderUtils {
-
   /**
    * Build Snippets Recursively
    * @param {Render[]} renders
    * @param {string[]} [processedSnippets=[]]
    */
   static async buildSnippets (renders, processedSnippets = []) {
-
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         await SnippetBuilder.build(render.snippet)
@@ -27,7 +25,6 @@ class RenderUtils {
       if (render.snippet.renders) {
         await this.buildSnippets(render.snippet.renders, processedSnippets)
       }
-
     }
   }
 
@@ -88,7 +85,6 @@ class RenderUtils {
    * @return {string[]}
    */
   static getSnippetsMainStylesheet (renders, processedSnippets = []) {
-
     let stylesheets = []
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
@@ -168,7 +164,6 @@ class RenderUtils {
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
-
         if (render.snippet.schemaLocales) {
           schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, render.snippet.schemaLocales)
         }
@@ -185,7 +180,6 @@ class RenderUtils {
 
     return schemaLocales
   }
-
 }
 
 export default RenderUtils

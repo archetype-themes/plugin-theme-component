@@ -42,7 +42,6 @@ class Section extends Component {
   set files (value) {
     this.#files = value
   }
-
 }
 
 export default Section

@@ -12,7 +12,6 @@ class ThemeFactory {
    * @return {Theme}
    */
   static fromThemeInstallCommand () {
-
     const theme = new Theme()
 
     theme.name = NodeUtils.getPackageName()

@@ -40,11 +40,10 @@ class CollectionFactory {
    * @return {Promise<string[]>}
    */
   static async getSectionNames (collectionName, sectionsFolder) {
-
     let sectionNames = NodeConfig.getCollectionSections(collectionName)
 
     if (sectionNames.length === 0) {
-      logger.info(`No section list found for Collection; all sections will be processed.`)
+      logger.info('No section list found for Collection; all sections will be processed.')
       try {
         sectionNames = await CollectionUtils.findSectionNames(sectionsFolder)
       } catch (error) {

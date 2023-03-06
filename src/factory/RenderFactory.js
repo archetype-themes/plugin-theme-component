@@ -4,7 +4,6 @@ import LiquidUtils from '../utils/LiquidUtils.js'
 import logger from '../utils/Logger.js'
 
 class RenderFactory {
-
   /**
    * Create Render Models From Component By Searching Through The Liquid Code For Render Tags
    * @param {string} liquidCode

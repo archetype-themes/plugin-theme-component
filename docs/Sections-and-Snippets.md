@@ -393,7 +393,7 @@ include the necessary files with a relative path.
 // SASS/SCSS Import styles core example
 @use "../../../../shared/[collection-name]-styles-core/src/main";
 ```
-æ
+
 ```css
 /* CSS/PostCSS Import styles core example */
 @import url('../../../../shared/[collection-name]-postcss-core/src/main.css');

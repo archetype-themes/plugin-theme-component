@@ -1,7 +1,7 @@
 // Node imports
 import path from 'path'
 
-//Archie imports
+// Archie imports
 import CollectionBuilder from '../../builders/CollectionBuilder.js'
 import CollectionFactory from '../../factory/CollectionFactory.js'
 import ThemeFactory from '../../factory/ThemeFactory.js'

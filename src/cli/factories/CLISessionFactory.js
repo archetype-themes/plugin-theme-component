@@ -14,7 +14,6 @@ import CLIFlags from '../../config/CLIFlags.js'
 import CLI from '../../config/CLI.js'
 
 class CLISessionFactory {
-
   /**
    * Factory method for ArchieCLI From Command Line Input
    * @param {string[]} commandLineArguments
@@ -73,7 +72,7 @@ class CLISessionFactory {
 
     logger.debug({
       'Archie CLI Computed Arguments': {
-        'command': CLISession.command,
+        command: CLISession.command,
         'command option': CLISession.commandOption,
         'command backup mode': CLISession.backupMode,
         'command watch mode': CLISession.watchMode,
@@ -178,10 +177,11 @@ class CLISessionFactory {
       case CLICommands.CREATE_COMMAND_NAME:
         return null
       case CLICommands.INSTALL_COMMAND_NAME:
-        if (Object.keys(NodeConfig.collections).length > 0)
+        if (Object.keys(NodeConfig.collections).length > 0) {
           return Object.keys(NodeConfig.collections)[0]
-        else
-          throw new Error(`No Default Collection found in configuration for install, please specify a collection name.`)
+        } else {
+          throw new Error('No Default Collection found in configuration for install, please specify a collection name.')
+        }
       default:
         throw new Error(`ARCHIE UTILS: getCommandDefaultTargetComponent => Unknown command ${command}`)
     }
@@ -211,7 +211,7 @@ class CLISessionFactory {
    * @param {string[]} [commandOptions]
    */
   static #sayHi (command, commandOptions) {
-    console.log(`Archie says hi!`)
+    console.log('Archie says hi!')
     if (command && commandOptions) {
       console.log(`Available options for the "${command}" command are [${commandOptions.join('/')}]`)
     } else {
@@ -229,7 +229,6 @@ class CLISessionFactory {
     const flags = args.filter(arg => arg.startsWith('-'))
     return [commands, flags]
   }
-
 }
 
 export default CLISessionFactory

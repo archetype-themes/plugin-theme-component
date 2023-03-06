@@ -40,7 +40,6 @@ class LocaleUtils {
         } else {
           locales[locale] = localeData
         }
-
       }
       // We have a single file with multiple locales
       else if (localeFileName.match(/^locales?(\.schema)?\.json$/)) {

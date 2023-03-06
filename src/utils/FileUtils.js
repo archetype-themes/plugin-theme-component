@@ -19,7 +19,7 @@ class FileUtils {
     files = (typeof files === 'string' || files instanceof String) ? [files] : files
 
     return Promise.all(files.map((file) => {
-      copyFile(file, `${file.replace(/\.[^/.]+$/, '')}.${this.getReadableTimestamp()}${path.extname(file)}`)
+      return copyFile(file, `${file.replace(/\.[^/.]+$/, '')}.${this.getReadableTimestamp()}${path.extname(file)}`)
     }))
   }
 
@@ -141,7 +141,7 @@ class FileUtils {
         if (!this.#EXCLUDED_FOLDERS.includes(entry.name)) {
           files.push(...(await this.getFolderFilesRecursively(absolutePath)))
         }
-      } else { files.push(absolutePath)}
+      } else { files.push(absolutePath) }
     }
 
     return files

@@ -18,7 +18,6 @@ import StylesUtils from '../utils/StylesUtils.js'
 import Components from '../config/Components.js'
 
 class SectionBuilder {
-
   /**
    * Build Section
    * @param {Section} section
@@ -65,7 +64,7 @@ class SectionBuilder {
         )
       fileOperationPromises.push(FileUtils.writeFile(section.build.stylesBundleFile, section.build.stylesBundle))
 
-      //Attach CSS bundle file reference to liquid code
+      // Attach CSS bundle file reference to liquid code
       section.build.liquidCode =
         LiquidUtils.generateStylesheetReference(path.basename(section.build.stylesBundleFile)) + '\n' +
         section.build.liquidCode
@@ -86,7 +85,7 @@ class SectionBuilder {
         )
       }
 
-      //Attach Javascript bundle file reference to liquid code
+      // Attach Javascript bundle file reference to liquid code
       section.build.liquidCode =
         LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) + '\n' +
         section.build.liquidCode
@@ -101,7 +100,6 @@ class SectionBuilder {
       let assetFiles = section.files.assetFiles
       assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
       fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
-
     }
 
     fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))

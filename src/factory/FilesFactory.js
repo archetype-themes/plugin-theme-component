@@ -66,6 +66,7 @@ class FilesFactory {
       if (folder.endsWith('/assets')) {
         componentFiles.assetFiles.push(file)
       } else {
+        const filename = path.basename(file).toLowerCase()
 
         switch (extension) {
           case '.css':
@@ -84,10 +85,8 @@ class FilesFactory {
             } else {
               componentFiles.liquidFiles.push(file)
             }
-
             break
           case '.json':
-            const filename = path.basename(file).toLowerCase()
             if (filename === 'package.json') {
               componentFiles.packageJson = file
             } else if (filename === 'schema.json') {

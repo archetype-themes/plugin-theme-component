@@ -98,7 +98,6 @@ class NodeConfig {
   static isSnippet () {
     return this.#componentType === Components.SNIPPET_COMPONENT_NAME
   }
-
 }
 
 export default NodeConfig
