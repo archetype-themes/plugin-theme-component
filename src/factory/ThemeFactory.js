@@ -1,7 +1,7 @@
-//Node Imports
+// Node Imports
 import { join } from 'path'
 
-//Archie Imports
+// Archie Imports
 import Theme from '../models/Theme.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Components from '../config/Components.js'
