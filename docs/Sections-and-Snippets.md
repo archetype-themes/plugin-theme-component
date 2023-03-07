@@ -30,8 +30,9 @@ to be inside a `src` folder. The `src` folder is mandatory. The `index.js` and `
 
 **Keep It Simple**
 
-Here we have a more complete component. It has a `locales` folder, using the new Archie multilingual approach. It also
-has an optional `assets` folder. You can use it to store your component's assets, such as images, fonts, etc.
+Here we have a more complete component. It has `locales.json` and `locales.schema.json` files using the new Archie
+multilingual approach. It also has an optional `assets` folder. You can use it to store your component's assets, such as
+images, fonts, etc.
 
 ```shell
 .
@@ -41,12 +42,11 @@ has an optional `assets` folder. You can use it to store your component's assets
 └── src
     ├── assets                            [ Static assets folder ]                     
     │   └── awesome-button.png                [ Example Asset File ]                     
-    ├── locales                           [ Locales folder ]
-    │   ├── locales.json                      [ Multilingual Locales File ]
-    │   └── locales.schema.json               [ Multilingual Schema Locales File ]
     ├── index.js                          [ Optional Main Javascript File ] 
     ├── main.css                          [ Optional Main Stylesheet ] 
     ├── some-nice-section-name.liquid     [ Mandatory Main Liquid File ]
+    ├── locales.json                      [ Optional Multilingual Locales File ]
+    ├── locales.schema.json               [ Optional Multilingual Shema Locales File ]
     └── schema.json                       [ Optional External Section Schema JSON file ]
 ```
 
