@@ -63,25 +63,62 @@ class FileUtils {
 
   /**
    * Copy Folder Contents
+   *
+   * @typedef {Object.<string, string>} JsTemplateVariables
+   *
+   * @typedef {Object} CopyFolderOptions
+   * @property {boolean} recursive
+   * @property {JsTemplateVariables} jsTemplateVariables
+   *
    * @param {string} sourceFolder
    * @param {string} targetFolder
-   * @param {boolean} [recursive=false]
+   * @param {CopyFolderOptions} [options]
    * @return {Promise<void>}
    */
-  static async copyFolder (sourceFolder, targetFolder, recursive = false) {
+  static async copyFolder (sourceFolder, targetFolder, options = { recursive: false, jsTemplateVariables: null }) {
     const promises = []
     const folderContent = await readdir(sourceFolder, { withFileTypes: true })
 
     for (const dirent of folderContent) {
       if (dirent.isFile()) {
-        promises.push(copyFile(path.join(sourceFolder, dirent.name), path.join(targetFolder, dirent.name)))
-      } else if (dirent.isDirectory() && recursive) {
+        const sourceFile = path.join(sourceFolder, dirent.name)
+        const targetFile = path.join(targetFolder, dirent.name)
+        if (options.jsTemplateVariables) {
+          promises.push(this.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
+        } else {
+          promises.push(copyFile(sourceFile, targetFile))
+        }
+      } else if (dirent.isDirectory() && options.recursive) {
         const newTargetFolder = path.join(targetFolder, dirent.name)
-        await mkdir(newTargetFolder, { recursive: true })
-        promises.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, recursive))
+        await mkdir(newTargetFolder, { recursive: options.recursive })
+        promises.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, options))
       }
     }
     return Promise.all(promises)
+  }
+
+  /**
+   *
+   * @param {string} sourceFile
+   * @param {string} targetFile
+   * @param {JsTemplateVariables} jsTemplateVariables
+   * @returns {Promise<void>}
+   */
+  static async processJsTemplateStringFile (sourceFile, targetFile, jsTemplateVariables) {
+    // Read the file's content
+    const data = await readFile(sourceFile, 'utf8')
+
+    // Initiate JS template variables for interpolation
+    Object.entries(jsTemplateVariables).forEach(([key, value]) => {
+      global[key] = value
+    })
+
+    // Interpret the file content as a JS template string
+    // eslint-disable-next-line no-eval
+    const template = eval('`' + data + '`')
+
+    // Write the interpreted content back to disk
+    return writeFile(targetFile, template)
   }
 
   /**
