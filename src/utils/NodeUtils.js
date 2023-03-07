@@ -62,7 +62,7 @@ class NodeUtils {
    * @returns {string}
    */
   static getArchieRootFolderName () {
-    return dirname(dirname(import.meta.url)).substring(7)
+    return dirname(dirname(dirname(import.meta.url)).substring(7))
   }
 
   /**
