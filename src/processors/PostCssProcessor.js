@@ -1,14 +1,14 @@
 import cssnanoPlugin from 'cssnano'
-import custom_mixins from './postcss/custom-mixins.js'
+import customMixins from './postcss/custom-mixins.js'
 import postcss from 'postcss'
-import postcss_for from 'postcss-for'
-import postcss_import from 'postcss-import'
-import postcss_mixins from 'postcss-mixins'
+import postcssFor from 'postcss-for'
+import postcssImport from 'postcss-import'
+import postcssMixins from 'postcss-mixins'
 import postcssPresetEnv from 'postcss-preset-env'
-import postcss_sass from '@csstools/postcss-sass'
-import postcss_scss from 'postcss-scss'
-import postcss_shopify_settings_variables from 'postcss-shopify-settings-variables'
-import postcss_simple_vars from 'postcss-simple-vars'
+import postcssSass from '@csstools/postcss-sass'
+import postcssScss from 'postcss-scss'
+import postcssShopifySettingsVariables from 'postcss-shopify-settings-variables'
+import postcssSimpleVars from 'postcss-simple-vars'
 import tailwindcss from 'tailwindcss'
 
 class PostCssProcessor {
@@ -21,21 +21,21 @@ class PostCssProcessor {
    */
   static async processStyles (styles, sourceFile, targetFile) {
     const processor = postcss([
-      postcss_sass,
-      postcss_import,
-      postcss_mixins({
+      postcssSass,
+      postcssImport,
+      postcssMixins({
         // PostCSS plugin for mixins. -- Note, that you must set this plugin before postcss-simple-vars and postcss-nested.
-        mixins: custom_mixins
+        mixins: customMixins
       }),
-      postcss_for,
-      postcss_simple_vars,
+      postcssFor,
+      postcssSimpleVars,
       postcssPresetEnv({
         features: {
           'nesting-rules': true
         },
         stage: 1
       }),
-      postcss_shopify_settings_variables,
+      postcssShopifySettingsVariables,
       tailwindcss({
         content: ['./**/*.{liquid,json}'],
         theme: {
@@ -58,7 +58,7 @@ class PostCssProcessor {
 
     const result = await processor.process(styles, {
       from: sourceFile,
-      syntax: postcss_scss,
+      syntax: postcssScss,
       to: targetFile
     })
 

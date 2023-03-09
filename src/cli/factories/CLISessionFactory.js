@@ -32,13 +32,12 @@ class CLISessionFactory {
 
     this.#validateCommand(callerComponentType, CLISession.command, CLI.AVAILABLE_COMMANDS)
 
-    // If we have 2 further arguments, we have both the option and the target
     if (commands[1] && commands[2]) {
+      // If we have 2 further arguments, we have both the option and the target
       CLISession.commandOption = commands[1].toLowerCase()
       CLISession.targetComponentName = commands[2]
-    }
-    // If we have only 1 further argument, check for a valid command option, or else, assume it is a Target Component Name
-    else if (commands[1]) {
+    } else if (commands[1]) {
+      // If we have only 1 further argument, check for a valid command option, or else, assume it is a Target Component Name
       const arg = commands[1].toLowerCase()
       // first check for an existing command option,
       if (CLI.AVAILABLE_COMMAND_OPTIONS.includes(arg)) {

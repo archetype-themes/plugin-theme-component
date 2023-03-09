@@ -24,12 +24,11 @@ class ThemeUtils {
     } else {
       let rootFolder
 
-      // yarn berry
       if (env.PROJECT_CWD) {
+        // yarn berry
         rootFolder = env.PROJECT_CWD
-      }
-      // npm
-      else if (env.npm_config_local_prefix) {
+      } else if (env.npm_config_local_prefix) {
+        // npm
         rootFolder = env.npm_config_local_prefix
       } else {
         logger.debug('Collection Install cancelled: neither of \'PROJECT_CWD\' or \'npm_config_local_prefix\' environment variables detected.')

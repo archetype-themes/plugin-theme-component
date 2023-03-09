@@ -40,9 +40,8 @@ class LocaleUtils {
         } else {
           locales[locale] = localeData
         }
-      }
-      // We have a single file with multiple locales
-      else if (localeFileName.match(/^locales?(\.schema)?\.json$/)) {
+      } else if (localeFileName.match(/^locales?(\.schema)?\.json$/)) {
+        // We have a single file with multiple locales
         // Load locales.json file
         const localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
 
