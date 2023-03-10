@@ -26,10 +26,13 @@ class CollectionBuilder {
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection)
 
-    logger.info(`We will bundle the following sections: ${collection.sectionNames.join(', ')}`)
+    const startTime = process.hrtime()
+    logger.info(`Starting Sections' build for: ${collection.sectionNames.join(', ')}`)
 
     // Build sections (will also build inner snippets recursively)
     await SectionBuilder.buildMany(collection.sections)
+
+    logger.info(`Finished Sections' build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
 
     // Gather and build Stylesheets
     const mainStylesheets = this.getMainStylesheets(collection)

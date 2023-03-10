@@ -1,15 +1,15 @@
-import cssnanoPlugin from 'cssnano'
-import customMixins from './postcss/custom-mixins.js'
-import postcss from 'postcss'
-import postcssFor from 'postcss-for'
-import postcssImport from 'postcss-import'
-import postcssMixins from 'postcss-mixins'
-import postcssPresetEnv from 'postcss-preset-env'
-import postcssSass from '@csstools/postcss-sass'
-import postcssScss from 'postcss-scss'
-import postcssShopifySettingsVariables from 'postcss-shopify-settings-variables'
-import postcssSimpleVars from 'postcss-simple-vars'
-import tailwindcss from 'tailwindcss'
+import cssnanoPlugin from 'cssnano' // A modular minifier, built on top of the PostCSS ecosystem.
+import customMixins from './postcss/custom-mixins.js' // Custom PostCSS Mixins
+import postcss from 'postcss' // PostCSS is a tool for transforming styles with JS plugins.
+import postcssFor from 'postcss-for' // PostCSS plugin to transform @for at-rules to CSS.
+import postcssImport from 'postcss-import' // PostCSS plugin to inline @import rules content.
+import postcssMixins from 'postcss-mixins' // PostCSS plugin for mixins. -- Note, that you must set this plugin before postcss-simple-vars and postcss-nested.
+import postcssPresetEnv from 'postcss-preset-env' // Convert modern CSS into something most browsers can understand
+import postcssSass from '@csstools/postcss-sass' // PostCSS plugin to transform Sass-like @at-rules to CSS.
+import postcssScss from 'postcss-scss' // PostCSS plugin to transform SCSS-like @at-rules to CSS.
+import postcssShopifySettingsVariables from 'postcss-shopify-settings-variables' // PostCSS plugin to allow use of Shopify specific theme variables in Shopify css files.
+import postcssSimpleVars from 'postcss-simple-vars' // PostCSS plugin for Sass-like variables.
+import tailwindcss from 'tailwindcss' // A utility-first CSS framework for rapid UI development.
 
 class PostCssProcessor {
   /**
