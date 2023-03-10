@@ -4,7 +4,6 @@ import FileUtils from './FileUtils.js'
 import FileAccessError from '../errors/FileAccessError.js'
 
 class StylesUtils {
-
   /**
    * Create Master Stylesheet
    * @param stylesheets
@@ -64,7 +63,6 @@ class StylesUtils {
         return component.files.mainStylesheet
       }
     }
-
   }
 
   /**
@@ -85,7 +83,6 @@ class StylesUtils {
   static isSassFile (filename) {
     return ['.scss', '.sass'].includes(path.extname(filename))
   }
-
 }
 
 export default StylesUtils

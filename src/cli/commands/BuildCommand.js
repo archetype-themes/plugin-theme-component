@@ -1,7 +1,8 @@
-//Node imports
+// Node imports
 import path from 'path'
 
 // External Modules imports
+// eslint-disable-next-line no-unused-vars
 import { FSWatcher } from 'chokidar'
 
 // Archie imports
@@ -22,33 +23,24 @@ class BuildCommand {
    * @param {string} commandOption
    * @param {string} targetComponentName
    * @param {boolean} watchMode
-   * @return {Promise<Awaited<void>[]>}
+   * @returns {Promise<FSWatcher|module:models/Collection|Section>}
    */
   static async execute (commandOption, targetComponentName, watchMode) {
-    const promises = []
-
     if (commandOption === Components.COLLECTION_COMPONENT_NAME) {
-      const collection = await this.buildCollection()
       if (watchMode) {
-        promises.push(this.watchCollection(collection))
+        const collection = await this.buildCollection()
+        return this.watchCollection(collection)
+      } else {
+        return this.buildCollection()
+      }
+    } else if (commandOption === Components.SECTION_COMPONENT_NAME) {
+      if (watchMode) {
+        const section = await this.buildSection(targetComponentName)
+        return this.watchSection(section)
+      } else {
+        return this.buildSection(targetComponentName)
       }
     }
-    // Build/Watch Section
-    else if (commandOption === Components.SECTION_COMPONENT_NAME) {
-      logger.info(`Building "${targetComponentName}" section`)
-      console.time(`Building "${targetComponentName}" section`)
-
-      const section = await this.buildSection(targetComponentName)
-
-      logger.info(`${targetComponentName}: Build Complete`)
-      console.timeEnd(`Building "${targetComponentName}" section`)
-
-      if (watchMode) {
-        await this.watchSection(section)
-      }
-    }
-
-    return Promise.all(promises)
   }
 
   /**
@@ -59,14 +51,13 @@ class BuildCommand {
     const collectionName = NodeUtils.getPackageName()
     const collectRootFolder = NodeUtils.getPackageRootFolder()
 
-    logger.info(`Building ${collectionName} Collection ...`)
-    console.time(`Building "${collectionName}" collection`)
+    logger.info(`Starting ${collectionName}'s build...`)
+    const startTime = process.hrtime()
 
     const collection = await CollectionFactory.fromNameAndFolder(collectionName, collectRootFolder)
     await CollectionBuilder.build(collection)
 
-    logger.info(`${collectionName}: Build Complete`)
-    console.timeEnd(`Building "${collectionName}" collection`)
+    logger.info(`Finished ${collectionName}'s build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
 
     return Promise.resolve(collection)
   }
@@ -77,36 +68,50 @@ class BuildCommand {
    * @return {Promise<Section>}
    */
   static async buildSection (sectionName) {
+    logger.info(`Starting ${sectionName}'s build...`)
+    const startTime = process.hrtime()
+
     const section = await SectionFactory.fromName(sectionName)
     await SectionBuilder.build(section)
+
+    logger.info(`Finished ${sectionName}'s build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
+
     return Promise.resolve(section)
   }
 
   /**
    * Watch a Collection
    * @param {module:models/Collection} collection
-   * @return {Promise<void>}
+   * @return {FSWatcher}
    */
-  static async watchCollection (collection) {
+  static watchCollection (collection) {
     const watchFolders = CollectionUtils.getWatchFolders(collection)
 
     const watcher = Watcher.getWatcher(watchFolders)
-    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, watcher)
-    Watcher.watch(watcher, onCollectionWatchEvent)
+    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(this, watcher)
+    logger.info('--------------------------------------------------------')
+    logger.info(`Watching Collection ${collection.name} for changes...`)
+    logger.info('(Ctrl+C to abort)')
+    logger.info('--------------------------------------------------------')
+    return Watcher.watch(watcher, onCollectionWatchEvent)
   }
 
   /**
    * Watch a Section
    * @param {Section} section
-   * @return {Promise<void>}
+   * @return {FSWatcher}
    */
-  static async watchSection (section) {
+  static watchSection (section) {
     const snippetRootFolders = RenderUtils.getSnippetRootFolders(section.renders)
     const watchFolders = [section.rootFolder].concat(snippetRootFolders).map(folder => path.join(folder, 'src'))
 
     const watcher = Watcher.getWatcher(watchFolders)
-    const onSectionWatchEvent = this.onSectionWatchEvent.bind(null, section.name, watcher)
-    Watcher.watch(watcher, onSectionWatchEvent)
+    const onSectionWatchEvent = this.onSectionWatchEvent.bind(this, section.name, watcher)
+    logger.info('--------------------------------------------------------')
+    logger.info(`Watching Section ${section.name} for changes...`)
+    logger.info('(Ctrl+C to abort)')
+    logger.info('--------------------------------------------------------')
+    return Watcher.watch(watcher, onSectionWatchEvent)
   }
 
   /**
@@ -114,7 +119,7 @@ class BuildCommand {
    * @param {FSWatcher} watcher
    * @param {string} event
    * @param {string} eventPath
-   * @return {Promise<void>}
+   * @return {Promise<FSWatcher|void>}
    */
   static async onCollectionWatchEvent (watcher, event, eventPath) {
     const filename = path.basename(eventPath)
@@ -125,6 +130,10 @@ class BuildCommand {
       await watcher.close()
       return this.watchCollection(collection)
     }
+    logger.info('--------------------------------------------------------')
+    logger.info(`Watching Collection ${collection.name} for changes...`)
+    logger.info('(Ctrl+C to abort)')
+    logger.info('--------------------------------------------------------')
   }
 
   /**
@@ -133,24 +142,23 @@ class BuildCommand {
    * @param {FSWatcher} watcher
    * @param {string} event
    * @param {string} eventPath
-   * @return {Promise<void>}
+   * @return {Promise<FSWatcher|void>}
    */
   static async onSectionWatchEvent (sectionName, watcher, event, eventPath) {
     const filename = path.basename(eventPath)
-    logger.info(`Watcher Event: "${event}" on file: ${filename} detected`)
-
-    logger.info(`Building "${sectionName}" section`)
-    console.time(`Building "${sectionName}" section`)
+    logger.info(`Watcher Event "${event}" on ${filename} detected`)
 
     const section = await this.buildSection(sectionName)
 
-    logger.info(`${sectionName}: Build Complete`)
-    console.timeEnd(`Building "${sectionName}" section`)
     // Restart Watcher on liquid file change to make sure we do refresh watcher snippet folders
     if (filename.endsWith('.liquid')) {
       await watcher.close()
       return this.watchSection(section)
     }
+    logger.info('--------------------------------------------------------')
+    logger.info(`Watching Section ${section.name} for changes...`)
+    logger.info('(Ctrl+C to abort)')
+    logger.info('--------------------------------------------------------')
   }
 }
 

@@ -8,7 +8,6 @@ import StylesUtils from '../utils/StylesUtils.js'
 import BuildFactory from '../factory/BuildFactory.js'
 
 class SnippetBuilder {
-
   /**
    * Build Snippet
    * @param {Snippet} snippet
@@ -38,7 +37,6 @@ class SnippetBuilder {
       await mkdir(snippetBuild.assetsFolder, { recursive: true })
     }
   }
-
 }
 
 export default SnippetBuilder

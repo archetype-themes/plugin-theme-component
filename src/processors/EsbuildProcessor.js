@@ -1,10 +1,10 @@
 #! /usr/bin/env node
 import esbuild from 'esbuild'
 
+// eslint-disable-next-line no-unused-vars
 const { build, BuildResult } = esbuild
 
 class EsbuildProcessor {
-
   /**
    * Build JavaScript files for a section or snippet
    * @param {string} outputFile
@@ -16,15 +16,15 @@ class EsbuildProcessor {
     const options = {
       bundle: true,
       charset: 'utf8',
-      //drop: ['console'], // TODO: Check with Team to see if we want to use this feature for bundled code or not.
+      // drop: ['console'], // TODO: Check with Team to see if we want to use this feature for bundled code or not.
       entryPoints: [mainJavaScriptFile],
       // metafile: true,  // result = build(options); logger.debug(result.metafile);return result
-      //minify: true,  // TODO: Could be an option in the archie config
+      // minify: true,  // TODO: Could be an option in the archie config
       format: 'cjs', // Defaults to iife on browser platform, but this wraps the code inside an immediately-invoked function expression
       outfile: outputFile,
       platform: 'browser',
       sourcemap: true,
-      target: ['chrome58', 'firefox57', 'safari11', 'edge18'],
+      target: ['chrome58', 'firefox57', 'safari11', 'edge18']
     }
 
     if (injectedFiles) {
@@ -33,7 +33,6 @@ class EsbuildProcessor {
 
     return build(options)
   }
-
 }
 
 export default EsbuildProcessor

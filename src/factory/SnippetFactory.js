@@ -113,7 +113,6 @@ class SnippetFactory {
    * @return {Promise<Snippet>}
    */
   static async fromRender (render, componentInternalSnippetFiles, snippetsPath) {
-
     // Look within the section's local snippets first
     for (const snippetFile of componentInternalSnippetFiles) {
       if (render.snippetName === path.parse(snippetFile).name) {
@@ -142,7 +141,6 @@ class SnippetFactory {
     }
     return Promise.resolve(renders)
   }
-
 }
 
 export default SnippetFactory

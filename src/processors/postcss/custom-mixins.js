@@ -1,7 +1,7 @@
 import NodeConfig from '../../cli/models/NodeConfig.js'
 
 function buildGridClasses (breakpoint) {
-  let result = {}
+  const result = {}
   let prefix = '.'
 
   if (breakpoint !== undefined) {
@@ -117,7 +117,7 @@ function buildGridClasses (breakpoint) {
 
   // Wrap in media query syntax if breakpoint sent
   if (breakpoint !== undefined) {
-    let mediaQuerySyntax = '@media (--' + breakpoint + ')'
+    const mediaQuerySyntax = '@media (--' + breakpoint + ')'
     return { [mediaQuerySyntax]: result }
   } else {
     // No breakpoint, top-level only
@@ -126,7 +126,7 @@ function buildGridClasses (breakpoint) {
 }
 
 function buildDisplayHelpers (breakpoint) {
-  let result = {}
+  const result = {}
   let prefix = '.'
 
   if (breakpoint !== undefined) {
@@ -142,7 +142,7 @@ function buildDisplayHelpers (breakpoint) {
 
   // Wrap in media query syntax if breakpoint sent
   if (breakpoint !== undefined) {
-    let mediaQuerySyntax = '@media (--' + breakpoint + ')'
+    const mediaQuerySyntax = '@media (--' + breakpoint + ')'
     return { [mediaQuerySyntax]: result }
   } else {
     // No breakpoint, top-level only
@@ -151,7 +151,7 @@ function buildDisplayHelpers (breakpoint) {
 }
 
 function buildAnimationDelay (count) {
-  let result = {}
+  const result = {}
 
   for (let i = count; i > 0; i--) {
     let delay = Math.round((0.06 * i) * 100) / 100
@@ -168,7 +168,7 @@ function buildAnimationDelay (count) {
 }
 
 function buildPushClasses (breakpoint) {
-  let result = {}
+  const result = {}
   let prefix = '.'
 
   if (breakpoint !== undefined) {
@@ -247,7 +247,7 @@ function buildPushClasses (breakpoint) {
 }
 
 function buildAppearDelay (count) {
-  let result = {}
+  const result = {}
   const baseTransform = 0.1
   const baseOpacity = 0.2
 
@@ -262,7 +262,7 @@ function buildAppearDelay (count) {
 
     result['.appear-delay-' + i] =
       {
-        'transition': `transform 1s cubic-bezier(0.165, 0.84, 0.44, 1) ${amountTransform}, opacity 1s cubic-bezier(0.165, 0.84, 0.44, 1) ${amountOpacity}`
+        transition: `transform 1s cubic-bezier(0.165, 0.84, 0.44, 1) ${amountTransform}, opacity 1s cubic-bezier(0.165, 0.84, 0.44, 1) ${amountOpacity}`
       }
   }
 

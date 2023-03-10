@@ -1,7 +1,6 @@
 import Components from './Components.js'
 
 class CLICommands {
-
   static BUILD_COMMAND_NAME = 'build'
 
   /** @type {string[]} **/

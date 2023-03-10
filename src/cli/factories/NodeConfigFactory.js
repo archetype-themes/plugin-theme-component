@@ -3,7 +3,6 @@ import logger from '../../utils/Logger.js'
 import CLI from '../../config/CLI.js'
 
 class NodeConfigFactory {
-
   /**
    * Init Archie Config
    * @param {Object} packageJsonData
@@ -21,10 +20,9 @@ class NodeConfigFactory {
    * @return {string}
    */
   static #findComponentType (packageJsonData) {
-
     /** @var {archie} packageJson.archie **/
     if (!packageJsonData.archie || !packageJsonData.archie.componentType) {
-      throw new Error(`Couldn't find archie.componentType value in package.json. Please create the variable and set it to either one of these: theme/collection/section/snippet`)
+      throw new Error('Couldn\'t find archie.componentType value in package.json. Please create the variable and set it to either one of these: theme/collection/section/snippet')
     }
 
     const componentType = packageJsonData.archie.componentType.toLowerCase()

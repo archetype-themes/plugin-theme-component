@@ -14,7 +14,6 @@ import CLIFlags from '../../config/CLIFlags.js'
 import CLI from '../../config/CLI.js'
 
 class CLISessionFactory {
-
   /**
    * Factory method for ArchieCLI From Command Line Input
    * @param {string[]} commandLineArguments
@@ -33,13 +32,12 @@ class CLISessionFactory {
 
     this.#validateCommand(callerComponentType, CLISession.command, CLI.AVAILABLE_COMMANDS)
 
-    // If we have 2 further arguments, we have both the option and the target
     if (commands[1] && commands[2]) {
+      // If we have 2 further arguments, we have both the option and the target
       CLISession.commandOption = commands[1].toLowerCase()
       CLISession.targetComponentName = commands[2]
-    }
-    // If we have only 1 further argument, check for a valid command option, or else, assume it is a Target Component Name
-    else if (commands[1]) {
+    } else if (commands[1]) {
+      // If we have only 1 further argument, check for a valid command option, or else, assume it is a Target Component Name
       const arg = commands[1].toLowerCase()
       // first check for an existing command option,
       if (CLI.AVAILABLE_COMMAND_OPTIONS.includes(arg)) {
@@ -73,7 +71,7 @@ class CLISessionFactory {
 
     logger.debug({
       'Archie CLI Computed Arguments': {
-        'command': CLISession.command,
+        command: CLISession.command,
         'command option': CLISession.commandOption,
         'command backup mode': CLISession.backupMode,
         'command watch mode': CLISession.watchMode,
@@ -178,10 +176,11 @@ class CLISessionFactory {
       case CLICommands.CREATE_COMMAND_NAME:
         return null
       case CLICommands.INSTALL_COMMAND_NAME:
-        if (Object.keys(NodeConfig.collections).length > 0)
+        if (Object.keys(NodeConfig.collections).length > 0) {
           return Object.keys(NodeConfig.collections)[0]
-        else
-          throw new Error(`No Default Collection found in configuration for install, please specify a collection name.`)
+        } else {
+          throw new Error('No Default Collection found in configuration for install, please specify a collection name.')
+        }
       default:
         throw new Error(`ARCHIE UTILS: getCommandDefaultTargetComponent => Unknown command ${command}`)
     }
@@ -211,7 +210,7 @@ class CLISessionFactory {
    * @param {string[]} [commandOptions]
    */
   static #sayHi (command, commandOptions) {
-    console.log(`Archie says hi!`)
+    console.log('Archie says hi!')
     if (command && commandOptions) {
       console.log(`Available options for the "${command}" command are [${commandOptions.join('/')}]`)
     } else {
@@ -229,7 +228,6 @@ class CLISessionFactory {
     const flags = args.filter(arg => arg.startsWith('-'))
     return [commands, flags]
   }
-
 }
 
 export default CLISessionFactory

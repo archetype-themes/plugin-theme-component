@@ -3,7 +3,6 @@ import SnippetBuild from '../models/SnippetBuild.js'
 import CollectionBuild from '../models/CollectionBuild.js'
 
 class BuildFactory {
-
   static fromCollection (collection) {
     const build = new CollectionBuild()
     build.rootFolder = `${collection.rootFolder}/build`
@@ -52,7 +51,6 @@ class BuildFactory {
     build.stylesheet = `${build.assetsFolder}/${snippet.name}.css`
     return build
   }
-
 }
 
 export default BuildFactory

@@ -1,7 +1,7 @@
-//Node imports
+// Node imports
 import { mkdir, rm } from 'node:fs/promises'
 
-//Archie imports
+// Archie imports
 import SectionBuilder from './SectionBuilder.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
@@ -26,10 +26,13 @@ class CollectionBuilder {
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection)
 
-    logger.info(`We will bundle the following sections: ${collection.sectionNames.join(', ')}`)
+    const startTime = process.hrtime()
+    logger.info(`Starting Sections' build for: ${collection.sectionNames.join(', ')}`)
 
     // Build sections (will also build inner snippets recursively)
     await SectionBuilder.buildMany(collection.sections)
+
+    logger.info(`Finished Sections' build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
 
     // Gather and build Stylesheets
     const mainStylesheets = this.getMainStylesheets(collection)
@@ -68,10 +71,11 @@ class CollectionBuilder {
   static buildSchemaLocales (sections) {
     let schemaLocales = []
 
-    for (const section of sections)
+    for (const section of sections) {
       if (section.build.schemaLocales) {
         schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, section.build.schemaLocales)
       }
+    }
 
     return schemaLocales
   }
@@ -90,7 +94,6 @@ class CollectionBuilder {
           folderCopyPromises.push(FileUtils.copyFolder(section.build.snippetsFolder, snippetsFolder))
         }
       }
-
     }
     return Promise.all(folderCopyPromises)
   }
@@ -150,7 +153,6 @@ class CollectionBuilder {
    * @return {string[]}
    */
   static getMainStylesheets (collection) {
-
     let mainStylesheets = []
 
     for (const section of collection.sections) {
@@ -196,7 +198,6 @@ class CollectionBuilder {
     await mkdir(collection.build.sectionsFolder, { recursive: true })
     await mkdir(collection.build.snippetsFolder, { recursive: true })
   }
-
 }
 
 export default CollectionBuilder

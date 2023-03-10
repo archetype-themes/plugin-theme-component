@@ -31,7 +31,7 @@ function traceCaller (pinoInstance) {
 
 let loglevel = 'info'
 
-/****                        Setting loglevel value                                  ****/
+/**                            Setting loglevel value                                  **/
 /*                                                                                      */
 /* YARN: argv works nicely with yarn berry                                              */
 /* NPM: argv is intercepted by npm, therefore we also check for env.npm_config_loglevel */

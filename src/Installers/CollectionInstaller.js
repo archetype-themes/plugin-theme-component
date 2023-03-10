@@ -12,7 +12,6 @@ import deepmerge from 'deepmerge'
  * @property {boolean} injectStylesheet
  */
 class CollectionInstaller {
-
   /**
    * Install Collection Within a Theme
    * @param {Theme} theme
@@ -26,7 +25,8 @@ class CollectionInstaller {
 
     const filesToCopy = []
 
-    let injectJavascript = false, injectStylesheet = false
+    let injectJavascript = false
+    let injectStylesheet = false
 
     // Copy Collection Build Assets
     const assetFolderContents = await readdir(collection.build.assetsFolder, { withFileTypes: true })
@@ -115,10 +115,7 @@ class CollectionInstaller {
     logger.info('Collection Files Installed Successfully.')
 
     if (injectJavascript || injectStylesheet) {
-      await this.injectAssetReferences(collection, theme, {
-        'injectJavascript': injectJavascript,
-        'injectStylesheet': injectStylesheet
-      }, backupMode)
+      await this.injectAssetReferences(collection, theme, { injectJavascript, injectStylesheet }, backupMode)
     }
 
     logger.info(`${collection.name}: Install Complete`)
@@ -145,7 +142,6 @@ class CollectionInstaller {
     if (filesToBackup.length) {
       logger.debug(`Backing up ${filesToBackup.length} files`)
       await FileUtils.backup(filesToBackup)
-
     } else {
       logger.debug('No files to backup')
     }
@@ -163,10 +159,10 @@ class CollectionInstaller {
     const javascriptFileBasename = basename(collection.build.javascriptFile)
     const stylesheetBasename = basename(collection.build.stylesheet)
 
-    let injections = []
+    const injections = []
 
     const themeLiquidFile = join(theme.rootFolder, 'layout', 'theme.liquid')
-    let themeLiquid = (
+    const themeLiquid = (
       await FileUtils.isReadable(themeLiquidFile)
     )
       ? await FileUtils.getFileContents(themeLiquidFile)
@@ -191,7 +187,6 @@ class CollectionInstaller {
     if (await FileUtils.isWritable(themeLiquidFile)) {
       if (injections.length > 0) {
         await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile, backupMode)
-
       }
     } else if (injections.length > 0) {
       this.injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
@@ -220,16 +215,14 @@ class CollectionInstaller {
         await FileUtils.backup(themeLiquidFile)
       }
       await FileUtils.writeFile(themeLiquidFile, themeLiquid)
-
     } else if (headTagClosureCount === 0) {
-      this.injectionFailureWarning(`Html head tag closure not found in "theme.liquid".`, injections)
+      this.injectionFailureWarning('Html head tag closure not found in "theme.liquid".', injections)
     } else {
       this.injectionFailureWarning(
         `${headTagClosureCount} Html head tag closure found in "theme.liquid". It should only be present once.`,
         injections
       )
     }
-
   }
 
   static injectionFailureWarning (message, injections) {
@@ -243,7 +236,6 @@ You should manually insert these lines inside your "theme.liquid" file:
  >>> ${injections.join('\n >>> ')}
 
 **************************************************************************************************`)
-
   }
 }
 

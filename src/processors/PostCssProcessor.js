@@ -1,15 +1,15 @@
-import cssnanoPlugin from 'cssnano'
-import custom_mixins from './postcss/custom-mixins.js'
-import postcss from 'postcss'
-import postcss_for from 'postcss-for'
-import postcss_import from 'postcss-import'
-import postcss_mixins from 'postcss-mixins'
-import postcssPresetEnv from 'postcss-preset-env'
-import postcss_sass from '@csstools/postcss-sass'
-import postcss_scss from 'postcss-scss'
-import postcss_shopify_settings_variables from 'postcss-shopify-settings-variables'
-import postcss_simple_vars from 'postcss-simple-vars'
-import tailwindcss from 'tailwindcss'
+import cssnanoPlugin from 'cssnano' // A modular minifier, built on top of the PostCSS ecosystem.
+import customMixins from './postcss/custom-mixins.js' // Custom PostCSS Mixins
+import postcss from 'postcss' // PostCSS is a tool for transforming styles with JS plugins.
+import postcssFor from 'postcss-for' // PostCSS plugin to transform @for at-rules to CSS.
+import postcssImport from 'postcss-import' // PostCSS plugin to inline @import rules content.
+import postcssMixins from 'postcss-mixins' // PostCSS plugin for mixins. -- Note, that you must set this plugin before postcss-simple-vars and postcss-nested.
+import postcssPresetEnv from 'postcss-preset-env' // Convert modern CSS into something most browsers can understand
+import postcssSass from '@csstools/postcss-sass' // PostCSS plugin to transform Sass-like @at-rules to CSS.
+import postcssScss from 'postcss-scss' // PostCSS plugin to transform SCSS-like @at-rules to CSS.
+import postcssShopifySettingsVariables from 'postcss-shopify-settings-variables' // PostCSS plugin to allow use of Shopify specific theme variables in Shopify css files.
+import postcssSimpleVars from 'postcss-simple-vars' // PostCSS plugin for Sass-like variables.
+import tailwindcss from 'tailwindcss' // A utility-first CSS framework for rapid UI development.
 
 class PostCssProcessor {
   /**
@@ -21,27 +21,27 @@ class PostCssProcessor {
    */
   static async processStyles (styles, sourceFile, targetFile) {
     const processor = postcss([
-      postcss_sass,
-      postcss_import,
-      postcss_mixins({
+      postcssSass,
+      postcssImport,
+      postcssMixins({
         // PostCSS plugin for mixins. -- Note, that you must set this plugin before postcss-simple-vars and postcss-nested.
-        mixins: custom_mixins
+        mixins: customMixins
       }),
-      postcss_for,
-      postcss_simple_vars,
+      postcssFor,
+      postcssSimpleVars,
       postcssPresetEnv({
         features: {
           'nesting-rules': true
         },
-        stage: 1,
+        stage: 1
       }),
-      postcss_shopify_settings_variables,
+      postcssShopifySettingsVariables,
       tailwindcss({
         content: ['./**/*.{liquid,json}'],
         theme: {
-          extend: {},
+          extend: {}
         },
-        plugins: [],
+        plugins: []
       }),
       cssnanoPlugin({
         preset: ['default', {
@@ -51,15 +51,15 @@ class PostCssProcessor {
           normalizeCharset: false,
           normalizeDisplayValues: false,
           normalizeWhitespace: false,
-          rawCache: true,
+          rawCache: true
         }]
       })
     ])
 
     const result = await processor.process(styles, {
       from: sourceFile,
-      syntax: postcss_scss,
-      to: targetFile,
+      syntax: postcssScss,
+      to: targetFile
     })
 
     return result.css

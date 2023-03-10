@@ -28,7 +28,6 @@ class SectionSchemaUtils {
 
     return sectionSchema
   }
-
 }
 
 export default SectionSchemaUtils

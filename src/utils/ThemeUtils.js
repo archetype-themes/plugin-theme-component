@@ -19,20 +19,19 @@ class ThemeUtils {
       Components.DEFAULT_PACKAGE_SCOPE,
       collectionName
     )
-    if (await FileUtils.isReadable(childRepoPath))
+    if (await FileUtils.isReadable(childRepoPath)) {
       return childRepoPath
-    else {
+    } else {
       let rootFolder
 
-      // yarn berry
       if (env.PROJECT_CWD) {
+        // yarn berry
         rootFolder = env.PROJECT_CWD
-      }
-      // npm
-      else if (env.npm_config_local_prefix) {
+      } else if (env.npm_config_local_prefix) {
+        // npm
         rootFolder = env.npm_config_local_prefix
       } else {
-        logger.debug(`Collection Install cancelled: neither of 'PROJECT_CWD' or 'npm_config_local_prefix' environment variables detected.`)
+        logger.debug('Collection Install cancelled: neither of \'PROJECT_CWD\' or \'npm_config_local_prefix\' environment variables detected.')
         throw new FileAccessError(`${collectionName} Collection not found or not accessible. Is it installed?`)
       }
 
@@ -45,7 +44,6 @@ class ThemeUtils {
       }
     }
   }
-
 }
 
 export default ThemeUtils

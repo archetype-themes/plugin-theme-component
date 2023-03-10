@@ -31,7 +31,7 @@ and process it.
 
 **Notes**
 - The mjs file extension is also accepted.
-- Use of a scripts sub-folder is recommended but not compulsory. Archie will search the whole src diretory tree for
+- Use of a scripts sub-folder is recommended but not compulsory. Archie will search the whole src directory tree for
   your main JavaScript file.
 
 **Resulting files**
@@ -71,7 +71,7 @@ stylesheet and process it.
 
 **Notes**
 - Sass and Less is also handled. Your main file can also use any of the following extensions (css|sass|scss|less)
-- Use of a styles sub-folder is recommended but not compulsory. Archie will search the whole src diretory tree for
+- Use of a styles sub-folder is recommended but not compulsory. Archie will search the whole src directory tree for
   your main stylesheet.
 
 **Resulting files**

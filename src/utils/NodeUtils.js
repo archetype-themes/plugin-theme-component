@@ -1,7 +1,7 @@
 // NodeJS imports
 import { argv, env, exit } from 'node:process'
 import { dirname } from 'path'
-// External librairies imports
+// External libraries imports
 import merge from 'deepmerge'
 // Archie imports
 import FileUtils from './FileUtils.js'
@@ -31,7 +31,7 @@ class NodeUtils {
    */
   static async getPackageJsonData () {
     if (!env.npm_package_json) {
-      throw new Error(`Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.`)
+      throw new Error('Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.')
     }
 
     return JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
@@ -62,7 +62,7 @@ class NodeUtils {
    * @returns {string}
    */
   static getArchieRootFolderName () {
-    return dirname(dirname(import.meta.url)).substring(7)
+    return dirname(dirname(dirname(import.meta.url)).substring(7))
   }
 
   /**
@@ -85,7 +85,6 @@ class NodeUtils {
         }
         logger.error(errorMessage)
       }
-
     }
     exit(1)
   }
@@ -109,7 +108,6 @@ class NodeUtils {
 
     return finalArray
   }
-
 }
 
 export default NodeUtils

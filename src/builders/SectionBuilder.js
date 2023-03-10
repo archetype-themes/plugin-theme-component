@@ -10,7 +10,6 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
-import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
@@ -18,11 +17,10 @@ import StylesUtils from '../utils/StylesUtils.js'
 import Components from '../config/Components.js'
 
 class SectionBuilder {
-
   /**
    * Build Section
    * @param {Section} section
-   * @returns {Promise<Awaited<unknown>[]>} - disk write operations array
+   * @returns {Promise<Awaited<void>[]>} - disk write operations array
    */
   static async build (section) {
     const sectionBuild = (
@@ -65,7 +63,7 @@ class SectionBuilder {
         )
       fileOperationPromises.push(FileUtils.writeFile(section.build.stylesBundleFile, section.build.stylesBundle))
 
-      //Attach CSS bundle file reference to liquid code
+      // Attach CSS bundle file reference to liquid code
       section.build.liquidCode =
         LiquidUtils.generateStylesheetReference(path.basename(section.build.stylesBundleFile)) + '\n' +
         section.build.liquidCode
@@ -86,7 +84,7 @@ class SectionBuilder {
         )
       }
 
-      //Attach Javascript bundle file reference to liquid code
+      // Attach Javascript bundle file reference to liquid code
       section.build.liquidCode =
         LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) + '\n' +
         section.build.liquidCode
@@ -101,7 +99,6 @@ class SectionBuilder {
       let assetFiles = section.files.assetFiles
       assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
       fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
-
     }
 
     fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
@@ -112,18 +109,14 @@ class SectionBuilder {
   /**
    * Build multiple Sections
    * @param {Section[]} sections
-   * @return {Promise<void>}
+   * @returns {Promise<Awaited<void>[]>}
    */
   static async buildMany (sections) {
+    const promises = []
     for (const section of sections) {
-      logger.info(`Building "${section.name}" section`)
-      console.time(`Building "${section.name}" section`)
-
-      await SectionBuilder.build(section)
-
-      logger.info(`${section.name}: Build Complete`)
-      console.timeEnd(`Building "${section.name}" section`)
+      promises.push(SectionBuilder.build(section))
     }
+    return Promise.all(promises)
   }
 
   /**

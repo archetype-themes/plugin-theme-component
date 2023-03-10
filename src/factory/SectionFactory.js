@@ -19,7 +19,6 @@ import Components from '../config/Components.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
 class SectionFactory {
-
   /**
    * Builds a new Section and sets its basic parameters
    * @param {string} name - Section name

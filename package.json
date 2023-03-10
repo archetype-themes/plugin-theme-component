@@ -5,7 +5,7 @@
   "main": "src/bin/archie.js",
   "name": "@archetype-themes/archie",
   "type": "module",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "bin": "src/bin/archie.js",
   "scripts": {
     "test": "standard && exit 0"

@@ -3,7 +3,6 @@ import { mkdir } from 'node:fs/promises'
 import path from 'path'
 
 class LiquidUtils {
-
   /**
    * Finds render tags in liquid code and create Render models
    * @param {string} liquidCode
@@ -50,7 +49,6 @@ class LiquidUtils {
   static async inlineOrCopySnippets (liquidCode, renders, snippetsFolder) {
     let buildLiquidCode = liquidCode
     for (const render of renders) {
-
       if (render.snippet.renders) {
         render.snippet.build.liquidCode =
           await this.inlineOrCopySnippets(render.snippet.liquidCode, render.snippet.renders, snippetsFolder)
