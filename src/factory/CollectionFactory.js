@@ -14,17 +14,16 @@ class CollectionFactory {
   /**
    * From Collection Build Script
    * @param {string} collectionName - Collection name
-   * @param {string} rootFolder - Collection root folder
    * @return {Promise<Collection>}
    */
-  static async fromNameAndFolder (collectionName, rootFolder) {
+  static async fromName (collectionName) {
     const collection = new Collection()
 
     // Set Collection name
     collection.name = collectionName
 
     // Set folder names
-    collection.rootFolder = rootFolder
+    collection.rootFolder = CollectionUtils.getRootFolder(collectionName)
     collection.sectionsFolder = join(collection.rootFolder, Components.COLLECTION_SECTIONS_FOLDER)
 
     // Get Section Names and create Sections

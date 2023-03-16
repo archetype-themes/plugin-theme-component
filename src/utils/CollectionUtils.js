@@ -1,9 +1,12 @@
 // NodeJS imports
 import { access, constants, readdir } from 'node:fs/promises'
 import path from 'path'
+import NodeConfig from '../cli/models/NodeConfig.js'
+import NodeUtils from './NodeUtils.js'
 
 // Archie imports
 import RenderUtils from './RenderUtils.js'
+import ThemeUtils from './ThemeUtils.js'
 
 class CollectionUtils {
   /**
@@ -44,6 +47,26 @@ class CollectionUtils {
     }
 
     return watchFolders.map(folder => path.join(folder, 'src'))
+  }
+
+  /**
+   * Get Collection Root Folder
+   * @param {string} [collectionName] - Required when getting collection root folder from a theme.
+   * @returns {Promise<string>|string}
+   */
+  static getRootFolder (collectionName) {
+    if (NodeConfig.isSection()) {
+      return NodeUtils.getMonorepoRootFolder()
+    }
+    if (NodeConfig.isCollection()) {
+      return NodeUtils.getPackageRootFolder()
+    }
+    if (NodeConfig.isTheme()) {
+      if (!collectionName) {
+        throw new Error('Collection name is required when getting collection root folder from a theme.')
+      }
+      return ThemeUtils.findCollectionPackageRootFolder(collectionName)
+    }
   }
 }
 
