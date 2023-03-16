@@ -1,5 +1,4 @@
 import { join } from 'path'
-import { env } from 'node:process'
 import Components from '../config/Components.js'
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
@@ -22,20 +21,7 @@ class ThemeUtils {
     if (await FileUtils.isReadable(childRepoPath)) {
       return childRepoPath
     } else {
-      let rootFolder
-
-      if (env.PROJECT_CWD) {
-        // yarn berry
-        rootFolder = env.PROJECT_CWD
-      } else if (env.npm_config_local_prefix) {
-        // npm
-        rootFolder = env.npm_config_local_prefix
-      } else {
-        logger.debug('Collection Install cancelled: neither of \'PROJECT_CWD\' or \'npm_config_local_prefix\' environment variables detected.')
-        throw new FileAccessError(`${collectionName} Collection not found or not accessible. Is it installed?`)
-      }
-
-      const parentRepoPath = join(rootFolder, 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
+      const parentRepoPath = join(NodeUtils.getMonorepoRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
       if (await FileUtils.isReadable(parentRepoPath)) {
         return parentRepoPath
       } else {
