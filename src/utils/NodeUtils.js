@@ -50,11 +50,31 @@ class NodeUtils {
    * @return {string}
    */
   static getPackageRootFolder () {
-    if (!env.npm_package_json) {
-      throw new Error(
-        'Environment variable npm_package_json is not set. Please make sure you are executing Archie from within a Node Package folder.')
+    // Generic env variable (should be set by npm and yarn)
+    if (env.npm_package_json) {
+      return dirname(env.npm_package_json)
     }
-    return dirname(env.npm_package_json)
+
+    throw new Error('Unable to get Package Root Folder through Environment Variables. Please make sure you are running Archie from within a Node Package folder.')
+  }
+
+  /**
+   * Get Root Repo Folder (useful in a monorepo context)
+   * @returns {string}
+   */
+  static getMonorepoRootFolder () {
+    // NPM specific env variable
+    if (env.npm_config_local_prefix) {
+      return env.npm_config_local_prefix.toString()
+    }
+
+    // Yarn Berry specific env variable
+    if (env.PROJECT_CWD) {
+      // yarn berry
+      return env.PROJECT_CWD.toString()
+    }
+
+    throw new Error('Monorepo Root Folder couldn\'t be found in the environment variables. Please make sure you are running Archie from within a Node Package folder.')
   }
 
   /**
@@ -66,7 +86,7 @@ class NodeUtils {
   }
 
   /**
-   *
+   * Exit with Error
    * @param {Error|string} error
    */
   static exitWithError (error) {
