@@ -123,3 +123,48 @@ src/layout/theme.liquid
 # Adding/editing Schema locales if needed
 src/locales/[some-locale].schema.json
 ```
+## Testing sections on a local version of Next
+
+### Install theme dependencies 
+
+Install dependencies at the core level + at the Expanse theme level
+
+Expanse package.json will have Next and Archie packages as dev dependencies 
+
+Running the regular gulp deploy (`gulp deploy`) commands should build theme files as usual.
+
+—
+
+### Linking to the Next repo
+
+In your local **next** workspace, install the dependencies 
+
+Run `npm link` 
+
+Switch to the core workspace at the Expanse theme level
+
+Run `npm link @archetype-themes/next`
+
+This should link your local version of Next to the Expanse theme 
+
+Now you can make changes in Next and test them in the theme 
+
+In Next, make section migration changes
+
+Run `npm run build` or `npm run watch` to run the Archie build command and it will build the sections listed inside of the package.json config
+
+To see the sections listed, look for the archie property inside of your package.json config and then the collections object. Sections have been configured under a **next** collection.
+
+Migrated sections are the following: "blog-posts", "scrolling-text", "advanced-content", "background-image-text", "faq", "contact-form", "featured-video", "footer-promotions", "image-compare", "collection-return", "countdown", "age-verification-popup", "logo-list" as of v0.13.0
+
+Now that you’ve run the build successfully switch over to the Expanse theme workspace
+
+A similar package.json next collection config can be found under “archie” in package.json 
+
+Run `npm run archie` or `npm run archiew` to install the sections listed in the theme’s package.json into the Expanse theme 
+
+Then run `npm run deploy` to build the theme files and deploy to the Shopify theme editor
+
+If your `npm link` was successful you will be able to see local changes and test them in the editor. 
+
+Otherwise you may just see results based on the next v0.13.0 package that was released and installed as a dependency. Try unlinking and link again to fix this.
