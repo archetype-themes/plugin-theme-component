@@ -23,7 +23,7 @@ class CollectionFactory {
     collection.name = collectionName
 
     // Set folder names
-    collection.rootFolder = CollectionUtils.getRootFolder(collectionName)
+    collection.rootFolder = await CollectionUtils.findRootFolder(collectionName)
     collection.sectionsFolder = join(collection.rootFolder, Components.COLLECTION_SECTIONS_FOLDER)
 
     // Get Section Names and create Sections
