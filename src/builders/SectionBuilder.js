@@ -15,6 +15,7 @@ import RenderUtils from '../utils/RenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
 import Components from '../config/Components.js'
+import SnippetBuilder from './SnippetBuilder.js'
 
 class SectionBuilder {
   /**
@@ -32,7 +33,7 @@ class SectionBuilder {
     section.build = BuildFactory.fromSection(section)
     await this.resetBuildFolders(section.files, section.build)
 
-    await RenderUtils.buildSnippets(section.renders)
+    await SnippetBuilder.buildMany(section.renders)
 
     // Build Section CSS if it is a Sass file because it doesn't play well with PostCSS style bundles
     // This excludes snippets recursive CSS

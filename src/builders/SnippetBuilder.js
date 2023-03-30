@@ -25,6 +25,25 @@ class SnippetBuilder {
   }
 
   /**
+   * Build Snippets Recursively
+   * @param {Render[]} renders
+   * @param {string[]} [processedSnippets=[]]
+   */
+  static async buildMany (renders, processedSnippets = []) {
+    for (const render of renders) {
+      if (!processedSnippets.includes(render.snippetName)) {
+        await SnippetBuilder.build(render.snippet)
+
+        processedSnippets.push(render.snippetName)
+      }
+
+      if (render.snippet.renders) {
+        await this.buildMany(render.snippet.renders, processedSnippets)
+      }
+    }
+  }
+
+  /**
    *
    * @param {SnippetFiles} snippetFiles
    * @param {SnippetBuild} snippetBuild

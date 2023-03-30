@@ -3,31 +3,11 @@ import { union } from 'lodash-es'
 
 // Archie imports
 import NodeUtils from './NodeUtils.js'
-import SnippetBuilder from '../builders/SnippetBuilder.js'
 import StylesUtils from './StylesUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
 class RenderUtils {
-  /**
-   * Build Snippets Recursively
-   * @param {Render[]} renders
-   * @param {string[]} [processedSnippets=[]]
-   */
-  static async buildSnippets (renders, processedSnippets = []) {
-    for (const render of renders) {
-      if (!processedSnippets.includes(render.snippetName)) {
-        await SnippetBuilder.build(render.snippet)
-
-        processedSnippets.push(render.snippetName)
-      }
-
-      if (render.snippet.renders) {
-        await this.buildSnippets(render.snippet.renders, processedSnippets)
-      }
-    }
-  }
-
   /**
    * Get Render Asset Files Recursively
    * @param {Render[]} renders
