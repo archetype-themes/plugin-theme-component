@@ -12,7 +12,7 @@ class BuildFactory {
     build.snippetsFolder = `${build.rootFolder}/snippets`
 
     build.javascriptFile = `${build.assetsFolder}/${collection.name}.js`
-    build.stylesheet = `${build.assetsFolder}/${collection.name}.css`
+    build.stylesheet = `${build.assetsFolder}/${collection.name}.css.liquid`
     return build
   }
 
@@ -30,7 +30,7 @@ class BuildFactory {
 
     build.liquidFile = `${build.rootFolder}/${section.name}.liquid`
     build.javascriptFile = `${build.assetsFolder}/${section.name}.js`
-    build.stylesheet = `${build.assetsFolder}/${section.name}.css`
+    build.stylesheet = `${build.assetsFolder}/${section.name}.css.liquid`
     build.stylesBundleFile = `${build.assetsFolder}/${section.name}.bundle.css`
     return build
   }
@@ -48,7 +48,7 @@ class BuildFactory {
 
     build.liquidFile = `${build.rootFolder}/${snippet.name}.liquid`
     build.javascriptFile = `${build.assetsFolder}/${snippet.name}.js`
-    build.stylesheet = `${build.assetsFolder}/${snippet.name}.css`
+    build.stylesheet = `${build.assetsFolder}/${snippet.name}.css.liquid`
     return build
   }
 }
