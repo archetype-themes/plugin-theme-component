@@ -9,7 +9,6 @@ import CollectionInstaller from '../../Installers/CollectionInstaller.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
 import Watcher from '../../utils/Watcher.js'
-import ThemeUtils from '../../utils/ThemeUtils.js'
 
 class InstallCommand {
   /**
@@ -46,8 +45,7 @@ class InstallCommand {
     console.time(`Building "${collectionName}" collection`)
 
     // Creating Collection and its children
-    const collectionRootFolder = await ThemeUtils.findCollectionPackageRootFolder(collectionName)
-    const collection = await CollectionFactory.fromNameAndFolder(collectionName, collectionRootFolder)
+    const collection = await CollectionFactory.fromName(collectionName)
     // Build and install Collection
     await CollectionBuilder.build(collection)
 

@@ -1,6 +1,11 @@
 // NodeJS imports
 import { access, constants, readdir } from 'node:fs/promises'
-import path from 'path'
+import { join } from 'path'
+import NodeConfig from '../cli/models/NodeConfig.js'
+import Components from '../config/Components.js'
+import FileAccessError from '../errors/FileAccessError.js'
+import FileUtils from './FileUtils.js'
+import NodeUtils from './NodeUtils.js'
 
 // Archie imports
 import RenderUtils from './RenderUtils.js'
@@ -17,7 +22,7 @@ class CollectionUtils {
     for (const entry of entries) {
       if (entry.isDirectory()) {
         try {
-          const sectionFolder = path.join(sectionsFolder, entry.name)
+          const sectionFolder = join(sectionsFolder, entry.name)
           await access(sectionFolder + '/package.json', constants.R_OK)
           sectionNames.push(entry.name)
         } catch {}
@@ -43,7 +48,58 @@ class CollectionUtils {
       }
     }
 
-    return watchFolders.map(folder => path.join(folder, 'src'))
+    return watchFolders.map(folder => join(folder, 'src'))
+  }
+
+  /**
+   * Get Collection Root Folder
+   * @param {string} [collectionName] - Only Required in a multiple Collection environment only - not fully implemented yet.
+   * @returns {Promise<string>|string}
+   */
+  static async findRootFolder (collectionName) {
+    if (NodeConfig.isSection()) {
+      return NodeUtils.getMonorepoRootFolder()
+    }
+    if (NodeConfig.isCollection()) {
+      return NodeUtils.getPackageRootFolder()
+    }
+    if (NodeConfig.isTheme()) {
+      if (!collectionName && NodeConfig.collections.length === 1) {
+        collectionName = NodeConfig.collections[0]
+      }
+      if (!collectionName) {
+        throw new Error('Collection name is required when getting collection root folder from a theme.')
+      }
+
+      const childRepoPath = join(NodeUtils.getPackageRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
+      if (await FileUtils.isReadable(childRepoPath)) {
+        return childRepoPath
+      }
+
+      const parentRepoPath = join(NodeUtils.getMonorepoRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
+      if (await FileUtils.isReadable(parentRepoPath)) {
+        return parentRepoPath
+      }
+
+      throw new FileAccessError(`${collectionName} Collection not found or not accessible. Is it installed?`)
+    }
+  }
+
+  /**
+   * Find postcss Config File
+   * @param {string} [collectionName]
+   * @returns {Promise<string>}
+   */
+  static async findPostCssConfigFile (collectionName) {
+    const jsFile = join(await this.findRootFolder(collectionName), 'postcss.config.js')
+    if (await FileUtils.isReadable(jsFile)) {
+      return jsFile
+    }
+
+    const mjsFile = join(await this.findRootFolder(collectionName), 'postcss.config.mjs')
+    if (await FileUtils.isReadable(mjsFile)) {
+      return mjsFile
+    }
   }
 }
 

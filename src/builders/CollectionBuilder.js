@@ -36,7 +36,7 @@ class CollectionBuilder {
 
     // Gather and build Stylesheets
     const mainStylesheets = this.getMainStylesheets(collection)
-    collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet)
+    collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.name)
     fileOperationPromises.push(FileUtils.writeFile(collection.build.stylesheet, collection.build.styles))
 
     // Gather and Build Collection JS Files

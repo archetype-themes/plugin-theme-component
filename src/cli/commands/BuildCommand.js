@@ -49,12 +49,11 @@ class BuildCommand {
    */
   static async buildCollection () {
     const collectionName = NodeUtils.getPackageName()
-    const collectRootFolder = NodeUtils.getPackageRootFolder()
 
     logger.info(`Starting ${collectionName}'s build...`)
     const startTime = process.hrtime()
 
-    const collection = await CollectionFactory.fromNameAndFolder(collectionName, collectRootFolder)
+    const collection = await CollectionFactory.fromName(collectionName)
     await CollectionBuilder.build(collection)
 
     logger.info(`Finished ${collectionName}'s build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)

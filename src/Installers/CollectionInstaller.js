@@ -157,7 +157,10 @@ class CollectionInstaller {
    */
   static async injectAssetReferences (collection, theme, options, backupMode) {
     const javascriptFileBasename = basename(collection.build.javascriptFile)
-    const stylesheetBasename = basename(collection.build.stylesheet)
+    let stylesheetBasename = basename(collection.build.stylesheet)
+    if (stylesheetBasename.endsWith('.liquid')) {
+      stylesheetBasename = stylesheetBasename.substring(0, stylesheetBasename.lastIndexOf('.'))
+    }
 
     const injections = []
 
