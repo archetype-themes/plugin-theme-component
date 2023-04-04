@@ -18,7 +18,7 @@
     "@csstools/postcss-sass": "^5.0.1",
     "chokidar": "^3.5.3",
     "deepmerge": "^4.3.1",
-    "esbuild": "^0.17.14",
+    "esbuild": "^0.17.15",
     "lodash-es": "^4.17.21",
     "pino": "^8.10.0",
     "pino-pretty": "^10.0.0",
