@@ -1,5 +1,5 @@
 import esbuild from 'esbuild'
-import EsbuildProcessor from './EsbuildProcessor.js'
+import EsbuildProcessor from './javascript-processors/EsbuildProcessor.js'
 import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
 import FileAccessError from '../errors/FileAccessError.js'
