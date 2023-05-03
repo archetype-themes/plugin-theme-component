@@ -1,5 +1,5 @@
 import esbuild from 'esbuild'
-import EsbuildProcessor from './javascript-processors/EsbuildProcessor.js'
+import EsbuildProcessor from './javascript/EsbuildProcessor.js'
 import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
 import FileAccessError from '../errors/FileAccessError.js'
@@ -16,6 +16,8 @@ class JavaScriptProcessor {
    * @returns {Promise<BuildResult>}
    */
   static async buildJavaScript (outputFile, mainJavaScriptFile, injectedFiles = []) {
+
+    const esbuildConfigFile = await CollectionUtils.findEsbuildConfigFile(collectionName)
     return EsbuildProcessor.buildJavaScript(outputFile, mainJavaScriptFile, injectedFiles)
   }
 
