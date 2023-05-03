@@ -1,4 +1,5 @@
 import postcss from 'postcss' // PostCSS is a tool for transforming styles with JS plugins.
+import postcssrc from 'postcss-load-config'
 
 class PostCssProcessor {
   /**
@@ -6,25 +7,17 @@ class PostCssProcessor {
    * @param {string} styles
    * @param {string} sourceFile
    * @param {string} targetFile
-   * @param {Object} postCssConfig
+   * @param {string} contextPath
    * @return {Promise<string>}
    */
-  static async processStyles (styles, sourceFile, targetFile, postCssConfig) {
-    const processor = postcss(postCssConfig.plugins)
-    const postCssOptions = {
-      from: sourceFile,
-      to: targetFile
-    }
-    // Reference: https://postcss.org/api/#processoptions
-    const additionalProcessOptions = ['map', 'parser', 'stringifier', 'syntax']
+  static async processStyles (styles, sourceFile, targetFile, contextPath) {
+    const { plugins, options } = await postcssrc({ cwd: contextPath }, contextPath)
+    const processor = postcss(plugins)
 
-    for (const option of additionalProcessOptions) {
-      if (postCssConfig[option]) {
-        postCssOptions[option] = postCssConfig[option]
-      }
-    }
+    options.from = sourceFile
+    options.to = targetFile
 
-    const result = await processor.process(styles, postCssOptions)
+    const result = await processor.process(styles, options)
 
     return result.css
   }
