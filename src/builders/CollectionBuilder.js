@@ -30,13 +30,13 @@ class CollectionBuilder {
     logger.info(`Starting Sections' build for: ${collection.sectionNames.join(', ')}`)
 
     // Build sections (will also build inner snippets recursively)
-    await SectionBuilder.buildMany(collection.sections)
+    await SectionBuilder.buildMany(collection.sections, collection.rootFolder)
 
     logger.info(`Finished Sections' build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
 
     // Gather and build Stylesheets
     const mainStylesheets = this.getMainStylesheets(collection)
-    collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.name)
+    collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.rootFolder)
     fileOperationPromises.push(FileUtils.writeFile(collection.build.stylesheet, collection.build.styles))
 
     // Gather and Build Collection JS Files
