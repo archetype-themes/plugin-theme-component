@@ -11,15 +11,16 @@ class SnippetBuilder {
   /**
    * Build Snippet
    * @param {Snippet} snippet
+   * @param {string} collectionRootFolder
    */
-  static async build (snippet) {
+  static async build (snippet, collectionRootFolder) {
     // Generate build elements
     snippet.build = BuildFactory.fromSnippet(snippet)
 
     await this.resetBuildFolders(snippet.files, snippet.build)
 
     if (snippet.files.mainStylesheet && StylesUtils.isSassFile(snippet.files.mainStylesheet)) {
-      snippet.build.styles = await StylesProcessor.buildStyles(snippet.files.mainStylesheet, snippet.build.stylesheet)
+      snippet.build.styles = await StylesProcessor.buildStyles(snippet.files.mainStylesheet, snippet.build.stylesheet, collectionRootFolder)
       await FileUtils.writeFile(snippet.build.stylesheet, snippet.build.styles)
     }
   }
@@ -27,18 +28,19 @@ class SnippetBuilder {
   /**
    * Build Snippets Recursively
    * @param {Render[]} renders
+   * @param {string} collectionRootFolder
    * @param {string[]} [processedSnippets=[]]
    */
-  static async buildMany (renders, processedSnippets = []) {
+  static async buildMany (renders, collectionRootFolder, processedSnippets = []) {
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
-        await SnippetBuilder.build(render.snippet)
+        await SnippetBuilder.build(render.snippet, collectionRootFolder)
 
         processedSnippets.push(render.snippetName)
       }
 
       if (render.snippet.renders) {
-        await this.buildMany(render.snippet.renders, processedSnippets)
+        await this.buildMany(render.snippet.renders, collectionRootFolder, processedSnippets)
       }
     }
   }

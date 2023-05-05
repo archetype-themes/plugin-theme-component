@@ -20,10 +20,11 @@ import SnippetBuilder from './SnippetBuilder.js'
 class SectionBuilder {
   /**
    * Build Section
-   * @param {Section} section
+   * @param {Section} section - The Section model instance
+   * @param {string} [collectionRootFolder] - Collection Root folder, used to get config files for css & js processors
    * @returns {Promise<Awaited<void>[]>} - disk write operations array
    */
-  static async build (section) {
+  static async build (section, collectionRootFolder) {
     const sectionBuild = (
       CLISession.commandOption === Components.SECTION_COMPONENT_NAME
     )
@@ -33,12 +34,12 @@ class SectionBuilder {
     section.build = BuildFactory.fromSection(section)
     await this.resetBuildFolders(section.files, section.build)
 
-    await SnippetBuilder.buildMany(section.renders)
+    await SnippetBuilder.buildMany(section.renders, collectionRootFolder)
 
     // Build Section CSS if it is a Sass file because it doesn't play well with PostCSS style bundles
     // This excludes snippets recursive CSS
     if (section.files.mainStylesheet && StylesUtils.isSassFile(section.files.mainStylesheet)) {
-      section.build.styles = await StylesProcessor.buildStyles(section.files.mainStylesheet, section.build.stylesheet)
+      section.build.styles = await StylesProcessor.buildStyles(section.files.mainStylesheet, section.build.stylesheet, collectionRootFolder)
       fileOperationPromises.push(FileUtils.writeFile(section.build.stylesheet, section.build.styles))
     }
 
@@ -57,6 +58,7 @@ class SectionBuilder {
       // Bundle CSS
       section.build.stylesBundle =
         await this.bundleStyles(
+          collectionRootFolder,
           section.files.mainStylesheet,
           section.build.stylesheet,
           section.renders,
@@ -109,13 +111,14 @@ class SectionBuilder {
 
   /**
    * Build multiple Sections
-   * @param {Section[]} sections
+   * @param {Section[]} sections - Section model instances
+   * @param {string} collectionRootFolder - Collection Root folder, used to get config files for css & js processors
    * @returns {Promise<Awaited<void>[]>}
    */
-  static async buildMany (sections) {
+  static async buildMany (sections, collectionRootFolder) {
     const promises = []
     for (const section of sections) {
-      promises.push(SectionBuilder.build(section))
+      promises.push(SectionBuilder.build(section, collectionRootFolder))
     }
     return Promise.all(promises)
   }
@@ -173,13 +176,14 @@ class SectionBuilder {
   /**
    * Bundle Styles
    * Create a CSS bundle file for the section and all its snippets
+   * @param {string} collectionRootFolder
    * @param {string} sectionMainStylesheet
    * @param {string} sectionBuildStylesheet
    * @param {Render[]} sectionRenders
    * @param {string} targetBundleStylesheet
    * @return {Promise<string>}
    */
-  static async bundleStyles (sectionMainStylesheet, sectionBuildStylesheet, sectionRenders, targetBundleStylesheet) {
+  static async bundleStyles (collectionRootFolder, sectionMainStylesheet, sectionBuildStylesheet, sectionRenders, targetBundleStylesheet) {
     let mainStylesheets = []
 
     if (sectionMainStylesheet) {
@@ -194,7 +198,7 @@ class SectionBuilder {
       mainStylesheets = mainStylesheets.concat(RenderUtils.getSnippetsMainStylesheet(sectionRenders))
     }
 
-    return StylesProcessor.buildStylesBundle(mainStylesheets, targetBundleStylesheet)
+    return StylesProcessor.buildStylesBundle(mainStylesheets, targetBundleStylesheet, collectionRootFolder)
   }
 
   /**
