@@ -75,12 +75,14 @@ class SectionBuilder {
       const rendersJavascriptIndexes = RenderUtils.getSnippetsJavascriptIndex(section.renders)
       if (section.files.javascriptIndex) {
         await JavaScriptProcessor.buildJavaScript(
+          collectionRootFolder,
           section.build.javascriptFile,
           section.files.javascriptIndex,
           rendersJavascriptIndexes
         )
       } else if (rendersJavascriptIndexes.length > 0) {
         await JavaScriptProcessor.buildJavaScript(
+          collectionRootFolder,
           section.build.javascriptFile,
           rendersJavascriptIndexes.shift(),
           rendersJavascriptIndexes

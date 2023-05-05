@@ -42,7 +42,7 @@ class CollectionBuilder {
     // Gather and Build Collection JS Files
     const jsFiles = this.getJsFiles(collection)
     if (jsFiles.length > 0) {
-      await JavaScriptProcessor.buildJavaScript(collection.build.javascriptFile, jsFiles.shift(), jsFiles)
+      await JavaScriptProcessor.buildJavaScript(collection.rootFolder, collection.build.javascriptFile, jsFiles.shift(), jsFiles)
     }
 
     // Build and Write Schema Locales

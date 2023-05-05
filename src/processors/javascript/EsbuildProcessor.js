@@ -1,5 +1,13 @@
-#! /usr/bin/env node
+// NodeJS core modules
+import { join } from 'node:path'
+
+// External Modules
 import esbuild from 'esbuild'
+import merge from 'deepmerge'
+
+// Internal modules
+import FileUtils from '../../utils/FileUtils.js'
+import logger from '../../utils/Logger.js'
 
 // eslint-disable-next-line no-unused-vars
 const { build, BuildResult } = esbuild
@@ -7,13 +15,14 @@ const { build, BuildResult } = esbuild
 class EsbuildProcessor {
   /**
    * Build JavaScript files for a section or snippet
+   * @param {string} configFilePath
    * @param {string} outputFile
    * @param {string} mainJavaScriptFile
-   * @param {string[]} injectedFiles
+   * @param {string[]} [injectedFiles]
    * @returns {Promise<BuildResult>}
    */
-  static async buildJavaScript (outputFile, mainJavaScriptFile, injectedFiles) {
-    const options = {
+  static async buildJavaScript (configFilePath, outputFile, mainJavaScriptFile, injectedFiles) {
+    const defaultOptions = {
       bundle: true,
       charset: 'utf8',
       // drop: ['console'], // TODO: Check with Team to see if we want to use this feature for bundled code or not.
@@ -28,10 +37,20 @@ class EsbuildProcessor {
     }
 
     if (injectedFiles) {
-      options.inject = injectedFiles
+      defaultOptions.inject = injectedFiles
     }
 
-    return build(options)
+    const esbuildConfigFile = join(configFilePath, 'esbuild.config.js')
+    console.log(esbuildConfigFile)
+    if (await FileUtils.isReadable(esbuildConfigFile)) {
+      const configFileOptions = await import(esbuildConfigFile)
+      /** @type {Object} **/
+      const options = merge(defaultOptions, configFileOptions.default)
+      logger.debug('esbuild external config file found and processed')
+      return build(options)
+    }
+    logger.debug('No esbuild external config file was found. Using the embedded Archie default esbuild config.')
+    return build(defaultOptions)
   }
 }
 

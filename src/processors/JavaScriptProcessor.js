@@ -10,15 +10,14 @@ const { BuildResult } = esbuild
 class JavaScriptProcessor {
   /**
    * This is simply a wrapper for the EsbuildProcessor for now
+   * @param {string} collectionRootFolder
    * @param {string} outputFile
    * @param {string} mainJavaScriptFile
-   * @param {string[]} injectedFiles
+   * @param {string[]} [injectedFiles]
    * @returns {Promise<BuildResult>}
    */
-  static async buildJavaScript (outputFile, mainJavaScriptFile, injectedFiles = []) {
-
-    const esbuildConfigFile = await CollectionUtils.findEsbuildConfigFile(collectionName)
-    return EsbuildProcessor.buildJavaScript(outputFile, mainJavaScriptFile, injectedFiles)
+  static async buildJavaScript (collectionRootFolder, outputFile, mainJavaScriptFile, injectedFiles = []) {
+    return EsbuildProcessor.buildJavaScript(collectionRootFolder, outputFile, mainJavaScriptFile, injectedFiles)
   }
 
   /**
