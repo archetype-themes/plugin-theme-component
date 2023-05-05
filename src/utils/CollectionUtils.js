@@ -84,23 +84,6 @@ class CollectionUtils {
       throw new FileAccessError(`${collectionName} Collection not found or not accessible. Is it installed?`)
     }
   }
-
-  /**
-   * Find postcss Config File
-   * @param {string} [collectionName]
-   * @returns {Promise<string>}
-   */
-  static async findPostCssConfigFile (collectionName) {
-    const jsFile = join(await this.findRootFolder(collectionName), 'postcss.config.js')
-    if (await FileUtils.isReadable(jsFile)) {
-      return jsFile
-    }
-
-    const mjsFile = join(await this.findRootFolder(collectionName), 'postcss.config.mjs')
-    if (await FileUtils.isReadable(mjsFile)) {
-      return mjsFile
-    }
-  }
 }
 
 export default CollectionUtils
