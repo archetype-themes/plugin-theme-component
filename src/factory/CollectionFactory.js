@@ -42,7 +42,10 @@ class CollectionFactory {
     let sectionNames = NodeConfig.getCollectionSections(collectionName)
 
     if (sectionNames.length === 0) {
-      logger.info('No section list found for Collection; all sections will be processed.')
+      if (NodeConfig.isTheme()) {
+        logger.warn('No section list found for Collection; all sections will be processed.')
+      }
+
       try {
         sectionNames = await CollectionUtils.findSectionNames(sectionsFolder)
       } catch (error) {

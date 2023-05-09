@@ -41,7 +41,7 @@ class EsbuildProcessor {
     }
 
     const esbuildConfigFile = join(configFilePath, 'esbuild.config.js')
-    console.log(esbuildConfigFile)
+    logger.debug(`ESBuild Config file: ${esbuildConfigFile}`)
     if (await FileUtils.isReadable(esbuildConfigFile)) {
       const configFileOptions = await import(esbuildConfigFile)
       /** @type {Object} **/
@@ -49,7 +49,7 @@ class EsbuildProcessor {
       logger.debug('esbuild external config file found and processed')
       return build(options)
     }
-    logger.debug('No esbuild external config file was found. Using the embedded Archie default esbuild config.')
+    logger.debug('No ESBuild external config file was found. Using the embedded Archie default esbuild config.')
     return build(defaultOptions)
   }
 }
