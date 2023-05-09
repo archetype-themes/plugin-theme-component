@@ -37,8 +37,7 @@ Next, you will need to edit your package.json in order to add/replace the follow
 ```json
 {
   "archie": {
-    "componentType": "collection",
-    "gridSize": 6
+    "componentType": "collection"
   },
   "scripts": {
     "build": "archie build",
@@ -54,7 +53,6 @@ Next, you will need to edit your package.json in order to add/replace the follow
 
 - Add the **archie** group with
     - The **"collection"** component type helps archie identify your package as a collection monorepo.
-    - The **"gridSize"** is for postCSS. It is a default value that Themes can override.
 - Add or change the **scripts**  groups
     - The **"build"** script starts a Collection build with Archie CLI. This is a shortcut to the
       full `npx archie build` command.

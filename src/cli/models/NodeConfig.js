@@ -7,9 +7,6 @@ class NodeConfig {
   /** @type {string}  **/
   static #componentType
 
-  /** @type {number} **/
-  static #gridSize
-
   /**
    * Get Collections
    * @return {string[]}
@@ -40,22 +37,6 @@ class NodeConfig {
    */
   static set componentType (value) {
     this.#componentType = value
-  }
-
-  /**
-   * Get postcss mixins grid size
-   * @return {number}
-   */
-  static get gridSize () {
-    return this.#gridSize
-  }
-
-  /**
-   * Set postcss mixins grid size
-   * @param {number} value
-   */
-  static set gridSize (value) {
-    this.#gridSize = value
   }
 
   /**
