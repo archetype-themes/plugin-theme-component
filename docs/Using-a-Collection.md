@@ -53,15 +53,49 @@ the
 section/snippet.
 
 ## Building your collection
-
 ```shell
 npx archie build collection
 
 # Use the watch flag to refresh build on file change
 npx archie build collection --watch
 ```
-
 This will package your collection's sections and snippets together inside the **build** sub-folder.
+
+**PostCSS Build Pro Tips:**
+When using PostCSS, use of a PostCSS config file at the root of your Collection is recommended. Archie will load it through the use of [postcss-load-config](https://www.npmjs.com/package/postcss-load-config) and take it into consideration when building a section, a collection or even when installing to a theme.
+
+Reference to some [postcss.config.js usage examples](https://github.com/postcss/postcss#usage)
+Reference to [available postcss process options](https://postcss.org/api/#processoptions)
+Reference to the active list of [available PostCSS plugins](https://github.com/postcss/postcss/blob/main/docs/plugins.md) or the [searchable catalog](https://www.postcss.parts/)
+
+**JavScript Build Pro Tips:**
+Archie uses [esbuild](https://esbuild.github.io/) to bundle your javascript. Use of an ESBuild config file at the root of your Collection is optional. Archie will load it and take it into consideration when building a section, a collection or even when installing to a theme. This configuration import feature is specific to Archie and is not documented on esbuild's website.
+
+Here is an example of such a configuration files:
+
+````javascript
+import browsers from '@shopify/browserslist-config' // A list of browsers that we support
+import { resolveToEsbuildTarget } from 'esbuild-plugin-browserslist'
+import browserslist from 'browserslist'
+
+export default {
+  bundle: true,
+  charset: 'utf8',
+  format: 'cjs', // Defaults to iife on browser platform, but this wraps the code inside an immediately-invoked function expression
+  platform: 'browser', // Allows native browser variables
+  target: resolveToEsbuildTarget(browserslist(browsers)),
+  // drop: ['console'], // Enable this to automatically remove console.log entries
+  minify: true,  // Enable this to minify JS
+  sourcemap: false // Enables JS sourcemap
+}
+````
+The target browsers are set using Shopify's supported browserslist. This requires a few NodeJS Modules.
+If used as is, do not forget to use install them by using the following npm install command:
+
+```javascript
+npm i @shopify/browserslist-config esbuild-plugin-browserslist browserslist
+```
+You can refer to [esbuild's API build command documentation](https://esbuild.github.io/api/#build) for a more detailed overview of the available options.
 
 **Watch Flag**
 Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor source folders and refresh your
