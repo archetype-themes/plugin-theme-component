@@ -71,7 +71,7 @@ class BuildCommand {
     const startTime = process.hrtime()
 
     const section = await SectionFactory.fromName(sectionName)
-    await SectionBuilder.build(section)
+    await SectionBuilder.build(section, await CollectionUtils.findRootFolder())
 
     logger.info(`Finished ${sectionName}'s build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
 
