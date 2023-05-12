@@ -3,7 +3,7 @@ import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
 
 // Archie Component imports
-import CLISession from '../cli/models/CLISession.js'
+import NodeConfig from '../cli/models/NodeConfig.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
@@ -14,7 +14,6 @@ import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
-import Components from '../config/Components.js'
 import SnippetBuilder from './SnippetBuilder.js'
 
 class SectionBuilder {
@@ -25,9 +24,6 @@ class SectionBuilder {
    * @returns {Promise<Awaited<void>[]>} - disk write operations array
    */
   static async build (section, collectionRootFolder) {
-    const sectionBuild = (
-      CLISession.commandOption === Components.SECTION_COMPONENT_NAME
-    )
     const fileOperationPromises = []
 
     // Create build model and prepare folders
@@ -54,7 +50,7 @@ class SectionBuilder {
     const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
     section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
 
-    if (sectionBuild) {
+    if (NodeConfig.isSection()) {
       // Bundle CSS
       section.build.stylesBundle =
         await this.bundleStyles(
