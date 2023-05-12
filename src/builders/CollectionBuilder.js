@@ -26,6 +26,7 @@ class CollectionBuilder {
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection)
 
+    // Start Timer
     const startTime = process.hrtime()
     logger.info(`Starting Sections' build for: ${collection.sectionNames.join(', ')}`)
 
@@ -49,9 +50,10 @@ class CollectionBuilder {
     collection.build.schemaLocales = this.buildSchemaLocales(collection.sections)
     await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
 
-    // Gather & Copy Section Liquid Files
-    const liquidFiles = this.getSectionLiquidFiles(collection.sections)
-    fileOperationPromises.push(FileUtils.copyFilesToFolder(liquidFiles, collection.build.sectionsFolder))
+    // Gather & Copy Sections & Snippets Liquid Files
+    for (const section of collection.sections) {
+      fileOperationPromises.push(FileUtils.writeFile(join(collection.build.sectionsFolder, basename(section.build.liquidFile)), section.build.liquidCode))
+    }
 
     // Copy External Snippet Files
     fileOperationPromises.push(this.copySnippetLiquidFiles(collection.sections, collection.build.snippetsFolder))

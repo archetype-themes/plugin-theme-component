@@ -100,9 +100,9 @@ class SectionBuilder {
       let assetFiles = section.files.assetFiles
       assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
       fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
-    }
 
-    fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
+      fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
+    }
 
     return Promise.all(fileOperationPromises)
   }
