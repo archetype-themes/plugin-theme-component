@@ -46,6 +46,14 @@ class NodeUtils {
   }
 
   /**
+   * Get NodeJS Package Scope (ie: @archetype-themes)
+   * @return {string}
+   */
+  static getPackageScope () {
+    return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[0] : env.npm_package_name
+  }
+
+  /**
    * Get Package Root Folder
    * @return {string}
    */

@@ -1,10 +1,15 @@
 {
-  "author": "Archetype Themes Limited Partnership",
-  "description": "${collectionName}'s ${componentName} ${componentType}",
-  "license": "UNLICENSED",
-  "main": "src/index.liquid",
   "name": "${packageName}",
   "version": "1.0.0",
+  "description": "${collectionName}'s ${componentName} ${componentType}",
+  "license": "${license}",
+  "author": "${author}",
+  "main": "src/index.liquid",
+  "repository": {
+    "type": "git",
+    "url": "${gitUrl}",
+    "directory": "${componentFolder}"
+  },
   "archie": {
     "componentType": "${componentType}"
   },
