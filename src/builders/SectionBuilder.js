@@ -43,8 +43,7 @@ class SectionBuilder {
     const snippetsSchema = RenderUtils.getSnippetsSchema(section.renders)
     section.build.schema = SectionSchemaUtils.merge(section.schema, snippetsSchema)
 
-    section.build.liquidCode =
-      await this.buildLiquid(section.liquidCode, section.build.schema, section.renders, section.build.snippetsFolder)
+    section.build.liquidCode = await this.buildLiquid(section.liquidCode, section.build.schema)
 
     // Assemble Schema Locales
     const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
@@ -102,6 +101,7 @@ class SectionBuilder {
       fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
 
       fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
+      fileOperationPromises.push(RenderUtils.getSnippetsLiquidFilesWritePromises(section.renders, section.build.snippetsFolder))
     }
 
     return Promise.all(fileOperationPromises)
@@ -126,17 +126,10 @@ class SectionBuilder {
    * @override
    * @param {string} liquidCode
    * @param {SectionSchema} schema
-   * @param {Render[]} renders
-   * @param {string} snippetsFolder
    * @return {Promise<string>}
    */
-  static async buildLiquid (liquidCode, schema, renders, snippetsFolder) {
+  static async buildLiquid (liquidCode, schema) {
     let buildLiquidCode = liquidCode
-
-    //  Replace renders tags with the proper snippet liquid code recursively
-    if (renders.length > 0) {
-      buildLiquidCode = await LiquidUtils.inlineOrCopySnippets(buildLiquidCode, renders, snippetsFolder)
-    }
 
     // Append section schema to liquid code
     if (schema) {

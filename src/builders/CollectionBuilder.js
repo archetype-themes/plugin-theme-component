@@ -1,5 +1,6 @@
 // Node imports
 import { mkdir, rm } from 'node:fs/promises'
+import { basename, join } from 'node:path'
 
 // Archie imports
 import SectionBuilder from './SectionBuilder.js'
@@ -53,6 +54,7 @@ class CollectionBuilder {
     // Gather & Copy Sections & Snippets Liquid Files
     for (const section of collection.sections) {
       fileOperationPromises.push(FileUtils.writeFile(join(collection.build.sectionsFolder, basename(section.build.liquidFile)), section.build.liquidCode))
+      fileOperationPromises.push(RenderUtils.getSnippetsLiquidFilesWritePromises(section.renders, collection.build.snippetsFolder))
     }
 
     // Copy External Snippet Files
@@ -171,19 +173,6 @@ class CollectionBuilder {
     mainStylesheets = [...new Set(mainStylesheets)]
 
     return mainStylesheets
-  }
-
-  /**
-   * Get Section Liquid Files
-   * @param {Section[]} sections
-   * @return {string[]}
-   */
-  static getSectionLiquidFiles (sections) {
-    const sectionLiquidFiles = []
-    for (const section of sections) {
-      sectionLiquidFiles.push(section.build.liquidFile)
-    }
-    return sectionLiquidFiles
   }
 
   /**

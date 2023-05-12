@@ -1,5 +1,9 @@
 // External Library imports
+import merge from 'deepmerge'
 import { union } from 'lodash-es'
+import { basename } from 'node:path'
+import { join } from 'path'
+import FileUtils from './FileUtils.js'
 
 // Archie imports
 import NodeUtils from './NodeUtils.js'
@@ -56,6 +60,33 @@ class RenderUtils {
     }
 
     return jsFiles
+  }
+
+  /**
+   *
+   * @param {Render[]} renders
+   * @param {string} targetFolder
+   * @param {string[]} [processedSnippets=[]]
+   * @return {Promise[]}
+   */
+  static getSnippetsLiquidFilesWritePromises (renders, targetFolder, processedSnippets = []) {
+    let liquidFilesWritePromises = []
+
+    for (const render of renders) {
+      if (!processedSnippets.includes(render.snippetName)) {
+        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, basename(render.snippet.build.liquidFile)), render.snippet.build.liquidCode))
+      }
+
+      // Recursively check child renders for liquid files
+      if (render.snippet.renders) {
+        const childRendersLiquidWritePromises = this.getSnippetsLiquidFilesWritePromises(render.snippet.renders, targetFolder, processedSnippets)
+        if (childRendersLiquidWritePromises && childRendersLiquidWritePromises.length > 0) {
+          liquidFilesWritePromises = merge(liquidFilesWritePromises, childRendersLiquidWritePromises)
+        }
+      }
+    }
+
+    return liquidFilesWritePromises
   }
 
   /**
