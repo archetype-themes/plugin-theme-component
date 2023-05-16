@@ -51,7 +51,7 @@ class CollectionFactory {
       try {
         sectionNames = await CollectionUtils.findSectionNames(sectionsFolder)
       } catch (error) {
-        throw new FileAccessError(`Couldn't find sections for the ${collectionName} collection on disk. Please verify your install.`)
+        throw new FileAccessError(`Couldn't find or access sections for the ${collectionName} collection on disk. Please verify your install and file permissions.`)
       }
     }
     return sectionNames

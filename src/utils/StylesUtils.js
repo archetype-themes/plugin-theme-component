@@ -1,7 +1,11 @@
-import path from 'path'
+// NodeJS Core Modules
+import path from 'node:path'
+
+// Internal Modules
+import FileMissingError from '../errors/FileMissingError.js'
+import InputFileError from '../errors/InputFileError.js'
 import logger from './Logger.js'
 import FileUtils from './FileUtils.js'
-import FileAccessError from '../errors/FileAccessError.js'
 
 class StylesUtils {
   /**
@@ -45,10 +49,10 @@ class StylesUtils {
       logger.debug(`Main StyleSheet Found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
       return matches[0]
     } else if (matches.length === 0) {
-      throw new FileAccessError('An index or main StyleSheet file could not be found.')
+      throw new FileMissingError('An index or main StyleSheet file could not be found.')
     }
     logger.debug(matches)
-    throw new FileAccessError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
+    throw new InputFileError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
   }
 
   /**

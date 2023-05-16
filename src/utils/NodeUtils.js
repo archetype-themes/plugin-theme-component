@@ -3,6 +3,7 @@ import { argv, env, exit } from 'node:process'
 import { dirname } from 'path'
 // External libraries imports
 import merge from 'deepmerge'
+import InternalError from '../errors/InternalError.js'
 // Archie imports
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
@@ -31,7 +32,7 @@ class NodeUtils {
    */
   static async getPackageJsonData () {
     if (!env.npm_package_json) {
-      throw new Error('Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.')
+      throw new InternalError('Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.')
     }
 
     return JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
@@ -63,7 +64,7 @@ class NodeUtils {
       return dirname(env.npm_package_json)
     }
 
-    throw new Error('Unable to get Package Root Folder through Environment Variables. Please make sure you are running Archie from within a Node Package folder.')
+    throw new InternalError('Unable to get Package Root Folder through Environment Variables. Please make sure you are running Archie from within a Node Package folder.')
   }
 
   /**
@@ -82,7 +83,7 @@ class NodeUtils {
       return env.PROJECT_CWD.toString()
     }
 
-    throw new Error('Monorepo Root Folder couldn\'t be found in the environment variables. Please make sure you are running Archie from within a Node Package folder.')
+    throw new InternalError('Monorepo Root Folder couldn\'t be found in the environment variables. Please make sure you are running Archie from within a Node Package folder.')
   }
 
   /**

@@ -31,11 +31,11 @@ Please refer to the [Sections and Snippets](Sections-and-Snippets.md) guide for 
 
 ### The Template Files
 
-The source template files are located under the [``resources/component-files``](resources/component-files) folder and
-the [``resources/section-files``](resources/section-files) folder. The files will be copied as is into the new
+The source template files are located under the [``resources/component-files``](../resources/component-files) folder and
+the [``resources/section-files``](../resources/section-files) folder. The files will be copied as is into the new
 section/snippet folder.
 
-The files in the [``resources/section-files``](resources/section-files) folder are exclusive to sections.
+The files in the [``resources/section-files``](../resources/section-files) folder are exclusive to sections.
 
 The files contain variables in the form of JavaScript Template Strings. These variables will be replaced with their
 actual value upon creation. The available variables are:
@@ -49,7 +49,7 @@ ${packageName}      // The name of the NPM package for the component with scope
 
 **Pro Tip:** As an Archetype Themes developer, you can edit these files to your liking. You can also add new files to
 the
-[``resources/component-files``](resources/component-files) folder and they will be copied over to the new
+[``resources/component-files``](../resources/component-files) folder and they will be copied over to the new
 section/snippet.
 
 ## Building your collection
@@ -92,7 +92,7 @@ export default {
 The target browsers are set using Shopify's supported browserslist. This requires a few NodeJS Modules.
 If used as is, do not forget to use install them by using the following npm install command:
 
-```javascript
+```shell
 npm i @shopify/browserslist-config esbuild-plugin-browserslist browserslist
 ```
 You can refer to [esbuild's API build command documentation](https://esbuild.github.io/api/#build) for a more detailed overview of the available options.

@@ -3,6 +3,7 @@ import path from 'path'
 
 // External Module imports
 import merge from 'deepmerge'
+import FileMissingError from '../errors/FileMissingError.js'
 
 // Archie module imports
 import FilesFactory from './FilesFactory.js'
@@ -31,7 +32,7 @@ class SnippetFactory {
 
     // Validation: Make sure that the root folder is readable
     if (!await FileUtils.isReadable(snippet.rootFolder)) {
-      logger.error(`Snippet Factory Abort: ${snippet.name} was not found at any expected location: "${snippet.rootFolder}".`)
+      logger.debug(`Snippet Factory Abort: ${snippet.name} was not found at any expected location: "${snippet.rootFolder}".`)
       throw new FileAccessError(`Unable to access the "${snippet.name}" section on disk. Tips: Is it spelled properly? Is the collection installed?`)
     }
 
@@ -40,7 +41,7 @@ class SnippetFactory {
 
     // Validation: Make sure that a liquid file was founds
     if (snippet.files.liquidFiles.length === 0) {
-      throw new FileAccessError(`Snippet Factory: No liquid files file found for the "${snippet.name}" snippet`)
+      throw new FileMissingError(`Snippet Factory: No liquid files file found for the "${snippet.name}" snippet`)
     }
 
     // Load Liquid Code

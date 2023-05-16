@@ -1,8 +1,12 @@
+// External Modules
 import esbuild from 'esbuild'
-import EsbuildProcessor from './javascript/EsbuildProcessor.js'
+
+// Internal Modules
+import FileMissingError from '../errors/FileMissingError.js'
+import InputFileError from '../errors/InputFileError.js'
 import logger from '../utils/Logger.js'
 import FileUtils from '../utils/FileUtils.js'
-import FileAccessError from '../errors/FileAccessError.js'
+import EsbuildProcessor from './javascript/EsbuildProcessor.js'
 
 // eslint-disable-next-line no-unused-vars
 const { BuildResult } = esbuild
@@ -40,10 +44,10 @@ class JavaScriptProcessor {
       logger.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
       return matches[0]
     } else if (matches.length === 0) {
-      throw new FileAccessError('An index or main JavaScript file could not be found.')
+      throw new FileMissingError('An index or main JavaScript file could not be found.')
     }
     logger.debug(matches)
-    throw new FileAccessError('Only one index or main JavaScript file is allowed but multiple matches were found.')
+    throw new InputFileError('Only one index or main JavaScript file is allowed but multiple matches were found.')
   }
 
   /**
