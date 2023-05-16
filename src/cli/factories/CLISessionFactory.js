@@ -1,5 +1,7 @@
 // Node JS imports
 import { exit } from 'node:process'
+import CommandLineInputError from '../../errors/CommandLineInputError.js'
+import InternalError from '../../errors/InternalError.js'
 
 // Archie imports
 import logger from '../../utils/Logger.js'
@@ -98,14 +100,13 @@ class CLISessionFactory {
   static #validateCommand (callerComponentType, command, availableCommands) {
     if (!availableCommands.includes(command)) {
       this.#sayHi()
-      throw new Error(`Unknown command "${command}"`)
+      throw new CommandLineInputError(`Unknown command "${command}"`)
     }
 
     // Validate that the Component is entitled to call this Command
     const commandEnabledComponentTypes = this.#getCommandEnabledComponentTypes(command)
     if (!commandEnabledComponentTypes.includes(callerComponentType)) {
-      throw new Error(`INVALID COMPONENT TYPE: "${callerComponentType}". This script can only be run from the following component(s): [${commandEnabledComponentTypes.join(
-        '/')}].`)
+      throw new CommandLineInputError(`Invalid Component Type: "${callerComponentType}". This script can only be run from the following component(s): [${commandEnabledComponentTypes.join('/')}].`)
     }
   }
 
@@ -114,12 +115,11 @@ class CLISessionFactory {
 
     const availableCommandOptions = this.#getCommandAvailableOptions(command)
     if (!availableCommandOptions.includes(commandOption)) {
-      throw new Error(`INVALID COMMAND OPTION: "${commandOption}". This command only accepts the following option(s): [${availableCommandOptions.join(
-        '/')}].`)
+      throw new CommandLineInputError(`Invalid Command Option "${commandOption}". This command only accepts the following option(s): [${availableCommandOptions.join('/')}].`)
     }
 
     if (!targetComponent) {
-      throw new Error(`Please specify a ${commandOption} name. ie: npx archie ${command} ${commandOption} some-smart-${commandOption}-name`)
+      throw new CommandLineInputError(`Please specify a ${commandOption} name. ie: npx archie ${command} ${commandOption} some-smart-${commandOption}-name`)
     }
 
     if (watchFlag && !CLIFlags.WATCH_FLAG_COMMANDS.includes(command)) {
@@ -141,7 +141,7 @@ class CLISessionFactory {
       case CLICommands.INSTALL_COMMAND_NAME:
         return CLICommands.INSTALL_COMMAND_OPTIONS
       default:
-        throw new Error(`ARCHIE UTILS: getCommandAvailableOptions => Unknown command "${command}"`)
+        throw new InternalError(`Invalid command "${command}"`)
     }
   }
 
@@ -154,7 +154,7 @@ class CLISessionFactory {
       case CLICommands.INSTALL_COMMAND_NAME:
         return Components.COLLECTION_COMPONENT_NAME
       default:
-        throw new Error(`ARCHIE UTILS: getCommandDefaultOption => Unknown command ${command}`)
+        throw new InternalError(`Invalid command ${command}`)
     }
   }
 
@@ -179,10 +179,10 @@ class CLISessionFactory {
         if (Object.keys(NodeConfig.collections).length > 0) {
           return Object.keys(NodeConfig.collections)[0]
         } else {
-          throw new Error('No Default Collection found in configuration for install, please specify a collection name.')
+          throw new CommandLineInputError('No Default Collection found in configuration for install, please specify a collection name.')
         }
       default:
-        throw new Error(`ARCHIE UTILS: getCommandDefaultTargetComponent => Unknown command ${command}`)
+        throw new InternalError(`Invalid command ${command}`)
     }
   }
 
@@ -200,7 +200,7 @@ class CLISessionFactory {
       case CLICommands.INSTALL_COMMAND_NAME:
         return CLICommands.INSTALL_COMMAND_COMPONENTS
       default:
-        throw new Error(`ARCHIE UTILS: getCommandEnabledComponentTypes => Unknown command ${command}`)
+        throw new InternalError(`Invalid command ${command}`)
     }
   }
 

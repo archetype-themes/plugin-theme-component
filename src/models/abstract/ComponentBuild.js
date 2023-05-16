@@ -1,3 +1,5 @@
+import AbstractClassInstantiationError from '../../errors/AbstractClassInstantiationError.js'
+
 class ComponentBuild {
   /** @type {string} **/
   #assetsFolder
@@ -31,7 +33,7 @@ class ComponentBuild {
 
   constructor () {
     if (new.target === ComponentBuild) {
-      throw new TypeError('Cannot construct ComponentBuild instances directly')
+      throw new AbstractClassInstantiationError('Cannot construct ComponentBuild instances directly. It is meant to be used as an abstract class.')
     }
   }
 

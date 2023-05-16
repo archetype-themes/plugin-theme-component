@@ -1,5 +1,6 @@
 // Internal Modules
 import CLI from '../../config/CLI.js'
+import ConfigError from '../../errors/ConfigError.js'
 import NodeConfig from '../models/NodeConfig.js'
 import logger from '../../utils/Logger.js'
 
@@ -24,13 +25,13 @@ class NodeConfigFactory {
   static #findComponentType (packageJsonData) {
     /** @var {archie} packageJson.archie **/
     if (!packageJsonData.archie || !packageJsonData.archie.componentType) {
-      throw new Error(`Couldn't find archie.componentType value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}`)
+      throw new ConfigError(`Couldn't find archie.componentType value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}`)
     }
 
     const componentType = packageJsonData.archie.componentType.toLowerCase()
 
     if (!CLI.AVAILABLE_COMPONENT_TYPES.includes(componentType)) {
-      throw new Error(`The value for archie.componentType from package.json must be changed to one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}, "${packageJsonData.archie.componentType}" is not an allowed value`)
+      throw new ConfigError(`Invalid Archie Component Type: The value for archie.componentType from package.json must be changed to one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}, "${packageJsonData.archie.componentType}" is not an allowed value`)
     }
     logger.debug(`Component Type: "${componentType}"`)
 

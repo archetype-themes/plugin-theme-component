@@ -1,3 +1,5 @@
+import AbstractClassInstantiationError from '../../errors/AbstractClassInstantiationError.js'
+
 class Component {
   /** @type {string} **/
   #liquidCode
@@ -19,7 +21,7 @@ class Component {
 
   constructor () {
     if (new.target === Component) {
-      throw new TypeError('Cannot construct Component instances directly')
+      throw new AbstractClassInstantiationError('Cannot construct Component instances directly. It is meant to be used as an abstract class.')
     }
   }
 

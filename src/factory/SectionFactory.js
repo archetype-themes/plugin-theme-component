@@ -3,6 +3,7 @@ import path from 'path'
 
 // External Node JS Modules
 import deepmerge from 'deepmerge'
+import FileMissingError from '../errors/FileMissingError.js'
 
 // Archie Internal JS imports
 import FilesFactory from './FilesFactory.js'
@@ -41,7 +42,7 @@ class SectionFactory {
 
     // Validation: Make sure that the root folder is readable
     if (!await FileUtils.isReadable(section.rootFolder)) {
-      logger.error(`Section Factory Abort: ${section.name} was not found at any expected location: "${section.rootFolder}".`)
+      logger.debug(`Section Factory Abort: ${section.name} was not found at any expected location: "${section.rootFolder}".`)
       throw new FileAccessError(`Unable to access the "${section.name}" section on disk. Tips: Is it spelled properly in your archie config? Is the collection installed?`)
     }
 
@@ -50,7 +51,7 @@ class SectionFactory {
 
     // Validation: Make sure that a liquid file was found
     if (section.files.liquidFiles.length === 0) {
-      throw new FileAccessError(`Section Factory: No liquid files file found for the "${section.name}" section`)
+      throw new FileMissingError(`Section Factory: No liquid files file found for the "${section.name}" section`)
     }
 
     // Load Liquid Code

@@ -1,3 +1,5 @@
+import AbstractClassInstantiationError from '../../errors/AbstractClassInstantiationError.js'
+
 class ComponentFiles {
   /** @type {string[]} */
   #assetFiles = []
@@ -35,7 +37,7 @@ class ComponentFiles {
 
   constructor () {
     if (new.target === ComponentFiles) {
-      throw new TypeError('Cannot construct ComponentFiles instances directly')
+      throw new AbstractClassInstantiationError('Cannot construct ComponentFiles instances directly. It is meant to be used as an abstract class.')
     }
   }
 
