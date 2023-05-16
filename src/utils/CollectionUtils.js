@@ -4,6 +4,7 @@ import { join } from 'path'
 import NodeConfig from '../cli/models/NodeConfig.js'
 import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
+import InternalError from '../errors/InternalError.js'
 import FileUtils from './FileUtils.js'
 import NodeUtils from './NodeUtils.js'
 
@@ -68,7 +69,7 @@ class CollectionUtils {
         collectionName = NodeConfig.collections[0]
       }
       if (!collectionName) {
-        throw new Error('Collection name is required when getting collection root folder from a theme.')
+        throw new InternalError('Collection name is required when getting collection root folder from a theme.')
       }
 
       const childRepoPath = join(NodeUtils.getPackageRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
