@@ -1,0 +1,41 @@
+name: Publish NPM Package On New GitHub Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          registry-url: https://npm.pkg.github.com/
+      - name: Clean install of NodeJS dependencies
+        run: npm ci
+      - name: Run Tests
+        run: npm test
+      - name: Check for version change
+        id: check-version
+        run: |
+          VERSION_CHANGED=$(git diff HEAD^ HEAD -- package.json | grep -E '^\+.*"version"')
+          if [ -z "$VERSION_CHANGED" ]; then
+            echo "Version unchanged. Skipping publish."
+            echo "::set-output name=publish::false"
+          else
+            echo "Version changed. Publishing package."
+            echo "::set-output name=publish::true"
+          fi
+      - name: Publish package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
