@@ -1,3 +1,4 @@
+import LiquidSyntaxError from '../errors/LiquidSyntaxError.js'
 import RecursionError from '../errors/RecursionError.js'
 import Render from '../models/Render.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
@@ -39,7 +40,7 @@ class RenderFactory {
     const render = new Render()
 
     if (!matchGroups.snippet) {
-      throw new Error('Expected name of snippet is empty')
+      throw new LiquidSyntaxError('Expected name of snippet is empty')
     }
     render.snippetName = matchGroups.snippet
     render.liquidTag = matchText
