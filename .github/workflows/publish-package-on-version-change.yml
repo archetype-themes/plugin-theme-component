@@ -26,18 +26,22 @@ jobs:
         run: npm ci
       - name: Run Tests
         run: npm test
-      - name: Check for version change
-        id: check-version
+      - name: Publish NPM Package on version change
         run: |
-          VERSION_CHANGED=$(git diff HEAD^ HEAD -- package.json | grep -E '^\+.*"version"')
-          if [ -z "$VERSION_CHANGED" ]; then
-            echo "Version unchanged. Skipping publish."
-            echo "::set-output name=publish::false"
+          REMOTE_VERSION=$(npm view @archetype-themes/archie version) # Replace with your GitHub username or org name and package name
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          echo "NPM Repository version: $(npm pkg get name):$REMOTE_VERSION"
+          echo "Current Local version:  $(npm pkg get name):$CURRENT_VERSION"
+          echo ""
+          
+          if [ "$CURRENT_VERSION" != "$REMOTE_VERSION" ]; then
+            echo "New version detected. Publishing..."
+            git tag $CURRENT_VERSION
+            git push origin $CURRENT_VERSION
+            npm publish
           else
-            echo "Version changed. Publishing package."
-            echo "::set-output name=publish::true"
+            echo "No new version. Skipping publish."
           fi
-      - name: Publish package
-        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
