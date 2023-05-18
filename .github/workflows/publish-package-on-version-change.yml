@@ -41,6 +41,8 @@ jobs:
             echo "::set-output name=should_publish::true"
             echo "::set-output name=new_version::$CURRENT_VERSION"
           fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Create Git Tag
         if: steps.check-version.outputs.should_publish == 'true'
         run: git tag ${{ steps.check-version.outputs.new_version }}
