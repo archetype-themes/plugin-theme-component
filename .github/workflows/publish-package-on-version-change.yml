@@ -1,4 +1,4 @@
-name: Publish NPM Package On New GitHub Release
+name: Publish NPM Package On Version Change
 
 on:
   push:
