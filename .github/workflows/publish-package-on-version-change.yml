@@ -32,7 +32,7 @@ jobs:
           echo "## Version Change Check" >> $GITHUB_STEP_SUMMARY
 
           PACKAGE_NAME=$(npm pkg get name)
-          LOCAL_SEMVER=$(npm pkg get version")
+          LOCAL_SEMVER=$(npm pkg get version)
           REMOTE_SEMVER=$(npm view $PACKAGE_NAME version)
           
           
