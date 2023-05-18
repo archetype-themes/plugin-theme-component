@@ -10,9 +10,16 @@ jobs:
   publish-package-to-github:
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       packages: write
       contents: write
+    env:
+      NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     steps:
+      - name: Init Summary
+        run: |
+          echo "# ${{ github.action }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Install NodeJS
@@ -20,39 +27,71 @@ jobs:
         with:
           node-version: latest
           registry-url: https://npm.pkg.github.com/
-      - name: Clean install of NodeJS dependencies
-        run: npm ci
-      - name: Run Tests
-        run: npm test
       - name: Check if we have a version change
-        id: check-version
         run: |
-          REMOTE_VERSION=$(npm view @archetype-themes/archie version) # Replace with your GitHub username or org name and package name
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "## Version Change Check" >> $GITHUB_STEP_SUMMARY
+
+          PACKAGE_NAME=$(npm pkg get name)
+          LOCAL_SEMVER=$(npm pkg get version")
+          REMOTE_SEMVER=$(npm view $PACKAGE_NAME version)
           
-          echo "NPM Repository version: $(npm pkg get name):$REMOTE_VERSION"
-          echo "Current Local version:  $(npm pkg get name):$CURRENT_VERSION"
-          echo ""
           
-          if [ "$CURRENT_VERSION" = "$REMOTE_VERSION" ]; then
-            echo "No new version. Skipping npm module publication."
-            echo "::set-output name=should_publish::false"
+          echo "- Last Published Version: $PACKAGE_NAME:$REMOTE_SEMVER" >> $GITHUB_STEP_SUMMARY
+          echo "- Current Version: $PACKAGE_NAME:$LOCAL_SEMVER" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$LOCAL_SEMVER" ]]; then
+            echo "PUBLISH=false" >> "$GITHUB_ENV"
+
+            echo "**Local version number is lower than the last published version. Publishing aborted.**"  >> $GITHUB_STEP_SUMMARY
+          elif [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$REMOTE_SEMVER" ]]; then
+            echo "PUBLISH=true" >> "$GITHUB_ENV"
+            echo "LOCAL_SEMVER=$LOCAL_SEMVER" >> "$GITHUB_ENV"
+
+            echo "**Local version number is greater than the last published version.**" >> $GITHUB_STEP_SUMMARY
           else
-            echo "::set-output name=should_publish::true"
-            echo "::set-output name=new_version::$CURRENT_VERSION"
+            echo "PUBLISH=false" >> "$GITHUB_ENV"
+
+            echo "**Local version number is equal to the last published version. Publishing aborted.**" >> $GITHUB_STEP_SUMMARY
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Create Git Tag
-        if: steps.check-version.outputs.should_publish == 'true'
-        run: git tag ${{ steps.check-version.outputs.new_version }}
+          echo "" >> $GITHUB_STEP_SUMMARY
+      - name: Abort Publication
+        if: env.PUBLISH == 'false'
+        run: |
+          echo "Execution terminated - Publishing aborted." >> $GITHUB_STEP_SUMMARY
+          gh run cancel ${{ github.run_id }}
+          gh run watch ${{ github.run_id }}
+      - name: Init Summary
+        if: env.PUBLISH == 'true'
+        run: |
+          echo "## Publish Package" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      - name: Prepare & Test Package
+        if: env.PUBLISH == 'true'
+        run: |
+          echo "## Version Change Check" >> $GITHUB_STEP_SUMMARY
 
+          npm ci
+          echo "- NPM Clean Install >> $GITHUB_STEP_SUMMARY
+
+          npm test
+          echo "- NPM Tests >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
       - name: Publish Git Tag
-        if: steps.check-version.outputs.should_publish == 'true'
-        run: git push origin ${{ steps.check-version.outputs.new_version }}
+        if: env.PUBLISH == 'true'
+        run: |
+          git tag ${{ env.LOCAL_SEMVER }}
+          git push origin ${{ env.LOCAL_SEMVER }}
 
+          echo "- New Git Tag `${{ env.LOCAL_SEMVER }}` Created" >> $GITHUB_STEP_SUMMARY
       - name: Publish package
-        if: steps.check-version.outputs.should_publish == 'true'
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        if: env.PUBLISH == 'true'
+        run: |
+          npm publish
+
+          echo "- Package Version `${{ env.LOCAL_SEMVER }}` Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      - name: Close Summary
+        if: env.PUBLISH == 'true'
+        run: echo "Execution terminated successfully." >> $GITHUB_STEP_SUMMARY
