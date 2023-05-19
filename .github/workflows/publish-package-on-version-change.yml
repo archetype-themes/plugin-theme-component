@@ -9,4 +9,4 @@ on:
 
 jobs:
   publish-package-to-github:
-    uses: archetype-themes/workflows/publish-new-nodejs-package-version.yml@main
+    uses: archetype-themes/workflows/.github/workflows/publish-new-nodejs-package-version.yml@main
