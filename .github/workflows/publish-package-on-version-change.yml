@@ -42,14 +42,14 @@ jobs:
 
           if [[ $LOCAL_SEMVER == $REMOTE_SEMVER ]]; then
             echo "PUBLISH=false" >> "$GITHUB_ENV"
-            echo "**Local version number and the last published version. Publishing aborted.**" >> $GITHUB_STEP_SUMMARY
+            echo "- **Aborting Publication:** The current version and the last published version are the same." >> $GITHUB_STEP_SUMMARY
           elif [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$LOCAL_SEMVER" ]]; then
             echo "PUBLISH=false" >> "$GITHUB_ENV"
-            echo "**Local version number is lower than the last published version. Publishing aborted.**"  >> $GITHUB_STEP_SUMMARY
+            echo "- **Aborting Publication:** Local version number is lower than the last published version."  >> $GITHUB_STEP_SUMMARY
           elif [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$REMOTE_SEMVER" ]]; then
             echo "PUBLISH=true" >> "$GITHUB_ENV"
             echo "LOCAL_SEMVER=$LOCAL_SEMVER" >> "$GITHUB_ENV"
-            echo "**Local version number is greater than the last published version.**" >> $GITHUB_STEP_SUMMARY
+            echo "- **Publication will proceed:** Local version number is greater than the last published version." >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
       - name: Abort Publication
