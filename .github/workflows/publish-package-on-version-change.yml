@@ -1,4 +1,5 @@
-name: Publish NPM Package On Version Change
+name: Publish New NodeJS Package Version
+run-name: Publish New NodeJS Package Version
 
 on:
   push:
@@ -8,87 +9,4 @@ on:
 
 jobs:
   publish-package-to-github:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      packages: write
-      contents: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-      NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    steps:
-      - name: Init Summary
-        run: |
-          echo "### $GITHUB_WORKFLOW" > $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install NodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: latest
-          registry-url: https://npm.pkg.github.com/
-      - name: Check if we have a version change
-        run: |
-          echo "#### Version Change Check" >> $GITHUB_STEP_SUMMARY
-
-          PACKAGE_NAME=$(npm pkg get name | xargs echo)
-          LOCAL_SEMVER=$(npm pkg get version | xargs echo)
-          REMOTE_SEMVER=$(npm view $PACKAGE_NAME version)
-
-          echo "- Last Published Version: $PACKAGE_NAME:$REMOTE_SEMVER" >> $GITHUB_STEP_SUMMARY
-          echo "- Current Version: $PACKAGE_NAME:$LOCAL_SEMVER" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [[ $LOCAL_SEMVER == $REMOTE_SEMVER ]]; then
-            echo "PUBLISH=false" >> "$GITHUB_ENV"
-            echo "- **Aborting Publication:** The current version and the last published version are the same." >> $GITHUB_STEP_SUMMARY
-          elif [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$LOCAL_SEMVER" ]]; then
-            echo "PUBLISH=false" >> "$GITHUB_ENV"
-            echo "- **Aborting Publication:** Local version number is lower than the last published version."  >> $GITHUB_STEP_SUMMARY
-          elif [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$REMOTE_SEMVER" ]]; then
-            echo "PUBLISH=true" >> "$GITHUB_ENV"
-            echo "LOCAL_SEMVER=$LOCAL_SEMVER" >> "$GITHUB_ENV"
-            echo "- **Publication will proceed:** Local version number is greater than the last published version." >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-      - name: Abort Publication
-        if: env.PUBLISH == 'false'
-        run: |
-          echo "Execution terminated - Publishing aborted." >> $GITHUB_STEP_SUMMARY
-          gh run cancel ${{ github.run_id }}
-          gh run watch ${{ github.run_id }}
-      - name: Init Summary
-        if: env.PUBLISH == 'true'
-        run: |
-          echo "#### Publish Package" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-      - name: Prepare & Test Package
-        if: env.PUBLISH == 'true'
-        run: |
-          echo "#### Version Change Check" >> $GITHUB_STEP_SUMMARY
-
-          npm ci
-          echo "- NPM Clean Install >> $GITHUB_STEP_SUMMARY
-
-          npm test
-          echo "- NPM Tests >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-      - name: Publish Git Tag
-        if: env.PUBLISH == 'true'
-        run: |
-          git tag ${{ env.LOCAL_SEMVER }}
-          git push origin ${{ env.LOCAL_SEMVER }}
-
-          echo "- New Git Tag `${{ env.LOCAL_SEMVER }}` Created" >> $GITHUB_STEP_SUMMARY
-      - name: Publish package
-        if: env.PUBLISH == 'true'
-        run: |
-          npm publish
-
-          echo "- Package Version `${{ env.LOCAL_SEMVER }}` Published" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-      - name: Close Summary
-        if: env.PUBLISH == 'true'
-        run: echo "Execution terminated successfully." >> $GITHUB_STEP_SUMMARY
+    uses: archetype-themes/workflows/publish-new-nodejs-package-version.yml
