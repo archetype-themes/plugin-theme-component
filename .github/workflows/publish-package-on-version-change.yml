@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Init Summary
         run: |
-          echo "### ${{ github.action }}" > $GITHUB_STEP_SUMMARY
+          echo "### $GITHUB_WORKFLOW" > $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
       - name: Checkout code
         uses: actions/checkout@v3
