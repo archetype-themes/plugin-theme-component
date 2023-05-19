@@ -1,5 +1,4 @@
 name: Publish New NodeJS Package Version
-run-name: Publish New NodeJS Package Version
 
 on:
   push:
