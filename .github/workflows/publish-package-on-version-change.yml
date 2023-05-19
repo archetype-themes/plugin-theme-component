@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Init Summary
         run: |
-          echo "# ${{ github.action }}" > $GITHUB_STEP_SUMMARY
+          echo "### ${{ github.action }}" > $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,30 +30,26 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - name: Check if we have a version change
         run: |
-          echo "## Version Change Check" >> $GITHUB_STEP_SUMMARY
+          echo "#### Version Change Check" >> $GITHUB_STEP_SUMMARY
 
           PACKAGE_NAME=$(npm pkg get name | xargs echo)
           LOCAL_SEMVER=$(npm pkg get version | xargs echo)
           REMOTE_SEMVER=$(npm view $PACKAGE_NAME version)
-          
-          
+
           echo "- Last Published Version: $PACKAGE_NAME:$REMOTE_SEMVER" >> $GITHUB_STEP_SUMMARY
           echo "- Current Version: $PACKAGE_NAME:$LOCAL_SEMVER" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$LOCAL_SEMVER" ]]; then
+          if [[ $LOCAL_SEMVER == $REMOTE_SEMVER ]]; then
             echo "PUBLISH=false" >> "$GITHUB_ENV"
-
+            echo "**Local version number and the last published version. Publishing aborted.**" >> $GITHUB_STEP_SUMMARY
+          elif [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$LOCAL_SEMVER" ]]; then
+            echo "PUBLISH=false" >> "$GITHUB_ENV"
             echo "**Local version number is lower than the last published version. Publishing aborted.**"  >> $GITHUB_STEP_SUMMARY
           elif [[ $(echo -e "$LOCAL_SEMVER\n$REMOTE_SEMVER" | sort -V | head -n1) == "$REMOTE_SEMVER" ]]; then
             echo "PUBLISH=true" >> "$GITHUB_ENV"
             echo "LOCAL_SEMVER=$LOCAL_SEMVER" >> "$GITHUB_ENV"
-
             echo "**Local version number is greater than the last published version.**" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "PUBLISH=false" >> "$GITHUB_ENV"
-
-            echo "**Local version number is equal to the last published version. Publishing aborted.**" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
       - name: Abort Publication
@@ -65,12 +61,12 @@ jobs:
       - name: Init Summary
         if: env.PUBLISH == 'true'
         run: |
-          echo "## Publish Package" >> $GITHUB_STEP_SUMMARY
+          echo "#### Publish Package" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
       - name: Prepare & Test Package
         if: env.PUBLISH == 'true'
         run: |
-          echo "## Version Change Check" >> $GITHUB_STEP_SUMMARY
+          echo "#### Version Change Check" >> $GITHUB_STEP_SUMMARY
 
           npm ci
           echo "- NPM Clean Install >> $GITHUB_STEP_SUMMARY
