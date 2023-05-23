@@ -1,0 +1,23 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - octocat
+  categories:
+    - title: Added
+      labels:
+        - "*"
+      exclude-labels:
+        - bug
+        - refactoring
+    - title: Changed
+      labels:
+        - refactoring
+    #- title: Deprecated
+    #- title: Removed
+    - title: Fixed
+      labels:
+        - bug
+    #- title: Security
+    #  labels:
