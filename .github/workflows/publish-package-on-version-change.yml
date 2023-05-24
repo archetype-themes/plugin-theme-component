@@ -1,0 +1,11 @@
+name: Publish New NodeJS Package Version
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  publish-package-to-github:
+    uses: archetype-themes/workflows/.github/workflows/publish-new-nodejs-package-version.yml@main
