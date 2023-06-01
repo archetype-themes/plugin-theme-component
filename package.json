@@ -8,7 +8,9 @@
   "version": "1.2.3",
   "bin": "src/bin/archie.js",
   "scripts": {
-    "test": "standard && dpdm --no-warning --no-tree --exit-code circular:1 src/bin/archie.js && exit 0"
+    "dependencies-check": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/archie.js",
+    "lint": "standard",
+    "test": "vitest runq --coverage"
   },
   "publishConfig": {
     "@archetype-themes:registry": "https://npm.pkg.github.com"
@@ -22,13 +24,15 @@
     "lodash-es": "^4.17.21",
     "pino": "^8.14.1",
     "pino-pretty": "^10.0.0",
-    "postcss": "^8.4.23",
+    "postcss": "^8.4.24",
     "postcss-load-config": "^4.0.1",
     "sass": "^1.62.1"
   },
   "devDependencies": {
+    "@vitest/coverage-c8": "^0.31.4",
     "dpdm": "^3.13.0",
-    "standard": "*"
+    "standard": "*",
+    "vitest": "^0.31.4"
   },
   "engines": {
     "node": ">=18.14.2"

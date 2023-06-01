@@ -1,7 +1,6 @@
 import { argv, env } from 'node:process'
 import pino from 'pino'
 import PinoPretty from 'pino-pretty'
-import { dirname } from 'path'
 
 const STACKTRACE_OFFSET = 2
 const LINE_OFFSET = 7
@@ -15,7 +14,7 @@ const { symbols: { asJsonSym } } = pino
  */
 function traceCaller (pinoInstance) {
   const get = (target, name) => name === asJsonSym ? asJson : target[name]
-  const rootFolder = dirname(dirname(dirname(import.meta.url)).substring(7))
+  const rootFolder = new URL('../../', import.meta.url).pathname
 
   function asJson (...args) {
     args[0] = args[0] || Object.create(null)

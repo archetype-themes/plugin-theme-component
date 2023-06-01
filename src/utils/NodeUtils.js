@@ -1,6 +1,6 @@
 // NodeJS imports
 import { argv, env, exit } from 'node:process'
-import { dirname } from 'path'
+import { dirname } from 'node:path'
 // External libraries imports
 import merge from 'deepmerge'
 import InternalError from '../errors/InternalError.js'
@@ -43,6 +43,9 @@ class NodeUtils {
    * @return {string}
    */
   static getPackageName () {
+    if (!env.npm_package_name) {
+      throw new InternalError('Unavailable NPM Package Name environment variable')
+    }
     return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
   }
 
@@ -51,7 +54,10 @@ class NodeUtils {
    * @return {string}
    */
   static getPackageScope () {
-    return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[0] : env.npm_package_name
+    if (!env.npm_package_name) {
+      throw new InternalError('Unavailable NPM Package Name environment variable')
+    }
+    return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[0] : ''
   }
 
   /**
@@ -91,7 +97,7 @@ class NodeUtils {
    * @returns {string}
    */
   static getArchieRootFolderName () {
-    return dirname(dirname(dirname(import.meta.url)).substring(7))
+    return new URL('../../', import.meta.url).pathname
   }
 
   /**
