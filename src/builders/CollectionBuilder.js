@@ -52,9 +52,15 @@ class CollectionBuilder {
     await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
 
     // Gather & Copy Sections & Snippets Liquid Files
+    const processedSnippets = []
     for (const section of collection.sections) {
       fileOperationPromises.push(FileUtils.writeFile(join(collection.build.sectionsFolder, basename(section.build.liquidFile)), section.build.liquidCode))
-      fileOperationPromises.push(RenderUtils.getSnippetsLiquidFilesWritePromises(section.renders, collection.build.snippetsFolder))
+      const {
+        liquidFilesWritePromise,
+        processedSectionSnippets
+      } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
+      processedSnippets.push(...processedSectionSnippets)
+      fileOperationPromises.push(liquidFilesWritePromise)
     }
 
     // Copy External Snippet Files

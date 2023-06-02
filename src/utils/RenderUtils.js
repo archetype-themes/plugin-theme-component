@@ -1,5 +1,4 @@
 // External Library imports
-import merge from 'deepmerge'
 import { union } from 'lodash-es'
 import { basename } from 'node:path'
 import { join } from 'path'
@@ -67,10 +66,10 @@ class RenderUtils {
    * @param {Render[]} renders
    * @param {string} targetFolder
    * @param {string[]} [processedSnippets=[]]
-   * @return {Promise[]}
+   * @return {{liquidFilesWritePromise: Promise<Awaited<unknown>[]>, processedSnippets: string[]}}
    */
-  static getSnippetsLiquidFilesWritePromises (renders, targetFolder, processedSnippets = []) {
-    let liquidFilesWritePromises = []
+  static getSnippetsLiquidFilesWritePromise (renders, targetFolder, processedSnippets = []) {
+    const liquidFilesWritePromises = []
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
@@ -79,14 +78,12 @@ class RenderUtils {
 
       // Recursively check child renders for liquid files
       if (render.snippet.renders) {
-        const childRendersLiquidWritePromises = this.getSnippetsLiquidFilesWritePromises(render.snippet.renders, targetFolder, processedSnippets)
-        if (childRendersLiquidWritePromises && childRendersLiquidWritePromises.length > 0) {
-          liquidFilesWritePromises = merge(liquidFilesWritePromises, childRendersLiquidWritePromises)
-        }
+        const { liquidFilesWritePromise: childRendersLiquidWritePromises } = this.getSnippetsLiquidFilesWritePromise(render.snippet.renders, targetFolder, processedSnippets)
+        liquidFilesWritePromises.push(childRendersLiquidWritePromises)
       }
     }
 
-    return liquidFilesWritePromises
+    return { liquidFilesWritePromise: Promise.all(liquidFilesWritePromises), processedSnippets }
   }
 
   /**

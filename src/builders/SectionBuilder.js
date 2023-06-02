@@ -101,7 +101,8 @@ class SectionBuilder {
       fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
 
       fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
-      fileOperationPromises.push(RenderUtils.getSnippetsLiquidFilesWritePromises(section.renders, section.build.snippetsFolder))
+      const { liquidFilesWritePromise } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
+      fileOperationPromises.push(liquidFilesWritePromise)
     }
 
     return Promise.all(fileOperationPromises)
