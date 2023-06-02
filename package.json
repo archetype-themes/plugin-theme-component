@@ -10,7 +10,7 @@
   "scripts": {
     "dependencies-check": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/archie.js",
     "lint": "standard",
-    "test": "vitest runq --coverage"
+    "test": "vitest run --coverage"
   },
   "publishConfig": {
     "@archetype-themes:registry": "https://npm.pkg.github.com"
