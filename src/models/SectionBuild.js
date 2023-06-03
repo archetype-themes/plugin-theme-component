@@ -4,7 +4,7 @@ class SectionBuild extends ComponentBuild {
   /** @type {SectionSchema} **/
   #schema
 
-  /** @type {Object[]} **/
+  /** @type {Object} **/
   #schemaLocales
 
   /** @type {string} **/
@@ -28,7 +28,7 @@ class SectionBuild extends ComponentBuild {
 
   /**
    * Get Schema Locales
-   * @return {Object[]}
+   * @return {Object}
    */
   get schemaLocales () {
     return this.#schemaLocales
@@ -36,7 +36,7 @@ class SectionBuild extends ComponentBuild {
 
   /**
    * Set Schema locales
-   * @param {Object[]} value
+   * @param {Object} value
    */
   set schemaLocales (value) {
     this.#schemaLocales = value

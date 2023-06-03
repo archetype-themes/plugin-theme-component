@@ -1,12 +1,11 @@
 // NodeJS imports
 import { argv, env, exit } from 'node:process'
 import { dirname } from 'node:path'
-// External libraries imports
-import merge from 'deepmerge'
-import InternalError from '../errors/InternalError.js'
+
 // Archie imports
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
+import InternalError from '../errors/InternalError.js'
 
 class NodeUtils {
   /**
@@ -18,7 +17,7 @@ class NodeUtils {
     const filteredArgs = []
 
     for (const arg of args) {
-      if (!arg.match(/^--(verbose|quiet|debug)$/i)) {
+      if (!/^--(verbose|quiet|debug)$/i.exec(arg)) {
         filteredArgs.push(arg)
       }
     }
@@ -122,26 +121,6 @@ class NodeUtils {
       }
     }
     exit(1)
-  }
-
-  /**
-   *
-   * @param {Object[]} sourceArray
-   * @param {Object[]} newArray
-   * @return {Object[]}
-   */
-  static mergeObjectArrays (sourceArray, newArray) {
-    const finalArray = sourceArray
-
-    for (const key in newArray) {
-      if (finalArray[key]) {
-        finalArray[key] = merge(finalArray[key], newArray[key])
-      } else {
-        finalArray[key] = newArray[key]
-      }
-    }
-
-    return finalArray
   }
 }
 

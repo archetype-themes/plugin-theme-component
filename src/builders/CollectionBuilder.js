@@ -1,4 +1,5 @@
 // Node imports
+import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
@@ -10,7 +11,6 @@ import logger from '../utils/Logger.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
-import NodeUtils from '../utils/NodeUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 
@@ -76,14 +76,14 @@ class CollectionBuilder {
   /**
    * Build Collection Schema Locales
    * @param {Section[]} sections
-   * @return {Object[]}
+   * @return {Object}
    */
   static buildSchemaLocales (sections) {
-    let schemaLocales = []
+    let schemaLocales = {}
 
     for (const section of sections) {
       if (section.build.schemaLocales) {
-        schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, section.build.schemaLocales)
+        schemaLocales = merge(schemaLocales, section.build.schemaLocales)
       }
     }
 

@@ -1,4 +1,5 @@
 // NodeJs imports
+import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
 
@@ -10,7 +11,6 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
-import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
@@ -132,18 +132,18 @@ class SectionBuilder {
   /**
    *
    * @param {string} sectionName
-   * @param {Object[]} [sectionSchemaLocales=[]]
-   * @param {Object[]} [snippetSchemaLocales=[]]
-   * @return {Object[]}
+   * @param {Object} [sectionSchemaLocales={}]
+   * @param {Object} [snippetsSchemaLocales={}]
+   * @return {Object}
    */
-  static buildSchemaLocales (sectionName, sectionSchemaLocales = [], snippetSchemaLocales = []) {
-    let buildSchemaLocales = []
+  static buildSchemaLocales (sectionName, sectionSchemaLocales = {}, snippetsSchemaLocales = {}) {
+    let buildSchemaLocales = {}
 
-    buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, sectionSchemaLocales)
-    buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, snippetSchemaLocales)
+    buildSchemaLocales = merge(buildSchemaLocales, sectionSchemaLocales)
+    buildSchemaLocales = merge(buildSchemaLocales, snippetsSchemaLocales)
 
-    // Make sure all Schema Locales are in the appropriate section namespace
-    for (const locale in buildSchemaLocales) {
+    // Put Schema Locales in the appropriate section namespace
+    for (const locale of Object.keys(buildSchemaLocales)) {
       buildSchemaLocales[locale] = {
         sections: {
           [sectionName]: buildSchemaLocales[locale]

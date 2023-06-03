@@ -16,8 +16,8 @@ class Component {
   /** @type {SectionSchema} **/
   #schema
 
-  /** @type {Object[]} **/
-  #schemaLocales = []
+  /** @type {Object} **/
+  #schemaLocales = {}
 
   constructor () {
     if (new.target === Component) {
@@ -107,7 +107,7 @@ class Component {
 
   /**
    * Get Schema Locales
-   * @return {Object[]}
+   * @return {Object}
    */
   get schemaLocales () {
     return this.#schemaLocales
@@ -115,7 +115,7 @@ class Component {
 
   /**
    * Set Schema Locales
-   * @param {Object[]} value
+   * @param {Object} value
    */
   set schemaLocales (value) {
     this.#schemaLocales = value

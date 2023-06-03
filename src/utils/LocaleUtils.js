@@ -8,17 +8,10 @@ class LocaleUtils {
   /**
    * Parse Locale Files into an object
    * @param {string[]} localeFiles
-   * @return {Promise<Object[]|Object<string, Object<string, string>>>}
+   * @return {Promise<{}>}
    */
   static async parseLocaleFilesContent (localeFiles) {
-    let locales
-    if (localeFiles.length > 0) {
-      if (localeFiles[0].endsWith('.schema.json')) {
-        locales = []
-      } else {
-        locales = {}
-      }
-    }
+    let locales = {}
 
     const singleLocaleFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2}))?(\.default)?(\.schema)?\.json$/
 
@@ -55,13 +48,13 @@ class LocaleUtils {
 
   /**
    * Write Schema Locales
-   * @param {Object[]} schemaLocales
+   * @param {Object} schemaLocales
    * @param {string} localesFolder
    * @return {Promise<Awaited<void>[]>}
    */
   static async writeSchemaLocales (schemaLocales, localesFolder) {
     const promises = []
-    for (const locale in schemaLocales) {
+    for (const locale of Object.keys(schemaLocales)) {
       const schemaLocaleFilename = path.join(localesFolder, `${locale}.schema.json`)
       const localeJsonString = JSON.stringify(schemaLocales[locale], null, 2)
       promises.push(writeFile(schemaLocaleFilename, localeJsonString))

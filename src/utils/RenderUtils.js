@@ -1,10 +1,10 @@
 // External Library imports
+import merge from 'deepmerge'
 import { union } from 'lodash-es'
 import { join } from 'path'
 import FileUtils from './FileUtils.js'
 
 // Archie imports
-import NodeUtils from './NodeUtils.js'
 import StylesUtils from './StylesUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
@@ -164,20 +164,20 @@ class RenderUtils {
    * Get Schema Locales from Render Snippets Recursively
    * @param {Render[]} renders
    * @param {string[]} [processedSnippets=[]]
-   * @return {Object[]}
+   * @return {Object}
    */
   static getSnippetsSchemaLocales (renders, processedSnippets = []) {
-    let schemaLocales = []
+    let schemaLocales = {}
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         if (render.snippet.schemaLocales) {
-          schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, render.snippet.schemaLocales)
+          schemaLocales = merge(schemaLocales, render.snippet.schemaLocales)
         }
 
         // Recursively merge child Schema Locales
         if (render.snippet.renders) {
-          schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
+          schemaLocales = merge(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
         }
 
         processedSnippets.push(render.snippetName)

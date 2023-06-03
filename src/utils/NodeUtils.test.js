@@ -22,7 +22,7 @@ describe('getArgs', () => {
 })
 
 describe('getPackageJsonData', () => {
-  test('Returns package.json as a javascript object when npm_package_json is valid', async (context) => {
+  test('Returns package.json as a javascript object when npm_package_json is valid', async () => {
     vi.stubEnv('npm_package_json', new URL('test/sample.package.json', import.meta.url).pathname)
     const packageJsonData = await NodeUtils.getPackageJsonData()
     expect(packageJsonData).toMatchFileSnapshot('./test/sample.package.json.snap')
@@ -38,7 +38,7 @@ describe('getPackageJsonData', () => {
 })
 
 describe('getPackageName', () => {
-  test('Returns the package name if both package scope and package name are present', (context) => {
+  test('Returns the package name if both package scope and package name are present', () => {
     vi.stubEnv('npm_package_name', '@some-scope/some-package')
     expect(NodeUtils.getPackageName()).toBe('some-package')
     vi.unstubAllEnvs()
@@ -59,7 +59,7 @@ describe('getPackageName', () => {
 })
 
 describe('getPackageScope', () => {
-  test('Returns the package scope if both package scope and package name are present', (context) => {
+  test('Returns the package scope if both package scope and package name are present', () => {
     vi.stubEnv('npm_package_name', '@some-scope/some-package')
     expect(NodeUtils.getPackageScope()).toBe('@some-scope')
     vi.unstubAllEnvs()
@@ -126,128 +126,5 @@ describe('getMonorepoRootFolder', () => {
 describe('getArchieRootFolderName', () => {
   test('Get Root Folder from the current file\'s path.', () => {
     expect(NodeUtils.getMonorepoRootFolder()).toBe(process.cwd())
-  })
-})
-
-describe('mergeObjectArrays', () => {
-  test('Shallow merge', () => {
-    const sourceArray = []
-    const newArray = []
-
-    sourceArray.en = { 'go-forward': 'Go Forward' }
-    newArray.fr = { 'go-forward': 'Avancer' }
-    newArray.sp = { 'go-forward': 'Andale' }
-
-    const mergedArray = NodeUtils.mergeObjectArrays(sourceArray, newArray)
-
-    const expectedArray = []
-    expectedArray.en = { 'go-forward': 'Go Forward' }
-    expectedArray.fr = { 'go-forward': 'Avancer' }
-    expectedArray.sp = { 'go-forward': 'Andale' }
-
-    expect(mergedArray).toEqual(expectedArray)
-  })
-
-  test('Shallow merge with overlap', () => {
-    const sourceArray = []
-    const newArray = []
-
-    sourceArray.en = { 'go-forward': 'Go Forward' }
-    sourceArray.fr = { 'go-forward': 'Go Forward' }
-    newArray.fr = { 'go-forward': 'Avancer' }
-    newArray.sp = { 'go-forward': 'Andale' }
-
-    const expectedArray = []
-    expectedArray.en = { 'go-forward': 'Go Forward' }
-    expectedArray.fr = { 'go-forward': 'Avancer' }
-    expectedArray.sp = { 'go-forward': 'Andale' }
-
-    expect(NodeUtils.mergeObjectArrays(sourceArray, newArray)).toEqual(expectedArray)
-  })
-
-  test('Deep merge', () => {
-    const sourceArray = []
-    const newArray = []
-
-    sourceArray.en = {
-      sections: {
-        'section-name': {
-          'section-item-1': 'Section Item 1', 'section-item-2': 'Section Item 2'
-        }
-      }
-    }
-    newArray.en = { sections: { 'section-name': { 'section-item-3': 'Section Item 3' } } }
-    newArray.fr = {
-      sections: {
-        'section-name': {
-          'section-item-1': 'Article de section 1', 'section-item-2': 'Article de section 2'
-        }
-      }
-    }
-
-    const expectedArray = []
-    expectedArray.en = {
-      sections: {
-        'section-name': {
-          'section-item-1': 'Section Item 1', 'section-item-2': 'Section Item 2', 'section-item-3': 'Section Item 3'
-        }
-      }
-    }
-    expectedArray.fr = {
-      sections: {
-        'section-name': {
-          'section-item-1': 'Article de section 1', 'section-item-2': 'Article de section 2'
-        }
-      }
-    }
-
-    expect(NodeUtils.mergeObjectArrays(sourceArray, newArray)).toEqual(expectedArray)
-  })
-
-  test('Deep merge with overlap', () => {
-    const sourceArray = []
-    const newArray = []
-
-    sourceArray.en = {
-      sections: {
-        'section-name': {
-          'section-item-1': 'Section Item 1', 'section-item-2': 'Section Item 2'
-        }
-      }
-    }
-    newArray.en = {
-      sections: {
-        'section-name': {
-          'section-item-2': 'New Section Item 2',
-          'section-item-3': 'Section Item 3'
-        }
-      }
-    }
-    newArray.fr = {
-      sections: {
-        'section-name': {
-          'section-item-1': 'Article de section 1', 'section-item-2': 'Article de section 2'
-        }
-      }
-    }
-
-    const expectedArray = []
-    expectedArray.en = {
-      sections: {
-        'section-name': {
-          'section-item-1': 'Section Item 1',
-          'section-item-2': 'New Section Item 2',
-          'section-item-3': 'Section Item 3'
-        }
-      }
-    }
-    expectedArray.fr = {
-      sections: {
-        'section-name': {
-          'section-item-1': 'Article de section 1', 'section-item-2': 'Article de section 2'
-        }
-      }
-    }
-    expect(NodeUtils.mergeObjectArrays(sourceArray, newArray)).toEqual(expectedArray)
   })
 })
