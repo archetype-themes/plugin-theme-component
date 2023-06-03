@@ -1,6 +1,5 @@
 // External Library imports
 import { union } from 'lodash-es'
-import { basename } from 'node:path'
 import { join } from 'path'
 import FileUtils from './FileUtils.js'
 
@@ -73,7 +72,7 @@ class RenderUtils {
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
-        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, basename(render.snippet.build.liquidFile)), render.snippet.build.liquidCode))
+        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, `${render.snippet.name}.liquid`), render.snippet.liquidCode))
       }
 
       // Recursively check child renders for liquid files
@@ -178,8 +177,7 @@ class RenderUtils {
 
         // Recursively merge child Schema Locales
         if (render.snippet.renders) {
-          schemaLocales =
-            NodeUtils.mergeObjectArrays(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
+          schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
         }
 
         processedSnippets.push(render.snippetName)
