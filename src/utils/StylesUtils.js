@@ -39,7 +39,7 @@ class StylesUtils {
     const regex = /[/\\]((?:index|main)+\.(?:css|less|sass|scss))$/i
     const matches = []
     for (const styleSheet of styleSheets) {
-      const match = styleSheet.match(regex)
+      const match = RegExp(regex).exec(styleSheet)
       if (match) {
         matches.push(match.input)
       }
@@ -53,20 +53,6 @@ class StylesUtils {
     }
     logger.debug(matches)
     throw new InputFileError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
-  }
-
-  /**
-   * Get Component Main CSS File (excludes sass files)
-   * @param {Section|Snippet} component
-   */
-  static getComponentMainCssFile (component) {
-    if (component.files.mainStylesheet) {
-      if (this.isSassFile(component.files.mainStylesheet)) {
-        return component.build.stylesheet
-      } else {
-        return component.files.mainStylesheet
-      }
-    }
   }
 
   /**

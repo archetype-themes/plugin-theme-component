@@ -5,7 +5,6 @@ import { join } from 'path'
 import FileUtils from './FileUtils.js'
 
 // Archie imports
-import StylesUtils from './StylesUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
@@ -92,17 +91,14 @@ class RenderUtils {
    * @return {string[]}
    */
   static getSnippetsMainStylesheet (renders, processedSnippets = []) {
-    let stylesheets = []
+    const stylesheets = []
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         if (render.snippet.files.mainStylesheet) {
-          const mainCssFile = StylesUtils.getComponentMainCssFile(render.snippet)
-          if (mainCssFile) {
-            stylesheets.push(mainCssFile)
-          }
+          stylesheets.push(render.snippet.files.mainStylesheet)
 
           if (render.snippet.renders) {
-            stylesheets = stylesheets.concat(this.getSnippetsMainStylesheet(render.snippet.renders, processedSnippets))
+            stylesheets.push(...this.getSnippetsMainStylesheet(render.snippet.renders, processedSnippets))
           }
         }
         processedSnippets.push(render.snippetName)

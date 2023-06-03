@@ -11,7 +11,6 @@ import logger from '../utils/Logger.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
-import StylesUtils from '../utils/StylesUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 
 class CollectionBuilder {
@@ -166,12 +165,11 @@ class CollectionBuilder {
     let mainStylesheets = []
 
     for (const section of collection.sections) {
-      const sectionMainCssFile = StylesUtils.getComponentMainCssFile(section)
-      if (sectionMainCssFile) {
-        mainStylesheets.push(sectionMainCssFile)
+      if (section.files.mainStylesheet) {
+        mainStylesheets.push(section.files.mainStylesheet)
       }
       if (section.renders) {
-        mainStylesheets = mainStylesheets.concat(RenderUtils.getSnippetsMainStylesheet(section.renders))
+        mainStylesheets.push(...RenderUtils.getSnippetsMainStylesheet(section.renders))
       }
     }
 
