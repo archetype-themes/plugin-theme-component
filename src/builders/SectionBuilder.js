@@ -14,7 +14,6 @@ import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
-import SnippetBuilder from './SnippetBuilder.js'
 
 class SectionBuilder {
   /**
@@ -24,20 +23,8 @@ class SectionBuilder {
    * @returns {Promise<Awaited<void>[]>} - disk write operations array
    */
   static async build (section, collectionRootFolder) {
-    const fileOperationPromises = []
-
-    // Create build model and prepare folders
+    // Create build module
     section.build = BuildFactory.fromSection(section)
-    await this.resetBuildFolders(section.files, section.build)
-
-    await SnippetBuilder.buildMany(section.renders, collectionRootFolder)
-
-    // Build Section CSS if it is a Sass file because it doesn't play well with PostCSS style bundles
-    // This excludes snippets recursive CSS
-    if (section.files.mainStylesheet && StylesUtils.isSassFile(section.files.mainStylesheet)) {
-      section.build.styles = await StylesProcessor.buildStyles(section.files.mainStylesheet, section.build.stylesheet, collectionRootFolder)
-      fileOperationPromises.push(FileUtils.writeFile(section.build.stylesheet, section.build.styles))
-    }
 
     // Recursively check for Snippet Schema
     const snippetsSchema = RenderUtils.getSnippetsSchema(section.renders)
@@ -50,6 +37,9 @@ class SectionBuilder {
     section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
 
     if (NodeConfig.isSection()) {
+      const fileOperationPromises = []
+      await this.resetBuildFolders(section.files, section.build)
+
       // Bundle CSS
       section.build.stylesBundle =
         await this.bundleStyles(
@@ -103,9 +93,8 @@ class SectionBuilder {
       fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
       const { liquidFilesWritePromise } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
       fileOperationPromises.push(liquidFilesWritePromise)
+      return Promise.all(fileOperationPromises)
     }
-
-    return Promise.all(fileOperationPromises)
   }
 
   /**
