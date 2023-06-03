@@ -57,7 +57,7 @@ class CollectionBuilder {
       fileOperationPromises.push(FileUtils.writeFile(join(collection.build.sectionsFolder, basename(section.build.liquidFile)), section.build.liquidCode))
       const {
         liquidFilesWritePromise,
-        processedSectionSnippets
+        processedSnippets: processedSectionSnippets
       } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
       processedSnippets.push(...processedSectionSnippets)
       fileOperationPromises.push(liquidFilesWritePromise)
