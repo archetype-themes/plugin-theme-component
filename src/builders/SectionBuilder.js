@@ -2,9 +2,11 @@
 import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
+import CLISession from '../cli/models/CLISession.js'
 
 // Archie Component imports
-import NodeConfig from '../cli/models/NodeConfig.js'
+import CLICommands from '../config/CLICommands.js'
+import Components from '../config/Components.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
@@ -13,7 +15,6 @@ import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
-import StylesUtils from '../utils/StylesUtils.js'
 
 class SectionBuilder {
   /**
@@ -36,7 +37,7 @@ class SectionBuilder {
     const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
     section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
 
-    if (NodeConfig.isSection()) {
+    if (CLISession.command === CLICommands.BUILD_COMMAND_NAME && CLISession.commandOption === Components.SECTION_COMPONENT_NAME) {
       const fileOperationPromises = []
       await this.resetBuildFolders(section.files, section.build)
 
@@ -168,11 +169,7 @@ class SectionBuilder {
     let mainStylesheets = []
 
     if (sectionMainStylesheet) {
-      if (StylesUtils.isSassFile(sectionMainStylesheet)) {
-        mainStylesheets.push(sectionBuildStylesheet)
-      } else {
-        mainStylesheets.push(sectionMainStylesheet)
-      }
+      mainStylesheets.push(sectionMainStylesheet)
     }
 
     if (sectionRenders) {
