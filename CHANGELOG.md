@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2023-06-04
+
+### Added
+
+- Templates for new components
+  - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
+  - package.json now inherits "author", "license" and package scope from parent monorepo
+  - package.json now includes repository information
+- SVG Snippets are now processed through SVGO
+- vitest is now installed as a test framework
+- Tests for NodeUtils added
+
+### Changed
+
+- Snippets inlining is disabled, files are now copied individually.
+- Section liquid files are not built in the section folder anymore on collection commands, there is no need.
+
+### Removed
+
+- Sass handling items for mixing sass & postcss. This is not allowed anymore.
+
 ## [1.2.3] - 2023-05-19
 
 ### Changed - External and Shareable Automated NodeJS Package Publication

@@ -37,6 +37,7 @@ class SectionBuilder {
     const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
     section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
 
+    // Build and write physical files only if "build section" was explicitly requested
     if (CLISession.command === CLICommands.BUILD_COMMAND_NAME && CLISession.commandOption === Components.SECTION_COMPONENT_NAME) {
       const fileOperationPromises = []
       await this.resetBuildFolders(section.files, section.build)
