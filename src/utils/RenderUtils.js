@@ -60,7 +60,7 @@ class RenderUtils {
   }
 
   /**
-   *
+   * Get Snippets' Liquid Files' Write Promises
    * @param {Render[]} renders
    * @param {string} targetFolder
    * @param {string[]} [processedSnippets=[]]
