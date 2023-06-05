@@ -26,7 +26,8 @@ class ComponentGenerator {
    */
   static async generate (componentName, componentType) {
     const workspaceFolder = (componentType === Components.SECTION_COMPONENT_NAME) ? Components.COLLECTION_SECTIONS_FOLDER : Components.COLLECTION_SNIPPETS_FOLDER
-    const componentRootFolder = path.join(NodeUtils.getPackageRootFolder(), workspaceFolder, componentName)
+    const componentFolder = path.join(workspaceFolder, componentName)
+    const componentRootFolder = path.join(NodeUtils.getPackageRootFolder(), componentFolder)
 
     logger.info(`Creating "${componentName}" ${componentType}`)
 
@@ -50,13 +51,23 @@ class ComponentGenerator {
     const componentSources = path.join(archieRootFolder, 'resources/component-files')
     const sectionSources = path.join(archieRootFolder, 'resources/section-files')
 
+    const packageJsonData = await NodeUtils.getPackageJsonData()
+
+    const packageScope = NodeUtils.getPackageScope()
+    const packageScopeName = packageScope.charAt(0) === '@' ? packageScope.substring(1) : packageScope
+    const packageName = NodeUtils.getPackageName()
     const copyFolderOptions = {
       recursive: true,
       jsTemplateVariables: {
-        collectionName: NodeUtils.getPackageName(),
+        author: packageJsonData.author ? packageJsonData.author : 'Archetype Themes Limited Partnership',
+        collectionName: packageName,
+        collectionScope: packageScope,
         componentName,
         componentType,
-        packageName: `${Components.DEFAULT_PACKAGE_SCOPE}/${componentName}`
+        componentFolder: `${workspaceFolder}/${componentName}`,
+        gitUrl: `https://github.com/${packageScopeName}/${packageName}.git`,
+        license: packageJsonData.license ? packageJsonData.license : 'UNLICENSED',
+        packageName: `${packageScope}/${componentName}-${componentType}`
       }
     }
 

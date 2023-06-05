@@ -1,5 +1,7 @@
 // Node imports
+import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
+import { basename, join } from 'node:path'
 
 // Archie imports
 import SectionBuilder from './SectionBuilder.js'
@@ -9,8 +11,6 @@ import logger from '../utils/Logger.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
-import NodeUtils from '../utils/NodeUtils.js'
-import StylesUtils from '../utils/StylesUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 
 class CollectionBuilder {
@@ -26,6 +26,7 @@ class CollectionBuilder {
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection)
 
+    // Start Timer
     const startTime = process.hrtime()
     logger.info(`Starting Sections' build for: ${collection.sectionNames.join(', ')}`)
 
@@ -49,9 +50,17 @@ class CollectionBuilder {
     collection.build.schemaLocales = this.buildSchemaLocales(collection.sections)
     await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
 
-    // Gather & Copy Section Liquid Files
-    const liquidFiles = this.getSectionLiquidFiles(collection.sections)
-    fileOperationPromises.push(FileUtils.copyFilesToFolder(liquidFiles, collection.build.sectionsFolder))
+    // Gather & Copy Sections & Snippets Liquid Files
+    const processedSnippets = []
+    for (const section of collection.sections) {
+      fileOperationPromises.push(FileUtils.writeFile(join(collection.build.sectionsFolder, basename(section.build.liquidFile)), section.build.liquidCode))
+      const {
+        liquidFilesWritePromise,
+        processedSnippets: processedSectionSnippets
+      } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
+      processedSnippets.push(...processedSectionSnippets)
+      fileOperationPromises.push(liquidFilesWritePromise)
+    }
 
     // Copy External Snippet Files
     fileOperationPromises.push(this.copySnippetLiquidFiles(collection.sections, collection.build.snippetsFolder))
@@ -66,14 +75,14 @@ class CollectionBuilder {
   /**
    * Build Collection Schema Locales
    * @param {Section[]} sections
-   * @return {Object[]}
+   * @return {Object}
    */
   static buildSchemaLocales (sections) {
-    let schemaLocales = []
+    let schemaLocales = {}
 
     for (const section of sections) {
       if (section.build.schemaLocales) {
-        schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, section.build.schemaLocales)
+        schemaLocales = merge(schemaLocales, section.build.schemaLocales)
       }
     }
 
@@ -156,12 +165,11 @@ class CollectionBuilder {
     let mainStylesheets = []
 
     for (const section of collection.sections) {
-      const sectionMainCssFile = StylesUtils.getComponentMainCssFile(section)
-      if (sectionMainCssFile) {
-        mainStylesheets.push(sectionMainCssFile)
+      if (section.files.mainStylesheet) {
+        mainStylesheets.push(section.files.mainStylesheet)
       }
       if (section.renders) {
-        mainStylesheets = mainStylesheets.concat(RenderUtils.getSnippetsMainStylesheet(section.renders))
+        mainStylesheets.push(...RenderUtils.getSnippetsMainStylesheet(section.renders))
       }
     }
 
@@ -169,19 +177,6 @@ class CollectionBuilder {
     mainStylesheets = [...new Set(mainStylesheets)]
 
     return mainStylesheets
-  }
-
-  /**
-   * Get Section Liquid Files
-   * @param {Section[]} sections
-   * @return {string[]}
-   */
-  static getSectionLiquidFiles (sections) {
-    const sectionLiquidFiles = []
-    for (const section of sections) {
-      sectionLiquidFiles.push(section.build.liquidFile)
-    }
-    return sectionLiquidFiles
   }
 
   /**

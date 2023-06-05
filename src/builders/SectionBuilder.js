@@ -1,21 +1,20 @@
 // NodeJs imports
+import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
+import CLISession from '../cli/models/CLISession.js'
 
 // Archie Component imports
-import CLISession from '../cli/models/CLISession.js'
+import CLICommands from '../config/CLICommands.js'
+import Components from '../config/Components.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
-import NodeUtils from '../utils/NodeUtils.js'
 import RenderUtils from '../utils/RenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
-import StylesUtils from '../utils/StylesUtils.js'
-import Components from '../config/Components.js'
-import SnippetBuilder from './SnippetBuilder.js'
 
 class SectionBuilder {
   /**
@@ -25,36 +24,24 @@ class SectionBuilder {
    * @returns {Promise<Awaited<void>[]>} - disk write operations array
    */
   static async build (section, collectionRootFolder) {
-    const sectionBuild = (
-      CLISession.commandOption === Components.SECTION_COMPONENT_NAME
-    )
-    const fileOperationPromises = []
-
-    // Create build model and prepare folders
+    // Create build module
     section.build = BuildFactory.fromSection(section)
-    await this.resetBuildFolders(section.files, section.build)
-
-    await SnippetBuilder.buildMany(section.renders, collectionRootFolder)
-
-    // Build Section CSS if it is a Sass file because it doesn't play well with PostCSS style bundles
-    // This excludes snippets recursive CSS
-    if (section.files.mainStylesheet && StylesUtils.isSassFile(section.files.mainStylesheet)) {
-      section.build.styles = await StylesProcessor.buildStyles(section.files.mainStylesheet, section.build.stylesheet, collectionRootFolder)
-      fileOperationPromises.push(FileUtils.writeFile(section.build.stylesheet, section.build.styles))
-    }
 
     // Recursively check for Snippet Schema
     const snippetsSchema = RenderUtils.getSnippetsSchema(section.renders)
     section.build.schema = SectionSchemaUtils.merge(section.schema, snippetsSchema)
 
-    section.build.liquidCode =
-      await this.buildLiquid(section.liquidCode, section.build.schema, section.renders, section.build.snippetsFolder)
+    section.build.liquidCode = await this.buildLiquid(section.liquidCode, section.build.schema)
 
     // Assemble Schema Locales
     const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
     section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
 
-    if (sectionBuild) {
+    // Build and write physical files only if "build section" was explicitly requested
+    if (CLISession.command === CLICommands.BUILD_COMMAND_NAME && CLISession.commandOption === Components.SECTION_COMPONENT_NAME) {
+      const fileOperationPromises = []
+      await this.resetBuildFolders(section.files, section.build)
+
       // Bundle CSS
       section.build.stylesBundle =
         await this.bundleStyles(
@@ -104,11 +91,12 @@ class SectionBuilder {
       let assetFiles = section.files.assetFiles
       assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
       fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
+
+      fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
+      const { liquidFilesWritePromise } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
+      fileOperationPromises.push(liquidFilesWritePromise)
+      return Promise.all(fileOperationPromises)
     }
-
-    fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
-
-    return Promise.all(fileOperationPromises)
   }
 
   /**
@@ -130,17 +118,10 @@ class SectionBuilder {
    * @override
    * @param {string} liquidCode
    * @param {SectionSchema} schema
-   * @param {Render[]} renders
-   * @param {string} snippetsFolder
    * @return {Promise<string>}
    */
-  static async buildLiquid (liquidCode, schema, renders, snippetsFolder) {
+  static async buildLiquid (liquidCode, schema) {
     let buildLiquidCode = liquidCode
-
-    //  Replace renders tags with the proper snippet liquid code recursively
-    if (renders.length > 0) {
-      buildLiquidCode = await LiquidUtils.inlineOrCopySnippets(buildLiquidCode, renders, snippetsFolder)
-    }
 
     // Append section schema to liquid code
     if (schema) {
@@ -153,18 +134,18 @@ class SectionBuilder {
   /**
    *
    * @param {string} sectionName
-   * @param {Object[]} [sectionSchemaLocales=[]]
-   * @param {Object[]} [snippetSchemaLocales=[]]
-   * @return {Object[]}
+   * @param {Object} [sectionSchemaLocales={}]
+   * @param {Object} [snippetsSchemaLocales={}]
+   * @return {Object}
    */
-  static buildSchemaLocales (sectionName, sectionSchemaLocales = [], snippetSchemaLocales = []) {
-    let buildSchemaLocales = []
+  static buildSchemaLocales (sectionName, sectionSchemaLocales = {}, snippetsSchemaLocales = {}) {
+    let buildSchemaLocales = {}
 
-    buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, sectionSchemaLocales)
-    buildSchemaLocales = NodeUtils.mergeObjectArrays(buildSchemaLocales, snippetSchemaLocales)
+    buildSchemaLocales = merge(buildSchemaLocales, sectionSchemaLocales)
+    buildSchemaLocales = merge(buildSchemaLocales, snippetsSchemaLocales)
 
-    // Make sure all Schema Locales are in the appropriate section namespace
-    for (const locale in buildSchemaLocales) {
+    // Put Schema Locales in the appropriate section namespace
+    for (const locale of Object.keys(buildSchemaLocales)) {
       buildSchemaLocales[locale] = {
         sections: {
           [sectionName]: buildSchemaLocales[locale]
@@ -189,11 +170,7 @@ class SectionBuilder {
     let mainStylesheets = []
 
     if (sectionMainStylesheet) {
-      if (StylesUtils.isSassFile(sectionMainStylesheet)) {
-        mainStylesheets.push(sectionBuildStylesheet)
-      } else {
-        mainStylesheets.push(sectionMainStylesheet)
-      }
+      mainStylesheets.push(sectionMainStylesheet)
     }
 
     if (sectionRenders) {

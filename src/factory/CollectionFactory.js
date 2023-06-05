@@ -34,6 +34,8 @@ class CollectionFactory {
   }
 
   /**
+   * Get Section Names
+   * Returns the NodeJS config Archie collection item's inner section list or all sections by default.
    * @param {string} collectionName
    * @param {string} sectionsFolder
    * @return {Promise<string[]>}

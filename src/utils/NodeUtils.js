@@ -1,12 +1,11 @@
 // NodeJS imports
 import { argv, env, exit } from 'node:process'
-import { dirname } from 'path'
-// External libraries imports
-import merge from 'deepmerge'
-import InternalError from '../errors/InternalError.js'
+import { dirname } from 'node:path'
+
 // Archie imports
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
+import InternalError from '../errors/InternalError.js'
 
 class NodeUtils {
   /**
@@ -18,7 +17,7 @@ class NodeUtils {
     const filteredArgs = []
 
     for (const arg of args) {
-      if (!arg.match(/^--(verbose|quiet|debug)$/i)) {
+      if (!/^--(verbose|quiet|debug)$/i.exec(arg)) {
         filteredArgs.push(arg)
       }
     }
@@ -43,7 +42,21 @@ class NodeUtils {
    * @return {string}
    */
   static getPackageName () {
+    if (!env.npm_package_name) {
+      throw new InternalError('Unavailable NPM Package Name environment variable')
+    }
     return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
+  }
+
+  /**
+   * Get NodeJS Package Scope (ie: @archetype-themes)
+   * @return {string}
+   */
+  static getPackageScope () {
+    if (!env.npm_package_name) {
+      throw new InternalError('Unavailable NPM Package Name environment variable')
+    }
+    return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[0] : ''
   }
 
   /**
@@ -83,7 +96,7 @@ class NodeUtils {
    * @returns {string}
    */
   static getArchieRootFolderName () {
-    return dirname(dirname(dirname(import.meta.url)).substring(7))
+    return new URL('../../', import.meta.url).pathname
   }
 
   /**
@@ -108,26 +121,6 @@ class NodeUtils {
       }
     }
     exit(1)
-  }
-
-  /**
-   *
-   * @param {Object[]} sourceArray
-   * @param {Object[]} newArray
-   * @return {Object[]}
-   */
-  static mergeObjectArrays (sourceArray, newArray) {
-    const finalArray = sourceArray
-
-    for (const key in newArray) {
-      if (finalArray[key]) {
-        finalArray[key] = merge(finalArray[key], newArray[key])
-      } else {
-        finalArray[key] = newArray[key]
-      }
-    }
-
-    return finalArray
   }
 }
 

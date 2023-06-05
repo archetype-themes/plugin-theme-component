@@ -1,9 +1,10 @@
 // External Library imports
+import merge from 'deepmerge'
 import { union } from 'lodash-es'
+import { join } from 'path'
+import FileUtils from './FileUtils.js'
 
 // Archie imports
-import NodeUtils from './NodeUtils.js'
-import StylesUtils from './StylesUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
@@ -59,23 +60,45 @@ class RenderUtils {
   }
 
   /**
+   * Get Snippets' Liquid Files' Write Promises
+   * @param {Render[]} renders
+   * @param {string} targetFolder
+   * @param {string[]} [processedSnippets=[]]
+   * @return {{liquidFilesWritePromise: Promise<Awaited<unknown>[]>, processedSnippets: string[]}}
+   */
+  static getSnippetsLiquidFilesWritePromise (renders, targetFolder, processedSnippets = []) {
+    const liquidFilesWritePromises = []
+
+    for (const render of renders) {
+      if (!processedSnippets.includes(render.snippetName)) {
+        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, `${render.snippet.name}.liquid`), render.snippet.liquidCode))
+      }
+
+      // Recursively check child renders for liquid files
+      if (render.snippet.renders) {
+        const { liquidFilesWritePromise: childRendersLiquidWritePromises } = this.getSnippetsLiquidFilesWritePromise(render.snippet.renders, targetFolder, processedSnippets)
+        liquidFilesWritePromises.push(childRendersLiquidWritePromises)
+      }
+    }
+
+    return { liquidFilesWritePromise: Promise.all(liquidFilesWritePromises), processedSnippets }
+  }
+
+  /**
    * Get Main Stylesheets From Renders Recursively
    * @param {Render[]} renders
    * @param {string[]} [processedSnippets=[]]
    * @return {string[]}
    */
   static getSnippetsMainStylesheet (renders, processedSnippets = []) {
-    let stylesheets = []
+    const stylesheets = []
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         if (render.snippet.files.mainStylesheet) {
-          const mainCssFile = StylesUtils.getComponentMainCssFile(render.snippet)
-          if (mainCssFile) {
-            stylesheets.push(mainCssFile)
-          }
+          stylesheets.push(render.snippet.files.mainStylesheet)
 
           if (render.snippet.renders) {
-            stylesheets = stylesheets.concat(this.getSnippetsMainStylesheet(render.snippet.renders, processedSnippets))
+            stylesheets.push(...this.getSnippetsMainStylesheet(render.snippet.renders, processedSnippets))
           }
         }
         processedSnippets.push(render.snippetName)
@@ -137,21 +160,20 @@ class RenderUtils {
    * Get Schema Locales from Render Snippets Recursively
    * @param {Render[]} renders
    * @param {string[]} [processedSnippets=[]]
-   * @return {Object[]}
+   * @return {Object}
    */
   static getSnippetsSchemaLocales (renders, processedSnippets = []) {
-    let schemaLocales = []
+    let schemaLocales = {}
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         if (render.snippet.schemaLocales) {
-          schemaLocales = NodeUtils.mergeObjectArrays(schemaLocales, render.snippet.schemaLocales)
+          schemaLocales = merge(schemaLocales, render.snippet.schemaLocales)
         }
 
         // Recursively merge child Schema Locales
         if (render.snippet.renders) {
-          schemaLocales =
-            NodeUtils.mergeObjectArrays(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
+          schemaLocales = merge(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
         }
 
         processedSnippets.push(render.snippetName)

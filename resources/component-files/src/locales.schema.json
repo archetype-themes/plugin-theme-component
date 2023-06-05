@@ -1,4 +1,7 @@
 {
+  "de": {
+    "${componentName}": "${componentName}"
+  },
   "en": {
     "${componentName}": "${componentName}"
   },
@@ -6,6 +9,15 @@
     "${componentName}": "${componentName}"
   },
   "fr": {
+    "${componentName}": "${componentName}"
+  },
+  "it": {
+    "${componentName}": "${componentName}"
+  },
+  "pt-BR": {
+    "${componentName}": "${componentName}"
+  },
+  "pt-PT": {
     "${componentName}": "${componentName}"
   }
 }

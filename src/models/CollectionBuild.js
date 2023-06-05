@@ -11,8 +11,8 @@ class CollectionBuild {
   /** @type {string} **/
   #rootFolder
 
-  /** @type {Object[]} **/
-  #schemaLocales = []
+  /** @type {Object} **/
+  #schemaLocales = {}
 
   /** @type {string} **/
   #sectionsFolder
@@ -92,7 +92,7 @@ class CollectionBuild {
 
   /**
    * Get Schema Locales
-   * @return {Object[]}
+   * @return {Object}
    */
   get schemaLocales () {
     return this.#schemaLocales
@@ -100,7 +100,7 @@ class CollectionBuild {
 
   /**
    * Set Schema Locales
-   * @param {Object[]} value
+   * @param {Object} value
    */
   set schemaLocales (value) {
     this.#schemaLocales = value

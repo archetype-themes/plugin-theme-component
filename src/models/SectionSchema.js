@@ -83,7 +83,7 @@ class SectionSchema {
   /** @type {Preset} **/
   #default
 
-  /** @type {Object<string, Object<string, string>>} **/
+  /** @type {Object} **/
   #locales
 
   /** @type {string[]} **/
@@ -235,7 +235,7 @@ class SectionSchema {
 
   /**
    * Get locales
-   * @return {Object<string, Object<string, string>>}
+   * @return {Object}
    */
   get locales () {
     return this.#locales
@@ -243,7 +243,7 @@ class SectionSchema {
 
   /**
    * Set locales
-   * @param {Object<string, Object<string, string>>} value
+   * @param {Object} value
    */
   set locales (value) {
     this.#locales = value

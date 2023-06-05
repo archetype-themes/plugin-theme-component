@@ -1,5 +1,4 @@
 import SectionBuild from '../models/SectionBuild.js'
-import SnippetBuild from '../models/SnippetBuild.js'
 import CollectionBuild from '../models/CollectionBuild.js'
 
 class BuildFactory {
@@ -32,23 +31,6 @@ class BuildFactory {
     build.javascriptFile = `${build.assetsFolder}/${section.name}.js`
     build.stylesheet = `${build.assetsFolder}/${section.name}.css.liquid`
     build.stylesBundleFile = `${build.assetsFolder}/${section.name}.bundle.css`
-    return build
-  }
-
-  /**
-   *
-   * @param {Snippet} snippet
-   * @returns {SnippetBuild}
-   */
-  static fromSnippet (snippet) {
-    const build = new SnippetBuild()
-    build.rootFolder = `${snippet.rootFolder}/build`
-    build.assetsFolder = `${build.rootFolder}/assets`
-    build.localesFolder = `${build.rootFolder}/locales`
-
-    build.liquidFile = `${build.rootFolder}/${snippet.name}.liquid`
-    build.javascriptFile = `${build.assetsFolder}/${snippet.name}.js`
-    build.stylesheet = `${build.assetsFolder}/${snippet.name}.css.liquid`
     return build
   }
 }
