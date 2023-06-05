@@ -3,6 +3,11 @@ import { loadConfig, optimize } from 'svgo'
 import logger from '../utils/Logger.js'
 
 class SvgProcessor {
+  /** @type {Object} **/
+  static #svgoConfig
+  /** @type {boolean} **/
+  static #svgoConfigCheck = false
+
   /**
    * Build SVG
    * @param {string} svgName
@@ -11,8 +16,14 @@ class SvgProcessor {
    */
   static async buildSvg (svgName, svgSource) {
     // SVGO processing
-    const config = await loadConfig()
-    const result = optimize(svgSource, config)
+    if (!this.#svgoConfigCheck) {
+      this.#svgoConfig = await loadConfig()
+      if (!this.#svgoConfig) {
+        logger.warn('SVGO configuration not found. Proceeding with default settings.')
+      }
+    }
+
+    const result = optimize(svgSource, this.#svgoConfig)
 
     // JSDOM additional manipulations
     const dom = new JSDOM(result.data)
