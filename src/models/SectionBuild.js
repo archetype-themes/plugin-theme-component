@@ -7,6 +7,9 @@ class SectionBuild extends ComponentBuild {
   /** @type {Object} **/
   #schemaLocales
 
+  /** @type {Object} **/
+  #settingsSchema
+
   /** @type {string} **/
   #snippetsFolder
 
@@ -40,6 +43,22 @@ class SectionBuild extends ComponentBuild {
    */
   set schemaLocales (value) {
     this.#schemaLocales = value
+  }
+
+  /**
+   * Get Settings Schema
+   * @return {Object}
+   */
+  get settingsSchema () {
+    return this.#settingsSchema
+  }
+
+  /**
+   * Set Settings Schema
+   * @param {Object} value
+   */
+  set settingsSchema (value) {
+    this.#settingsSchema = value
   }
 
   /**

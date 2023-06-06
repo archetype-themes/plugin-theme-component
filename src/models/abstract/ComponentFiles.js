@@ -29,6 +29,9 @@ class ComponentFiles {
   /** @type {string[]} **/
   #schemaLocaleFiles = []
 
+  /** @type {string} **/
+  #settingsSchemaFile
+
   /** @type {string[]} **/
   #snippetFiles = []
 
@@ -183,6 +186,22 @@ class ComponentFiles {
    */
   set schemaLocaleFiles (value) {
     this.#schemaLocaleFiles = value
+  }
+
+  /**
+   * Get Settings Schema File
+   * @return {string}
+   */
+  get settingsSchemaFile () {
+    return this.#settingsSchemaFile
+  }
+
+  /**
+   * Set Settings Schema File
+   * @param {string} value
+   */
+  set settingsSchemaFile (value) {
+    this.#settingsSchemaFile = value
   }
 
   /**
