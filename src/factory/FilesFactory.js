@@ -91,6 +91,8 @@ class FilesFactory {
               componentFiles.packageJson = file
             } else if (filename === 'schema.json') {
               componentFiles.schemaFile = file
+            } else if (filename === 'settings_schema.json') {
+              componentFiles.settingsSchemaFile = file
             } else if (filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/) ||
               filename.match(/^locales?\.json$/)) {
               componentFiles.localeFiles.push(file)
