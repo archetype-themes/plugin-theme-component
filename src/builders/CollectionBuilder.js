@@ -98,7 +98,7 @@ class CollectionBuilder {
   static async copySnippetLiquidFiles (sections, snippetsFolder) {
     const folderCopyPromises = []
     for (const section of sections) {
-      if (section.renders) {
+      if (section.renders?.length) {
         if (await FileUtils.isReadable(section.build.snippetsFolder)) {
           folderCopyPromises.push(FileUtils.copyFolder(section.build.snippetsFolder, snippetsFolder))
         }
@@ -119,7 +119,7 @@ class CollectionBuilder {
       if (section.files.assetFiles) {
         assetFiles = assetFiles.concat(section.files.assetFiles)
       }
-      if (section.renders) {
+      if (section.renders?.length) {
         assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
       }
     }
@@ -145,7 +145,7 @@ class CollectionBuilder {
       }
 
       // Add Section snippet files
-      if (section.renders) {
+      if (section.renders?.length) {
         jsFiles = jsFiles.concat(RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders))
       }
     }
@@ -168,7 +168,7 @@ class CollectionBuilder {
       if (section.files.mainStylesheet) {
         mainStylesheets.push(section.files.mainStylesheet)
       }
-      if (section.renders) {
+      if (section.renders?.length) {
         mainStylesheets.push(...RecursiveRenderUtils.getSnippetsMainStylesheet(section.renders))
       }
     }
