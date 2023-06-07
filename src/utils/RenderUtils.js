@@ -71,7 +71,7 @@ class RenderUtils {
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
-        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, `${render.snippet.name}.liquid`), render.snippet.liquidCode))
+        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, `${render.snippet.name}.liquid`), render.snippet.build.liquidCode))
       }
 
       // Recursively check child renders for liquid files
