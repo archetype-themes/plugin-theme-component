@@ -27,7 +27,7 @@ class SectionBuilder {
     // Create build module
     section.build = BuildFactory.fromSection(section)
 
-    SnippetBuilder.buildRecursivelyFromRenders(section.renders)
+    await RecursiveRenderUtils.buildSnippets(section.renders)
 
     // Build Section Schema (this includes previously collated locales through factory methods
     const snippetsSchema = RecursiveRenderUtils.getSnippetsSchema(section.renders)

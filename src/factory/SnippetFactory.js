@@ -3,13 +3,12 @@ import path from 'path'
 
 // External Module imports
 import merge from 'deepmerge'
-import SnippetBuilder from '../builders/SnippetBuilder.js'
-import FileMissingError from '../errors/FileMissingError.js'
 
 // Archie module imports
 import FilesFactory from './FilesFactory.js'
 import RenderFactory from './RenderFactory.js'
 import FileAccessError from '../errors/FileAccessError.js'
+import FileMissingError from '../errors/FileMissingError.js'
 import SectionSchema from '../models/SectionSchema.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
@@ -48,7 +47,7 @@ class SnippetFactory {
     // Load Liquid Code
     const pluralForm = snippet.files.liquidFiles.length > 1 ? 's' : ''
     logger.debug(`${snippet.name}: ${snippet.files.liquidFiles.length} liquid file${pluralForm} found`)
-    snippet.liquidCode = await SnippetBuilder.buildLiquid(snippet.name, await FileUtils.getMergedFilesContent(snippet.files.liquidFiles))
+    snippet.liquidCode = await FileUtils.getMergedFilesContent(snippet.files.liquidFiles)
 
     // Load Schema
     if (snippet.files.schemaFile) {
@@ -95,7 +94,7 @@ class SnippetFactory {
     snippet.name = snippetName
     snippet.files = new SnippetFiles()
     snippet.files.liquidFiles = [snippetFile]
-    snippet.liquidCode = await SnippetBuilder.buildLiquid(snippet.name, await FileUtils.getFileContents(snippetFile))
+    snippet.liquidCode = await FileUtils.getFileContents(snippetFile)
 
     // Non-Recursively Create Renders
     snippet.renders = RenderFactory.fromLiquidCode(snippet.liquidCode, snippet.name)

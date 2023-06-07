@@ -2,6 +2,7 @@
 import merge from 'deepmerge'
 import { union } from 'lodash-es'
 import { join } from 'path'
+import SnippetBuilder from '../builders/SnippetBuilder.js'
 import FileUtils from './FileUtils.js'
 
 // Archie imports
@@ -9,6 +10,24 @@ import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
 class RecursiveRenderUtils {
+  /**
+   * Recursively Build Snippets From (Section) Renders
+   * @param {Render[]} renders
+   * @param {Object} [snippetCache={}]
+   */
+  static async buildSnippets (renders, snippetCache = {}) {
+    for (const render of renders) {
+      if (!snippetCache[render.snippetName]) {
+        snippetCache[render.snippetName] = await SnippetBuilder.build(render.snippet)
+      }
+      render.snippet = snippetCache[render.snippetName]
+      // Recursively check child renders for schema
+      if (render.snippet.renders) {
+        await this.buildSnippets(render.snippet.renders, snippetCache)
+      }
+    }
+  }
+
   /**
    * Get Render Asset Files Recursively
    * @param {Render[]} renders
