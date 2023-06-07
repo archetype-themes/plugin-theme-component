@@ -13,7 +13,7 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
-import RenderUtils from '../utils/RenderUtils.js'
+import RecursiveRenderUtils from '../utils/RecursiveRenderUtils.js'
 import SectionSchemaUtils from '../utils/SectionSchemaUtils.js'
 
 class SectionBuilder {
@@ -27,14 +27,16 @@ class SectionBuilder {
     // Create build module
     section.build = BuildFactory.fromSection(section)
 
-    // Recursively check for Snippet Schema
-    const snippetsSchema = RenderUtils.getSnippetsSchema(section.renders)
+    SnippetBuilder.buildRecursivelyFromRenders(section.renders)
+
+    // Build Section Schema (this includes previously collated locales through factory methods
+    const snippetsSchema = RecursiveRenderUtils.getSnippetsSchema(section.renders)
     section.build.schema = SectionSchemaUtils.merge(section.schema, snippetsSchema)
 
     section.build.liquidCode = await this.buildLiquid(section.liquidCode, section.build.schema)
 
     // Assemble Schema Locales
-    const renderSchemaLocales = RenderUtils.getSnippetsSchemaLocales(section.renders)
+    const renderSchemaLocales = RecursiveRenderUtils.getSnippetsSchemaLocales(section.renders)
     section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
 
     // Build and write physical files only if "build section" was explicitly requested
@@ -59,7 +61,7 @@ class SectionBuilder {
         section.build.liquidCode
 
       // Build JS
-      const rendersJavascriptIndexes = RenderUtils.getSnippetsJavascriptIndex(section.renders)
+      const rendersJavascriptIndexes = RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders)
       if (section.files.javascriptIndex) {
         await JavaScriptProcessor.buildJavaScript(
           collectionRootFolder,
@@ -89,11 +91,11 @@ class SectionBuilder {
 
       // Copy Assets
       let assetFiles = section.files.assetFiles
-      assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
+      assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
       fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
 
       fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
-      const { liquidFilesWritePromise } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
+      const { liquidFilesWritePromise } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
       fileOperationPromises.push(liquidFilesWritePromise)
       return Promise.all(fileOperationPromises)
     }
@@ -174,7 +176,7 @@ class SectionBuilder {
     }
 
     if (sectionRenders) {
-      mainStylesheets = mainStylesheets.concat(RenderUtils.getSnippetsMainStylesheet(sectionRenders))
+      mainStylesheets = mainStylesheets.concat(RecursiveRenderUtils.getSnippetsMainStylesheet(sectionRenders))
     }
 
     return StylesProcessor.buildStylesBundle(mainStylesheets, targetBundleStylesheet, collectionRootFolder)

@@ -9,7 +9,7 @@ import FileUtils from './FileUtils.js'
 import NodeUtils from './NodeUtils.js'
 
 // Archie imports
-import RenderUtils from './RenderUtils.js'
+import RecursiveRenderUtils from './RecursiveRenderUtils.js'
 
 class CollectionUtils {
   /**
@@ -42,7 +42,7 @@ class CollectionUtils {
 
     for (const section of collection.sections) {
       watchFolders.push(section.rootFolder)
-      for (const snippetRootFolder of RenderUtils.getSnippetRootFolders(section.renders)) {
+      for (const snippetRootFolder of RecursiveRenderUtils.getSnippetRootFolders(section.renders)) {
         if (!watchFolders.includes(snippetRootFolder)) {
           watchFolders.push(snippetRootFolder)
         }

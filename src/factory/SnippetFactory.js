@@ -57,18 +57,16 @@ class SnippetFactory {
       snippet.schema = Object.assign(snippet.schema, snippetSchemaJson)
     }
 
-    // Load Locales
+    // Load Locales into schema data
     if (snippet.files.localeFiles && snippet.files.localeFiles.length > 0) {
       const locales = await LocaleUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
 
+      // It is possible that a schema file was not present. Then we need to create the section schema to store locale content
       if (!snippet.schema) {
         snippet.schema = new SectionSchema()
       }
-      if (snippet.schema.locales) {
-        snippet.schema.locales = merge(snippet.schema.locales, locales)
-      } else {
-        snippet.schema.locales = locales
-      }
+      // It is possible that some locale data was present in the schema file. if so, we will merge contents.
+      snippet.schema.locales = snippet.schema.locales ? merge(snippet.schema.locales, locales) : locales
     }
 
     // Load Schema Locales

@@ -8,7 +8,7 @@ import FileUtils from './FileUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
-class RenderUtils {
+class RecursiveRenderUtils {
   /**
    * Get Render Asset Files Recursively
    * @param {Render[]} renders
@@ -184,4 +184,4 @@ class RenderUtils {
   }
 }
 
-export default RenderUtils
+export default RecursiveRenderUtils

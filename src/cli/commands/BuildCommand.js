@@ -14,7 +14,7 @@ import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
 import Watcher from '../../utils/Watcher.js'
 import NodeUtils from '../../utils/NodeUtils.js'
-import RenderUtils from '../../utils/RenderUtils.js'
+import RecursiveRenderUtils from '../../utils/RecursiveRenderUtils.js'
 import Components from '../../config/Components.js'
 
 class BuildCommand {
@@ -101,7 +101,7 @@ class BuildCommand {
    * @return {FSWatcher}
    */
   static watchSection (section) {
-    const snippetRootFolders = RenderUtils.getSnippetRootFolders(section.renders)
+    const snippetRootFolders = RecursiveRenderUtils.getSnippetRootFolders(section.renders)
     const watchFolders = [section.rootFolder].concat(snippetRootFolders).map(folder => path.join(folder, 'src'))
 
     const watcher = Watcher.getWatcher(watchFolders)

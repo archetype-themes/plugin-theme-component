@@ -8,7 +8,7 @@ import SectionBuilder from './SectionBuilder.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
-import RenderUtils from '../utils/RenderUtils.js'
+import RecursiveRenderUtils from '../utils/RecursiveRenderUtils.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
@@ -57,7 +57,7 @@ class CollectionBuilder {
       const {
         liquidFilesWritePromise,
         processedSnippets: processedSectionSnippets
-      } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
+      } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
       processedSnippets.push(...processedSectionSnippets)
       fileOperationPromises.push(liquidFilesWritePromise)
     }
@@ -120,7 +120,7 @@ class CollectionBuilder {
         assetFiles = assetFiles.concat(section.files.assetFiles)
       }
       if (section.renders) {
-        assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
+        assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
       }
     }
 
@@ -146,7 +146,7 @@ class CollectionBuilder {
 
       // Add Section snippet files
       if (section.renders) {
-        jsFiles = jsFiles.concat(RenderUtils.getSnippetsJavascriptIndex(section.renders))
+        jsFiles = jsFiles.concat(RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders))
       }
     }
 
@@ -169,7 +169,7 @@ class CollectionBuilder {
         mainStylesheets.push(section.files.mainStylesheet)
       }
       if (section.renders) {
-        mainStylesheets.push(...RenderUtils.getSnippetsMainStylesheet(section.renders))
+        mainStylesheets.push(...RecursiveRenderUtils.getSnippetsMainStylesheet(section.renders))
       }
     }
 
