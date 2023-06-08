@@ -20,9 +20,6 @@ class CollectionInstaller {
    * @return {Promise<void>}
    */
   static async install (theme, collection, backupMode) {
-    logger.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
-    console.time(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
-
     const filesToCopy = []
 
     let injectJavascript = false
@@ -117,10 +114,6 @@ class CollectionInstaller {
     if (injectJavascript || injectStylesheet) {
       await this.injectAssetReferences(collection, theme, { injectJavascript, injectStylesheet }, backupMode)
     }
-
-    logger.info(`${collection.name}: Install Complete`)
-    console.timeEnd(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
-    console.log('\n')
   }
 
   /**
