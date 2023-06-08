@@ -58,8 +58,7 @@ class SnippetFactory {
 
     // Load Locales into schema data
     if (snippet.files.localeFiles && snippet.files.localeFiles.length > 0) {
-      const locales = await LocaleUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
-
+      const locales = await LocaleUtils.parseLocaleFilesContent(snippet.files.localeFiles)
       // It is possible that a schema file was not present. Then we need to create the section schema to store locale content
       if (!snippet.schema) {
         snippet.schema = new SectionSchema()
