@@ -1,6 +1,5 @@
 import { hrtime } from 'node:process'
 import InternalError from '../errors/InternalError.js'
-import logger from './Logger.js'
 
 class Timer {
   static getTimer () {
