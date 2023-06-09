@@ -1,63 +1,20 @@
 // Node JS Internal imports
+import merge from 'deepmerge'
 import path from 'path'
+import SectionSchema from '../models/SectionSchema.js'
 
 // Archie Internal JS imports
-import SectionFiles from '../models/SectionFiles.js'
-import SnippetFiles from '../models/SnippetFiles.js'
-import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
+import LocaleUtils from '../utils/LocaleUtils.js'
 import logger from '../utils/Logger.js'
-import StylesUtils from '../utils/StylesUtils.js'
 
-class FilesFactory {
-  /**
-   * Generate SectionFiles object for a section, from its root folder
-   * @param {string} folder
-   * @returns {Promise<SectionFiles>}
-   */
-  static async fromSectionFolder (folder) {
-    const files = await FileUtils.getFolderFilesRecursively(folder)
-    const sectionFiles = new SectionFiles()
-    this.#filterFiles(files, sectionFiles)
-
-    if (sectionFiles.javascriptFiles.length) {
-      sectionFiles.javascriptIndex = JavaScriptProcessor.getMainJavascriptFile(sectionFiles.javascriptFiles)
-    }
-
-    if (sectionFiles.stylesheets.length) {
-      sectionFiles.mainStylesheet = StylesUtils.getMainStyleSheet(sectionFiles.stylesheets)
-    }
-
-    return sectionFiles
-  }
-
-  /**
-   * Generate SnippetFiles object for a snippet, from its root folder
-   * @param {string} folder
-   * @returns {Promise<SnippetFiles>}
-   */
-  static async fromSnippetFolder (folder) {
-    const files = await FileUtils.getFolderFilesRecursively(folder)
-    const snippetFiles = new SnippetFiles()
-    this.#filterFiles(files, snippetFiles)
-
-    if (snippetFiles.javascriptFiles.length) {
-      snippetFiles.javascriptIndex = JavaScriptProcessor.getMainJavascriptFile(snippetFiles.javascriptFiles)
-    }
-
-    if (snippetFiles.stylesheets.length) {
-      snippetFiles.mainStylesheet = StylesUtils.getMainStyleSheet(snippetFiles.stylesheets)
-    }
-
-    return snippetFiles
-  }
-
+class ComponentFilesUtils {
   /**
    * Filter Section/Snippet Files by Type
    * @param {string[]} files
    * @param {SectionFiles|SnippetFiles} componentFiles
    */
-  static #filterFiles (files, componentFiles) {
+  static filterFiles (files, componentFiles) {
     // Categorize files for the build steps
     for (const file of files) {
       const extension = path.extname(file).toLowerCase()
@@ -107,6 +64,50 @@ class FilesFactory {
       }
     }
   }
+
+  /**
+   * Get Liquid Code From Component Liquid Files
+   * @param {string} componentName
+   * @param {SectionFiles|SnippetFiles} componentFiles
+   * @return {Promise<string>}
+   */
+  static async getLiquidCode (componentName, componentFiles) {
+    const pluralForm = componentFiles.liquidFiles.length > 1 ? 's' : ''
+    logger.debug(`${componentName}: ${componentFiles.liquidFiles.length} liquid file${pluralForm} found`)
+    return FileUtils.getMergedFilesContent(componentFiles.liquidFiles)
+  }
+
+  /**
+   * Get Section Schema from schema file.
+   * @param {string} schemaFile
+   * @return {Promise<SectionSchema>}
+   */
+  static async getSectionSchema (schemaFile) {
+    const sectionSchema = new SectionSchema()
+    const sectionSchemaJson = JSON.parse(await FileUtils.getFileContents(schemaFile))
+    return Object.assign(sectionSchema, sectionSchemaJson)
+  }
+
+  /**
+   * Get Locales from Locale Files
+   * @param {string[]} localeFiles - locale files from SectionFiles or SnippetFiles
+   * @param {Object} [preexistingLocales] - locale data tha was already present in the schema file
+   * @return {Promise<Object>}
+   */
+  static async getLocales (localeFiles, preexistingLocales) {
+    const locales = await LocaleUtils.parseLocaleFilesContent(localeFiles)
+    // If some locale data was already present in the schema file, we need to merge contents.
+    return preexistingLocales ? merge(preexistingLocales, locales) : locales
+  }
+
+  /**
+   * Get Schema Locales from schema locale files
+   * @param schemaLocaleFiles
+   * @return {Promise<{}>}
+   */
+  static async getSchemaLocales (schemaLocaleFiles) {
+    return LocaleUtils.parseLocaleFilesContent(schemaLocaleFiles)
+  }
 }
 
-export default FilesFactory
+export default ComponentFilesUtils
