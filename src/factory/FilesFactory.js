@@ -20,11 +20,11 @@ class FilesFactory {
     const sectionFiles = new SectionFiles()
     this.#filterFiles(files, sectionFiles)
 
-    if (sectionFiles.javascriptFiles.length > 0) {
+    if (sectionFiles.javascriptFiles.length) {
       sectionFiles.javascriptIndex = JavaScriptProcessor.getMainJavascriptFile(sectionFiles.javascriptFiles)
     }
 
-    if (sectionFiles.stylesheets.length > 0) {
+    if (sectionFiles.stylesheets.length) {
       sectionFiles.mainStylesheet = StylesUtils.getMainStyleSheet(sectionFiles.stylesheets)
     }
 
@@ -41,11 +41,11 @@ class FilesFactory {
     const snippetFiles = new SnippetFiles()
     this.#filterFiles(files, snippetFiles)
 
-    if (snippetFiles.javascriptFiles.length > 0) {
+    if (snippetFiles.javascriptFiles.length) {
       snippetFiles.javascriptIndex = JavaScriptProcessor.getMainJavascriptFile(snippetFiles.javascriptFiles)
     }
 
-    if (snippetFiles.stylesheets.length > 0) {
+    if (snippetFiles.stylesheets.length) {
       snippetFiles.mainStylesheet = StylesUtils.getMainStyleSheet(snippetFiles.stylesheets)
     }
 

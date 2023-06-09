@@ -39,7 +39,7 @@ class RecursiveRenderUtils {
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
-        if (render.snippet.files.assetFiles && render.snippet.files.assetFiles.length > 0) {
+        if (render.snippet.files.assetFiles?.length) {
           assets = assets.concat(render.snippet.files.assetFiles)
         }
 

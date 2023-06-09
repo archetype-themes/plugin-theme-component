@@ -110,15 +110,15 @@ class SectionBuilder {
     await rm(sectionBuild.rootFolder, { force: true, recursive: true })
     await mkdir(sectionBuild.rootFolder, { recursive: true })
 
-    if (sectionFiles.schemaLocaleFiles.length > 0) {
+    if (sectionFiles.schemaLocaleFiles.length) {
       await mkdir(sectionBuild.localesFolder, { recursive: true })
     }
 
-    if (sectionFiles.snippetFiles.length > 0) {
+    if (sectionFiles.snippetFiles.length) {
       await mkdir(sectionBuild.snippetsFolder, { recursive: true })
     }
 
-    if (sectionFiles.javascriptFiles.length > 0 || sectionFiles.stylesheets.length > 0) {
+    if (sectionFiles.javascriptFiles.length || sectionFiles.stylesheets.length) {
       await mkdir(sectionBuild.assetsFolder, { recursive: true })
     }
   }
@@ -158,7 +158,7 @@ class SectionBuilder {
         section.files.javascriptIndex,
         rendersJavascriptIndexes
       )
-    } else if (rendersJavascriptIndexes.length > 0) {
+    } else if (rendersJavascriptIndexes.length) {
       await JavaScriptProcessor.buildJavaScript(
         collectionRootFolder,
         section.build.javascriptFile,

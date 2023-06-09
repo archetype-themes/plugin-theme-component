@@ -67,7 +67,7 @@ class SectionFactory {
     }
 
     // Load Locales
-    if (section.files.localeFiles && section.files.localeFiles.length > 0) {
+    if (section.files.localeFiles?.length) {
       const locales = await LocaleUtils.parseLocaleFilesContent(section.files.localeFiles)
       if (!section.schema) {
         section.schema = new SectionSchema()
@@ -80,7 +80,7 @@ class SectionFactory {
     }
 
     // Load Schema Locales
-    if (section.files.schemaLocaleFiles && section.files.schemaLocaleFiles.length > 0) {
+    if (section.files.schemaLocaleFiles?.length) {
       section.schemaLocales = await LocaleUtils.parseLocaleFilesContent(section.files.schemaLocaleFiles)
     }
 
