@@ -176,7 +176,7 @@ class CLISessionFactory {
       case CLICommands.CREATE_COMMAND_NAME:
         return null
       case CLICommands.INSTALL_COMMAND_NAME:
-        if (Object.keys(NodeConfig.collections).length > 0) {
+        if (Object.keys(NodeConfig.collections).length) {
           return Object.keys(NodeConfig.collections)[0]
         } else {
           throw new CommandLineInputError('No Default Collection found in configuration for install, please specify a collection name.')

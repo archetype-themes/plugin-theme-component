@@ -1,7 +1,22 @@
-import ComponentBuild from './abstract/ComponentBuild.js'
+class SnippetBuild {
+  /** @type {string} **/
+  #liquidCode
 
-class SnippetBuild extends ComponentBuild {
+  /**
+   * Get liquid code
+   * @return {string}
+   */
+  get liquidCode () {
+    return this.#liquidCode
+  }
 
+  /**
+   * Set liquid code
+   * @param {string} value
+   */
+  set liquidCode (value) {
+    this.#liquidCode = value
+  }
 }
 
 export default SnippetBuild

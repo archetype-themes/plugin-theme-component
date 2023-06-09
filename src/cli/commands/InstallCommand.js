@@ -1,14 +1,14 @@
 // Node imports
-import path from 'path'
+import path from 'node:path'
 
 // Archie imports
-import CollectionBuilder from '../../builders/CollectionBuilder.js'
-import CollectionFactory from '../../factory/CollectionFactory.js'
 import ThemeFactory from '../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../Installers/CollectionInstaller.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
+import Timer from '../../utils/Timer.js'
 import Watcher from '../../utils/Watcher.js'
+import BuildCommand from './BuildCommand.js'
 
 class InstallCommand {
   /**
@@ -34,27 +34,24 @@ class InstallCommand {
    * Install a Collection
    * @param {string} collectionName
    * @param {boolean} backupMode
-   * @return {Promise<Collection>}
+   * @return {Promise<module:models/Collection>}
    */
   static async installOne (collectionName, backupMode) {
+    logger.info(`Building & Installing the ${collectionName} Collection.`)
+    const startTime = Timer.getTimer()
+
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
 
-    // Log & timer
-    logger.info(`Building ${collectionName} Collection ...`)
-    console.time(`Building "${collectionName}" collection`)
+    // Build using the Build Command
+    const collection = await BuildCommand.buildCollection(collectionName)
 
-    // Creating Collection and its children
-    const collection = await CollectionFactory.fromName(collectionName)
-    // Build and install Collection
-    await CollectionBuilder.build(collection)
-
-    // Log & timer
-    logger.info(`${collectionName}: Build Complete`)
-    console.timeEnd(`Building "${collectionName}" collection`)
-
+    // Install and time it!
+    logger.info(`Installing the ${collectionName} Collection for the ${theme.name} Theme.`)
+    const installStartTime = Timer.getTimer()
     await CollectionInstaller.install(theme, collection, backupMode)
-
+    logger.info(`${collection.name}: Install Complete in ${Timer.getEndTimerInSeconds(installStartTime)} seconds`)
+    logger.info(`${collection.name}: Build & Install Completed in ${Timer.getEndTimerInSeconds(startTime)} seconds\n`)
     return Promise.resolve(collection)
   }
 

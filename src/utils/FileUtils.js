@@ -34,12 +34,12 @@ class FileUtils {
 
   /**
    * Copy Files from an associative array
-   * @param {string[]} files
+   * @param {Object.<string, string>} files
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async copy (files) {
     const copyPromises = []
-    for (const sourceFile in files) {
+    for (const sourceFile of Object.keys(files)) {
       logger.debug(`Copying ${path.basename(sourceFile)}`)
       copyPromises.push(copyFile(sourceFile, files[sourceFile]))
     }

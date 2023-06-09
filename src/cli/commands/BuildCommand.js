@@ -1,5 +1,5 @@
 // Node imports
-import path from 'path'
+import path from 'node:path'
 
 // External Modules imports
 // eslint-disable-next-line no-unused-vars
@@ -12,9 +12,10 @@ import CollectionFactory from '../../factory/CollectionFactory.js'
 import SectionFactory from '../../factory/SectionFactory.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
+import Timer from '../../utils/Timer.js'
 import Watcher from '../../utils/Watcher.js'
 import NodeUtils from '../../utils/NodeUtils.js'
-import RenderUtils from '../../utils/RenderUtils.js'
+import RecursiveRenderUtils from '../../utils/RecursiveRenderUtils.js'
 import Components from '../../config/Components.js'
 
 class BuildCommand {
@@ -27,11 +28,12 @@ class BuildCommand {
    */
   static async execute (commandOption, targetComponentName, watchMode) {
     if (commandOption === Components.COLLECTION_COMPONENT_NAME) {
+      const collectionName = NodeUtils.getPackageName()
       if (watchMode) {
-        const collection = await this.buildCollection()
+        const collection = await this.buildCollection(collectionName)
         return this.watchCollection(collection)
       } else {
-        return this.buildCollection()
+        return this.buildCollection(collectionName)
       }
     } else if (commandOption === Components.SECTION_COMPONENT_NAME) {
       if (watchMode) {
@@ -45,18 +47,44 @@ class BuildCommand {
 
   /**
    * Build a Collection
+   * @param {string} collectionName
    * @return {Promise<module:models/Collection>}
    */
-  static async buildCollection () {
-    const collectionName = NodeUtils.getPackageName()
-
+  static async buildCollection (collectionName) {
     logger.info(`Starting ${collectionName}'s build...`)
-    const startTime = process.hrtime()
+    const startTime = Timer.getTimer()
 
     const collection = await CollectionFactory.fromName(collectionName)
-    await CollectionBuilder.build(collection)
+    logger.info(`${collectionName}'s factory preparation completed in ${Timer.getEndTimerInSeconds(startTime)} seconds`)
 
-    logger.info(`Finished ${collectionName}'s build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
+    // Step 1: Start from the bottom: Build Snippets first, synchronously, but with a cache
+    logger.info(`Step 1/3 - Beginning Snippets' build for ${collection.name}`)
+    const stepOneStartTime = Timer.getTimer()
+
+    const snippetCache = {}
+    for (const section of collection.sections) {
+      if (section.renders?.length) {
+        await RecursiveRenderUtils.buildSnippets(section.renders, snippetCache)
+      }
+    }
+    logger.info(`Step 1/3 - Finished Snippets' build in ${Timer.getEndTimerInSeconds(stepOneStartTime)} seconds`)
+
+    // Step 2: Build Sections Concurrently
+    const stepTwoStartTime = Timer.getTimer()
+    logger.info(`Step 2/3 - Starting Sections' build for: ${collection.name}`)
+    const promises = []
+    for (const section of collection.sections) {
+      promises.push(SectionBuilder.build(section))
+    }
+    await Promise.all(promises)
+    logger.info(`Step 2/3 - Finished Sections' build in ${Timer.getEndTimerInSeconds(stepTwoStartTime)} seconds`)
+
+    // Step 3: Build The Collection
+    const stepThreeStartTime = Timer.getTimer()
+    logger.info(`Step 3/3 - Starting Final Collection build for: ${collection.name}`)
+    await CollectionBuilder.build(collection)
+    logger.info(`Step 3/3 - Finished Collection's build in ${Timer.getEndTimerInSeconds(stepThreeStartTime)} seconds`)
+    logger.info(`Completed all three steps for ${collectionName}'s build in ${Timer.getEndTimerInSeconds(startTime)} seconds`)
 
     return Promise.resolve(collection)
   }
@@ -68,12 +96,19 @@ class BuildCommand {
    */
   static async buildSection (sectionName) {
     logger.info(`Starting ${sectionName}'s build...`)
-    const startTime = process.hrtime()
+    const startTime = Timer.getTimer()
 
     const section = await SectionFactory.fromName(sectionName)
-    await SectionBuilder.build(section, await CollectionUtils.findRootFolder())
 
-    logger.info(`Finished ${sectionName}'s build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
+    // Start from the bottom: Build Snippets first
+    if (section.renders?.length) {
+      await RecursiveRenderUtils.buildSnippets(section.renders)
+    }
+    // Build Section
+    await SectionBuilder.build(section)
+    // Write Build To Disk
+    await SectionBuilder.writeBuild(section, await CollectionUtils.findRootFolder())
+    logger.info(`Finished ${sectionName}'s build in ${Timer.getEndTimerInSeconds(startTime)} seconds`)
 
     return Promise.resolve(section)
   }
@@ -101,7 +136,7 @@ class BuildCommand {
    * @return {FSWatcher}
    */
   static watchSection (section) {
-    const snippetRootFolders = RenderUtils.getSnippetRootFolders(section.renders)
+    const snippetRootFolders = RecursiveRenderUtils.getSnippetRootFolders(section.renders)
     const watchFolders = [section.rootFolder].concat(snippetRootFolders).map(folder => path.join(folder, 'src'))
 
     const watcher = Watcher.getWatcher(watchFolders)
@@ -123,7 +158,7 @@ class BuildCommand {
   static async onCollectionWatchEvent (watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${eventPath} detected`)
-    const collection = await this.buildCollection()
+    const collection = await this.buildCollection(NodeUtils.getPackageName())
     // Restart Watcher on liquid file change to make sure we do refresh watcher snippet folders
     if (filename.endsWith('.liquid')) {
       await watcher.close()

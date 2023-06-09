@@ -2,13 +2,32 @@
 import merge from 'deepmerge'
 import { union } from 'lodash-es'
 import { join } from 'path'
+import SnippetBuilder from '../builders/SnippetBuilder.js'
 import FileUtils from './FileUtils.js'
 
 // Archie imports
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
-class RenderUtils {
+class RecursiveRenderUtils {
+  /**
+   * Recursively Build Snippets From (Section) Renders
+   * @param {Render[]} renders
+   * @param {Object} [snippetCache={}]
+   */
+  static async buildSnippets (renders, snippetCache = {}) {
+    for (const render of renders) {
+      if (!snippetCache[render.snippetName]) {
+        snippetCache[render.snippetName] = await SnippetBuilder.build(render.snippet)
+      }
+      render.snippet = snippetCache[render.snippetName]
+      // Recursively check child renders for schema
+      if (render.snippet.renders?.length) {
+        await this.buildSnippets(render.snippet.renders, snippetCache)
+      }
+    }
+  }
+
   /**
    * Get Render Asset Files Recursively
    * @param {Render[]} renders
@@ -20,11 +39,11 @@ class RenderUtils {
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
-        if (render.snippet.files.assetFiles && render.snippet.files.assetFiles.length > 0) {
+        if (render.snippet.files.assetFiles?.length) {
           assets = assets.concat(render.snippet.files.assetFiles)
         }
 
-        if (render.snippet.renders) {
+        if (render.snippet.renders?.length) {
           assets = assets.concat(this.getSnippetAssets(render.snippet.renders, processedSnippets))
         }
 
@@ -49,7 +68,7 @@ class RenderUtils {
           jsFiles.push(render.snippet.files.javascriptIndex)
         }
 
-        if (render.snippet.renders) {
+        if (render.snippet.renders?.length) {
           jsFiles = jsFiles.concat(this.getSnippetsJavascriptIndex(render.snippet.renders, processedSnippets))
         }
       }
@@ -71,11 +90,11 @@ class RenderUtils {
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
-        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, `${render.snippet.name}.liquid`), render.snippet.liquidCode))
+        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, `${render.snippet.name}.liquid`), render.snippet.build.liquidCode))
       }
 
       // Recursively check child renders for liquid files
-      if (render.snippet.renders) {
+      if (render.snippet.renders?.length) {
         const { liquidFilesWritePromise: childRendersLiquidWritePromises } = this.getSnippetsLiquidFilesWritePromise(render.snippet.renders, targetFolder, processedSnippets)
         liquidFilesWritePromises.push(childRendersLiquidWritePromises)
       }
@@ -97,7 +116,7 @@ class RenderUtils {
         if (render.snippet.files.mainStylesheet) {
           stylesheets.push(render.snippet.files.mainStylesheet)
 
-          if (render.snippet.renders) {
+          if (render.snippet.renders?.length) {
             stylesheets.push(...this.getSnippetsMainStylesheet(render.snippet.renders, processedSnippets))
           }
         }
@@ -119,7 +138,7 @@ class RenderUtils {
         if (render.snippet.rootFolder && !snippetRootFolders.includes(render.snippet.rootFolder)) {
           snippetRootFolders.push(render.snippet.rootFolder)
         }
-        if (render.snippet.renders && render.snippet.renders.length > 0) {
+        if (render.snippet.renders?.length) {
           const childSnippetRootFolders = this.getSnippetRootFolders(render.snippet.renders)
           snippetRootFolders = union(snippetRootFolders, childSnippetRootFolders)
         }
@@ -145,7 +164,7 @@ class RenderUtils {
         }
 
         // Recursively check child renders for schema
-        if (render.snippet.renders) {
+        if (render.snippet.renders?.length) {
           schema = SectionSchemaUtils.merge(schema, this.getSnippetsSchema(render.snippet.renders, processedSnippets))
         }
 
@@ -172,7 +191,7 @@ class RenderUtils {
         }
 
         // Recursively merge child Schema Locales
-        if (render.snippet.renders) {
+        if (render.snippet.renders?.length) {
           schemaLocales = merge(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
         }
 
@@ -184,4 +203,4 @@ class RenderUtils {
   }
 }
 
-export default RenderUtils
+export default RecursiveRenderUtils
