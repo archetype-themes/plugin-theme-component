@@ -3,7 +3,6 @@ import path from 'path'
 
 // External Node JS Modules
 import SectionFiles from '../models/SectionFiles.js'
-import ComponentFactory from './ComponentFactory.js'
 import ComponentFilesUtils from './ComponentFilesUtils.js'
 
 // Archie Internal JS imports
@@ -15,7 +14,7 @@ import SectionSchema from '../models/SectionSchema.js'
 import Components from '../config/Components.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
-class SectionFactory extends ComponentFactory {
+class SectionFactory {
   /**
    * Builds a new Section and sets its basic parameters
    * @param {string} name - Section name
@@ -37,7 +36,7 @@ class SectionFactory extends ComponentFactory {
     }
 
     // Index Section Files
-    section.files = await super.indexFiles(section.name, section.rootFolder, new SectionFiles())
+    section.files = await ComponentFilesUtils.indexFiles(section.name, section.rootFolder, new SectionFiles())
 
     // Load Liquid Code
     section.liquidCode = await ComponentFilesUtils.getLiquidCode(section.name, section.files)

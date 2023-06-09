@@ -2,7 +2,6 @@
 import path from 'path'
 
 // External Module imports
-import ComponentFactory from './ComponentFactory.js'
 import ComponentFilesUtils from './ComponentFilesUtils.js'
 
 // Archie module imports
@@ -12,7 +11,7 @@ import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
 import FileUtils from '../utils/FileUtils.js'
 
-class SnippetFactory extends ComponentFactory {
+class SnippetFactory {
   /**
    * Build a full Snippet from its name by locating and scanning its home folder
    * @param {string} snippetName - Snippet name
@@ -27,7 +26,7 @@ class SnippetFactory extends ComponentFactory {
     snippet.rootFolder = path.join(snippetsPath, snippet.name)
 
     // Index Snippet Files
-    snippet.files = await super.indexFiles(snippet.name, snippet.rootFolder, new SnippetFiles())
+    snippet.files = await ComponentFilesUtils.indexFiles(snippet.name, snippet.rootFolder, new SnippetFiles())
 
     // Load Liquid Code
     snippet.liquidCode = await ComponentFilesUtils.getLiquidCode(snippet.name, snippet.files)

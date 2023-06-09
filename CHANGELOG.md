@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2023-06-08
+
+### Added
+
+- New Timer Utility library for time stats avoiding duplicate code and removing legacy code, now using hrtime.bigint()
+  instead of legacy hrtime().
+
+### Changed
+
+- Separation of concerns: Decoupled build methods. Collection, Section and Snippet's build methods are not intertwined
+  anymore.
+- Separation of concerns: Timer code now exclusively in CLI calls, removed from factory and builder libraries.
+- Use of Optional chaining for "if" conditions checking for an array property's existence and then validating the length
+  property now replaces double if condition check.
+- Separation of concerns: SnippetBuilder and Snippet Build are back in a simplified manner. They are needed only for svg
+  transformation in liquid code.
+- Duplicated code: SectionFactory.js and SnippetFactory.js common bits joined in ComponentFilesUtils.js
+
+### Fixed
+
+- Locale contents were not loaded for snippets
+
 ## [1.3.0] - 2023-06-04
 
 ### Added
@@ -76,7 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- NPM: Node engine version required bumped to current LTS version
+- NPM: Node engine version required was bumped to the current LTS version
 - Documentation: Clarified Archie's mission and added "main benefits" list on the main README.md
 - Documentation: Added GitHub Package Repository setup link in Prerequisites
 - Documentation: Modified NPM command examples to use the GitHub Package Repository
@@ -85,7 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation: Contributing section now details the code structure. All folders and phases of build are now explained.
 - Documentation: Sections and Snippet Components now contain multiple examples of different-size components with
   different file structures and strategies.
-- Documentation: Setup documentation now gives you the option of using nvm or Homebrew to setup NodeJS
+- Documentation: Setup documentation now gives you the option of using nvm or Homebrew to set up NodeJS
 
 ## [1.0.5] - 2023-02-14 - GitHub Packages Integration
 
