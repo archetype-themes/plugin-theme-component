@@ -7,10 +7,10 @@ import SectionSchema from '../models/SectionSchema.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 
 // Archie Internal JS imports
-import FileUtils from '../utils/FileUtils.js'
-import LocaleUtils from '../utils/LocaleUtils.js'
-import logger from '../utils/Logger.js'
-import StylesUtils from '../utils/StylesUtils.js'
+import FileUtils from './FileUtils.js'
+import LocaleUtils from './LocaleUtils.js'
+import logger from './Logger.js'
+import StylesUtils from './StylesUtils.js'
 
 class ComponentFilesUtils {
   /**

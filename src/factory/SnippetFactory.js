@@ -2,7 +2,7 @@
 import path from 'path'
 
 // External Module imports
-import ComponentFilesUtils from './ComponentFilesUtils.js'
+import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
 
 // Archie module imports
 import RenderFactory from './RenderFactory.js'

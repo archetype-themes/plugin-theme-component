@@ -3,7 +3,7 @@ import path from 'path'
 
 // External Node JS Modules
 import SectionFiles from '../models/SectionFiles.js'
-import ComponentFilesUtils from './ComponentFilesUtils.js'
+import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
 
 // Archie Internal JS imports
 import RenderFactory from './RenderFactory.js'
