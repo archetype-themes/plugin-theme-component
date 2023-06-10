@@ -14,7 +14,7 @@ class CollectionFactory {
   /**
    * From Collection Build Script
    * @param {string} collectionName - Collection name
-   * @return {Promise<Collection>}
+   * @return {Promise<module:models/Collection>}
    */
   static async fromName (collectionName) {
     const collection = new Collection()

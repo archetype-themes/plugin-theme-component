@@ -20,10 +20,8 @@ class CollectionInstaller {
    * @return {Promise<void>}
    */
   static async install (theme, collection, backupMode) {
-    logger.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
-    console.time(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
-
-    const filesToCopy = []
+    /** @type {Object.<string, string>} **/
+    const filesToCopy = {}
 
     let injectJavascript = false
     let injectStylesheet = false
@@ -117,25 +115,21 @@ class CollectionInstaller {
     if (injectJavascript || injectStylesheet) {
       await this.injectAssetReferences(collection, theme, { injectJavascript, injectStylesheet }, backupMode)
     }
-
-    logger.info(`${collection.name}: Install Complete`)
-    console.timeEnd(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
-    console.log('\n')
   }
 
   /**
    *
-   * @param {string[]} filesToCopy
+   * @param {Object.<string, string>} filesToCopy
    * @return {Promise<void>}
    */
   static async backupFiles (filesToCopy) {
     const filesToBackup = []
 
-    for (const sourceFile in filesToCopy) {
-      const fileToCopy = filesToCopy[sourceFile]
-      if (await FileUtils.exists(fileToCopy)) {
-        logger.debug(`File "${basename(fileToCopy)}" exists - backup requested.`)
-        filesToBackup.push(fileToCopy)
+    for (const sourceFile of Object.keys(filesToCopy)) {
+      const targetFile = filesToCopy[sourceFile]
+      if (await FileUtils.exists(targetFile)) {
+        logger.debug(`File "${basename(targetFile)}" exists - backup requested.`)
+        filesToBackup.push(targetFile)
       }
     }
 
@@ -188,10 +182,10 @@ class CollectionInstaller {
     }
 
     if (await FileUtils.isWritable(themeLiquidFile)) {
-      if (injections.length > 0) {
+      if (injections.length) {
         await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile, backupMode)
       }
-    } else if (injections.length > 0) {
+    } else if (injections.length) {
       this.injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
     }
   }

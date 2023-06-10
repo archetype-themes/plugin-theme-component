@@ -1,17 +1,17 @@
 // Node imports
-import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
+// External Packages
+import merge from 'deepmerge'
+
 // Archie imports
-import SectionBuilder from './SectionBuilder.js'
-import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
-import FileUtils from '../utils/FileUtils.js'
-import logger from '../utils/Logger.js'
-import RenderUtils from '../utils/RenderUtils.js'
 import BuildFactory from '../factory/BuildFactory.js'
+import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
+import FileUtils from '../utils/FileUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
+import RecursiveRenderUtils from '../utils/RecursiveRenderUtils.js'
 
 class CollectionBuilder {
   /**
@@ -26,15 +26,6 @@ class CollectionBuilder {
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection)
 
-    // Start Timer
-    const startTime = process.hrtime()
-    logger.info(`Starting Sections' build for: ${collection.sectionNames.join(', ')}`)
-
-    // Build sections (will also build inner snippets recursively)
-    await SectionBuilder.buildMany(collection.sections, collection.rootFolder)
-
-    logger.info(`Finished Sections' build in ${process.hrtime(startTime).toString().slice(0, 5)} seconds`)
-
     // Gather and build Stylesheets
     const mainStylesheets = this.getMainStylesheets(collection)
     collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.rootFolder)
@@ -42,7 +33,7 @@ class CollectionBuilder {
 
     // Gather and Build Collection JS Files
     const jsFiles = this.getJsFiles(collection)
-    if (jsFiles.length > 0) {
+    if (jsFiles.length) {
       await JavaScriptProcessor.buildJavaScript(collection.rootFolder, collection.build.javascriptFile, jsFiles.shift(), jsFiles)
     }
 
@@ -57,13 +48,10 @@ class CollectionBuilder {
       const {
         liquidFilesWritePromise,
         processedSnippets: processedSectionSnippets
-      } = RenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
+      } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
       processedSnippets.push(...processedSectionSnippets)
       fileOperationPromises.push(liquidFilesWritePromise)
     }
-
-    // Copy External Snippet Files
-    fileOperationPromises.push(this.copySnippetLiquidFiles(collection.sections, collection.build.snippetsFolder))
 
     // Gather & Copy Assets Files
     const assetFiles = this.getAssetFiles(collection.sections)
@@ -90,24 +78,6 @@ class CollectionBuilder {
   }
 
   /**
-   * Copy Snippet Liquid Files
-   * @param {Section[]} sections
-   * @param {string} snippetsFolder
-   * @return {Promise<Awaited<void>[]>}
-   */
-  static async copySnippetLiquidFiles (sections, snippetsFolder) {
-    const folderCopyPromises = []
-    for (const section of sections) {
-      if (section.renders) {
-        if (await FileUtils.isReadable(section.build.snippetsFolder)) {
-          folderCopyPromises.push(FileUtils.copyFolder(section.build.snippetsFolder, snippetsFolder))
-        }
-      }
-    }
-    return Promise.all(folderCopyPromises)
-  }
-
-  /**
    *
    * @param {Section[]} sections
    * @return {string[]}
@@ -119,8 +89,8 @@ class CollectionBuilder {
       if (section.files.assetFiles) {
         assetFiles = assetFiles.concat(section.files.assetFiles)
       }
-      if (section.renders) {
-        assetFiles = assetFiles.concat(RenderUtils.getSnippetAssets(section.renders))
+      if (section.renders?.length) {
+        assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
       }
     }
 
@@ -145,8 +115,8 @@ class CollectionBuilder {
       }
 
       // Add Section snippet files
-      if (section.renders) {
-        jsFiles = jsFiles.concat(RenderUtils.getSnippetsJavascriptIndex(section.renders))
+      if (section.renders?.length) {
+        jsFiles = jsFiles.concat(RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders))
       }
     }
 
@@ -168,8 +138,8 @@ class CollectionBuilder {
       if (section.files.mainStylesheet) {
         mainStylesheets.push(section.files.mainStylesheet)
       }
-      if (section.renders) {
-        mainStylesheets.push(...RenderUtils.getSnippetsMainStylesheet(section.renders))
+      if (section.renders?.length) {
+        mainStylesheets.push(...RecursiveRenderUtils.getSnippetsMainStylesheet(section.renders))
       }
     }
 

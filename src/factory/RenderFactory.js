@@ -16,7 +16,7 @@ class RenderFactory {
     const regexMatches = LiquidUtils.findRenderTags(liquidCode)
     const renders = []
 
-    if (regexMatches.length > 0) {
+    if (regexMatches.length) {
       // Validation: Make sure a snippet doesn't include itself, therefore creating an infinite loop
       if (sourceSnippetName) {
         this.validateSnippetRecursion(sourceSnippetName, regexMatches)
@@ -51,7 +51,7 @@ class RenderFactory {
       render.clauseTargetVariable = matchGroups.clauseTargetVariable
     }
 
-    if (matchGroups.variables && matchGroups.variables.length > 0) {
+    if (matchGroups.variables?.length) {
       const variables = []
       const variablesMatched = matchGroups.variables.split(',')
 

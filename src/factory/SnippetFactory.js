@@ -2,20 +2,14 @@
 import path from 'path'
 
 // External Module imports
-import merge from 'deepmerge'
-import SnippetBuilder from '../builders/SnippetBuilder.js'
-import FileMissingError from '../errors/FileMissingError.js'
+import ComponentFilesUtils from './ComponentFilesUtils.js'
 
 // Archie module imports
-import FilesFactory from './FilesFactory.js'
 import RenderFactory from './RenderFactory.js'
-import FileAccessError from '../errors/FileAccessError.js'
 import SectionSchema from '../models/SectionSchema.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
 import FileUtils from '../utils/FileUtils.js'
-import LocaleUtils from '../utils/LocaleUtils.js'
-import logger from '../utils/Logger.js'
 
 class SnippetFactory {
   /**
@@ -31,49 +25,29 @@ class SnippetFactory {
     // Set root folder
     snippet.rootFolder = path.join(snippetsPath, snippet.name)
 
-    // Validation: Make sure that the root folder is readable
-    if (!await FileUtils.isReadable(snippet.rootFolder)) {
-      logger.debug(`Snippet Factory Abort: ${snippet.name} was not found at any expected location: "${snippet.rootFolder}".`)
-      throw new FileAccessError(`Unable to access the "${snippet.name}" section on disk. Tips: Is it spelled properly? Is the collection installed?`)
-    }
-
-    // Create Snippet Files Model
-    snippet.files = await FilesFactory.fromSnippetFolder(snippet.rootFolder)
-
-    // Validation: Make sure that a liquid file was founds
-    if (snippet.files.liquidFiles.length === 0) {
-      throw new FileMissingError(`Snippet Factory: No liquid files file found for the "${snippet.name}" snippet`)
-    }
+    // Index Snippet Files
+    snippet.files = await ComponentFilesUtils.indexFiles(snippet.name, snippet.rootFolder, new SnippetFiles())
 
     // Load Liquid Code
-    const pluralForm = snippet.files.liquidFiles.length > 1 ? 's' : ''
-    logger.debug(`${snippet.name}: ${snippet.files.liquidFiles.length} liquid file${pluralForm} found`)
-    snippet.liquidCode = await SnippetBuilder.buildLiquid(snippet.name, await FileUtils.getMergedFilesContent(snippet.files.liquidFiles))
+    snippet.liquidCode = await ComponentFilesUtils.getLiquidCode(snippet.name, snippet.files)
 
     // Load Schema
     if (snippet.files.schemaFile) {
-      snippet.schema = new SectionSchema()
-      const snippetSchemaJson = JSON.parse(await FileUtils.getFileContents(snippet.files.schemaFile))
-      snippet.schema = Object.assign(snippet.schema, snippetSchemaJson)
+      snippet.schema = await ComponentFilesUtils.getSectionSchema(snippet.files.schemaFile)
     }
 
-    // Load Locales
-    if (snippet.files.localeFiles && snippet.files.localeFiles.length > 0) {
-      const locales = await LocaleUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
-
+    // Load Locales into schema data
+    if (snippet.files.localeFiles?.length) {
+      // If a schema file was not present, we need to create the section schema to store locale content
       if (!snippet.schema) {
         snippet.schema = new SectionSchema()
       }
-      if (snippet.schema.locales) {
-        snippet.schema.locales = merge(snippet.schema.locales, locales)
-      } else {
-        snippet.schema.locales = locales
-      }
+      snippet.schema.locales = await ComponentFilesUtils.getLocales(snippet.files.localeFiles, snippet.schema.locales)
     }
 
     // Load Schema Locales
-    if (snippet.files.schemaLocaleFiles && snippet.files.schemaLocaleFiles.length > 0) {
-      snippet.schemaLocales = await LocaleUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
+    if (snippet.files.schemaLocaleFiles?.length) {
+      snippet.schemaLocales = await ComponentFilesUtils.getSchemaLocales(snippet.files.schemaLocaleFiles)
     }
 
     // Create Renders
@@ -97,7 +71,7 @@ class SnippetFactory {
     snippet.name = snippetName
     snippet.files = new SnippetFiles()
     snippet.files.liquidFiles = [snippetFile]
-    snippet.liquidCode = await SnippetBuilder.buildLiquid(snippet.name, await FileUtils.getFileContents(snippetFile))
+    snippet.liquidCode = await FileUtils.getFileContents(snippetFile)
 
     // Non-Recursively Create Renders
     snippet.renders = RenderFactory.fromLiquidCode(snippet.liquidCode, snippet.name)

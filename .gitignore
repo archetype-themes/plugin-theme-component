@@ -132,3 +132,5 @@ dist
 # Components build folders
 sections/*/build
 snippets/*/build
+
+/test.js
