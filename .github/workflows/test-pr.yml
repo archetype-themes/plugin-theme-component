@@ -15,5 +15,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: latest
+      # Install dependencies
       - run: npm ci
+      # Run tests
       - run: npm test
+      # Run Circular Dependencies Check
+      - run: npm run cdc
+      # Run lint check
+      - run: npm run lint
