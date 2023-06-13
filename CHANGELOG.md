@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - settins_schema.json is now handled, merged and installed by archie.
 
+### Changed
+
+- PR Test workflow now also checks for proper code linting and circular dependencies.
+
 ## [1.3.1] - 2023-06-08
 
 ### Added
