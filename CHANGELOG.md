@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.0] - 2023-06-08
+## [1.4.0] - 2023-06-14
 
 ### Added
 
@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - PR Test workflow now also checks for proper code linting and circular dependencies.
+- SVGO config is now cached, preventing it from being loaded for every single svg file.
+- ComponentFilesUtils was moved to its proper location, the utils folder
 
 ## [1.3.1] - 2023-06-08
 
