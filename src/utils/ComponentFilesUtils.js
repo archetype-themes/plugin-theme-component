@@ -3,8 +3,8 @@ import merge from 'deepmerge'
 import path from 'path'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
-import SectionSchema from '../models/SectionSchema.js'
-import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import SectionSchema from '../main/models/SectionSchema.js'
+import JavaScriptProcessor from '../main/processors/JavaScriptProcessor.js'
 
 // Archie Internal JS imports
 import FileUtils from './FileUtils.js'

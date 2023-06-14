@@ -9,9 +9,9 @@ import merge from 'deepmerge'
 import BuildFactory from '../factory/BuildFactory.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
-import FileUtils from '../utils/FileUtils.js'
-import LocaleUtils from '../utils/LocaleUtils.js'
-import RecursiveRenderUtils from '../utils/RecursiveRenderUtils.js'
+import FileUtils from '../../utils/FileUtils.js'
+import LocaleUtils from '../../utils/LocaleUtils.js'
+import RecursiveRenderUtils from '../../utils/RecursiveRenderUtils.js'
 
 class CollectionBuilder {
   /**

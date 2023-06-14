@@ -4,11 +4,11 @@ import { access, constants } from 'node:fs/promises'
 import path from 'path'
 
 // Archie imports
-import Components from '../config/Components.js'
-import FileAccessError from '../errors/FileAccessError.js'
-import FileUtils from '../utils/FileUtils.js'
-import logger from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
+import Components from '../../config/Components.js'
+import FileAccessError from '../../errors/FileAccessError.js'
+import FileUtils from '../../utils/FileUtils.js'
+import logger from '../../utils/Logger.js'
+import NodeUtils from '../../utils/NodeUtils.js'
 
 /**
  * This callback is displayed as part of the Requester class.

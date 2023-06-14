@@ -1,8 +1,8 @@
-import LiquidSyntaxError from '../errors/LiquidSyntaxError.js'
-import RecursionError from '../errors/RecursionError.js'
+import LiquidSyntaxError from '../../errors/LiquidSyntaxError.js'
+import RecursionError from '../../errors/RecursionError.js'
 import Render from '../models/Render.js'
-import LiquidUtils from '../utils/LiquidUtils.js'
-import logger from '../utils/Logger.js'
+import LiquidUtils from '../../utils/LiquidUtils.js'
+import logger from '../../utils/Logger.js'
 
 class RenderFactory {
   /**

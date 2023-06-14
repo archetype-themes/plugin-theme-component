@@ -2,14 +2,14 @@
 import path from 'path'
 
 // External Module imports
-import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
+import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
 
 // Archie module imports
 import RenderFactory from './RenderFactory.js'
 import SectionSchema from '../models/SectionSchema.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
-import FileUtils from '../utils/FileUtils.js'
+import FileUtils from '../../utils/FileUtils.js'
 
 class SnippetFactory {
   /**

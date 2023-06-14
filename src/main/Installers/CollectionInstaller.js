@@ -2,8 +2,8 @@
 import { readdir } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 // Archie  imports
-import FileUtils from '../utils/FileUtils.js'
-import logger from '../utils/Logger.js'
+import FileUtils from '../../utils/FileUtils.js'
+import logger from '../../utils/Logger.js'
 import deepmerge from 'deepmerge'
 
 /**

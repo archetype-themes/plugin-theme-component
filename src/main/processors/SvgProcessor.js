@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { loadConfig, optimize } from 'svgo'
-import logger from '../utils/Logger.js'
+import logger from '../../utils/Logger.js'
 
 class SvgProcessor {
   /** @type {Object} **/

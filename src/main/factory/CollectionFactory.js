@@ -3,12 +3,12 @@ import { join } from 'path'
 
 // Archie imports
 import SectionFactory from './SectionFactory.js'
-import NodeConfig from '../cli/models/NodeConfig.js'
-import FileAccessError from '../errors/FileAccessError.js'
+import NodeConfig from '../../cli/models/NodeConfig.js'
+import FileAccessError from '../../errors/FileAccessError.js'
 import Collection from '../models/Collection.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
-import logger from '../utils/Logger.js'
-import Components from '../config/Components.js'
+import CollectionUtils from '../../utils/CollectionUtils.js'
+import logger from '../../utils/Logger.js'
+import Components from '../../config/Components.js'
 
 class CollectionFactory {
   /**

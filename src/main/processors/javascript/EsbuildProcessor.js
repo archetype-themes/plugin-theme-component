@@ -6,8 +6,8 @@ import esbuild from 'esbuild'
 import merge from 'deepmerge'
 
 // Internal modules
-import FileUtils from '../../utils/FileUtils.js'
-import logger from '../../utils/Logger.js'
+import FileUtils from '../../../utils/FileUtils.js'
+import logger from '../../../utils/Logger.js'
 
 // eslint-disable-next-line no-unused-vars
 const { build, BuildResult } = esbuild

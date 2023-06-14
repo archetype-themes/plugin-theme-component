@@ -1,4 +1,4 @@
-import ComponentGenerator from '../../generators/ComponentGenerator.js'
+import ComponentGenerator from '../../main/generators/ComponentGenerator.js'
 import Components from '../../config/Components.js'
 
 class CreateCommand {

@@ -2,11 +2,11 @@
 import merge from 'deepmerge'
 import { union } from 'lodash-es'
 import { join } from 'path'
-import SnippetBuilder from '../builders/SnippetBuilder.js'
+import SnippetBuilder from '../main/builders/SnippetBuilder.js'
 import FileUtils from './FileUtils.js'
 
 // Archie imports
-import SectionSchema from '../models/SectionSchema.js'
+import SectionSchema from '../main/models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
 class RecursiveRenderUtils {

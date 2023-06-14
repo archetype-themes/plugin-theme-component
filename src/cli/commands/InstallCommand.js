@@ -2,8 +2,8 @@
 import path from 'node:path'
 
 // Archie imports
-import ThemeFactory from '../../factory/ThemeFactory.js'
-import CollectionInstaller from '../../Installers/CollectionInstaller.js'
+import ThemeFactory from '../../main/factory/ThemeFactory.js'
+import CollectionInstaller from '../../main/Installers/CollectionInstaller.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
 import Timer from '../../utils/Timer.js'
