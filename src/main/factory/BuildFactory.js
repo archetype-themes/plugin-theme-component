@@ -6,6 +6,7 @@ class BuildFactory {
     const build = new CollectionBuild()
     build.rootFolder = `${collection.rootFolder}/build`
     build.assetsFolder = `${build.rootFolder}/assets`
+    build.configFolder = `${build.rootFolder}/config`
     build.localesFolder = `${build.rootFolder}/locales`
     build.sectionsFolder = `${build.rootFolder}/sections`
     build.snippetsFolder = `${build.rootFolder}/snippets`
@@ -24,6 +25,7 @@ class BuildFactory {
     const build = new SectionBuild()
     build.rootFolder = `${section.rootFolder}/build`
     build.assetsFolder = `${build.rootFolder}/assets`
+    build.configFolder = `${build.rootFolder}/config`
     build.localesFolder = `${build.rootFolder}/locales`
     build.snippetsFolder = `${build.rootFolder}/snippets`
 
