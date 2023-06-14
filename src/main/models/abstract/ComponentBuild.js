@@ -5,13 +5,10 @@ class ComponentBuild {
   #assetsFolder
 
   /** @type {string} **/
+  #configFolder
+
+  /** @type {string} **/
   #javascriptFile
-
-  /** @type {string} **/
-  #liquidCode
-
-  /** @type {string} **/
-  #liquidFile
 
   /** @type {string} **/
   #localesFolder
@@ -19,14 +16,17 @@ class ComponentBuild {
   /** @type {string} **/
   #rootFolder
 
+  /** @type {Object} **/
+  #schemaLocales
+
+  /** @type {Object} **/
+  #settingsSchema
+
+  /** @type {string} **/
+  #snippetsFolder
+
   /** @type {string} **/
   #styles
-
-  /** @type {string} **/
-  #stylesBundle
-
-  /** @type {string} **/
-  #stylesBundleFile
 
   /** @type {string} **/
   #stylesheet
@@ -54,6 +54,22 @@ class ComponentBuild {
   }
 
   /**
+   * Get Config Folder
+   * @return {string}
+   */
+  get configFolder () {
+    return this.#configFolder
+  }
+
+  /**
+   * Set Config Folder
+   * @param {string} value
+   */
+  set configFolder (value) {
+    this.#configFolder = value
+  }
+
+  /**
    * Get Javascript Build File Location
    * @returns {string}
    */
@@ -67,38 +83,6 @@ class ComponentBuild {
    */
   set javascriptFile (value) {
     this.#javascriptFile = value
-  }
-
-  /**
-   * Get liquid code
-   * @return {string}
-   */
-  get liquidCode () {
-    return this.#liquidCode
-  }
-
-  /**
-   * Set liquid code
-   * @param {string} value
-   */
-  set liquidCode (value) {
-    this.#liquidCode = value
-  }
-
-  /**
-   * Get Liquid Build File Location
-   * @returns {string}
-   */
-  get liquidFile () {
-    return this.#liquidFile
-  }
-
-  /**
-   * Set Liquid Build File Location
-   * @param {string} value
-   */
-  set liquidFile (value) {
-    this.#liquidFile = value
   }
 
   /**
@@ -134,6 +118,54 @@ class ComponentBuild {
   }
 
   /**
+   * Get Schema Locales
+   * @return {Object}
+   */
+  get schemaLocales () {
+    return this.#schemaLocales
+  }
+
+  /**
+   * Set Schema locales
+   * @param {Object} value
+   */
+  set schemaLocales (value) {
+    this.#schemaLocales = value
+  }
+
+  /**
+   * Get Settings Schema
+   * @return {Object}
+   */
+  get settingsSchema () {
+    return this.#settingsSchema
+  }
+
+  /**
+   * Set Settings Schema
+   * @param {Object} value
+   */
+  set settingsSchema (value) {
+    this.#settingsSchema = value
+  }
+
+  /**
+   * Get Build Snippets Folder
+   * @returns {string}
+   */
+  get snippetsFolder () {
+    return this.#snippetsFolder
+  }
+
+  /**
+   * Set Build Snippets Folder
+   * @param {string} value
+   */
+  set snippetsFolder (value) {
+    this.#snippetsFolder = value
+  }
+
+  /**
    * Get build styles
    * @return {string}
    */
@@ -147,38 +179,6 @@ class ComponentBuild {
    */
   set styles (value) {
     this.#styles = value
-  }
-
-  /**
-   * Get styles bundle content
-   * @return {string}
-   */
-  get stylesBundle () {
-    return this.#stylesBundle
-  }
-
-  /**
-   * Set styles bundle content
-   * @param {string} value
-   */
-  set stylesBundle (value) {
-    this.#stylesBundle = value
-  }
-
-  /**
-   * Get styles bundle filename
-   * @return {string}
-   */
-  get stylesBundleFile () {
-    return this.#stylesBundleFile
-  }
-
-  /**
-   * Set styles bundle filename
-   * @param value
-   */
-  set stylesBundleFile (value) {
-    this.#stylesBundleFile = value
   }
 
   /**
