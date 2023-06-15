@@ -1,4 +1,4 @@
-import deepmerge from 'deepmerge'
+import merge from 'deepmerge'
 
 class SectionSchemaUtils {
   static SECTION_SCHEMA_MERGEABLE_OBJECT_PROPERTIES = [
@@ -22,7 +22,7 @@ class SectionSchemaUtils {
 
     for (const property of this.SECTION_SCHEMA_MERGEABLE_OBJECT_PROPERTIES) {
       if (newSectionSchema[property]) {
-        sectionSchema[property] = deepmerge(originalSectionSchema[property], newSectionSchema[property])
+        sectionSchema[property] = merge(originalSectionSchema[property], newSectionSchema[property])
       }
     }
 
