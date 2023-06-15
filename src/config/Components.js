@@ -26,6 +26,9 @@ class Components {
   static THEME_ASSETS_FOLDER = 'assets'
 
   /** @type {string} **/
+  static THEME_CONFIG_FOLDER = 'assets'
+
+  /** @type {string} **/
   static THEME_LOCALES_FOLDER = 'locales'
 
   /** @type {string} **/

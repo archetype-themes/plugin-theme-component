@@ -3,6 +3,9 @@ class Theme {
   #assetsFolder
 
   /** @type {string} **/
+  #configFolder
+
+  /** @type {string} **/
   #localesFolder
 
   /** @type {string} **/
@@ -31,6 +34,22 @@ class Theme {
    */
   set assetsFolder (value) {
     this.#assetsFolder = value
+  }
+
+  /**
+   * Get Config Folder
+   * @return {string}
+   */
+  get configFolder () {
+    return this.#configFolder
+  }
+
+  /**
+   * Set Config Folder
+   * @param {string} value
+   */
+  set configFolder (value) {
+    this.#configFolder = value
   }
 
   /**
