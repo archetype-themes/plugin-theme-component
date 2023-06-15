@@ -34,6 +34,8 @@ class Components {
   /** @type {string} **/
   static THEME_SECTIONS_FOLDER = 'sections'
 
+  static THEME_SETTINGS_SCHEMA_FILENAME = 'settings_schema.json'
+
   /** @type {string} **/
   static THEME_SNIPPETS_FOLDER = 'snippets'
 }

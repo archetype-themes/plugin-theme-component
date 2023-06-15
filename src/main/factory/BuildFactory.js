@@ -1,3 +1,4 @@
+import Components from '../../config/Components.js'
 import SectionBuild from '../models/SectionBuild.js'
 import CollectionBuild from '../models/CollectionBuild.js'
 
@@ -5,14 +6,16 @@ class BuildFactory {
   static fromCollection (collection) {
     const build = new CollectionBuild()
     build.rootFolder = `${collection.rootFolder}/build`
-    build.assetsFolder = `${build.rootFolder}/assets`
-    build.configFolder = `${build.rootFolder}/config`
-    build.localesFolder = `${build.rootFolder}/locales`
-    build.sectionsFolder = `${build.rootFolder}/sections`
-    build.snippetsFolder = `${build.rootFolder}/snippets`
+    build.assetsFolder = `${build.rootFolder}/${Components.THEME_ASSETS_FOLDER}`
+    build.configFolder = `${build.rootFolder}/${Components.THEME_CONFIG_FOLDER}`
+    build.localesFolder = `${build.rootFolder}/${Components.THEME_LOCALES_FOLDER}`
+    build.sectionsFolder = `${build.rootFolder}/${Components.THEME_SECTIONS_FOLDER}`
+    build.snippetsFolder = `${build.rootFolder}/${Components.THEME_SNIPPETS_FOLDER}`
 
     build.javascriptFile = `${build.assetsFolder}/${collection.name}.js`
+    build.settingsSchemaFile = `${build.configFolder}/${Components.THEME_SETTINGS_SCHEMA_FILENAME}`
     build.stylesheet = `${build.assetsFolder}/${collection.name}.css.liquid`
+
     return build
   }
 
@@ -24,15 +27,17 @@ class BuildFactory {
   static fromSection (section) {
     const build = new SectionBuild()
     build.rootFolder = `${section.rootFolder}/build`
-    build.assetsFolder = `${build.rootFolder}/assets`
-    build.configFolder = `${build.rootFolder}/config`
-    build.localesFolder = `${build.rootFolder}/locales`
-    build.snippetsFolder = `${build.rootFolder}/snippets`
+    build.assetsFolder = `${build.rootFolder}/${Components.THEME_ASSETS_FOLDER}`
+    build.configFolder = `${build.rootFolder}/${Components.THEME_CONFIG_FOLDER}`
+    build.localesFolder = `${build.rootFolder}/${Components.THEME_LOCALES_FOLDER}`
+    build.snippetsFolder = `${build.rootFolder}/${Components.THEME_SNIPPETS_FOLDER}`
 
     build.liquidFile = `${build.rootFolder}/${section.name}.liquid`
     build.javascriptFile = `${build.assetsFolder}/${section.name}.js`
+    build.settingsSchemaFile = `${build.configFolder}/${Components.THEME_SETTINGS_SCHEMA_FILENAME}`
     build.stylesheet = `${build.assetsFolder}/${section.name}.css.liquid`
     build.stylesBundleFile = `${build.assetsFolder}/${section.name}.bundle.css`
+
     return build
   }
 }

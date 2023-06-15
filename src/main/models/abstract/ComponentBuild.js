@@ -23,6 +23,9 @@ class ComponentBuild {
   #settingsSchema
 
   /** @type {string} **/
+  #settingsSchemaFile
+
+  /** @type {string} **/
   #snippetsFolder
 
   /** @type {string} **/
@@ -147,6 +150,22 @@ class ComponentBuild {
    */
   set settingsSchema (value) {
     this.#settingsSchema = value
+  }
+
+  /**
+   * Get Settings Schema File
+   * @return {string}
+   */
+  get settingsSchemaFile () {
+    return this.#settingsSchemaFile
+  }
+
+  /**
+   * Set Settings Schema File
+   * @param {string} value
+   */
+  set settingsSchemaFile (value) {
+    this.#settingsSchemaFile = value
   }
 
   /**
