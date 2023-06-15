@@ -19,7 +19,7 @@ class Component {
   /** @type {Object} **/
   #schemaLocales = {}
 
-  /** @type {Object} **/
+  /** @type {Object[]} **/
   #settingsSchema
 
   constructor () {
@@ -126,7 +126,7 @@ class Component {
 
   /**
    * Get Settings Schema
-   * @return {Object}
+   * @return {Object[]}
    */
   get settingsSchema () {
     return this.#settingsSchema
@@ -134,7 +134,7 @@ class Component {
 
   /**
    * Set Settings Schema
-   * @param {Object} value
+   * @param {Object[]} value
    */
   set settingsSchema (value) {
     this.#settingsSchema = value
