@@ -201,6 +201,34 @@ class RecursiveRenderUtils {
 
     return schemaLocales
   }
+
+  /**
+   * Get Snippet Schema Recursively
+   * @param {Render[]} renders
+   * @param {string[]} [processedSnippets=[]]
+   * @return {Object[]}
+   */
+  static getSnippetsSettingsSchema (renders, processedSnippets = []) {
+    let settingsSchema = []
+
+    for (const render of renders) {
+      if (!processedSnippets.includes(render.snippetName)) {
+        // Merge Snippet schema
+        if (render.snippet.settingsSchema) {
+          settingsSchema = merge(settingsSchema, render.snippet.settingsSchema)
+        }
+
+        // Recursively check child renders for schema
+        if (render.snippet.renders?.length) {
+          settingsSchema = merge(settingsSchema, this.getSnippetsSettingsSchema(render.snippet.renders, processedSnippets))
+        }
+
+        processedSnippets.push(render.snippetName)
+      }
+    }
+
+    return settingsSchema
+  }
 }
 
 export default RecursiveRenderUtils
