@@ -60,6 +60,11 @@ class SectionFactory {
       section.schemaLocales = ComponentFilesUtils.getSchemaLocales(section.files.schemaLocaleFiles)
     }
 
+    // Load Settings Schema
+    if (section.files.settingsSchemaFile) {
+      section.settingsSchema = JSON.parse(await FileUtils.getFileContents(section.files.settingsSchemaFile))
+    }
+
     // Create Renders
     section.renders = RenderFactory.fromLiquidCode(section.liquidCode)
 

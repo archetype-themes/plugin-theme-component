@@ -50,6 +50,11 @@ class SnippetFactory {
       snippet.schemaLocales = await ComponentFilesUtils.getSchemaLocales(snippet.files.schemaLocaleFiles)
     }
 
+    // Load Settings Schema
+    if (snippet.files.settingsSchemaFile) {
+      snippet.settingsSchema = JSON.parse(await FileUtils.getFileContents(snippet.files.settingsSchemaFile))
+    }
+
     // Create Renders
     snippet.renders = RenderFactory.fromLiquidCode(snippet.liquidCode, snippet.name)
 
