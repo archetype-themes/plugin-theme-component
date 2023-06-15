@@ -152,16 +152,22 @@ class CollectionBuilder {
   /**
    * Reset Collection Build Folders
    * @param {module:models/Collection} collection
-   * @return {Promise<void>}
+   * @return {Promise<Awaited<unknown>[]>}
    */
   static async #resetBuildFolders (collection) {
     await rm(collection.build.rootFolder, { force: true, recursive: true })
 
     await mkdir(collection.build.rootFolder, { recursive: true })
-    await mkdir(collection.build.assetsFolder, { recursive: true })
-    await mkdir(collection.build.localesFolder, { recursive: true })
-    await mkdir(collection.build.sectionsFolder, { recursive: true })
-    await mkdir(collection.build.snippetsFolder, { recursive: true })
+
+    const mkdirPromises = []
+
+    mkdirPromises.push(mkdir(collection.build.assetsFolder, { recursive: true }))
+    mkdirPromises.push(mkdir(collection.build.configFolder, { recursive: true }))
+    mkdirPromises.push(mkdir(collection.build.localesFolder, { recursive: true }))
+    mkdirPromises.push(mkdir(collection.build.sectionsFolder, { recursive: true }))
+    mkdirPromises.push(mkdir(collection.build.snippetsFolder, { recursive: true }))
+
+    return Promise.all(mkdirPromises)
   }
 }
 
