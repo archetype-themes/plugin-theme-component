@@ -4,7 +4,7 @@ import { basename, join } from 'node:path'
 // Archie  imports
 import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
-import deepmerge from 'deepmerge'
+import merge from 'deepmerge'
 
 /**
  * @typedef {Object} InjectionOptions
@@ -71,7 +71,7 @@ class CollectionInstaller {
           const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
           const themeSchemaLocale = JSON.parse(await FileUtils.getFileContents(realTargetFile))
           const collectionSchemaLocale = JSON.parse(await FileUtils.getFileContents(sourceFile))
-          const mergedSchemaLocale = deepmerge(collectionSchemaLocale, themeSchemaLocale)
+          const mergedSchemaLocale = merge(collectionSchemaLocale, themeSchemaLocale)
 
           if (backupMode) {
             await FileUtils.backup(realTargetFile)
