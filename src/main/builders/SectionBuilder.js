@@ -102,25 +102,33 @@ class SectionBuilder {
   }
 
   /**
-   *
+   * Reset Build Folders
    * @param {SectionFiles} sectionFiles
    * @param {SectionBuild} sectionBuild
+   * @return {Promise<Awaited<unknown>[]>}
    */
   static async resetBuildFolders (sectionFiles, sectionBuild) {
     await rm(sectionBuild.rootFolder, { force: true, recursive: true })
     await mkdir(sectionBuild.rootFolder, { recursive: true })
 
+    const mkdirPromises = []
+
     if (sectionFiles.schemaLocaleFiles.length) {
-      await mkdir(sectionBuild.localesFolder, { recursive: true })
+      mkdirPromises.push(mkdir(sectionBuild.localesFolder, { recursive: true }))
     }
 
     if (sectionFiles.snippetFiles.length) {
-      await mkdir(sectionBuild.snippetsFolder, { recursive: true })
+      mkdirPromises.push(mkdir(sectionBuild.snippetsFolder, { recursive: true }))
+    }
+
+    if (sectionBuild.settingsSchema) {
+      mkdirPromises.push(mkdir(sectionBuild.configFolder, { recursive: true }))
     }
 
     if (sectionFiles.javascriptFiles.length || sectionFiles.stylesheets.length) {
-      await mkdir(sectionBuild.assetsFolder, { recursive: true })
+      mkdirPromises.push(mkdir(sectionBuild.assetsFolder, { recursive: true }))
     }
+    return Promise.all(mkdirPromises)
   }
 
   /**
