@@ -32,6 +32,10 @@ class SectionBuilder {
     // Assemble Schema Locales
     const renderSchemaLocales = RecursiveRenderUtils.getSnippetsSchemaLocales(section.renders)
     section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
+
+    // Assemble settings schema
+    const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders)
+    section.build.settingsSchema = merge(section.settingsSchema, rendersSettingsSchema)
   }
 
   /**
@@ -185,6 +189,9 @@ class SectionBuilder {
       section.build.schemaLocales,
       section.build.localesFolder
     ))
+
+    // Write Settings Schema to disk.
+    fileOperationPromises.push(FileUtils.writeFile(section.build.settingsSchemaFile, JSON.stringify(section.build.settingsSchema)))
 
     // Copy Assets
     let assetFiles = section.files.assetFiles
