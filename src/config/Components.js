@@ -18,6 +18,9 @@ class Components {
   static SECTION_COMPONENT_NAME = 'section'
 
   /** @type {string}  **/
+  static SECTION_SCHEMA_FILENAME = 'schema.json'
+
+  /** @type {string}  **/
   static SNIPPET_COMPONENT_NAME = 'snippet'
 
   static THEME_COMPONENT_NAME = 'theme'

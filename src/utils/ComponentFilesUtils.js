@@ -1,6 +1,7 @@
 // Node JS Internal imports
 import merge from 'deepmerge'
 import path from 'path'
+import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import SectionSchema from '../main/models/SectionSchema.js'
@@ -55,7 +56,7 @@ class ComponentFilesUtils {
       const extension = path.extname(file).toLowerCase()
       const folder = path.dirname(file).toLowerCase()
 
-      if (folder.endsWith('/assets')) {
+      if (folder.endsWith(`/${Components.THEME_ASSETS_FOLDER}`)) {
         componentFiles.assetFiles.push(file)
       } else {
         const filename = path.basename(file).toLowerCase()
@@ -81,9 +82,9 @@ class ComponentFilesUtils {
           case '.json':
             if (filename === 'package.json') {
               componentFiles.packageJson = file
-            } else if (filename === 'schema.json') {
+            } else if (filename === Components.SECTION_SCHEMA_FILENAME) {
               componentFiles.schemaFile = file
-            } else if (filename === 'settings_schema.json') {
+            } else if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME) {
               componentFiles.settingsSchemaFile = file
             } else if (filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/) ||
               filename.match(/^locales?\.json$/)) {
