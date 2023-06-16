@@ -32,10 +32,6 @@ class SectionBuilder {
     // Assemble Schema Locales
     const renderSchemaLocales = RecursiveRenderUtils.getSnippetsSchemaLocales(section.renders)
     section.build.schemaLocales = this.buildSchemaLocales(section.name, section.schemaLocales, renderSchemaLocales)
-
-    // Assemble settings schema
-    const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders)
-    section.build.settingsSchema = merge(section.settingsSchema, rendersSettingsSchema)
   }
 
   /**
@@ -142,9 +138,6 @@ class SectionBuilder {
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async writeBuild (section, collectionRootFolder) {
-    const fileOperationPromises = []
-    await this.resetBuildFolders(section.files, section.build)
-
     // Bundle CSS
     section.build.stylesBundle =
       await this.bundleStyles(
@@ -154,7 +147,6 @@ class SectionBuilder {
         section.renders,
         section.build.stylesBundleFile
       )
-    fileOperationPromises.push(FileUtils.writeFile(section.build.stylesBundleFile, section.build.stylesBundle))
 
     // Attach CSS bundle file reference to liquid code
     section.build.liquidCode =
@@ -184,24 +176,26 @@ class SectionBuilder {
       LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) + '\n' +
       section.build.liquidCode
 
-    // Write Schema Locales to disk
-    fileOperationPromises.push(LocaleUtils.writeSchemaLocales(
-      section.build.schemaLocales,
-      section.build.localesFolder
-    ))
-
-    // Write Settings Schema to disk.
-    fileOperationPromises.push(FileUtils.writeFile(section.build.settingsSchemaFile, JSON.stringify(section.build.settingsSchema)))
+    // Build Settings Schema
+    const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders)
+    section.build.settingsSchema = section.settingsSchema.concat(rendersSettingsSchema)
 
     // Copy Assets
     let assetFiles = section.files.assetFiles
     assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
-    fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder))
 
-    fileOperationPromises.push(FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode))
     const { liquidFilesWritePromise } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
-    fileOperationPromises.push(liquidFilesWritePromise)
-    return Promise.all(fileOperationPromises)
+
+    await this.resetBuildFolders(section.files, section.build)
+
+    return Promise.all([
+      LocaleUtils.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder),
+      FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder),
+      FileUtils.writeFile(section.build.stylesBundleFile, section.build.stylesBundle),
+      FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode),
+      FileUtils.writeFile(section.build.settingsSchemaFile, JSON.stringify(section.build.settingsSchema)),
+      liquidFilesWritePromise
+    ])
   }
 }
 

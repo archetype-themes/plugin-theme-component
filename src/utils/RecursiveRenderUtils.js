@@ -209,18 +209,18 @@ class RecursiveRenderUtils {
    * @return {Object[]}
    */
   static getSnippetsSettingsSchema (renders, processedSnippets = []) {
-    let settingsSchema = []
+    const settingsSchema = []
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         // Merge Snippet schema
         if (render.snippet.settingsSchema) {
-          settingsSchema = merge(settingsSchema, render.snippet.settingsSchema)
+          settingsSchema.push(...render.snippet.settingsSchema)
         }
 
         // Recursively check child renders for schema
         if (render.snippet.renders?.length) {
-          settingsSchema = merge(settingsSchema, this.getSnippetsSettingsSchema(render.snippet.renders, processedSnippets))
+          settingsSchema.push(...this.getSnippetsSettingsSchema(render.snippet.renders, processedSnippets))
         }
 
         processedSnippets.push(render.snippetName)

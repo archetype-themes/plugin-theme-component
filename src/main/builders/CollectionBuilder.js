@@ -41,13 +41,16 @@ class CollectionBuilder {
     collection.build.schemaLocales = this.buildSchemaLocales(collection.sections)
     await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
 
+    // Build Section Schema
+    collection.build.settingsSchema = this.buildSettingsSchema(collection.sections)
+    fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema)))
+
     // Gather & Copy Sections & Snippets Liquid Files
     const processedSnippets = []
     for (const section of collection.sections) {
       fileOperationPromises.push(FileUtils.writeFile(join(collection.build.sectionsFolder, basename(section.build.liquidFile)), section.build.liquidCode))
       const {
-        liquidFilesWritePromise,
-        processedSnippets: processedSectionSnippets
+        liquidFilesWritePromise, processedSnippets: processedSectionSnippets
       } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
       processedSnippets.push(...processedSectionSnippets)
       fileOperationPromises.push(liquidFilesWritePromise)
@@ -75,6 +78,28 @@ class CollectionBuilder {
     }
 
     return schemaLocales
+  }
+
+  /**
+   * Build Settings Schema
+   * @param {Section[]} sections
+   * @return {Object[]} Settings Schema
+   */
+  static buildSettingsSchema (sections) {
+    const settingsSchema = []
+    const processedSnippets = []
+
+    for (const section of sections) {
+      if (section.settingsSchema?.length) {
+        settingsSchema.push(...section.settingsSchema)
+      }
+      if (section.renders?.length) {
+        const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders, processedSnippets)
+        settingsSchema.push(...rendersSettingsSchema)
+      }
+    }
+
+    return settingsSchema
   }
 
   /**
@@ -156,7 +181,6 @@ class CollectionBuilder {
    */
   static async #resetBuildFolders (collection) {
     await rm(collection.build.rootFolder, { force: true, recursive: true })
-
     await mkdir(collection.build.rootFolder, { recursive: true })
 
     const mkdirPromises = []
