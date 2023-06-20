@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.0] - 2023-06-16
+## [1.4.0] - UNRELEASED
 
 ### Added
 
 - settins_schema.json is now handled, merged and installed by archie.
+- ACTION REQUIRED: "archie.componentPath" setting added in package.json, this allows for theme install in any folder.
+  When not provided, this now defaults to the package's root folder rather than the previously hardcoded 'src'
+  sub-folder. Current Themes located in the src folder will need to add archie.componentPath="src" to their package.json
+  configuration.
 
 ### Changed
 

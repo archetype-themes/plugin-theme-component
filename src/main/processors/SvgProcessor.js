@@ -21,6 +21,7 @@ class SvgProcessor {
       if (!this.#svgoConfig) {
         logger.warn('SVGO configuration not found. Proceeding with default settings.')
       }
+      this.#svgoConfigCheck = true
     }
 
     const result = optimize(svgSource, this.#svgoConfig)

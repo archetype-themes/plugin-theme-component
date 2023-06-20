@@ -7,6 +7,9 @@ class NodeConfig {
   /** @type {string}  **/
   static #componentType
 
+  /** @type {string}  **/
+  static #componentPath
+
   /**
    * Get Collections
    * @return {string[]}
@@ -21,6 +24,22 @@ class NodeConfig {
    */
   static set collections (value) {
     this.#collections = value
+  }
+
+  /**
+   * Get Component Path
+   * @return {string}
+   */
+  static get componentPath () {
+    return this.#componentPath
+  }
+
+  /**
+   * Set Component Path
+   * @param value
+   */
+  static set componentPath (value) {
+    this.#componentPath = value
   }
 
   /**
