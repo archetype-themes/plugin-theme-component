@@ -33,7 +33,7 @@
   "devDependencies": {
     "@vitest/coverage-c8": "^0.32.0",
     "dpdm": "^3.13.1",
-    "standard": "*",
+    "standard": "latest",
     "vitest": "^0.32.0"
   },
   "engines": {
