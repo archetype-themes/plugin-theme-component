@@ -24,7 +24,7 @@ class ThemeFactory {
     }
 
     theme.assetsFolder = join(theme.rootFolder, Components.THEME_ASSETS_FOLDER)
-    theme.configFolder = join(theme.rootFolder, Components.THEME_ASSETS_FOLDER)
+    theme.configFolder = join(theme.rootFolder, Components.THEME_CONFIG_FOLDER)
     theme.localesFolder = join(theme.rootFolder, Components.THEME_LOCALES_FOLDER)
     theme.sectionsFolder = join(theme.rootFolder, Components.THEME_SECTIONS_FOLDER)
     theme.snippetsFolder = join(theme.rootFolder, Components.THEME_SNIPPETS_FOLDER)
