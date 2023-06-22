@@ -60,10 +60,11 @@ class FileUtils {
    * @param {string} sourceFolder
    * @param {string} targetFolder
    * @param {CopyFolderOptions} [options]
-   * @return {Promise<void>}
+   * @return {Promise<Awaited<void>[]>}
    */
   static async copyFolder (sourceFolder, targetFolder, options = { recursive: false, jsTemplateVariables: null }) {
-    const promises = []
+    const fileOperations = []
+    logger.debug(`Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `)
     const folderContent = await readdir(sourceFolder, { withFileTypes: true })
 
     for (const dirent of folderContent) {
@@ -71,17 +72,17 @@ class FileUtils {
         const sourceFile = path.join(sourceFolder, dirent.name)
         const targetFile = path.join(targetFolder, dirent.name)
         if (options.jsTemplateVariables) {
-          promises.push(this.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
+          fileOperations.push(this.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
         } else {
-          promises.push(copyFile(sourceFile, targetFile))
+          fileOperations.push(copyFile(sourceFile, targetFile))
         }
       } else if (dirent.isDirectory() && options.recursive) {
         const newTargetFolder = path.join(targetFolder, dirent.name)
         await mkdir(newTargetFolder, { recursive: options.recursive })
-        promises.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, options))
+        fileOperations.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, options))
       }
     }
-    return Promise.all(promises)
+    return Promise.all(fileOperations)
   }
 
   /**

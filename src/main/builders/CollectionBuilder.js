@@ -17,7 +17,7 @@ class CollectionBuilder {
   /**
    * Build Collection
    * @param {module:models/Collection} collection
-   * @return {Promise<void>}
+   * @return {Promise<Awaited<unknown>[]>}
    */
   static async build (collection) {
     const fileOperationPromises = []
