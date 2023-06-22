@@ -76,7 +76,7 @@ Please follow the guidelines listed below.
     ├── bin
     │   ├── archie.js   [ archie entrypoint ]
     ├── builders        [ component builders ]
-    ├── cli             
+    ├── cli
     │   └── commands    [ CLI commands ]
     │   └── flags        [ CLI command flags ]
     │   └── models      [ CLI models ]
@@ -89,7 +89,7 @@ Please follow the guidelines listed below.
     ├── processors      [ external processors ]
     │   └── postcss     [ external postcss processor ]
     └── utils           [ component utilities ]
- 
+
 ```
 
 ### Phase 1: Bin & CLI Folder
@@ -131,7 +131,6 @@ Builders are there to assemble and process file contents in order to deliver a f
 Installers are meant to install Collection Builds in a Shopify Theme.
 
 - Run after Factories and Builders have completed their tasks.
-- Create backup copies of existing files before modifying or overwriting them.
 - Copy necessary final Build files to a Theme.
 - Perform file merge with Theme files when necessary (i.e.: Schema-Locale files)
 - **SHOULD NOT** load data from disk that needs transformation.

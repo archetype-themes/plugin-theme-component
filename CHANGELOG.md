@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ComponentFilesUtils was moved to its proper location, the utils folder
 - Main sub-folder created in src to regroup all main components.
 
+### Removed
+
+- Backup: Install Backup Functionality is removed, it will not be missed.
+
 ## [1.3.1] - 2023-06-08
 
 ### Added

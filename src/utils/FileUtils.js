@@ -11,19 +11,6 @@ class FileUtils {
   static #FILE_ENCODING_OPTION = { encoding: 'utf8' }
 
   /**
-   *
-   * @param {string[]|string} files
-   * @return {Promise<void[]>}
-   */
-  static async backup (files) {
-    files = (typeof files === 'string' || files instanceof String) ? [files] : files
-
-    return Promise.all(files.map((file) => {
-      return copyFile(file, `${file.replace(/\.[^/.]+$/, '')}.${this.getReadableTimestamp()}${path.extname(file)}`)
-    }))
-  }
-
-  /**
    * Convert Component (Section/Snippet) Absolute Path to a Relative one
    * @param {string} absolutePath
    * @returns {string}
@@ -206,20 +193,6 @@ class FileUtils {
   static async getFileContents (file) {
     logger.debug(`Reading from disk: ${file}`)
     return readFile(file, this.#FILE_ENCODING_OPTION)
-  }
-
-  /**
-   * Get Readable Timestamp
-   * @param {Date} [date]
-   * @return {string}
-   */
-  static getReadableTimestamp (date) {
-    if (!date) {
-      date = new Date()
-    }
-    const dateString = date.toISOString()
-
-    return dateString.substring(0, 19).replace('T', '_').replaceAll(':', '-')
   }
 
   /**
