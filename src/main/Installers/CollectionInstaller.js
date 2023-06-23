@@ -172,7 +172,6 @@ class CollectionInstaller {
   static async writeSettingsSchema (themeConfigFolder, collectionSettingsSchema) {
     let finalSettingsSchema
     const themeSettingsSchemaFile = join(themeConfigFolder, Components.THEME_SETTINGS_SCHEMA_FILENAME)
-    console.log(themeSettingsSchemaFile)
 
     if (await FileUtils.exists(themeSettingsSchemaFile)) {
       const themeSettingsSchema = JSON.parse(await FileUtils.getFileContents(themeSettingsSchemaFile))
