@@ -93,6 +93,7 @@ class FileUtils {
    * @returns {Promise<void>}
    */
   static async processJsTemplateStringFile (sourceFile, targetFile, jsTemplateVariables) {
+    logger.debug(`Processing JS Template String file ${sourceFile}`)
     // Read the file's content
     const data = await readFile(sourceFile, 'utf8')
 
