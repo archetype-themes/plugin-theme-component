@@ -113,21 +113,22 @@ class SectionBuilder {
 
     const mkdirPromises = []
 
-    if (sectionFiles.schemaLocaleFiles.length) {
-      mkdirPromises.push(mkdir(sectionBuild.localesFolder, { recursive: true }))
+    if (sectionFiles.javascriptFiles.length || sectionFiles.stylesheets.length || sectionFiles.assetFiles.length > 0) {
+      mkdirPromises.push(mkdir(sectionBuild.assetsFolder, { recursive: true }))
     }
 
-    if (sectionFiles.snippetFiles.length) {
-      mkdirPromises.push(mkdir(sectionBuild.snippetsFolder, { recursive: true }))
+    if (sectionFiles.schemaLocaleFiles.length) {
+      mkdirPromises.push(mkdir(sectionBuild.localesFolder, { recursive: true }))
     }
 
     if (sectionBuild.settingsSchema) {
       mkdirPromises.push(mkdir(sectionBuild.configFolder, { recursive: true }))
     }
 
-    if (sectionFiles.javascriptFiles.length || sectionFiles.stylesheets.length) {
-      mkdirPromises.push(mkdir(sectionBuild.assetsFolder, { recursive: true }))
+    if (sectionFiles.snippetFiles.length) {
+      mkdirPromises.push(mkdir(sectionBuild.snippetsFolder, { recursive: true }))
     }
+
     return Promise.all(mkdirPromises)
   }
 
@@ -180,13 +181,13 @@ class SectionBuilder {
     const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders)
     section.build.settingsSchema = section.settingsSchema.concat(rendersSettingsSchema)
 
-    // Copy Assets
+    // Get all Section and Snippet Assets
     let assetFiles = section.files.assetFiles
     assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
 
-    const { liquidFilesWritePromise } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
-
     await this.resetBuildFolders(section.files, section.build)
+
+    const { liquidFilesWritePromise } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
 
     return Promise.all([
       LocaleUtils.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder),
