@@ -10,12 +10,6 @@ class SectionBuild extends ComponentBuild {
   /** @type {SectionSchema} **/
   #schema
 
-  /** @type {string} **/
-  #stylesBundle
-
-  /** @type {string} **/
-  #stylesBundleFile
-
   /**
    * Get liquid code
    * @return {string}
@@ -62,38 +56,6 @@ class SectionBuild extends ComponentBuild {
    */
   set schema (value) {
     this.#schema = value
-  }
-
-  /**
-   * Get styles bundle content
-   * @return {string}
-   */
-  get stylesBundle () {
-    return this.#stylesBundle
-  }
-
-  /**
-   * Set styles bundle content
-   * @param {string} value
-   */
-  set stylesBundle (value) {
-    this.#stylesBundle = value
-  }
-
-  /**
-   * Get styles bundle filename
-   * @return {string}
-   */
-  get stylesBundleFile () {
-    return this.#stylesBundleFile
-  }
-
-  /**
-   * Set styles bundle filename
-   * @param value
-   */
-  set stylesBundleFile (value) {
-    this.#stylesBundleFile = value
   }
 }
 

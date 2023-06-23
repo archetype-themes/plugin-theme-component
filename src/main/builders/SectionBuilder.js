@@ -84,10 +84,9 @@ class SectionBuilder {
    * @param {string} sectionMainStylesheet
    * @param {string} sectionBuildStylesheet
    * @param {Render[]} sectionRenders
-   * @param {string} targetBundleStylesheet
-   * @return {Promise<string>}
+   * @return {Promise<string|void>}
    */
-  static async bundleStyles (collectionRootFolder, sectionMainStylesheet, sectionBuildStylesheet, sectionRenders, targetBundleStylesheet) {
+  static async bundleStyles (collectionRootFolder, sectionMainStylesheet, sectionBuildStylesheet, sectionRenders) {
     let mainStylesheets = []
 
     if (sectionMainStylesheet) {
@@ -98,7 +97,9 @@ class SectionBuilder {
       mainStylesheets = mainStylesheets.concat(RecursiveRenderUtils.getSnippetsMainStylesheet(sectionRenders))
     }
 
-    return StylesProcessor.buildStylesBundle(mainStylesheets, targetBundleStylesheet, collectionRootFolder)
+    if (mainStylesheets.length > 0) {
+      return StylesProcessor.buildStylesBundle(mainStylesheets, sectionBuildStylesheet, collectionRootFolder)
+    }
   }
 
   /**
@@ -140,21 +141,33 @@ class SectionBuilder {
    */
   static async writeBuild (section, collectionRootFolder) {
     // Bundle CSS
-    section.build.stylesBundle =
+    section.build.styles =
       await this.bundleStyles(
         collectionRootFolder,
         section.files.mainStylesheet,
         section.build.stylesheet,
-        section.renders,
-        section.build.stylesBundleFile
+        section.renders
       )
 
     // Attach CSS bundle file reference to liquid code
-    section.build.liquidCode =
-      LiquidUtils.generateStylesheetReference(path.basename(section.build.stylesBundleFile)) + '\n' +
-      section.build.liquidCode
+    if (section.build.styles) {
+      section.build.liquidCode =
+        LiquidUtils.generateStylesheetReference(path.basename(section.build.stylesheet)) + '\n' +
+        section.build.liquidCode
+    }
 
-    // Build JS
+    // Build Settings Schema
+    const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders)
+    section.build.settingsSchema = section.settingsSchema.concat(rendersSettingsSchema)
+
+    // Get all Section and Snippet Assets
+    let assetFiles = section.files.assetFiles
+    assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
+
+    // IMPORTANT: No disk write operation should occur BEFORE this
+    await this.resetBuildFolders(section.files, section.build)
+
+    // Build & Write JS
     const rendersJavascriptIndexes = RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders)
     if (section.files.javascriptIndex) {
       await JavaScriptProcessor.buildJavaScript(
@@ -173,26 +186,18 @@ class SectionBuilder {
     }
 
     // Attach Javascript bundle file reference to liquid code
-    section.build.liquidCode =
-      LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) + '\n' +
-      section.build.liquidCode
-
-    // Build Settings Schema
-    const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders)
-    section.build.settingsSchema = section.settingsSchema.concat(rendersSettingsSchema)
-
-    // Get all Section and Snippet Assets
-    let assetFiles = section.files.assetFiles
-    assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
-
-    await this.resetBuildFolders(section.files, section.build)
+    if (section.files.javascriptIndex || rendersJavascriptIndexes.length) {
+      section.build.liquidCode =
+        LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) + '\n' +
+        section.build.liquidCode
+    }
 
     const { liquidFilesWritePromise } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
 
     return Promise.all([
       LocaleUtils.writeSchemaLocales(section.build.schemaLocales, section.build.localesFolder),
       FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder),
-      FileUtils.writeFile(section.build.stylesBundleFile, section.build.stylesBundle),
+      FileUtils.writeFile(section.build.stylesheet, section.build.styles),
       FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode),
       FileUtils.writeFile(section.build.settingsSchemaFile, JSON.stringify(section.build.settingsSchema, null, 2)),
       liquidFilesWritePromise

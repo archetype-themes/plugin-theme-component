@@ -36,7 +36,6 @@ class BuildFactory {
     build.javascriptFile = `${build.assetsFolder}/${section.name}.js`
     build.settingsSchemaFile = `${build.configFolder}/${Components.THEME_SETTINGS_SCHEMA_FILENAME}`
     build.stylesheet = `${build.assetsFolder}/${section.name}.css.liquid`
-    build.stylesBundleFile = `${build.assetsFolder}/${section.name}.bundle.css`
 
     return build
   }
