@@ -193,7 +193,7 @@ class SectionBuilder {
       FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder),
       FileUtils.writeFile(section.build.stylesBundleFile, section.build.stylesBundle),
       FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode),
-      FileUtils.writeFile(section.build.settingsSchemaFile, JSON.stringify(section.build.settingsSchema)),
+      FileUtils.writeFile(section.build.settingsSchemaFile, JSON.stringify(section.build.settingsSchema, null, 2)),
       liquidFilesWritePromise
     ])
   }

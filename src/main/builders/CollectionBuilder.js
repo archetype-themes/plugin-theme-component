@@ -48,7 +48,7 @@ class CollectionBuilder {
     // On Theme Install, these contents are merged from collection.build values.
     if (NodeConfig.isCollection()) {
       await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
-      fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema)))
+      fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema, null, 2)))
     }
 
     // Gather & Copy Sections & Snippets Liquid Files
