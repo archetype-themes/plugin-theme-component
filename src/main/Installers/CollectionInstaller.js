@@ -1,225 +1,188 @@
 // Node Core imports
-import { readdir } from 'node:fs/promises'
+import { mkdir, readdir } from 'node:fs/promises'
 import { basename, join } from 'node:path'
+import Components from '../../config/Components.js'
+import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 // Archie  imports
 import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
 import merge from 'deepmerge'
 
-/**
- * @typedef {Object} InjectionOptions
- * @property {boolean} injectJavascript
- * @property {boolean} injectStylesheet
- */
 class CollectionInstaller {
   /**
    * Install Collection Within a Theme
    * @param {Theme} theme
    * @param {module:models/Collection} collection
-   * @param {boolean} backupMode
-   * @return {Promise<void>}
+   * @return {Promise<Awaited<unknown>[]>}
    */
-  static async install (theme, collection, backupMode) {
-    /** @type {Object.<string, string>} **/
-    const filesToCopy = {}
-
-    let injectJavascript = false
-    let injectStylesheet = false
-
-    // Copy Collection Build Assets
-    const assetFolderContents = await readdir(collection.build.assetsFolder, { withFileTypes: true })
-    for (const assetFolderEntry of assetFolderContents) {
-      if (assetFolderEntry.isFile()) {
-        filesToCopy[join(collection.build.assetsFolder, assetFolderEntry.name)] =
-          join(theme.assetsFolder, assetFolderEntry.name)
-      }
-    }
-
-    // JavaScript Injection
-    if (collection.build.javascriptFile && await FileUtils.exists(collection.build.javascriptFile)) {
-      const javascriptFileBasename = basename(collection.build.javascriptFile)
-      logger.debug(`Source Collection Javascript file ${javascriptFileBasename} found.`)
-      injectJavascript = true
-    }
-
-    // Stylesheet Injection
-    if (collection.build.stylesheet && await FileUtils.exists(collection.build.stylesheet)) {
-      const stylesheetBasename = basename(collection.build.stylesheet)
-      logger.debug(`Source Collection Stylesheet file ${stylesheetBasename} found.`)
-      injectStylesheet = true
-    }
+  static async install (theme, collection) {
+    const fileOperations = []
+    // Copy Collection Asset Files
+    fileOperations.push(FileUtils.copyFolder(collection.build.assetsFolder, theme.assetsFolder))
 
     // Merge & Copy Schema Locales
-    // TODO: REVIEW AND OPTIMIZE THIS 2AM CODING BLITZ
-    const localesFolderContents = await readdir(collection.build.localesFolder, { withFileTypes: true })
-    for (const localesFolderEntry of localesFolderContents) {
-      if (localesFolderEntry.isFile()) {
-        const localeFilename = localesFolderEntry.name
-        const targetFileArray = localesFolderEntry.name.split('.')
-        targetFileArray.splice(1, 0, 'default')
-        const defaultLocaleFilename = targetFileArray.join('.')
-
-        const sourceFile = join(collection.build.localesFolder, localeFilename)
-
-        const targetFile = join(theme.localesFolder, localeFilename)
-        const defaultTargetFile = join(theme.localesFolder, defaultLocaleFilename)
-
-        const targetFileExists = await FileUtils.exists(targetFile)
-        const defaultTargetFileExists = await FileUtils.exists(defaultTargetFile)
-
-        if (targetFileExists || defaultTargetFileExists) {
-          const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
-          const themeSchemaLocale = JSON.parse(await FileUtils.getFileContents(realTargetFile))
-          const collectionSchemaLocale = JSON.parse(await FileUtils.getFileContents(sourceFile))
-          const mergedSchemaLocale = merge(collectionSchemaLocale, themeSchemaLocale)
-
-          if (backupMode) {
-            await FileUtils.backup(realTargetFile)
-          }
-          await FileUtils.writeFile(realTargetFile, JSON.stringify(mergedSchemaLocale, null, 2))
-        }
-      }
-    }
+    fileOperations.push(this.writeSchemaLocales(collection.build.localesFolder, theme.localesFolder))
 
     // Sections
-    logger.debug('Reading Section Files')
-    const sectionsContents = await readdir(collection.build.sectionsFolder, { withFileTypes: true })
-
-    for (const sectionsEntry of sectionsContents) {
-      if (sectionsEntry.isFile() && sectionsEntry.name.toLowerCase().endsWith('.liquid')) {
-        filesToCopy[join(collection.build.sectionsFolder, sectionsEntry.name)] =
-          join(theme.sectionsFolder, sectionsEntry.name)
-      }
-    }
+    fileOperations.push(FileUtils.copyFolder(collection.build.sectionsFolder, theme.sectionsFolder))
 
     // Snippets
-    logger.debug('Reading Snippet Files')
-    const snippetsContents = await readdir(collection.build.snippetsFolder, { withFileTypes: true })
+    fileOperations.push(FileUtils.copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
 
-    for (const snippetsEntry of snippetsContents) {
-      if (snippetsEntry.isFile() && snippetsEntry.name.toLowerCase().endsWith('.liquid')) {
-        filesToCopy[join(collection.build.snippetsFolder, snippetsEntry.name)] =
-          join(theme.snippetsFolder, snippetsEntry.name)
-      }
+    if (collection.build.settingsSchema) {
+      fileOperations.push(this.writeSettingsSchema(theme.configFolder, collection.build.settingsSchema))
     }
 
-    if (backupMode) {
-      await this.backupFiles(filesToCopy)
-    }
+    // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
+    fileOperations.push(this.injectAssetReferences(collection, theme))
 
-    logger.debug(`Copying ${Object.keys(filesToCopy).length} files`)
-    await FileUtils.copy(filesToCopy)
-
-    logger.info('Collection Files Installed Successfully.')
-
-    if (injectJavascript || injectStylesheet) {
-      await this.injectAssetReferences(collection, theme, { injectJavascript, injectStylesheet }, backupMode)
-    }
+    return Promise.all(fileOperations)
   }
 
   /**
-   *
-   * @param {Object.<string, string>} filesToCopy
-   * @return {Promise<void>}
-   */
-  static async backupFiles (filesToCopy) {
-    const filesToBackup = []
-
-    for (const sourceFile of Object.keys(filesToCopy)) {
-      const targetFile = filesToCopy[sourceFile]
-      if (await FileUtils.exists(targetFile)) {
-        logger.debug(`File "${basename(targetFile)}" exists - backup requested.`)
-        filesToBackup.push(targetFile)
-      }
-    }
-
-    if (filesToBackup.length) {
-      logger.debug(`Backing up ${filesToBackup.length} files`)
-      await FileUtils.backup(filesToBackup)
-    } else {
-      logger.debug('No files to backup')
-    }
-  }
-
-  /**
-   *
+   * Inject references to the Collection's main CSS and JS files in the theme's main liquid file
    * @param {module:models/Collection} collection
    * @param {Theme} theme
-   * @param {InjectionOptions} options
-   * @param {boolean} backupMode
    * @return {Promise<void>}
    */
-  static async injectAssetReferences (collection, theme, options, backupMode) {
-    const javascriptFileBasename = basename(collection.build.javascriptFile)
-    let stylesheetBasename = basename(collection.build.stylesheet)
-    if (stylesheetBasename.endsWith('.liquid')) {
-      stylesheetBasename = stylesheetBasename.substring(0, stylesheetBasename.lastIndexOf('.'))
-    }
+  static async injectAssetReferences (collection, theme) {
+    const injectableAssets = [
+      {
+        asset: collection.build.javascriptFile,
+        tagTemplate: filename => `<script src="{{ '${filename}' | asset_url }}" async></script>`,
+        loggerMessage: 'Source Collection Javascript file %s found.'
+      },
+      {
+        asset: collection.build.stylesheet,
+        tagTemplate: filename => `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
+        loggerMessage: 'Source Collection Stylesheet file %s found.',
+        nameModifier: name => name.endsWith('.liquid') ? name.substring(0, name.lastIndexOf('.')) : name
+      }
+    ]
 
     const injections = []
-
     const themeLiquidFile = join(theme.rootFolder, 'layout', 'theme.liquid')
-    const themeLiquid = (
-      await FileUtils.isReadable(themeLiquidFile)
-    )
+    const themeLiquid = (await FileUtils.isReadable(themeLiquidFile))
       ? await FileUtils.getFileContents(themeLiquidFile)
       : ''
 
-    if (options.injectJavascript) {
-      if (themeLiquid.includes(javascriptFileBasename)) {
-        logger.warn(`Html "script" tag injection unavailable: A conflictual reference to ${javascriptFileBasename} is already present within the theme.liquid file.`)
-      } else {
-        injections.push(`<script src="{{ '${javascriptFileBasename}' | asset_url }}" async></script>`)
+    for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
+      if (!asset || !await FileUtils.exists(asset)) continue
+
+      logger.debug(loggerMessage, basename(asset))
+
+      let assetBasename = basename(asset)
+      if (nameModifier) assetBasename = nameModifier(assetBasename)
+
+      if (themeLiquid.includes(assetBasename)) {
+        logger.warn(`Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`)
+        continue
       }
+
+      injections.push(tagTemplate(assetBasename))
     }
 
-    if (options.injectStylesheet) {
-      if (themeLiquid.includes(stylesheetBasename)) {
-        logger.warn(`Html "link" tag injection Unavailable: A conflictual reference to ${stylesheetBasename} is already present within the theme.liquid file.`)
-      } else {
-        injections.push(`<link type="text/css" href="{{ '${stylesheetBasename}' | asset_url }}" rel="stylesheet">`)
-      }
-    }
-
-    if (await FileUtils.isWritable(themeLiquidFile)) {
-      if (injections.length) {
-        await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile, backupMode)
-      }
-    } else if (injections.length) {
+    if (await FileUtils.isWritable(themeLiquidFile) && injections.length > 0) {
+      await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
+    } else if (injections.length > 0) {
       this.injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
     }
   }
 
   /**
-   *
+   * Write Asset References to Theme Liquid File
    * @param {string[]} injections
    * @param {string} themeLiquid
    * @param {string} themeLiquidFile
-   * @param {boolean} backupMode
    * @return {Promise<void>}
    */
-  static async writeAssetReferencesToThemeLiquidFile (injections, themeLiquid, themeLiquidFile, backupMode) {
-    const headTagClosureCount = (
-      themeLiquid.match(/<\/head>/g) || []
-    ).length
-    if (headTagClosureCount === 1) {
-      logger.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
-      themeLiquid = themeLiquid.replace(
-        '</head>',
-        `${injections.join('\n')}\n</head>`
-      )
-      if (backupMode) {
-        await FileUtils.backup(themeLiquidFile)
-      }
-      await FileUtils.writeFile(themeLiquidFile, themeLiquid)
-    } else if (headTagClosureCount === 0) {
-      this.injectionFailureWarning('Html head tag closure not found in "theme.liquid".', injections)
-    } else {
-      this.injectionFailureWarning(
-        `${headTagClosureCount} Html head tag closure found in "theme.liquid". It should only be present once.`,
+  static async writeAssetReferencesToThemeLiquidFile (injections, themeLiquid, themeLiquidFile) {
+    const closingHtmlHeadTagCount = (themeLiquid.match(/<\/head>/g) || []).length
+
+    // Exit if No </head> tag was found
+    if (closingHtmlHeadTagCount === 0) {
+      return this.injectionFailureWarning('Html head tag closure not found in "theme.liquid".', injections)
+    }
+
+    // Exit if Multiple </head> tags were found
+    if (closingHtmlHeadTagCount > 1) {
+      return this.injectionFailureWarning(
+        `${closingHtmlHeadTagCount} instances of Html head tag closure found in "theme.liquid". It should only be present once.`,
         injections
       )
     }
+
+    logger.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
+    themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
+
+    await FileUtils.writeFile(themeLiquidFile, themeLiquid)
+  }
+
+  /**
+   * Write Schema Locales, merging them atop of the theme's Schema Locales
+   * @param {string} collectionLocalesPath
+   * @param {string} themeLocalesPath
+   * @return {Promise<Awaited<unknown>[]>}
+   */
+  static async writeSchemaLocales (collectionLocalesPath, themeLocalesPath) {
+    logger.debug('Merging Collection Schema Locales with the Theme\'s Schema Locales')
+    const fileOperations = []
+
+    const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
+    for (const collectionLocalesFolderEntry of collectionLocalesFolderEntries) {
+      if (!collectionLocalesFolderEntry.isFile()) continue
+
+      const localeFilename = collectionLocalesFolderEntry.name
+      // Split filename on "." into an array.
+      let defaultLocaleFilename = collectionLocalesFolderEntry.name.split('.')
+      // Add "default" entry in second position
+      // IMPORTANT 'splice' returns DELETED elements, thus can not be chained.
+      defaultLocaleFilename.splice(1, 0, 'default')
+      // and glue together back again with "."
+      defaultLocaleFilename = defaultLocaleFilename.join('.')
+
+      const sourceFile = join(collectionLocalesPath, localeFilename)
+      const targetFile = join(themeLocalesPath, localeFilename)
+      const defaultTargetFile = join(themeLocalesPath, defaultLocaleFilename)
+
+      const targetFileExists = await FileUtils.exists(targetFile)
+      const defaultTargetFileExists = await FileUtils.exists(defaultTargetFile)
+
+      if (targetFileExists || defaultTargetFileExists) {
+        const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
+        const themeSchemaLocale = JSON.parse(await FileUtils.getFileContents(realTargetFile))
+        const collectionSchemaLocale = JSON.parse(await FileUtils.getFileContents(sourceFile))
+        const mergedSchemaLocale = merge(collectionSchemaLocale, themeSchemaLocale)
+
+        fileOperations.push(FileUtils.writeFile(realTargetFile, JSON.stringify(mergedSchemaLocale, null, 2)))
+      }
+    }
+    return Promise.all(fileOperations)
+  }
+
+  /**
+   * Write Settings Schema
+   * @param {string} configFolder
+   * @param {Object[]} settingsSchema
+   * @return {Promise<void>}
+   */
+  static async writeSettingsSchema (configFolder, settingsSchema) {
+    let finalSettingsSchema
+    const themeSettingsSchemaFile = join(configFolder, Components.THEME_SETTINGS_SCHEMA_FILENAME)
+    console.log(themeSettingsSchemaFile)
+
+    if (await FileUtils.exists(themeSettingsSchemaFile)) {
+      const themeSettingsSchema = JSON.parse(await FileUtils.getFileContents(themeSettingsSchemaFile))
+      finalSettingsSchema = mergeObjectArraysByUniqueKey(
+        themeSettingsSchema,
+        settingsSchema,
+        'name')
+    } else if (!await FileUtils.exists(configFolder)) {
+      await mkdir(configFolder)
+      finalSettingsSchema = settingsSchema
+    }
+
+    return FileUtils.writeFile(themeSettingsSchemaFile, JSON.stringify(finalSettingsSchema, null, 2))
   }
 
   static injectionFailureWarning (message, injections) {
