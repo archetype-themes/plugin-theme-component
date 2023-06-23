@@ -1,12 +1,15 @@
 // Node Core imports
-import { mkdir, readdir } from 'node:fs/promises'
+import { mkdir } from 'node:fs/promises'
 import { basename, join } from 'node:path'
+
+// External Packages
+import merge from 'deepmerge'
+
+// Archie imports
 import Components from '../../config/Components.js'
 import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
-// Archie  imports
 import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
-import merge from 'deepmerge'
 
 class CollectionInstaller {
   /**
@@ -17,18 +20,21 @@ class CollectionInstaller {
    */
   static async install (theme, collection) {
     const fileOperations = []
-    // Copy Collection Asset Files
+    // Copy Asset Folder
     fileOperations.push(FileUtils.copyFolder(collection.build.assetsFolder, theme.assetsFolder))
 
-    // Merge & Copy Schema Locales
-    fileOperations.push(this.writeSchemaLocales(collection.build.localesFolder, theme.localesFolder))
-
-    // Sections
+    // Copy Sections Folder
     fileOperations.push(FileUtils.copyFolder(collection.build.sectionsFolder, theme.sectionsFolder))
 
-    // Snippets
+    // Copy Snippets Folder
     fileOperations.push(FileUtils.copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
 
+    // Merge & Copy Schema Locales
+    if (collection.build.schemaLocales) {
+      fileOperations.push(this.writeSchemaLocales(collection.build.schemaLocales, theme.localesFolder))
+    }
+
+    // Merge & Copy Settings Schema
     if (collection.build.settingsSchema) {
       fileOperations.push(this.writeSettingsSchema(theme.configFolder, collection.build.settingsSchema))
     }
@@ -120,41 +126,38 @@ class CollectionInstaller {
 
   /**
    * Write Schema Locales, merging them atop of the theme's Schema Locales
-   * @param {string} collectionLocalesPath
+   * @param {Object} collectionSchemaLocales
    * @param {string} themeLocalesPath
    * @return {Promise<Awaited<unknown>[]>}
    */
-  static async writeSchemaLocales (collectionLocalesPath, themeLocalesPath) {
+  static async writeSchemaLocales (collectionSchemaLocales, themeLocalesPath) {
     logger.debug('Merging Collection Schema Locales with the Theme\'s Schema Locales')
     const fileOperations = []
 
-    const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
-    for (const collectionLocalesFolderEntry of collectionLocalesFolderEntries) {
-      if (!collectionLocalesFolderEntry.isFile()) continue
+    // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
+    for (const locale of Object.keys(collectionSchemaLocales)) {
+      const schemaLocaleFilename = `${locale}.schema.json`
 
-      const localeFilename = collectionLocalesFolderEntry.name
-      // Split filename on "." into an array.
-      let defaultLocaleFilename = collectionLocalesFolderEntry.name.split('.')
-      // Add "default" entry in second position
-      // IMPORTANT 'splice' returns DELETED elements, thus can not be chained.
-      defaultLocaleFilename.splice(1, 0, 'default')
-      // and glue together back again with "."
-      defaultLocaleFilename = defaultLocaleFilename.join('.')
+      const defaultSchemaLocaleFilename = `${locale}.default.schema.json`
 
-      const sourceFile = join(collectionLocalesPath, localeFilename)
-      const targetFile = join(themeLocalesPath, localeFilename)
-      const defaultTargetFile = join(themeLocalesPath, defaultLocaleFilename)
+      const targetFile = join(themeLocalesPath, schemaLocaleFilename)
+      const defaultTargetFile = join(themeLocalesPath, defaultSchemaLocaleFilename)
 
       const targetFileExists = await FileUtils.exists(targetFile)
       const defaultTargetFileExists = await FileUtils.exists(defaultTargetFile)
-
+      const collectionSchemaLocale = collectionSchemaLocales[locale]
       if (targetFileExists || defaultTargetFileExists) {
         const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
         const themeSchemaLocale = JSON.parse(await FileUtils.getFileContents(realTargetFile))
-        const collectionSchemaLocale = JSON.parse(await FileUtils.getFileContents(sourceFile))
         const mergedSchemaLocale = merge(collectionSchemaLocale, themeSchemaLocale)
 
         fileOperations.push(FileUtils.writeFile(realTargetFile, JSON.stringify(mergedSchemaLocale, null, 2)))
+      } else {
+        // if No Theme Schema Locale File was found for the current locale, check for a Default Theme Regular Locale File in order to determine 'default' status for the locale.
+        const defaultLocaleFilename = `${locale}.default.json`
+        const realTargetFile = await FileUtils.exists(join(themeLocalesPath, defaultLocaleFilename)) ? defaultTargetFile : targetFile
+
+        fileOperations.push(FileUtils.writeFile(realTargetFile, JSON.stringify(collectionSchemaLocale, null, 2)))
       }
     }
     return Promise.all(fileOperations)
@@ -162,24 +165,21 @@ class CollectionInstaller {
 
   /**
    * Write Settings Schema
-   * @param {string} configFolder
-   * @param {Object[]} settingsSchema
+   * @param {string} themeConfigFolder
+   * @param {Object[]} collectionSettingsSchema
    * @return {Promise<void>}
    */
-  static async writeSettingsSchema (configFolder, settingsSchema) {
+  static async writeSettingsSchema (themeConfigFolder, collectionSettingsSchema) {
     let finalSettingsSchema
-    const themeSettingsSchemaFile = join(configFolder, Components.THEME_SETTINGS_SCHEMA_FILENAME)
+    const themeSettingsSchemaFile = join(themeConfigFolder, Components.THEME_SETTINGS_SCHEMA_FILENAME)
     console.log(themeSettingsSchemaFile)
 
     if (await FileUtils.exists(themeSettingsSchemaFile)) {
       const themeSettingsSchema = JSON.parse(await FileUtils.getFileContents(themeSettingsSchemaFile))
-      finalSettingsSchema = mergeObjectArraysByUniqueKey(
-        themeSettingsSchema,
-        settingsSchema,
-        'name')
-    } else if (!await FileUtils.exists(configFolder)) {
-      await mkdir(configFolder)
-      finalSettingsSchema = settingsSchema
+      finalSettingsSchema = mergeObjectArraysByUniqueKey(themeSettingsSchema, collectionSettingsSchema, 'name')
+    } else if (!await FileUtils.exists(themeConfigFolder)) {
+      await mkdir(themeConfigFolder)
+      finalSettingsSchema = collectionSettingsSchema
     }
 
     return FileUtils.writeFile(themeSettingsSchemaFile, JSON.stringify(finalSettingsSchema, null, 2))

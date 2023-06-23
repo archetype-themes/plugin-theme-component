@@ -6,6 +6,7 @@ import { basename, join } from 'node:path'
 import merge from 'deepmerge'
 
 // Archie imports
+import NodeConfig from '../../cli/models/NodeConfig.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
@@ -37,13 +38,18 @@ class CollectionBuilder {
       await JavaScriptProcessor.buildJavaScript(collection.rootFolder, collection.build.javascriptFile, jsFiles.shift(), jsFiles)
     }
 
-    // Build and Write Schema Locales
+    // Build Schema Locales
     collection.build.schemaLocales = this.buildSchemaLocales(collection.sections)
-    await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
 
     // Build Section Schema
     collection.build.settingsSchema = this.buildSettingsSchema(collection.sections)
-    fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema)))
+
+    // Write Schema Locales and Settings Schema to disk for Collection Build
+    // On Theme Install, these contents are merged from collection.build values.
+    if (NodeConfig.isCollection()) {
+      await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
+      fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema)))
+    }
 
     // Gather & Copy Sections & Snippets Liquid Files
     const processedSnippets = []
