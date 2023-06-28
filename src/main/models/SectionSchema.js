@@ -5,14 +5,14 @@
  * @property {string} label - The setting label, which will show in the theme editor.
  * @property {*} [default] - The default value for the setting.
  * @property {string} [info] - An option for informational text about the setting.
- * @see https://shopify.dev/themes/architecture/settings/input-settings
+ * @see https://shopify.dev/docs/themes/architecture/settings/input-settings
  */
 
 /**
  * @typedef {Object} SidebarSetting
  * @property {string} type - The input setting type, which can be either header or paragraph.
  * @property {string} content - The setting content, which will show in the theme editor.
- * @see https://shopify.dev/themes/architecture/settings/sidebar-settings
+ * @see https://shopify.dev/docs/themes/architecture/settings/sidebar-settings
  */
 
 /**
@@ -20,8 +20,8 @@
  * @property {string} type - The block type. This is a free-form string that you can use as an identifier.
  * @property {string} name - The block name, which will show as the block title in the theme editor.
  * @property {number} [limit] - The number of blocks of this type that can be used.
- * @property {Object} [settings] - Any input or sidebar settings that you want for the block.
- * @see  https://shopify.dev/themes/architecture/sections/section-schema#blocks
+ * @property {InputSetting|SidebarSetting} [settings] - Any input or sidebar settings that you want for the block.
+ * @see  https://shopify.dev/docs/themes/architecture/sections/section-schema#blocks
  */
 
 /**
@@ -36,7 +36,22 @@
  * @property {string} name - The preset name, which will show in the Add section portion of the theme editor.
  * @property {SettingPreset} [settings] - A list of default values for any settings you might want to populate.
  * @property {BlockPreset} [blocks] - A list of default blocks that you might want to include.
- * @see https://shopify.dev/themes/architecture/sections/section-schema#presets
+ * @see https://shopify.dev/docs/themes/architecture/sections/section-schema#presets
+ */
+
+/**
+ *
+ * @typedef {Object} EnabledOn
+ * @property {string[]} [templates] - A list of the template page types where the section can be used.
+ * @property {string[]} [groups] - A list of the section groups where the section can be used.
+ * @see https://shopify.dev/docs/themes/architecture/sections/section-schema#enabled_on
+ */
+
+/**
+ * @typedef {Object} DisabledOn
+ * @property {string[]} [templates] - A list of the template page types where the section can't be used.
+ * @property {string[]} [groups] - A list of the section groups where the section can't be used.
+ * @see https://shopify.dev/docs/themes/architecture/sections/section-schema#disabled_on
  */
 
 /**
@@ -44,7 +59,8 @@
  * @see https://shopify.dev/themes/architecture/sections/section-schema
  */
 class SectionSchema {
-  static SECTION_SCHEMA_PROPERTIES = ['name',
+  static SECTION_SCHEMA_PROPERTIES = [
+    'name',
     'tag',
     'class',
     'limit',
@@ -54,7 +70,9 @@ class SectionSchema {
     'presets',
     'default',
     'locales',
-    'templates']
+    'templates',
+    'enabled_on',
+    'disabled_on']
 
   /** @type {string} **/
   #name
@@ -88,6 +106,12 @@ class SectionSchema {
 
   /** @type {string[]} **/
   #templates
+
+  /** @type {EnabledOn} can not be used with disabled_on **/
+  #enabled_on
+
+  /** @type {DisabledOn} can not be used with enabled_on **/
+  #disabled_on
 
   /**
    * Get name
@@ -263,6 +287,38 @@ class SectionSchema {
    */
   set templates (value) {
     this.#templates = value
+  }
+
+  /**
+   * Get Enabled On
+   * @return {EnabledOn}
+   */
+  get enabled_on () {
+    return this.#enabled_on
+  }
+
+  /**
+   * Set Enabled On
+   * @param value
+   */
+  set enabled_on (value) {
+    this.#enabled_on = value
+  }
+
+  /**
+   * Get Disabled On
+   * @return {DisabledOn}
+   */
+  get disabled_on () {
+    return this.#disabled_on
+  }
+
+  /**
+   * Set Disabled On
+   * @param value
+   */
+  set disabled_on (value) {
+    this.#disabled_on = value
   }
 
   toJSON () {
