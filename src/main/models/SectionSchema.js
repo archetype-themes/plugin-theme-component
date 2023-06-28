@@ -299,7 +299,7 @@ class SectionSchema {
 
   /**
    * Set Enabled On
-   * @param value
+   * @param {EnabledOn} value
    */
   set enabled_on (value) {
     this.#enabled_on = value
@@ -315,7 +315,7 @@ class SectionSchema {
 
   /**
    * Set Disabled On
-   * @param value
+   * @param {DisabledOn} value
    */
   set disabled_on (value) {
     this.#disabled_on = value
