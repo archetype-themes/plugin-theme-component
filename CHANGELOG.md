@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   When not provided, this now defaults to the package's root folder rather than the previously hardcoded 'src'
   sub-folder. Current Themes located in the src folder will need to add archie.componentPath="src" to their package.json
   configuration.
+- Section Schema now handles enabled_on and disabled_on properties.
 
 ### Changed
 
