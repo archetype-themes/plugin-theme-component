@@ -2,11 +2,11 @@
 import merge from 'deepmerge'
 import { union } from 'lodash-es'
 import { join } from 'path'
-import SnippetBuilder from '../builders/SnippetBuilder.js'
+import SnippetBuilder from '../main/builders/SnippetBuilder.js'
 import FileUtils from './FileUtils.js'
 
 // Archie imports
-import SectionSchema from '../models/SectionSchema.js'
+import SectionSchema from '../main/models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 
 class RecursiveRenderUtils {
@@ -200,6 +200,34 @@ class RecursiveRenderUtils {
     }
 
     return schemaLocales
+  }
+
+  /**
+   * Get Snippet Schema Recursively
+   * @param {Render[]} renders
+   * @param {string[]} [processedSnippets=[]]
+   * @return {Object[]}
+   */
+  static getSnippetsSettingsSchema (renders, processedSnippets = []) {
+    const settingsSchema = []
+
+    for (const render of renders) {
+      if (!processedSnippets.includes(render.snippetName)) {
+        // Merge Snippet schema
+        if (render.snippet.settingsSchema) {
+          settingsSchema.push(...render.snippet.settingsSchema)
+        }
+
+        // Recursively check child renders for schema
+        if (render.snippet.renders?.length) {
+          settingsSchema.push(...this.getSnippetsSettingsSchema(render.snippet.renders, processedSnippets))
+        }
+
+        processedSnippets.push(render.snippetName)
+      }
+    }
+
+    return settingsSchema
   }
 }
 

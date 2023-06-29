@@ -2,8 +2,8 @@
 import path from 'node:path'
 
 // Archie imports
-import ThemeFactory from '../../factory/ThemeFactory.js'
-import CollectionInstaller from '../../Installers/CollectionInstaller.js'
+import ThemeFactory from '../../main/factory/ThemeFactory.js'
+import CollectionInstaller from '../../main/Installers/CollectionInstaller.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
 import Timer from '../../utils/Timer.js'
@@ -14,17 +14,16 @@ class InstallCommand {
   /**
    * Execute Install command
    * @param {string} collectionName
-   * @param {boolean} backupMode
    * @param {boolean} watchMode
    * @return {Promise<Awaited<void>[]>}
    */
-  static async execute (collectionName, backupMode, watchMode) {
+  static async execute (collectionName, watchMode) {
     const promises = []
 
-    const collection = await InstallCommand.installOne(collectionName, backupMode)
+    const collection = await InstallCommand.installOne(collectionName)
 
     if (watchMode) {
-      promises.push(this.watch(collection, backupMode))
+      promises.push(this.watch(collection))
     }
 
     return Promise.all(promises)
@@ -33,10 +32,9 @@ class InstallCommand {
   /**
    * Install a Collection
    * @param {string} collectionName
-   * @param {boolean} backupMode
    * @return {Promise<module:models/Collection>}
    */
-  static async installOne (collectionName, backupMode) {
+  static async installOne (collectionName) {
     logger.info(`Building & Installing the ${collectionName} Collection.`)
     const startTime = Timer.getTimer()
 
@@ -49,7 +47,7 @@ class InstallCommand {
     // Install and time it!
     logger.info(`Installing the ${collectionName} Collection for the ${theme.name} Theme.`)
     const installStartTime = Timer.getTimer()
-    await CollectionInstaller.install(theme, collection, backupMode)
+    await CollectionInstaller.install(theme, collection)
     logger.info(`${collection.name}: Install Complete in ${Timer.getEndTimerInSeconds(installStartTime)} seconds`)
     logger.info(`${collection.name}: Build & Install Completed in ${Timer.getEndTimerInSeconds(startTime)} seconds\n`)
     return Promise.resolve(collection)
@@ -58,38 +56,36 @@ class InstallCommand {
   /**
    * On Collection Watch Event
    * @param {string} collectionName
-   * @param {boolean} backupMode
    * @param {FSWatcher} watcher
    * @param event
    * @param eventPath
    * @return {Promise<module: models/Collection>}
    */
-  static async onCollectionWatchEvent (collectionName, backupMode, watcher, event, eventPath) {
+  static async onCollectionWatchEvent (collectionName, watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${filename} detected`)
 
-    const collection = await InstallCommand.installOne(collectionName, backupMode)
+    const collection = await InstallCommand.installOne(collectionName)
 
     // The Watcher is restarted on any liquid file change.
     // This is useful if any render tags were added or removed, it will reset snippet watched folders.
     if (filename.endsWith('.liquid')) {
       await watcher.close()
-      return InstallCommand.watch(collection, backupMode)
+      return InstallCommand.watch(collection)
     }
   }
 
   /**
    * Build and Install Collection in Current Theme on File Change
    * @param {module:models/Collection} collection
-   * @param {boolean} backupMode
    * @return {Promise<module: models/Collection>}
    */
-  static async watch (collection, backupMode) {
+  static async watch (collection) {
     const watchFolders = CollectionUtils.getWatchFolders(collection)
 
     const watcher = Watcher.getWatcher(watchFolders)
 
-    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, backupMode, watcher)
+    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, watcher)
     Watcher.watch(watcher, onCollectionWatchEvent)
   }
 }

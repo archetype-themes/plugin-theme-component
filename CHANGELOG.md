@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2023-06-29
+
+### Added
+
+- Settings Schema: settins_schema.json is now handled, merged and installed by archie. This closes #44
+- Install: ACTION REQUIRED: "archie.componentPath" setting added in package.json, this allows for theme install in any
+  folder. When not provided, this now defaults to the package's root folder rather than the previously hardcoded 'src'
+  sub-folder. Current Themes located in the src folder will need to add archie.componentPath="src" to their package.json
+  configuration. This closes #20
+- Section Schema: Section Schema now handles enabled_on and disabled_on missing additional properties. This closes #59
+
+### Changed
+
+- Workflow: PR Test workflow now also checks for proper code linting and circular dependencies.
+- SVG: SVGO config is now cached, preventing it from being loaded for every single svg file.
+- Internal: ComponentFilesUtils was moved to its proper location, the utils folder
+- Internal: Main sub-folder created in src to regroup all main components.
+
+### Removed
+
+- Backup: Install Backup Functionality is removed, it will not be missed.
+
 ## [1.3.1] - 2023-06-08
 
 ### Added
@@ -25,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Locale contents were not loaded for snippets
+- Locale contents were not loaded for snippets. This closes #79
 
 ## [1.3.0] - 2023-06-04
 

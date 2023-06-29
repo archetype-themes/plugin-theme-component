@@ -11,19 +11,6 @@ class FileUtils {
   static #FILE_ENCODING_OPTION = { encoding: 'utf8' }
 
   /**
-   *
-   * @param {string[]|string} files
-   * @return {Promise<void[]>}
-   */
-  static async backup (files) {
-    files = (typeof files === 'string' || files instanceof String) ? [files] : files
-
-    return Promise.all(files.map((file) => {
-      return copyFile(file, `${file.replace(/\.[^/.]+$/, '')}.${this.getReadableTimestamp()}${path.extname(file)}`)
-    }))
-  }
-
-  /**
    * Convert Component (Section/Snippet) Absolute Path to a Relative one
    * @param {string} absolutePath
    * @returns {string}
@@ -73,10 +60,11 @@ class FileUtils {
    * @param {string} sourceFolder
    * @param {string} targetFolder
    * @param {CopyFolderOptions} [options]
-   * @return {Promise<void>}
+   * @return {Promise<Awaited<void>[]>}
    */
   static async copyFolder (sourceFolder, targetFolder, options = { recursive: false, jsTemplateVariables: null }) {
-    const promises = []
+    const fileOperations = []
+    logger.debug(`Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `)
     const folderContent = await readdir(sourceFolder, { withFileTypes: true })
 
     for (const dirent of folderContent) {
@@ -84,17 +72,17 @@ class FileUtils {
         const sourceFile = path.join(sourceFolder, dirent.name)
         const targetFile = path.join(targetFolder, dirent.name)
         if (options.jsTemplateVariables) {
-          promises.push(this.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
+          fileOperations.push(this.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
         } else {
-          promises.push(copyFile(sourceFile, targetFile))
+          fileOperations.push(copyFile(sourceFile, targetFile))
         }
       } else if (dirent.isDirectory() && options.recursive) {
         const newTargetFolder = path.join(targetFolder, dirent.name)
         await mkdir(newTargetFolder, { recursive: options.recursive })
-        promises.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, options))
+        fileOperations.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, options))
       }
     }
-    return Promise.all(promises)
+    return Promise.all(fileOperations)
   }
 
   /**
@@ -105,6 +93,7 @@ class FileUtils {
    * @returns {Promise<void>}
    */
   static async processJsTemplateStringFile (sourceFile, targetFile, jsTemplateVariables) {
+    logger.debug(`Processing JS Template String file ${sourceFile}`)
     // Read the file's content
     const data = await readFile(sourceFile, 'utf8')
 
@@ -206,20 +195,6 @@ class FileUtils {
   static async getFileContents (file) {
     logger.debug(`Reading from disk: ${file}`)
     return readFile(file, this.#FILE_ENCODING_OPTION)
-  }
-
-  /**
-   * Get Readable Timestamp
-   * @param {Date} [date]
-   * @return {string}
-   */
-  static getReadableTimestamp (date) {
-    if (!date) {
-      date = new Date()
-    }
-    const dateString = date.toISOString()
-
-    return dateString.substring(0, 19).replace('T', '_').replaceAll(':', '-')
   }
 
   /**

@@ -1,0 +1,12 @@
+name: Run Tests on Pull Requests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  publish-package-to-github:
+    uses: archetype-themes/workflows/.github/workflows/npm-test-and-lint.yml@main

@@ -26,7 +26,7 @@ try {
       await CreateCommand.execute(cliSession.commandOption, cliSession.targetComponentName)
       break
     case CLICommands.INSTALL_COMMAND_NAME:
-      await InstallCommand.execute(cliSession.targetComponentName, cliSession.backupMode, cliSession.watchMode)
+      await InstallCommand.execute(cliSession.targetComponentName, cliSession.watchMode)
       break
     // There is no need for a default case - "Invalid command" was already handled in ArchieCLIFactory call above
   }

@@ -91,8 +91,6 @@ npx archie build --watch
 ##### Theme Commands #####
 npx archie install
 npx archie install --watch
-npx archie install --backup
-npx archie install --watch --backup
 ```
 
 ### Watch Flag

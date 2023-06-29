@@ -18,6 +18,9 @@ class Components {
   static SECTION_COMPONENT_NAME = 'section'
 
   /** @type {string}  **/
+  static SECTION_SCHEMA_FILENAME = 'schema.json'
+
+  /** @type {string}  **/
   static SNIPPET_COMPONENT_NAME = 'snippet'
 
   static THEME_COMPONENT_NAME = 'theme'
@@ -26,10 +29,15 @@ class Components {
   static THEME_ASSETS_FOLDER = 'assets'
 
   /** @type {string} **/
+  static THEME_CONFIG_FOLDER = 'config'
+
+  /** @type {string} **/
   static THEME_LOCALES_FOLDER = 'locales'
 
   /** @type {string} **/
   static THEME_SECTIONS_FOLDER = 'sections'
+
+  static THEME_SETTINGS_SCHEMA_FILENAME = 'settings_schema.json'
 
   /** @type {string} **/
   static THEME_SNIPPETS_FOLDER = 'snippets'

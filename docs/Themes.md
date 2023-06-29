@@ -69,18 +69,6 @@ npm run ai
 
 ```
 
-**Backup Flag**
-
-Using the watch flag, `--backup` or`-b`, will create backups prior to modifying files. Backup files have timestamps in
-their name to make them unique.
-
-To exclude backup files from Git, use the following filter in your .gitignore file.
-
-````gitignore
-# Archie backup files *.yyyy-mm-dd_hh-mm-ss.*
-*.[1-9][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]_[1-2][0-9]-[0-6][0-9]-[0-6][0-9].*
-````
-
 **Watch Flag**
 
 Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor the collection's source folders
@@ -88,11 +76,9 @@ and refresh your install on any file change. You can stop the process by pressin
 
 ```shell
 # If you want to use archie manually, you should use "npx"
-npx archie install --backup
 npx archie install --watch
-npx archie install --watch --backup
 
-# If you created a shortcut script, you should "npm run"
+# If you created a shortcut script, you should use "npm run"
 npm run aw
 ```
 

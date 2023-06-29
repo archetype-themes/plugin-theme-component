@@ -1,7 +1,4 @@
 class CLISession {
-  /** @type {boolean}  **/
-  static #backupMode = false
-
   /** @type {string}  **/
   static #command
 
@@ -13,22 +10,6 @@ class CLISession {
 
   /** @type {boolean}  **/
   static #watchMode = false
-
-  /**
-   * Get Backup Mode
-   * @return {boolean}
-   */
-  static get backupMode () {
-    return this.#backupMode
-  }
-
-  /**
-   * Set Backup Mode
-   * @param {boolean} value
-   */
-  static set backupMode (value) {
-    this.#backupMode = value
-  }
 
   /**
    * Get Command Name

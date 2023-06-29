@@ -11,7 +11,14 @@ class NodeConfigFactory {
    * @return {void}
    */
   static fromPackageJsonData (packageJsonData) {
+    // Validate and load Component Type
     NodeConfig.componentType = this.#findComponentType(packageJsonData)
+
+    // Load Component Path, if available
+    if (packageJsonData.archie?.componentPath) {
+      NodeConfig.componentPath = packageJsonData.archie.componentPath
+    }
+
     if (NodeConfig.isTheme()) {
       NodeConfig.collections = this.#findCollections(packageJsonData)
     }
@@ -24,7 +31,7 @@ class NodeConfigFactory {
    */
   static #findComponentType (packageJsonData) {
     /** @var {archie} packageJson.archie **/
-    if (!packageJsonData.archie || !packageJsonData.archie.componentType) {
+    if (!packageJsonData.archie?.componentType) {
       throw new ConfigError(`Couldn't find archie.componentType value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}`)
     }
 
@@ -45,11 +52,7 @@ class NodeConfigFactory {
    */
   static #findCollections (packageJsonData) {
     /** @var {archie} packageJson.archie **/
-    if (packageJsonData.archie && packageJsonData.archie.collections) {
-      return packageJsonData.archie.collections
-    }
-
-    return []
+    return packageJsonData.archie?.collections ? packageJsonData.archie.collections : []
   }
 }
 
