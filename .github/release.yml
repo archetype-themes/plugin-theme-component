@@ -1,9 +1,7 @@
 changelog:
   exclude:
     labels:
-      - ignore-for-release
-    authors:
-      - octocat
+      - ignore-for-releases
   categories:
     - title: Added
       labels:
