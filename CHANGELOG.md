@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.4.2] - 2023-07-05
+
+### Changed
+
+- NPM: Updated NodeJS dependencies
+
+## [1.4.1] - 2023-07-05
+
+### Added
+
+- NPM: Dependabot config for automated NodeJS package updates
+
 ## [1.4.0] - 2023-06-29
 
 ### Added
@@ -31,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- New Timer Utility library for time stats avoiding duplicate code and removing legacy code, now using hrtime.bigint()
+- CLI: New Timer Utility library for time stats avoiding duplicate code and removing legacy code, now using hrtime.bigint()
   instead of legacy hrtime().
 
 ### Changed
@@ -39,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Separation of concerns: Decoupled build methods. Collection, Section and Snippet's build methods are not intertwined
   anymore.
 - Separation of concerns: Timer code now exclusively in CLI calls, removed from factory and builder libraries.
-- Use of Optional chaining for "if" conditions checking for an array property's existence and then validating the length
+- Code: Use of Optional chaining for "if" conditions checking for an array property's existence and then validating the length
   property now replaces double if condition check.
 - Separation of concerns: SnippetBuilder and Snippet Build are back in a simplified manner. They are needed only for svg
   transformation in liquid code.
