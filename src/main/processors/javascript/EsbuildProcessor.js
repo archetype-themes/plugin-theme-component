@@ -25,10 +25,10 @@ class EsbuildProcessor {
     const defaultOptions = {
       bundle: true,
       charset: 'utf8',
-      // drop: ['console'], // TODO: Check with Team to see if we want to use this feature for bundled code or not.
+      // drop: ['console'],
       entryPoints: [mainJavaScriptFile],
       // metafile: true,  // result = build(options); logger.debug(result.metafile);return result
-      // minify: true,  // TODO: Could be an option in the archie config
+      // minify: true,
       format: 'cjs', // Defaults to iife on browser platform, but this wraps the code inside an immediately-invoked function expression
       outfile: outputFile,
       platform: 'browser',
