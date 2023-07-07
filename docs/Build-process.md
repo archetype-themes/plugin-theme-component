@@ -7,7 +7,6 @@ Let's see what happens behind the curtains
 By default, any Liquid file detected in the section folders (recursively) will be merged in a single liquid file bearing
 the name of the section and put at the root of the `build` folder. Files are processed in alphabetical order.
 
-- Any Snippet rendering liquid tag will be replaced by the actual Snippet's content, unless it is a for loop.
 - Schema will be appended. The content will consist of an assembly of locales.json and schema.json
 
 Output files :
