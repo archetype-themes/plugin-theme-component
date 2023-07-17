@@ -158,7 +158,11 @@ class SectionBuilder {
 
     // Build Settings Schema
     const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders)
-    section.build.settingsSchema = section.settingsSchema.concat(rendersSettingsSchema)
+    if (section.settingsSchema?.length) {
+      section.build.settingsSchema = section.settingsSchema.concat(rendersSettingsSchema)
+    } else {
+      section.build.settingsSchema = rendersSettingsSchema
+    }
 
     // Get all Section and Snippet Assets
     let assetFiles = section.files.assetFiles
