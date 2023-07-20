@@ -20,14 +20,14 @@
     "@csstools/postcss-sass": "^5.0.1",
     "chokidar": "^3.5.3",
     "deepmerge": "^4.3.1",
-    "esbuild": "^0.18.13",
+    "esbuild": "^0.18.14",
     "jsdom": "^22.1.0",
     "lodash-es": "^4.17.21",
     "pino": "^8.14.1",
     "pino-pretty": "^10.0.1",
     "postcss": "^8.4.26",
     "postcss-load-config": "^4.0.1",
-    "sass": "^1.63.3",
+    "sass": "^1.64.0",
     "svgo": "^3.0.2"
   },
   "devDependencies": {
