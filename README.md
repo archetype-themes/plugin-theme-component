@@ -21,7 +21,7 @@ Themes.
 
 ## Prerequisites
 
-NodeJS needs to be installed, please follow the setup guide if needed.
+Node.js needs to be installed, please follow the setup guide if needed.
 
 - [Setup Guide](docs/Setup.md)
 
@@ -34,7 +34,7 @@ You need to authenticate to GitHub Packages Repository before you can install Ar
 Archie helps with multiple components: Collections, Sections & Snippets, and Themes.
 
 With Archie, you can easily create and maintain a Collection of Sections to share amongst your Themes. Collections are
-structured as a NodeJS Monorepo of child repositories consisting of Sections and Snippets and shared elements in their
+structured as a Node.js Monorepo of child repositories consisting of Sections and Snippets and shared elements in their
 respective workspaces.
 
 ### Please read the following guides to help you on your journey

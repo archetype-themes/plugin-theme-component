@@ -1,4 +1,4 @@
-// NodeJS internal imports
+// Node.js internal imports
 import { exec } from 'child_process'
 import { access, constants } from 'node:fs/promises'
 import path from 'path'

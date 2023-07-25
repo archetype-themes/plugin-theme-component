@@ -1,4 +1,4 @@
-// NodeJS imports
+// Node.js imports
 import path from 'path'
 
 // External Module imports

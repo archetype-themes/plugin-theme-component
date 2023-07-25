@@ -1,12 +1,12 @@
 # Creating a Collection
 
-An Archie Collection is a NodeJS Monorepo that regroups multiple Shopify
+An Archie Collection is a Node.js Monorepo that regroups multiple Shopify
 Theme [Sections and Snippets](Sections-and-Snippets.md) in the form of Archie Components in child repositories in their
 respective npm workspaces.
 
 ## Node Package Creation
 
-We will start by creating a NodeJS Package.
+We will start by creating a Node.js Package.
 
 ```shell
 # Save your collection name to a variable

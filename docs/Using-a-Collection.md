@@ -1,6 +1,6 @@
 # Archie Collections - User's Guide
 
-An Archie Collection is a NodeJS Monorepo that regroups multiple Shopify
+An Archie Collection is a Node.js Monorepo that regroups multiple Shopify
 Theme [Sections and Snippets](Sections-and-Snippets.md)  in the form of child repositories in their respective
 namespaces.
 
@@ -89,7 +89,7 @@ export default {
   sourcemap: false // Enables JS sourcemap
 }
 ````
-The target browsers are set using Shopify's supported browserslist. This requires a few NodeJS Modules.
+The target browsers are set using Shopify's supported browserslist. This requires a few Node.js Modules.
 If used as is, do not forget to use install them by using the following npm install command:
 
 ```shell

@@ -1,4 +1,4 @@
-// Node JS Internal imports
+// Node.js Internal imports
 import merge from 'deepmerge'
 import path from 'path'
 import Components from '../config/Components.js'

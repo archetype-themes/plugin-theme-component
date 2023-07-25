@@ -4,7 +4,7 @@
 
 ### Installing NodeJS
 
-Installing NodeJS is necessary to use Archie. You can use Node Version Manager if you might need multiple different
+Installing Node.js is necessary to use Archie. You can use Node Version Manager if you might need multiple different
 versions of node on your system. You can use Homebrew to always have the latest stable version on your system. You can
 also get binaries from the [node.js](https://nodejs.org/en/) website.
 
@@ -18,7 +18,7 @@ particular on these platforms: unix, macOS, and [windows WSL](https://github.com
 line.
 
 Follow instructions on the [nvm](https://github.com/nvm-sh/nvm) page to install it and to see how to install the latest
-or LTS release of NodeJS
+or LTS release of Node.js
 
 #### Using Homebrew
 

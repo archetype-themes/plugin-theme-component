@@ -1,4 +1,4 @@
-// Node JS internal imports
+// Node.js internal imports
 import { unlink } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'

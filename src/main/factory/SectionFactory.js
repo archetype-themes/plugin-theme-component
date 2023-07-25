@@ -1,4 +1,4 @@
-// Node JS Internal imports
+// Node.js Internal imports
 import path from 'path'
 
 // External Node JS Modules
@@ -58,7 +58,7 @@ class SectionFactory {
 
     // Load Schema Locales
     if (section.files.schemaLocaleFiles?.length) {
-      section.schemaLocales = ComponentFilesUtils.getSchemaLocales(section.files.schemaLocaleFiles)
+      section.schemaLocales = await ComponentFilesUtils.getSchemaLocales(section.files.schemaLocaleFiles)
     }
 
     // Load Settings Schema
