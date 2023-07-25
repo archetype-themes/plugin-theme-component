@@ -1,4 +1,4 @@
-// Node JS Internal imports
+// Node.js Internal imports
 import path from 'path'
 
 // External Node JS Modules

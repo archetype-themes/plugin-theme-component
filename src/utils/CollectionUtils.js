@@ -1,4 +1,4 @@
-// NodeJS imports
+// Node.js imports
 import { access, constants, readdir } from 'node:fs/promises'
 import { join } from 'path'
 import NodeConfig from '../cli/models/NodeConfig.js'

@@ -1,4 +1,4 @@
-// NodeJs imports
+// Node.js imports
 import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'

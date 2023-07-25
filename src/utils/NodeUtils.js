@@ -1,4 +1,4 @@
-// NodeJS imports
+// Node.js imports
 import { argv, env, exit } from 'node:process'
 import { dirname } from 'node:path'
 
@@ -38,7 +38,7 @@ class NodeUtils {
   }
 
   /**
-   * Get NodeJS package name without the namespace
+   * Get Node.js package name without the namespace
    * @return {string}
    */
   static getPackageName () {
@@ -49,7 +49,7 @@ class NodeUtils {
   }
 
   /**
-   * Get NodeJS Package Scope (ie: @archetype-themes)
+   * Get Node.js Package Scope (ie: @archetype-themes)
    * @return {string}
    */
   static getPackageScope () {

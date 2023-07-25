@@ -21,19 +21,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Section Creation main template file now uses css extension instead of scss
-- NPM: Updated NodeJS dependencies
+- NPM: Updated Node.js dependencies
 
 ## [1.4.2] - 2023-07-05
 
 ### Changed
 
-- NPM: Updated NodeJS dependencies
+- NPM: Updated Node.js dependencies
 
 ## [1.4.1] - 2023-07-05
 
 ### Added
 
-- NPM: Dependabot config for automated NodeJS package updates
+- NPM: Dependabot config for automated Node.js package updates
 
 ## [1.4.0] - 2023-06-29
 
@@ -104,22 +104,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.3] - 2023-05-19
 
-### Changed - External and Shareable Automated NodeJS Package Publication
+### Changed - External and Shareable Automated Node.js Package Publication
 
-- CI: Automated NodeJS package publishing is now external and can be shared with Next and other repositories.
+- CI: Automated Node.js package publishing is now external and can be shared with Next and other repositories.
 
-## [1.2.2] - 2023-05-16 - Automated NodeJS package publication
+## [1.2.2] - 2023-05-16 - Automated Node.js package publication
 
 ### Added
 
-- CI: Automated NodeJS package publishing upon version change in package.json file.
+- CI: Automated Node.js package publishing upon version change in package.json file.
 
 ## [1.2.1] - 2023-05-16 - Error Handling Improvements
 
 ### Changed
 
 - Code: Improved error handling by adding multiple custom error classes and using them throughout the code to replace
-  use of the generic NodeJS Error class.
+  use of the generic Node.js Error class.
 
 ## [1.2.0] - 2023-05-10 - External PostCSS and ESBuild Configurations
 
@@ -161,7 +161,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation: Contributing section now details the code structure. All folders and phases of build are now explained.
 - Documentation: Sections and Snippet Components now contain multiple examples of different-size components with
   different file structures and strategies.
-- Documentation: Setup documentation now gives you the option of using nvm or Homebrew to set up NodeJS
+- Documentation: Setup documentation now gives you the option of using nvm or Homebrew to set up Node.js
 
 ## [1.0.5] - 2023-02-14 - GitHub Packages Integration
 
