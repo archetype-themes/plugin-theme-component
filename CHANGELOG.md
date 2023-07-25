@@ -8,15 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.4] - 2023-07-25
 
+### Changed
+
+- documentation: Node.js framework name corrected all throughout code comments and documentation
+- typo: Typo corrected in the Changelog
+- code: default null value removed for jsTemplateVariables argument. It was both confusing and unnecessary.
+
 ### Fixed
 
-- Schema Locales Build missing because of a missing await.
+- bug: Schema Locales Build missing because of a missing await.
 
 ## [1.4.3] - 2023-07-17
 
 ### Fixed
 
-- Section build error on empty section.settingsSchema
+- bug: Section build error on empty section.settingsSchema
 
 ### Changed
 
