@@ -62,7 +62,7 @@ class FileUtils {
    * @param {CopyFolderOptions} [options]
    * @return {Promise<Awaited<void>[]>}
    */
-  static async copyFolder (sourceFolder, targetFolder, options = { recursive: false, jsTemplateVariables: null }) {
+  static async copyFolder (sourceFolder, targetFolder, options = { recursive: false }) {
     const fileOperations = []
     logger.debug(`Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `)
     const folderContent = await readdir(sourceFolder, { withFileTypes: true })
