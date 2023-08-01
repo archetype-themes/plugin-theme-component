@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] - 2023-08-01
+
+### Fixed
+
+- bug:Section build conditions to create the snippets build folder were updated to be aligned with the recent snippets
+  handling change (not inlined anymore)
+
+### Changed
+
+- NPM: Updated Node.js dependencies
 
 ## [1.4.4] - 2023-07-25
 
