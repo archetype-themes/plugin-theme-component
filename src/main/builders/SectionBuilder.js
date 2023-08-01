@@ -105,10 +105,11 @@ class SectionBuilder {
   /**
    * Reset Build Folders
    * @param {SectionFiles} sectionFiles
+   * @param {Render[]} sectionRenders
    * @param {SectionBuild} sectionBuild
    * @return {Promise<Awaited<unknown>[]>}
    */
-  static async resetBuildFolders (sectionFiles, sectionBuild) {
+  static async resetBuildFolders (sectionFiles, sectionRenders, sectionBuild) {
     await rm(sectionBuild.rootFolder, { force: true, recursive: true })
     await mkdir(sectionBuild.rootFolder, { recursive: true })
 
@@ -126,7 +127,7 @@ class SectionBuilder {
       mkdirPromises.push(mkdir(sectionBuild.configFolder, { recursive: true }))
     }
 
-    if (sectionFiles.snippetFiles.length) {
+    if (sectionFiles.snippetFiles.length || !!sectionRenders.length) {
       mkdirPromises.push(mkdir(sectionBuild.snippetsFolder, { recursive: true }))
     }
 
@@ -169,7 +170,7 @@ class SectionBuilder {
     assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
 
     // IMPORTANT: No disk write operation should occur BEFORE this
-    await this.resetBuildFolders(section.files, section.build)
+    await this.resetBuildFolders(section.files, section.renders, section.build)
 
     // Build & Write JS
     const rendersJavascriptIndexes = RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders)
