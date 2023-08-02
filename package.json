@@ -18,15 +18,17 @@
   "repository": "https://github.com/archetype-themes/archie.git",
   "dependencies": {
     "@csstools/postcss-sass": "^5.0.1",
+    "@rollup/plugin-multi-entry": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
     "chokidar": "^3.5.3",
     "deepmerge": "^4.3.1",
-    "esbuild": "^0.18.17",
     "jsdom": "^22.1.0",
     "lodash-es": "^4.17.21",
     "pino": "^8.14.2",
     "pino-pretty": "^10.2.0",
     "postcss": "^8.4.27",
     "postcss-load-config": "^4.0.1",
+    "rollup": "^3.27.0",
     "sass": "^1.64.2",
     "svgo": "^3.0.2"
   },
