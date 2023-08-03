@@ -5,27 +5,10 @@ import path from 'node:path'
 
 // Archie Internal imports
 import PostCssProcessor from './styles/PostCssProcessor.js'
-import SassPreProcessor from './styles/SassPreProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import StylesUtils from '../../utils/StylesUtils.js'
 
 class StylesProcessor {
-  /**
-   * Process Styles by using all appropriate style preprocessors
-   * @param {string} sourceFile
-   * @param {string} outputFile
-   * @param {string} collectionRootFolder - Collection path. Will be used to look for config files
-   * @returns {Promise<string>} Final styles
-   */
-  static async buildStyles (sourceFile, outputFile, collectionRootFolder) {
-    if (StylesUtils.isSassFile(sourceFile)) {
-      return SassPreProcessor.processStyleSheet(sourceFile)
-    }
-
-    const css = await FileUtils.getFileContents(sourceFile)
-    return PostCssProcessor.processStyles(css, sourceFile, outputFile, collectionRootFolder)
-  }
-
   /**
    * Create Styles Bundle
    * @param {string[]} stylesheets
