@@ -16,7 +16,6 @@ Themes.
 - Fix your bug once; in the collection repository.
   - Update the Collection dependency in your Themes repository.
 - Javascript processing through esbuild will assemble everything in a single file.
-- Optionally use Sass preprocessor for your CSS
 - Use postCSS post-processing for your CSS to assemble everything in a single file.
 
 ## Prerequisites
