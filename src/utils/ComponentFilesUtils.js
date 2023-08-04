@@ -16,6 +16,13 @@ import SectionSchema from '../main/models/SectionSchema.js'
 import StylesUtils from './StylesUtils.js'
 
 class ComponentFilesUtils {
+  static STYLE_EXTENSIONS = ['.css', '.less', '.sass', '.scss']
+  static SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
+  static SINGLE_LOCALE_FILENAME_REGEXP = /^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/
+  static SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP = /^([a-z]{2})(-[a-z]{2})?(\.default)?\.schema\.json$/
+  static GROUPED_LOCALES_FILENAME_REGEXP = /^locales?\.json$/
+  static GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP = /^locales?\.schema\.json$/
+
   /**
    * Index Component Files in a SectionFiles or SnippetFiles model
    * @param {string} componentName
@@ -57,50 +64,48 @@ class ComponentFilesUtils {
     for (const file of files) {
       const extension = path.extname(file).toLowerCase()
       const folder = path.dirname(file).toLowerCase()
+      const filename = path.basename(file).toLowerCase()
 
       if (folder.endsWith(`/${Components.THEME_ASSETS_FOLDER}`)) {
         componentFiles.assetFiles.push(file)
-      } else {
-        const filename = path.basename(file).toLowerCase()
+        continue
+      }
 
-        switch (extension) {
-          case '.css':
-          case '.less':
-          case '.sass':
-          case '.scss':
-            componentFiles.stylesheets.push(file)
-            break
-          case '.js':
-          case '.mjs':
-            componentFiles.javascriptFiles.push(file)
-            break
-          case '.liquid':
-            if (folder.endsWith('/snippets')) {
-              componentFiles.snippetFiles.push(file)
-            } else {
-              componentFiles.liquidFiles.push(file)
-            }
-            break
-          case '.json':
-            if (filename === 'package.json') {
-              componentFiles.packageJson = file
-            } else if (filename === Components.SECTION_SCHEMA_FILENAME) {
-              componentFiles.schemaFile = file
-            } else if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME) {
-              componentFiles.settingsSchemaFile = file
-            } else if (filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/) ||
-              filename.match(/^locales?\.json$/)) {
-              componentFiles.localeFiles.push(file)
-            } else if (filename.match(/^([a-z]{2})(-[a-z]{2})?(\.default)?\.schema\.json$/) ||
-              filename.match(/^locales?\.schema\.json$/)) {
-              componentFiles.schemaLocaleFiles.push(file)
-            }
+      if (this.STYLE_EXTENSIONS.includes(extension)) {
+        componentFiles.stylesheets.push(file)
+        continue
+      }
 
+      if (this.SCRIPT_EXTENSIONS.includes(extension)) {
+        componentFiles.javascriptFiles.push(file)
+        continue
+      }
+
+      switch (extension) {
+        case '.liquid':
+          if (folder.endsWith('/snippets')) {
+            componentFiles.snippetFiles.push(file)
             break
-          default:
-            logger.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
-            break
-        }
+          }
+          componentFiles.liquidFiles.push(file)
+          break
+        case '.json':
+          if (filename === 'package.json') {
+            componentFiles.packageJson = file
+          } else if (filename === Components.SECTION_SCHEMA_FILENAME) {
+            componentFiles.schemaFile = file
+          } else if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME) {
+            componentFiles.settingsSchemaFile = file
+          } else if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
+            componentFiles.localeFiles.push(file)
+          } else if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
+            componentFiles.schemaLocaleFiles.push(file)
+          }
+          break
+
+        default:
+          logger.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
+          break
       }
     }
   }

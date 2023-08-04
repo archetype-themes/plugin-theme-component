@@ -103,7 +103,7 @@ class CollectionInstaller {
    * @return {Promise<void>}
    */
   static async writeAssetReferencesToThemeLiquidFile (injections, themeLiquid, themeLiquidFile) {
-    const closingHtmlHeadTagCount = (themeLiquid.match(/<\/head>/g) || []).length
+    const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
 
     // Exit if No </head> tag was found
     if (closingHtmlHeadTagCount === 0) {

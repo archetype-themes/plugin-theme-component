@@ -18,7 +18,7 @@ class LocaleUtils {
     for (const localeFileWithPath of localeFiles) {
       const localeFileName = path.basename(localeFileWithPath).toLowerCase()
 
-      const singleLocaleMatch = localeFileName.match(singleLocaleFileRegex)
+      const singleLocaleMatch = singleLocaleFileRegex.exec(localeFileName)
 
       // We have a single locale in a distinctly named file
       if (singleLocaleMatch) {
@@ -33,7 +33,7 @@ class LocaleUtils {
         } else {
           locales[locale] = localeData
         }
-      } else if (localeFileName.match(/^locales?(\.schema)?\.json$/)) {
+      } else if (/^locales?(\.schema)?\.json$/.exec(localeFileName)) {
         // We have a single file with multiple locales
         // Load locales.json file
         const localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
