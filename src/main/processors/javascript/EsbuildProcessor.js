@@ -15,13 +15,12 @@ const { build, BuildResult } = esbuild
 class EsbuildProcessor {
   /**
    * Build JavaScript files for a section or snippet
-   * @param {string} configFilePath
-   * @param {string} outputFile
    * @param {string} mainJavaScriptFile
-   * @param {string[]} [injectedFiles]
+   * @param {string} outputFile
+   * @param {string} configFilePath
    * @returns {Promise<BuildResult>}
    */
-  static async buildJavaScript (configFilePath, outputFile, mainJavaScriptFile, injectedFiles) {
+  static async buildJavaScript (mainJavaScriptFile, outputFile, configFilePath) {
     const defaultOptions = {
       bundle: true,
       charset: 'utf8',
@@ -34,10 +33,6 @@ class EsbuildProcessor {
       platform: 'browser',
       sourcemap: true,
       target: ['chrome58', 'firefox57', 'safari11', 'edge18']
-    }
-
-    if (injectedFiles) {
-      defaultOptions.inject = injectedFiles
     }
 
     const esbuildConfigFile = join(configFilePath, 'esbuild.config.js')

@@ -40,6 +40,27 @@ class JavascriptUtils {
       return this.findMainJavaScriptFile(files)
     }
   }
+
+  /**
+   * Generate JS Bundle Index
+   * @param {string[]} javascriptFiles
+   * @return string
+   */
+  static generateJsBundleIndex (javascriptFiles) {
+    let jsBundleIndexContents = ''
+    const processedJavascriptFiles = []
+
+    for (const javascriptFile of javascriptFiles) {
+      // When building a Collection, multiple Sections might include the same snippet,
+      // Therefore we check for duplicates
+      if (!processedJavascriptFiles.includes(javascriptFile)) {
+        jsBundleIndexContents += `require('${javascriptFile}')\n`
+        processedJavascriptFiles.push(javascriptFile)
+      }
+    }
+
+    return jsBundleIndexContents
+  }
 }
 
 export default JavascriptUtils
