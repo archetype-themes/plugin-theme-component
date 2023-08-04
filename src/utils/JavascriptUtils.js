@@ -1,3 +1,9 @@
+// Internal Modules
+import FileMissingError from '../errors/FileMissingError.js'
+import FileUtils from './FileUtils.js'
+import InputFileError from '../errors/InputFileError.js'
+import logger from './Logger.js'
+
 class JavascriptUtils {
   /**
    * Finds the main or index JavaScript file within the provided file list

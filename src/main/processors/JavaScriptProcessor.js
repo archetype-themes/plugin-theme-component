@@ -13,7 +13,6 @@ import EsbuildProcessor from './javascript/EsbuildProcessor.js'
 const { BuildResult, BuildOptions } = esbuild
 
 class JavaScriptProcessor {
-
   /**
    * This is simply a wrapper for the EsbuildProcessor for now
    * @param {string[]} javascriptFiles
