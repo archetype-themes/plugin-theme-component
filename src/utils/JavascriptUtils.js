@@ -9,7 +9,7 @@ class JavascriptUtils {
     const regex = /[/\\]((?:index|main)+\.(?:js|mjs))$/i
     const matches = []
     for (const jsFile of files) {
-      const match = jsFile.match(regex)
+      const match = regex.exec(jsFile)
       if (match) {
         matches.push(match.input)
       }
@@ -54,7 +54,7 @@ class JavascriptUtils {
       // When building a Collection, multiple Sections might include the same snippet,
       // Therefore we check for duplicates
       if (!processedJavascriptFiles.includes(javascriptFile)) {
-        jsBundleIndexContents += `require('${javascriptFile}')\n`
+        jsBundleIndexContents += `import '${javascriptFile}'\n`
         processedJavascriptFiles.push(javascriptFile)
       }
     }
