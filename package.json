@@ -5,7 +5,7 @@
   "main": "src/bin/archie.js",
   "name": "@archetype-themes/archie",
   "type": "module",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "bin": "src/bin/archie.js",
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/archie.js",
@@ -23,7 +23,7 @@
     "esbuild": "^0.18.17",
     "jsdom": "^22.1.0",
     "lodash-es": "^4.17.21",
-    "pino": "^8.14.2",
+    "pino": "^8.15.0",
     "pino-pretty": "^10.2.0",
     "postcss": "^8.4.27",
     "postcss-load-config": "^4.0.1",
