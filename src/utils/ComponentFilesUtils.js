@@ -1,16 +1,18 @@
-// Node.js Internal imports
-import merge from 'deepmerge'
+// Node.js Modules
 import path from 'path'
+
+// External Modules
+import merge from 'deepmerge'
+
+// Internal Modules
 import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
-import SectionSchema from '../main/models/SectionSchema.js'
-import JavaScriptProcessor from '../main/processors/JavaScriptProcessor.js'
-
-// Archie Internal JS imports
 import FileUtils from './FileUtils.js'
+import JavascriptUtils from './JavascriptUtils.js'
 import LocaleUtils from './LocaleUtils.js'
 import logger from './Logger.js'
+import SectionSchema from '../main/models/SectionSchema.js'
 import StylesUtils from './StylesUtils.js'
 
 class ComponentFilesUtils {
@@ -35,7 +37,7 @@ class ComponentFilesUtils {
     }
 
     if (filesModel.javascriptFiles.length) {
-      filesModel.javascriptIndex = JavaScriptProcessor.getMainJavascriptFile(filesModel.javascriptFiles)
+      filesModel.javascriptIndex = JavascriptUtils.getMainJavascriptFile(filesModel.javascriptFiles)
     }
 
     if (filesModel.stylesheets.length) {
