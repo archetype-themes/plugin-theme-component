@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.6] - 2023-08-04
+
+### Fixed
+
+- bug: #142 build js files do not handle dependencies properly.
+
+### Changed
+
+- code: (cleanup) JavaScriptProcessor.js util methods were moved to JavascriptUtils.js to match Styles' cleaner more
+  recent file structure
+- code: (cleanup) Removing further sass & less legacy support options.
+- code: (SonarLint) string.match() replaced with RegExp.exec() for better performance
+- code: (cleanup) Reduced Cognitive complexity and improved clarity for ComponentFilesUtils.filterFiles
+
 ## [1.4.5] - 2023-08-01
 
 ### Fixed
@@ -102,9 +116,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Templates for new components
-  - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
-  - package.json now inherits "author", "license" and package scope from parent monorepo
-  - package.json now includes repository information
+    - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
+    - package.json now inherits "author", "license" and package scope from parent monorepo
+    - package.json now includes repository information
 - SVG Snippets are now processed through SVGO
 - vitest is now installed as a test framework
 - Tests for NodeUtils added

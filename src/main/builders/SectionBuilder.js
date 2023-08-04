@@ -173,25 +173,14 @@ class SectionBuilder {
     await this.resetBuildFolders(section.files, section.renders, section.build)
 
     // Build & Write JS
-    const rendersJavascriptIndexes = RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders)
-    if (section.files.javascriptIndex) {
-      await JavaScriptProcessor.buildJavaScript(
-        collectionRootFolder,
-        section.build.javascriptFile,
-        section.files.javascriptIndex,
-        rendersJavascriptIndexes
-      )
-    } else if (rendersJavascriptIndexes.length) {
-      await JavaScriptProcessor.buildJavaScript(
-        collectionRootFolder,
-        section.build.javascriptFile,
-        rendersJavascriptIndexes.shift(),
-        rendersJavascriptIndexes
-      )
-    }
+    const jsFiles = section.files.javascriptIndex ? [section.files.javascriptIndex] : []
+    jsFiles.push(...RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders))
 
-    // Attach Javascript bundle file reference to liquid code
-    if (section.files.javascriptIndex || rendersJavascriptIndexes.length) {
+    if (jsFiles.length) {
+      // Generate Javascript Bundle File
+      await JavaScriptProcessor.buildJavaScript(jsFiles, section.build.javascriptFile, collectionRootFolder)
+
+      // Attach Javascript bundle file reference to liquid code
       section.build.liquidCode =
         LiquidUtils.generateJavascriptFileReference(path.basename(section.build.javascriptFile)) + '\n' +
         section.build.liquidCode

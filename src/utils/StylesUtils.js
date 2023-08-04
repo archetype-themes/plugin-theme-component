@@ -36,7 +36,7 @@ class StylesUtils {
    * @throws Error
    */
   static findMainStyleSheetFile (styleSheets) {
-    const regex = /[/\\]((?:index|main)+\.(?:css|less|sass|scss))$/i
+    const regex = /[/\\]((?:index|main)+\.css)$/i
     const matches = []
     for (const styleSheet of styleSheets) {
       const match = RegExp(regex).exec(styleSheet)
