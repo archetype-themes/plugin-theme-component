@@ -27,7 +27,7 @@
     "pino-pretty": "^10.2.0",
     "postcss": "^8.4.27",
     "postcss-load-config": "^4.0.1",
-    "sass": "^1.64.2",
+    "sass": "^1.65.1",
     "svgo": "^3.0.2"
   },
   "devDependencies": {
