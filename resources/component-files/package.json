@@ -10,6 +10,13 @@
     "url": "${gitUrl}",
     "directory": "${componentFolder}"
   },
+  "dependencies": {
+    "${collectionScope}/scripts": "*",
+    "${collectionScope}/styles": "*"
+  },
+  "devDependencies": {
+    "standard": "*"
+  },
   "archie": {
     "componentType": "${componentType}"
   },
