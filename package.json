@@ -38,5 +38,10 @@
   },
   "engines": {
     "node": ">=18.14.2"
+  },
+  "standard": {
+    "ignore": [
+      "resources/**"
+    ]
   }
 }
