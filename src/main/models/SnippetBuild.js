@@ -2,6 +2,12 @@ class SnippetBuild {
   /** @type {string} **/
   #liquidCode
 
+  /** @type {Object} **/
+  #locales
+
+  /** @type {Object} **/
+  #schemaLocales
+
   /**
    * Get liquid code
    * @return {string}
@@ -16,6 +22,38 @@ class SnippetBuild {
    */
   set liquidCode (value) {
     this.#liquidCode = value
+  }
+
+  /**
+   * Get Locales
+   * @return {Object}
+   */
+  get locales () {
+    return this.#locales
+  }
+
+  /**
+   * Set Locales
+   * @param {Object} value
+   */
+  set locales (value) {
+    this.#locales = value
+  }
+
+  /**
+   * Get Schema Locales
+   * @return {Object}
+   */
+  get schemaLocales () {
+    return this.#schemaLocales
+  }
+
+  /**
+   * Set Schema locales
+   * @param {Object} value
+   */
+  set schemaLocales (value) {
+    this.#schemaLocales = value
   }
 }
 
