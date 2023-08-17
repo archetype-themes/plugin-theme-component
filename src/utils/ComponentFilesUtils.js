@@ -1,16 +1,12 @@
 // Node.js Modules
 import path from 'path'
 
-// External Modules
-import merge from 'deepmerge'
-
 // Internal Modules
 import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import FileUtils from './FileUtils.js'
 import JavascriptUtils from './JavascriptUtils.js'
-import LocaleUtils from './LocaleUtils.js'
 import logger from './Logger.js'
 import SectionSchema from '../main/models/SectionSchema.js'
 import StylesUtils from './StylesUtils.js'
@@ -131,27 +127,6 @@ class ComponentFilesUtils {
     const sectionSchema = new SectionSchema()
     const sectionSchemaJson = JSON.parse(await FileUtils.getFileContents(schemaFile))
     return Object.assign(sectionSchema, sectionSchemaJson)
-  }
-
-  /**
-   * Get Locales from Locale Files
-   * @param {string[]} localeFiles - locale files from SectionFiles or SnippetFiles
-   * @param {Object} [preexistingLocales] - locale data tha was already present in the schema file
-   * @return {Promise<Object>}
-   */
-  static async getLocales (localeFiles, preexistingLocales) {
-    const locales = await LocaleUtils.parseLocaleFilesContent(localeFiles)
-    // If some locale data was already present in the schema file, we need to merge contents.
-    return preexistingLocales ? merge(preexistingLocales, locales) : locales
-  }
-
-  /**
-   * Get Schema Locales from schema locale files
-   * @param schemaLocaleFiles
-   * @return {Promise<{}>}
-   */
-  static async getSchemaLocales (schemaLocaleFiles) {
-    return LocaleUtils.parseLocaleFilesContent(schemaLocaleFiles)
   }
 
   /**
