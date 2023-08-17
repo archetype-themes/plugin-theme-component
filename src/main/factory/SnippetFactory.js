@@ -6,7 +6,6 @@ import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
 
 // Archie module imports
 import RenderFactory from './RenderFactory.js'
-import SectionSchema from '../models/SectionSchema.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
 import FileUtils from '../../utils/FileUtils.js'
@@ -36,13 +35,9 @@ class SnippetFactory {
       snippet.schema = await ComponentFilesUtils.getSectionSchema(snippet.files.schemaFile)
     }
 
-    // Load Locales into schema data
+    // Load Locales
     if (snippet.files.localeFiles?.length) {
-      // If a schema file was not present, we need to create the section schema to store locale content
-      if (!snippet.schema) {
-        snippet.schema = new SectionSchema()
-      }
-      snippet.schema.locales = await ComponentFilesUtils.getLocales(snippet.files.localeFiles, snippet.schema.locales)
+      snippet.locales = await ComponentFilesUtils.getLocales(snippet.files.localeFiles, snippet.schema.locales)
     }
 
     // Load Schema Locales

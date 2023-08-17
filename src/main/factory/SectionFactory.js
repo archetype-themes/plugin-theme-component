@@ -9,7 +9,6 @@ import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
 import RenderFactory from './RenderFactory.js'
 import SnippetFactory from './SnippetFactory.js'
 import Section from '../models/Section.js'
-import SectionSchema from '../models/SectionSchema.js'
 import Components from '../../config/Components.js'
 import NodeConfig from '../../cli/models/NodeConfig.js'
 import FileUtils from '../../utils/FileUtils.js'
@@ -47,13 +46,9 @@ class SectionFactory {
       section.schema = await ComponentFilesUtils.getSectionSchema(section.files.schemaFile)
     }
 
-    // Load Locales into schema data
+    // Load Locales
     if (section.files.localeFiles?.length) {
-      // If a schema file was not present, we need to create the section schema to store locale content
-      if (!section.schema) {
-        section.schema = new SectionSchema()
-      }
-      section.schema.locales = await ComponentFilesUtils.getLocales(section.files.localeFiles, section.schema.locales)
+      section.locales = await ComponentFilesUtils.getLocales(section.files.localeFiles, section.schema.locales)
     }
 
     // Load Schema Locales
