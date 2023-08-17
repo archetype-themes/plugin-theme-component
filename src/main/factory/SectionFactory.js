@@ -1,18 +1,17 @@
 // Node.js Internal imports
 import path from 'path'
 
-// External Node JS Modules
-import SectionFiles from '../models/SectionFiles.js'
-import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
-
 // Archie Internal JS imports
+import Components from '../../config/Components.js'
+import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
+import FileUtils from '../../utils/FileUtils.js'
+import LocaleUtils from '../../utils/LocaleUtils.js'
+import NodeConfig from '../../cli/models/NodeConfig.js'
+import NodeUtils from '../../utils/NodeUtils.js'
 import RenderFactory from './RenderFactory.js'
+import SectionFiles from '../models/SectionFiles.js'
 import SnippetFactory from './SnippetFactory.js'
 import Section from '../models/Section.js'
-import Components from '../../config/Components.js'
-import NodeConfig from '../../cli/models/NodeConfig.js'
-import FileUtils from '../../utils/FileUtils.js'
-import NodeUtils from '../../utils/NodeUtils.js'
 
 class SectionFactory {
   /**
@@ -48,12 +47,12 @@ class SectionFactory {
 
     // Load Locales
     if (section.files.localeFiles?.length) {
-      section.locales = await ComponentFilesUtils.getLocales(section.files.localeFiles, section.schema.locales)
+      section.locales = await LocaleUtils.parseLocaleFilesContent(section.files.localeFiles)
     }
 
     // Load Schema Locales
     if (section.files.schemaLocaleFiles?.length) {
-      section.schemaLocales = await ComponentFilesUtils.getSchemaLocales(section.files.schemaLocaleFiles)
+      section.schemaLocales = await LocaleUtils.parseLocaleFilesContent(section.files.schemaLocaleFiles)
     }
 
     // Load Settings Schema

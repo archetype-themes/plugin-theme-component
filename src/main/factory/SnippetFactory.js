@@ -1,14 +1,13 @@
 // Node.js imports
 import path from 'path'
 
-// External Module imports
-import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
-
 // Archie module imports
+import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
+import FileUtils from '../../utils/FileUtils.js'
+import LocaleUtils from '../../utils/LocaleUtils.js'
 import RenderFactory from './RenderFactory.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
-import FileUtils from '../../utils/FileUtils.js'
 
 class SnippetFactory {
   /**
@@ -37,12 +36,12 @@ class SnippetFactory {
 
     // Load Locales
     if (snippet.files.localeFiles?.length) {
-      snippet.locales = await ComponentFilesUtils.getLocales(snippet.files.localeFiles, snippet.schema.locales)
+      snippet.locales = await LocaleUtils.parseLocaleFilesContent(snippet.files.localeFiles)
     }
 
     // Load Schema Locales
     if (snippet.files.schemaLocaleFiles?.length) {
-      snippet.schemaLocales = await ComponentFilesUtils.getSchemaLocales(snippet.files.schemaLocaleFiles)
+      snippet.schemaLocales = await LocaleUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
     }
 
     // Load Settings Schema
