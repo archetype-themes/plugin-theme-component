@@ -24,12 +24,14 @@ class SectionBuilder {
     section.build = BuildFactory.fromSection(section)
 
     // Build Locales
-    section.build.locales = LocaleUtils.buildLocales(section.name, section.locales, section.schema.locales)
+    section.build.locales = LocaleUtils.buildLocales(section.name, section.locales, section.schema?.locales)
     section.build.schemaLocales = LocaleUtils.buildLocales(section.name, section.schemaLocales)
 
     // Build Section Schema (this includes previously collated locales through factory methods
     const snippetsSchema = RecursiveRenderUtils.getSnippetsBuildSchema(section.renders)
-    section.build.schema = SectionSchemaUtils.build(section.schema, snippetsSchema)
+    if (section.schema || snippetsSchema) {
+      section.build.schema = SectionSchemaUtils.build(section.schema, snippetsSchema)
+    }
 
     section.build.liquidCode = await this.buildLiquid(section.liquidCode, section.build.schema)
   }
@@ -162,16 +164,22 @@ class SectionBuilder {
     }
 
     const { liquidFilesWritePromise } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
-
-    return Promise.all([
+    const filesWritePromises = [
       LocaleUtils.writeLocales(this.assembleLocales(section.build.locales, section.renders), section.build.localesFolder),
       LocaleUtils.writeLocales(this.assembleLocales(section.build.schemaLocales, section.renders, true), section.build.localesFolder, true),
       FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder),
-      FileUtils.writeFile(section.build.stylesheet, section.build.styles),
       FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode),
-      FileUtils.writeFile(section.build.settingsSchemaFile, JSON.stringify(section.build.settingsSchema, null, 2)),
       liquidFilesWritePromise
-    ])
+    ]
+
+    if (section.build.styles) {
+      filesWritePromises.push(FileUtils.writeFile(section.build.stylesheet, section.build.styles))
+    }
+    if (section.build.settingsSchema?.length) {
+      filesWritePromises.push(FileUtils.writeFile(section.build.settingsSchemaFile, JSON.stringify(section.build.settingsSchema, null, 2)))
+    }
+
+    return Promise.all(filesWritePromises)
   }
 
   /**

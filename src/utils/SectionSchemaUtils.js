@@ -37,13 +37,19 @@ class SectionSchemaUtils {
   static build (schema, snippetsSchema) {
     let buildSchema
 
-    if (snippetsSchema) {
-      buildSchema = this.merge(schema, snippetsSchema)
-    } else {
-      buildSchema = schema
+    if (!schema && !snippetsSchema) {
+      return null
     }
 
-    if (buildSchema.locales) {
+    if (schema && snippetsSchema) {
+      buildSchema = this.merge(schema, snippetsSchema)
+    } else if (schema) {
+      buildSchema = schema
+    } else if (snippetsSchema) {
+      buildSchema = snippetsSchema
+    }
+
+    if (buildSchema?.locales) {
       delete buildSchema.locales
     }
 
