@@ -6,7 +6,6 @@ class SectionSchemaUtils {
     'blocks',
     'presets',
     'default',
-    'locales',
     'templates'
   ]
 
