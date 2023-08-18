@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.8] - 2023-08-18
+
+### Fixed
+
+- Storefront Locales and Schema Locales from snippets overwrite each other.
+
+### Changed
+
+- Resources (component templates) do not use the 'src' folder anymore
+
 ## [1.4.7] - 2023-08-14
 
 ### Changed
