@@ -5,6 +5,9 @@ class SnippetBuild {
   /** @type {Object} **/
   #locales
 
+  /** @type {SectionSchema} **/
+  #schema
+
   /** @type {Object} **/
   #schemaLocales
 
@@ -38,6 +41,22 @@ class SnippetBuild {
    */
   set locales (value) {
     this.#locales = value
+  }
+
+  /**
+   * Get Schema
+   * @return {SectionSchema}
+   */
+  get schema () {
+    return this.#schema
+  }
+
+  /**
+   * Set Schema
+   * @param {SectionSchema} value
+   */
+  set schema (value) {
+    this.#schema = value
   }
 
   /**
