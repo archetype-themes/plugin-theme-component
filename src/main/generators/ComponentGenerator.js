@@ -1,6 +1,6 @@
 // Node.js internal imports
 import { exec } from 'child_process'
-import { access, constants } from 'node:fs/promises'
+import { access, constants, mkdir } from 'node:fs/promises'
 import path from 'path'
 
 // Archie imports
@@ -72,6 +72,7 @@ class ComponentGenerator {
     }
 
     // Copy files recursively
+    await mkdir(componentRootFolder)
     await FileUtils.copyFolder(componentSources, componentRootFolder, copyFolderOptions)
     await FileUtils.copyFolder(sectionSources, componentRootFolder, copyFolderOptions)
 
