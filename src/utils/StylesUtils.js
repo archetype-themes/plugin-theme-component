@@ -1,6 +1,3 @@
-// NodeJS Core Modules
-import path from 'node:path'
-
 // Internal Modules
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
@@ -68,10 +65,6 @@ class StylesUtils {
       // If we have more than one JavaScript file, try to find a single main/index file (one ring to rule them all)
       return this.findMainStyleSheetFile(styleSheets)
     }
-  }
-
-  static isSassFile (filename) {
-    return ['.scss', '.sass'].includes(path.extname(filename))
   }
 }
 

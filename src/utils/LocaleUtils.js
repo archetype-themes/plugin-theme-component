@@ -6,6 +6,38 @@ import merge from 'deepmerge'
 
 class LocaleUtils {
   /**
+   * Build Locales
+   * @param {string} componentName
+   * @param {Object} [locales={}]
+   * @param {Object} [localesFromSchema={}]
+   * @param {boolean} [isSnippet]
+   * @return {{}|null}
+   */
+  static buildLocales (componentName, locales = {}, localesFromSchema, isSnippet = false) {
+    let buildLocales
+    let buildLocalesFromSectionSchema
+
+    if (locales) {
+      buildLocales = LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet)
+    }
+
+    if (localesFromSchema) {
+      buildLocalesFromSectionSchema = LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSchema, isSnippet)
+    }
+
+    if (buildLocalesFromSectionSchema && buildLocales) {
+      return merge(buildLocalesFromSectionSchema, buildLocales)
+    }
+    if (buildLocales) {
+      return buildLocales
+    }
+    if (buildLocalesFromSectionSchema) {
+      return buildLocalesFromSectionSchema
+    }
+    return null
+  }
+
+  /**
    * Parse Locale Files into an object
    * @param {string[]} localeFiles
    * @return {Promise<{}>}
@@ -44,6 +76,29 @@ class LocaleUtils {
     }
 
     return locales
+  }
+
+  /**
+   * Prefix Locales Object with Component Name
+   * @param {string} componentName
+   * @param {Object} [locales]
+   * @param {boolean} [isSnippet=false] Defaults to false. It will use sections prefix, or snippets when true
+   * @returns {{}|null}
+   */
+  static prefixLocalesWithComponentName (componentName, locales, isSnippet = false) {
+    if (locales) {
+      const componentPrefix = isSnippet ? 'snippets' : 'sections'
+      const prefixedLocales = {}
+      for (const locale of Object.keys(locales)) {
+        prefixedLocales[locale] = {
+          [componentPrefix]: {
+            [componentName]: locales[locale]
+          }
+        }
+      }
+      return prefixedLocales
+    }
+    return null
   }
 
   /**

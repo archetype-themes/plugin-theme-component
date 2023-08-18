@@ -27,6 +27,28 @@ class SectionSchemaUtils {
 
     return sectionSchema
   }
+
+  /**
+   * Build Section Schema
+   * @param {SectionSchema} schema
+   * @param {SectionSchema} [snippetsSchema]
+   * @returns {SectionSchema}
+   */
+  static build (schema, snippetsSchema) {
+    let buildSchema
+
+    if (snippetsSchema) {
+      buildSchema = this.merge(schema, snippetsSchema)
+    } else {
+      buildSchema = schema
+    }
+
+    if (buildSchema.locales) {
+      delete buildSchema.locales
+    }
+
+    return buildSchema
+  }
 }
 
 export default SectionSchemaUtils
