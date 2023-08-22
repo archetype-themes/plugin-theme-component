@@ -46,7 +46,7 @@ class SnippetFactory {
 
     // Load Settings Schema
     if (snippet.files.settingsSchemaFile) {
-      snippet.settingsSchema = JSON.parse(await FileUtils.getFileContents(snippet.files.settingsSchemaFile))
+      snippet.settingsSchema = await ComponentFilesUtils.getSettingsSchema(snippet.files.settingsSchemaFile)
     }
 
     // Create Renders

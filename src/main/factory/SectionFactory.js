@@ -4,7 +4,6 @@ import path from 'path'
 // Archie Internal JS imports
 import Components from '../../config/Components.js'
 import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
-import FileUtils from '../../utils/FileUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import NodeConfig from '../../cli/models/NodeConfig.js'
 import NodeUtils from '../../utils/NodeUtils.js'
@@ -57,7 +56,7 @@ class SectionFactory {
 
     // Load Settings Schema
     if (section.files.settingsSchemaFile) {
-      section.settingsSchema = JSON.parse(await FileUtils.getFileContents(section.files.settingsSchemaFile))
+      section.settingsSchema = await ComponentFilesUtils.getSettingsSchema(section.files.settingsSchemaFile)
     }
 
     // Create Renders

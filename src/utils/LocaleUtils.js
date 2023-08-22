@@ -1,8 +1,14 @@
+// Node.js imports
 import { writeFile } from 'node:fs/promises'
-import path from 'path'
+import { basename, join } from 'node:path'
 
-import FileUtils from './FileUtils.js'
+// External imports
 import merge from 'deepmerge'
+import { extname } from 'path'
+
+// Internal Imports
+import ComponentFilesUtils from './ComponentFilesUtils.js'
+import FileUtils from './FileUtils.js'
 
 class LocaleUtils {
   /**
@@ -45,10 +51,10 @@ class LocaleUtils {
   static async parseLocaleFilesContent (localeFiles) {
     let locales = {}
 
-    const singleLocaleFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2}))?(\.default)?(\.schema)?\.json$/
+    const singleLocaleFileRegex = new RegExp(`^(?<locale>([a-z]{2})(-[a-z]{2}))?(\\.default)?(\\.schema)?\\.${ComponentFilesUtils.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
 
     for (const localeFileWithPath of localeFiles) {
-      const localeFileName = path.basename(localeFileWithPath).toLowerCase()
+      const localeFileName = basename(localeFileWithPath).toLowerCase()
 
       const singleLocaleMatch = singleLocaleFileRegex.exec(localeFileName)
 
@@ -57,9 +63,14 @@ class LocaleUtils {
         // Get locale from filename
         const locale = singleLocaleMatch.groups.locale
 
-        // Merge with matching locale
-        const localeData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+        let localeData
+        if (extname(localeFileWithPath) === '.json') {
+          localeData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+        } else {
+          localeData = await import(localeFileWithPath)
+        }
 
+        // Merge with matching locale
         if (locales[locale]) {
           locales[locale] = merge(locales[locale], localeData)
         } else {
@@ -68,7 +79,12 @@ class LocaleUtils {
       } else if (/^locales?(\.schema)?\.json$/.exec(localeFileName)) {
         // We have a single file with multiple locales
         // Load locales.json file
-        const localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+        let localesData
+        if (extname(localeFileWithPath) === '.json') {
+          localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+        } else {
+          localesData = await import(localeFileWithPath)
+        }
 
         // merge locales
         locales = merge(locales, localesData)
@@ -114,7 +130,7 @@ class LocaleUtils {
 
     // Create one file per locale key
     for (const locale of Object.keys(locales)) {
-      const localeFilename = path.join(localesFolder, `${locale}${schemaSuffix}.json`)
+      const localeFilename = join(localesFolder, `${locale}${schemaSuffix}.json`)
       const localeJsonString = JSON.stringify(locales[locale], null, 2)
       promises.push(writeFile(localeFilename, localeJsonString))
     }

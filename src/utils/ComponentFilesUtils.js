@@ -74,28 +74,23 @@ class ComponentFilesUtils {
       }
 
       if (this.SCRIPT_EXTENSIONS.includes(extension)) {
-        console.log(filename)
         if (filename === Components.SECTION_SCHEMA_FILENAME.replace('.json', extension)) {
-          console.log('schemaFile')
           componentFiles.schemaFile = file
           continue
         }
         if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME.replace('.json', extension)) {
-          console.log('settingsSchemaFile')
           componentFiles.settingsSchemaFile = file
           continue
         }
         if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
-          console.log('localeFiles')
           componentFiles.localeFiles.push(file)
           continue
         }
         if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
-          console.log('schemaLocaleFiles')
           componentFiles.schemaLocaleFiles.push(file)
           continue
         }
-        console.log('Regular JS file')
+
         componentFiles.javascriptFiles.push(file)
         continue
       }
@@ -158,8 +153,23 @@ class ComponentFilesUtils {
    */
   static async getSectionSchema (schemaFile) {
     const sectionSchema = new SectionSchema()
+    if (this.SCRIPT_EXTENSIONS.includes(extname(schemaFile))) {
+      return Object.assign(sectionSchema, await import(schemaFile))
+    }
     const sectionSchemaJson = JSON.parse(await FileUtils.getFileContents(schemaFile))
     return Object.assign(sectionSchema, sectionSchemaJson)
+  }
+
+  /**
+   * Get Settings Schema from schema file.
+   * @param {string} schemaFile
+   * @return {Promise<Object[]>}
+   */
+  static async getSettingsSchema (schemaFile) {
+    if (this.SCRIPT_EXTENSIONS.includes(extname(schemaFile))) {
+      return import(schemaFile)
+    }
+    return JSON.parse(await FileUtils.getFileContents(schemaFile))
   }
 
   /**
