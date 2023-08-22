@@ -12,8 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Locales: JS files input now accepted.
 - Schemas: JS files input now accepted.
 
-## [1.4.8] - 2023-08-18
-
 ### Fixed
 
 - Storefront Locales and Schema Locales from snippets overwrite each other.
@@ -139,9 +137,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Templates for new components
-  - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
-  - package.json now inherits "author", "license" and package scope from parent monorepo
-  - package.json now includes repository information
+    - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
+    - package.json now inherits "author", "license" and package scope from parent monorepo
+    - package.json now includes repository information
 - SVG Snippets are now processed through SVGO
 - vitest is now installed as a test framework
 - Tests for NodeUtils added
