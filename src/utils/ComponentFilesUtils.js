@@ -1,5 +1,5 @@
 // Node.js Modules
-import path from 'path'
+import { basename, dirname, extname } from 'path'
 
 // Internal Modules
 import Components from '../config/Components.js'
@@ -14,10 +14,11 @@ import StylesUtils from './StylesUtils.js'
 class ComponentFilesUtils {
   static STYLE_EXTENSIONS = ['.css', '.less', '.sass', '.scss']
   static SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
-  static SINGLE_LOCALE_FILENAME_REGEXP = /^([a-z]{2})(-[a-z]{2})?(\.default)?\.js(on)?$/
-  static SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP = /^([a-z]{2})(-[a-z]{2})?(\.default)?\.schema\.js(on)?$/
-  static GROUPED_LOCALES_FILENAME_REGEXP = /^locales?\.js(on)?$/
-  static GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP = /^locales?\.schema\.js(on)?$/
+  static DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP = '(cjs|js|json|mjs)'
+  static SINGLE_LOCALE_FILENAME_REGEXP = new RegExp(`^([a-z]{2})(-[a-z]{2})?(\\.default)?\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
+  static SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP = new RegExp(`^([a-z]{2})(-[a-z]{2})?(\\.default)?\\.schema\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
+  static GROUPED_LOCALES_FILENAME_REGEXP = new RegExp(`^locales?\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
+  static GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP = new RegExp(`^locales?\\.schema\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
 
   /**
    * Index Component Files in a SectionFiles or SnippetFiles model
@@ -58,9 +59,9 @@ class ComponentFilesUtils {
   static filterFiles (files, componentFiles) {
     // Categorize files for the build steps
     for (const file of files) {
-      const extension = path.extname(file).toLowerCase()
-      const folder = path.dirname(file).toLowerCase()
-      const filename = path.basename(file).toLowerCase()
+      const extension = extname(file).toLowerCase()
+      const folder = dirname(file).toLowerCase()
+      const filename = basename(file).toLowerCase()
 
       if (folder.endsWith(`/${Components.THEME_ASSETS_FOLDER}`)) {
         componentFiles.assetFiles.push(file)
@@ -74,12 +75,12 @@ class ComponentFilesUtils {
 
       if (this.SCRIPT_EXTENSIONS.includes(extension)) {
         console.log(filename)
-        if (filename === Components.SECTION_SCHEMA_FILENAME.replace('.json', '.js')) {
+        if (filename === Components.SECTION_SCHEMA_FILENAME.replace('.json', extension)) {
           console.log('schemaFile')
           componentFiles.schemaFile = file
           continue
         }
-        if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME.replace('.json', '.js')) {
+        if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME.replace('.json', extension)) {
           console.log('settingsSchemaFile')
           componentFiles.settingsSchemaFile = file
           continue
