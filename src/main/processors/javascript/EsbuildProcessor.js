@@ -38,9 +38,7 @@ class EsbuildProcessor {
     const esbuildConfigFile = join(configFilePath, 'esbuild.config.js')
     logger.debug(`ESBuild Config file: ${esbuildConfigFile}`)
     if (await FileUtils.isReadable(esbuildConfigFile)) {
-      const configFileOptions = await import(esbuildConfigFile)
-      /** @type {Object} **/
-      const options = merge(defaultOptions, configFileOptions.default)
+      const options = merge(defaultOptions, (await import(esbuildConfigFile)).default)
       logger.debug('esbuild external config file found and processed')
       return build(options)
     }

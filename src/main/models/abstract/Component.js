@@ -4,6 +4,9 @@ class Component {
   /** @type {string} **/
   #liquidCode
 
+  /** @type {Object} **/
+  #locales = {}
+
   /** @type {string} **/
   #name
 
@@ -42,6 +45,22 @@ class Component {
    */
   set liquidCode (value) {
     this.#liquidCode = value
+  }
+
+  /**
+   * Get Locales
+   * @return {Object}
+   */
+  get locales () {
+    return this.#locales
+  }
+
+  /**
+   * Set Locales
+   * @param {Object} value
+   */
+  set locales (value) {
+    this.#locales = value
   }
 
   /**

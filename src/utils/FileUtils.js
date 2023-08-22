@@ -205,6 +205,7 @@ class FileUtils {
    */
   static async writeFile (file, fileContents) {
     logger.debug(`Writing to disk: ${file}`)
+
     return writeFile(file, fileContents, this.#FILE_ENCODING_OPTION)
   }
 }

@@ -153,53 +153,55 @@ class RecursiveRenderUtils {
    * @param {string[]} [processedSnippets=[]]
    * @return {Object}
    */
-  static getSnippetsSchema (renders, processedSnippets = []) {
-    let schema = new SectionSchema()
+  static getSnippetsBuildSchema (renders, processedSnippets = []) {
+    let buildSchema = new SectionSchema()
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
         // Merge Snippet schema
-        if (render.snippet.schema) {
-          schema = SectionSchemaUtils.merge(schema, render.snippet.schema)
+        if (render.snippet.build.schema) {
+          buildSchema = SectionSchemaUtils.merge(buildSchema, render.snippet.build.schema)
         }
 
         // Recursively check child renders for schema
         if (render.snippet.renders?.length) {
-          schema = SectionSchemaUtils.merge(schema, this.getSnippetsSchema(render.snippet.renders, processedSnippets))
+          buildSchema = SectionSchemaUtils.merge(buildSchema, this.getSnippetsBuildSchema(render.snippet.renders, processedSnippets))
         }
 
         processedSnippets.push(render.snippetName)
       }
     }
 
-    return schema
+    return buildSchema
   }
 
   /**
    * Get Schema Locales from Render Snippets Recursively
    * @param {Render[]} renders
+   * @param {boolean} [schemaLocales=false]
    * @param {string[]} [processedSnippets=[]]
    * @return {Object}
    */
-  static getSnippetsSchemaLocales (renders, processedSnippets = []) {
-    let schemaLocales = {}
+  static getSnippetsBuildLocales (renders, schemaLocales = false, processedSnippets = []) {
+    let buildLocales = {}
+    const localesKey = schemaLocales ? 'schemaLocales' : 'locales'
 
     for (const render of renders) {
       if (!processedSnippets.includes(render.snippetName)) {
-        if (render.snippet.schemaLocales) {
-          schemaLocales = merge(schemaLocales, render.snippet.schemaLocales)
+        if (render.snippet.build[localesKey]) {
+          buildLocales = merge(buildLocales, render.snippet.build[localesKey])
         }
 
         // Recursively merge child Schema Locales
         if (render.snippet.renders?.length) {
-          schemaLocales = merge(schemaLocales, this.getSnippetsSchemaLocales(render.snippet.renders, processedSnippets))
+          buildLocales = merge(buildLocales, this.getSnippetsBuildLocales(render.snippet.renders, schemaLocales, processedSnippets))
         }
 
         processedSnippets.push(render.snippetName)
       }
     }
 
-    return schemaLocales
+    return buildLocales
   }
 
   /**

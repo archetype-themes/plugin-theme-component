@@ -6,7 +6,6 @@ class SectionSchemaUtils {
     'blocks',
     'presets',
     'default',
-    'locales',
     'templates'
   ]
 
@@ -27,6 +26,34 @@ class SectionSchemaUtils {
     }
 
     return sectionSchema
+  }
+
+  /**
+   * Build Section Schema
+   * @param {SectionSchema} schema
+   * @param {SectionSchema} [snippetsSchema]
+   * @returns {SectionSchema}
+   */
+  static build (schema, snippetsSchema) {
+    let buildSchema
+
+    if (!schema && !snippetsSchema) {
+      return null
+    }
+
+    if (schema && snippetsSchema) {
+      buildSchema = this.merge(schema, snippetsSchema)
+    } else if (schema) {
+      buildSchema = schema
+    } else if (snippetsSchema) {
+      buildSchema = snippetsSchema
+    }
+
+    if (buildSchema?.locales) {
+      delete buildSchema.locales
+    }
+
+    return buildSchema
   }
 }
 

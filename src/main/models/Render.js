@@ -125,22 +125,6 @@ class Render {
   set variables (variables) {
     this.#variables = variables
   }
-
-  /**
-   * Boolean helper to check for a "for" clause
-   * @returns {boolean}
-   */
-  hasForClause () {
-    return this.#clause && this.#clause === 'for'
-  }
-
-  /**
-   * Boolean helper to check for a "for" clause
-   * @returns {boolean}
-   */
-  hasWithClause () {
-    return this.#clause && this.#clause === 'with'
-  }
 }
 
 export default Render

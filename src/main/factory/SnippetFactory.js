@@ -1,15 +1,13 @@
 // Node.js imports
 import path from 'path'
 
-// External Module imports
-import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
-
 // Archie module imports
+import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
+import FileUtils from '../../utils/FileUtils.js'
+import LocaleUtils from '../../utils/LocaleUtils.js'
 import RenderFactory from './RenderFactory.js'
-import SectionSchema from '../models/SectionSchema.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
-import FileUtils from '../../utils/FileUtils.js'
 
 class SnippetFactory {
   /**
@@ -36,23 +34,19 @@ class SnippetFactory {
       snippet.schema = await ComponentFilesUtils.getSectionSchema(snippet.files.schemaFile)
     }
 
-    // Load Locales into schema data
+    // Load Locales
     if (snippet.files.localeFiles?.length) {
-      // If a schema file was not present, we need to create the section schema to store locale content
-      if (!snippet.schema) {
-        snippet.schema = new SectionSchema()
-      }
-      snippet.schema.locales = await ComponentFilesUtils.getLocales(snippet.files.localeFiles, snippet.schema.locales)
+      snippet.locales = await LocaleUtils.parseLocaleFilesContent(snippet.files.localeFiles)
     }
 
     // Load Schema Locales
     if (snippet.files.schemaLocaleFiles?.length) {
-      snippet.schemaLocales = await ComponentFilesUtils.getSchemaLocales(snippet.files.schemaLocaleFiles)
+      snippet.schemaLocales = await LocaleUtils.parseLocaleFilesContent(snippet.files.schemaLocaleFiles)
     }
 
     // Load Settings Schema
     if (snippet.files.settingsSchemaFile) {
-      snippet.settingsSchema = JSON.parse(await FileUtils.getFileContents(snippet.files.settingsSchemaFile))
+      snippet.settingsSchema = await ComponentFilesUtils.getSettingsSchema(snippet.files.settingsSchemaFile)
     }
 
     // Create Renders
