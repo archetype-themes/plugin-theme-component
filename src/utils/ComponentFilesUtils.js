@@ -14,10 +14,10 @@ import StylesUtils from './StylesUtils.js'
 class ComponentFilesUtils {
   static STYLE_EXTENSIONS = ['.css', '.less', '.sass', '.scss']
   static SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
-  static SINGLE_LOCALE_FILENAME_REGEXP = /^([a-z]{2})(-[a-z]{2})?(\.default)?\.json$/
-  static SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP = /^([a-z]{2})(-[a-z]{2})?(\.default)?\.schema\.json$/
-  static GROUPED_LOCALES_FILENAME_REGEXP = /^locales?\.json$/
-  static GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP = /^locales?\.schema\.json$/
+  static SINGLE_LOCALE_FILENAME_REGEXP = /^([a-z]{2})(-[a-z]{2})?(\.default)?\.js(on)?$/
+  static SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP = /^([a-z]{2})(-[a-z]{2})?(\.default)?\.schema\.js(on)?$/
+  static GROUPED_LOCALES_FILENAME_REGEXP = /^locales?\.js(on)?$/
+  static GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP = /^locales?\.schema\.js(on)?$/
 
   /**
    * Index Component Files in a SectionFiles or SnippetFiles model
@@ -73,6 +73,28 @@ class ComponentFilesUtils {
       }
 
       if (this.SCRIPT_EXTENSIONS.includes(extension)) {
+        console.log(filename)
+        if (filename === Components.SECTION_SCHEMA_FILENAME.replace('.json', '.js')) {
+          console.log('schemaFile')
+          componentFiles.schemaFile = file
+          continue
+        }
+        if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME.replace('.json', '.js')) {
+          console.log('settingsSchemaFile')
+          componentFiles.settingsSchemaFile = file
+          continue
+        }
+        if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
+          console.log('localeFiles')
+          componentFiles.localeFiles.push(file)
+          continue
+        }
+        if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
+          console.log('schemaLocaleFiles')
+          componentFiles.schemaLocaleFiles.push(file)
+          continue
+        }
+        console.log('Regular JS file')
         componentFiles.javascriptFiles.push(file)
         continue
       }
@@ -88,15 +110,25 @@ class ComponentFilesUtils {
         case '.json':
           if (filename === 'package.json') {
             componentFiles.packageJson = file
-          } else if (filename === Components.SECTION_SCHEMA_FILENAME) {
-            componentFiles.schemaFile = file
-          } else if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME) {
-            componentFiles.settingsSchemaFile = file
-          } else if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
-            componentFiles.localeFiles.push(file)
-          } else if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
-            componentFiles.schemaLocaleFiles.push(file)
+            break
           }
+          if (filename === Components.SECTION_SCHEMA_FILENAME) {
+            componentFiles.schemaFile = file
+            break
+          }
+          if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME) {
+            componentFiles.settingsSchemaFile = file
+            break
+          }
+          if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
+            componentFiles.localeFiles.push(file)
+            break
+          }
+          if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
+            componentFiles.schemaLocaleFiles.push(file)
+            break
+          }
+          logger.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
           break
 
         default:
