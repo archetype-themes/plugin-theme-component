@@ -13,6 +13,7 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import RecursiveRenderUtils from '../../utils/RecursiveRenderUtils.js'
+import SectionBuilder from './SectionBuilder.js'
 
 class CollectionBuilder {
   /**
@@ -38,16 +39,18 @@ class CollectionBuilder {
       await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.javascriptFile, collection.rootFolder)
     }
 
-    // Build Schema Locales
-    collection.build.schemaLocales = this.buildSchemaLocales(collection.sections)
+    // Build Locales
+    collection.build.locales = this.buildLocales(collection.sections)
+    collection.build.schemaLocales = this.buildLocales(collection.sections, true)
 
-    // Build Section Schema
+    // Build Settings Schema
     collection.build.settingsSchema = this.buildSettingsSchema(collection.sections)
 
     // Write Schema Locales and Settings Schema to disk for Collection Build
     // On Theme Install, these contents are merged from collection.build values.
     if (NodeConfig.isCollection()) {
-      await LocaleUtils.writeSchemaLocales(collection.build.schemaLocales, collection.build.localesFolder)
+      await LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
+      await LocaleUtils.writeLocales(collection.build.schemaLocales, collection.build.localesFolder, true)
       fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema, null, 2)))
     }
 
@@ -70,20 +73,20 @@ class CollectionBuilder {
   }
 
   /**
-   * Build Collection Schema Locales
+   * Build Collection Locales (Storefront or Schema)
    * @param {Section[]} sections
+   * @param {boolean} [isSchemaLocales=false] Defaults to Storefront Locales
    * @return {Object}
    */
-  static buildSchemaLocales (sections) {
-    let schemaLocales = {}
+  static buildLocales (sections, isSchemaLocales = false) {
+    let buildLocales = {}
 
     for (const section of sections) {
-      if (section.build.schemaLocales) {
-        schemaLocales = merge(schemaLocales, section.build.schemaLocales)
-      }
+      const buildSchemaLocales = SectionBuilder.assembleLocales(section.build.schemaLocales, section.renders, isSchemaLocales)
+      buildLocales = merge(buildLocales, buildSchemaLocales)
     }
 
-    return schemaLocales
+    return buildLocales
   }
 
   /**

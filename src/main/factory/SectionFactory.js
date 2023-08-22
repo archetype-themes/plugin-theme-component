@@ -1,19 +1,16 @@
 // Node.js Internal imports
 import path from 'path'
 
-// External Node JS Modules
-import SectionFiles from '../models/SectionFiles.js'
-import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
-
 // Archie Internal JS imports
+import Components from '../../config/Components.js'
+import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
+import LocaleUtils from '../../utils/LocaleUtils.js'
+import NodeConfig from '../../cli/models/NodeConfig.js'
+import NodeUtils from '../../utils/NodeUtils.js'
 import RenderFactory from './RenderFactory.js'
+import SectionFiles from '../models/SectionFiles.js'
 import SnippetFactory from './SnippetFactory.js'
 import Section from '../models/Section.js'
-import SectionSchema from '../models/SectionSchema.js'
-import Components from '../../config/Components.js'
-import NodeConfig from '../../cli/models/NodeConfig.js'
-import FileUtils from '../../utils/FileUtils.js'
-import NodeUtils from '../../utils/NodeUtils.js'
 
 class SectionFactory {
   /**
@@ -47,23 +44,19 @@ class SectionFactory {
       section.schema = await ComponentFilesUtils.getSectionSchema(section.files.schemaFile)
     }
 
-    // Load Locales into schema data
+    // Load Locales
     if (section.files.localeFiles?.length) {
-      // If a schema file was not present, we need to create the section schema to store locale content
-      if (!section.schema) {
-        section.schema = new SectionSchema()
-      }
-      section.schema.locales = await ComponentFilesUtils.getLocales(section.files.localeFiles, section.schema.locales)
+      section.locales = await LocaleUtils.parseLocaleFilesContent(section.files.localeFiles)
     }
 
     // Load Schema Locales
     if (section.files.schemaLocaleFiles?.length) {
-      section.schemaLocales = await ComponentFilesUtils.getSchemaLocales(section.files.schemaLocaleFiles)
+      section.schemaLocales = await LocaleUtils.parseLocaleFilesContent(section.files.schemaLocaleFiles)
     }
 
     // Load Settings Schema
     if (section.files.settingsSchemaFile) {
-      section.settingsSchema = JSON.parse(await FileUtils.getFileContents(section.files.settingsSchemaFile))
+      section.settingsSchema = await ComponentFilesUtils.getSettingsSchema(section.files.settingsSchemaFile)
     }
 
     // Create Renders
