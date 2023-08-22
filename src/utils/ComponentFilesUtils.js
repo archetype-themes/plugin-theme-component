@@ -154,7 +154,7 @@ class ComponentFilesUtils {
   static async getSectionSchema (schemaFile) {
     const sectionSchema = new SectionSchema()
     if (this.SCRIPT_EXTENSIONS.includes(extname(schemaFile))) {
-      return Object.assign(sectionSchema, await import(schemaFile))
+      return Object.assign(sectionSchema, (await import(schemaFile)).default)
     }
     const sectionSchemaJson = JSON.parse(await FileUtils.getFileContents(schemaFile))
     return Object.assign(sectionSchema, sectionSchemaJson)
@@ -167,7 +167,7 @@ class ComponentFilesUtils {
    */
   static async getSettingsSchema (schemaFile) {
     if (this.SCRIPT_EXTENSIONS.includes(extname(schemaFile))) {
-      return import(schemaFile)
+      return (await import(schemaFile)).default
     }
     return JSON.parse(await FileUtils.getFileContents(schemaFile))
   }

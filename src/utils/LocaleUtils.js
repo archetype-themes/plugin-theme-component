@@ -52,6 +52,7 @@ class LocaleUtils {
     let locales = {}
 
     const singleLocaleFileRegex = new RegExp(`^(?<locale>([a-z]{2})(-[a-z]{2}))?(\\.default)?(\\.schema)?\\.${ComponentFilesUtils.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
+    const multiLocalesFileRegex = new RegExp(`^locales?(\\.schema)?\\.${ComponentFilesUtils.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
 
     for (const localeFileWithPath of localeFiles) {
       const localeFileName = basename(localeFileWithPath).toLowerCase()
@@ -67,7 +68,7 @@ class LocaleUtils {
         if (extname(localeFileWithPath) === '.json') {
           localeData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
         } else {
-          localeData = await import(localeFileWithPath)
+          localeData = (await import(localeFileWithPath)).default
         }
 
         // Merge with matching locale
@@ -76,14 +77,18 @@ class LocaleUtils {
         } else {
           locales[locale] = localeData
         }
-      } else if (/^locales?(\.schema)?\.json$/.exec(localeFileName)) {
+        return locales
+      }
+
+      // We have a locales files regrouping multiple locales
+      if (multiLocalesFileRegex.exec(localeFileName)) {
         // We have a single file with multiple locales
         // Load locales.json file
         let localesData
         if (extname(localeFileWithPath) === '.json') {
           localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
         } else {
-          localesData = await import(localeFileWithPath)
+          localesData = (await import(localeFileWithPath)).default
         }
 
         // merge locales
