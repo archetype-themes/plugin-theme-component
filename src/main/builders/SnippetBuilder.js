@@ -22,7 +22,6 @@ class SnippetBuilder {
     }
 
     // Build Liquid Code
-    console.log('SNIPPET', snippet)
     snippet.build.liquidCode = await this.buildLiquid(snippet.name, snippet.liquidCode)
 
     // Build recursively

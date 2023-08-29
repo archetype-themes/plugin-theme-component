@@ -14,7 +14,9 @@ class LiquidUtils {
         snippetNames.push(renderMatch[1])
       }
     }
-    return snippetNames
+
+    // Remove duplicates
+    return [...new Set(snippetNames)]
   }
 
   /**

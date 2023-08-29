@@ -23,9 +23,6 @@ class SnippetFactory {
    * @returns {Promise<Snippet[]>}
    */
   static async fromNames (snippetNames, snippetsPath, snippetFiles) {
-    // Remove duplicates
-    snippetNames = [...new Set(snippetNames)]
-
     const snippets = []
 
     for (const snippetName of snippetNames) {
@@ -43,20 +40,20 @@ class SnippetFactory {
    * @returns {Promise<Snippet>}
    */
   static async fromName (snippetName, snippetsPath, snippetFiles) {
-    if (!this.snippetCache[snippetName]) {
-      // Start by looking into the component's internal snippet files
+    // Start by looking into the component's internal snippet files
+    if (!this.snippetCache[snippetName] && snippetFiles) {
       for (const snippetFile of snippetFiles) {
         if (snippetName === path.parse(snippetFile).name) {
           logger.debug(`Snippet "${snippetName}" was found amongst component's internal snippet files.`)
           this.snippetCache[snippetName] = await this.fromSingleFile(snippetName, snippetFile, snippetsPath)
         }
       }
+    }
 
-      // Alternatively, look into the collection snippets' workspace folder
-      if (!this.snippetCache[snippetName]) {
-        logger.debug(`Snippet "${snippetName}" was not found amongst component's internal snippet files. Building from folder.`)
-        this.snippetCache[snippetName] = await this.fromSnippetFolder(snippetName, snippetsPath)
-      }
+    // Alternatively, look into the collection snippets' workspace folder
+    if (!this.snippetCache[snippetName]) {
+      logger.debug(`Snippet "${snippetName}" was not found amongst component's internal snippet files. Building from folder.`)
+      this.snippetCache[snippetName] = await this.fromSnippetFolder(snippetName, snippetsPath)
     }
 
     return this.snippetCache[snippetName]
@@ -103,6 +100,7 @@ class SnippetFactory {
 
     const snippetNames = LiquidUtils.getSnippetNames(snippet.liquidCode)
     if (snippetNames.length) {
+      logger.info(` └─> Snippet ${snippet.name} has the following snippets: ${snippetNames.join(', ')} `)
       this.validateSnippetRecursion(snippet.name, snippetNames)
       snippet.snippets = await SnippetFactory.fromNames(snippetNames, snippetsPath, snippet.files.snippetFiles)
     }
@@ -126,6 +124,7 @@ class SnippetFactory {
 
     const snippetNames = LiquidUtils.getSnippetNames(snippet.liquidCode)
     if (snippetNames.length) {
+      logger.info(` └─> Snippet ${snippet.name} has the following snippets: ${snippetNames.join(', ')} `)
       this.validateSnippetRecursion(snippet.name, snippetNames)
       snippet.snippets = await SnippetFactory.fromNames(snippetNames, snippetsPath)
     }
