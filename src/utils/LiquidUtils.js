@@ -1,12 +1,20 @@
 class LiquidUtils {
   /**
-   * Finds render tags in liquid code and create Render models
+   * Finds snippet names from render tags in liquid code
    * @param {string} liquidCode
-   * @returns {RegExpMatchArray[]}
+   * @returns {string[]}
    */
-  static findRenderTags (liquidCode) {
-    const regex = /\{%-?\s+render\s+'(?<snippet>[\p{L}_. -]+)'(?:\s*(?<clause>for|with)\s+(?<clauseSourceVariable>\w+[.\w]+)\s+as\s+(?<clauseTargetVariable>\w+))?(?<variables>(?:\s*,\s*\w+:\s*(\w[.\w]+\w|'[^']+'))*)\s+-?%\}/giu
-    return [...liquidCode.matchAll(regex)]
+  static getSnippetNames (liquidCode) {
+    const blockRegex = /\{%-?.*?-?%}/sg
+    const renderRegex = /\srender\s+'([^']+)'/sg
+
+    const snippetNames = []
+    for (const block of liquidCode.matchAll(blockRegex)) {
+      for (const renderMatch of block[0].matchAll(renderRegex)) {
+        snippetNames.push(renderMatch[1])
+      }
+    }
+    return snippetNames
   }
 
   /**

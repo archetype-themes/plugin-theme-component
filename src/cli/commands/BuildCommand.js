@@ -15,7 +15,7 @@ import logger from '../../utils/Logger.js'
 import Timer from '../../utils/Timer.js'
 import Watcher from '../../utils/Watcher.js'
 import NodeUtils from '../../utils/NodeUtils.js'
-import RecursiveRenderUtils from '../../utils/RecursiveRenderUtils.js'
+import SnippetUtils from '../../utils/SnippetUtils.js'
 import Components from '../../config/Components.js'
 
 class BuildCommand {
@@ -61,10 +61,9 @@ class BuildCommand {
     logger.info(`Step 1/3 - Beginning Snippets' build for ${collection.name}`)
     const stepOneStartTime = Timer.getTimer()
 
-    const snippetCache = {}
     for (const section of collection.sections) {
-      if (section.renders?.length) {
-        await RecursiveRenderUtils.buildSnippets(section.renders, snippetCache)
+      if (section.snippets?.length) {
+        await SnippetUtils.buildRecursively(section.snippets)
       }
     }
     logger.info(`Step 1/3 - Finished Snippets' build in ${Timer.getEndTimerInSeconds(stepOneStartTime)} seconds`)
@@ -101,8 +100,8 @@ class BuildCommand {
     const section = await SectionFactory.fromName(sectionName)
 
     // Start from the bottom: Build Snippets first
-    if (section.renders?.length) {
-      await RecursiveRenderUtils.buildSnippets(section.renders)
+    if (section.snippets?.length) {
+      await SnippetUtils.buildRecursively(section.snippets)
     }
     // Build Section
     await SectionBuilder.build(section)
@@ -136,7 +135,7 @@ class BuildCommand {
    * @return {FSWatcher}
    */
   static watchSection (section) {
-    const snippetRootFolders = RecursiveRenderUtils.getSnippetRootFolders(section.renders)
+    const snippetRootFolders = SnippetUtils.getRootFoldersRecursively(section.snippets)
     const watchFolders = [section.rootFolder].concat(snippetRootFolders).map(folder => path.join(folder, 'src'))
 
     const watcher = Watcher.getWatcher(watchFolders)

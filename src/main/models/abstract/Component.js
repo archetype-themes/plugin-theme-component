@@ -4,14 +4,11 @@ class Component {
   /** @type {string} **/
   #liquidCode
 
-  /** @type {Object} **/
+  /** @type {Object } **/
   #locales = {}
 
   /** @type {string} **/
   #name
-
-  /** @type {Render[]} **/
-  #renders = []
 
   /** @type {string} **/
   #rootFolder
@@ -24,6 +21,9 @@ class Component {
 
   /** @type {Object[]} **/
   #settingsSchema
+
+  /** @type {Snippet[]} **/
+  #snippets = []
 
   constructor () {
     if (new.target === Component) {
@@ -77,22 +77,6 @@ class Component {
    */
   set name (value) {
     this.#name = value
-  }
-
-  /**
-   * Get Renders
-   * @returns {Render[]}
-   */
-  get renders () {
-    return this.#renders
-  }
-
-  /**
-   * Set Renders
-   * @param {Render[]} value
-   */
-  set renders (value) {
-    this.#renders = value
   }
 
   /**
@@ -157,6 +141,22 @@ class Component {
    */
   set settingsSchema (value) {
     this.#settingsSchema = value
+  }
+
+  /**
+   * Get Snippets
+   * @returns {Snippet[]}
+   */
+  get snippets () {
+    return this.#snippets
+  }
+
+  /**
+   * Set Snippets
+   * @param {Snippet[]} value
+   */
+  set snippets (value) {
+    this.#snippets = value
   }
 }
 
