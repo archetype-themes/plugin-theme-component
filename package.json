@@ -5,12 +5,12 @@
   "main": "src/bin/archie.js",
   "name": "@archetype-themes/archie",
   "type": "module",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "bin": "src/bin/archie.js",
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/archie.js",
     "lint": "standard",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage && npm ci && npm publish --dry-run"
   },
   "publishConfig": {
     "@archetype-themes:registry": "https://npm.pkg.github.com"

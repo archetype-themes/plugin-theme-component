@@ -4,12 +4,61 @@ import path from 'path'
 // Archie module imports
 import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
 import FileUtils from '../../utils/FileUtils.js'
+import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import RenderFactory from './RenderFactory.js'
+import logger from '../../utils/Logger.js'
+import RecursionError from '../../errors/RecursionError.js'
 import Snippet from '../models/Snippet.js'
 import SnippetFiles from '../models/SnippetFiles.js'
 
 class SnippetFactory {
+  /** @type {Object<string, Snippet>} Snippet Cache to Avoid building them more than once **/
+  static snippetCache = {}
+
+  /**
+   * Create Multiple Snippets From Their Names
+   * @param {string[]} snippetNames  - Snippet names
+   * @param {string} snippetsPath - Collection's snippets folder
+   * @param {string[]} [snippetFiles] - Component's internal snippet files
+   * @returns {Promise<Snippet[]>}
+   */
+  static async fromNames (snippetNames, snippetsPath, snippetFiles) {
+    const snippets = []
+
+    for (const snippetName of snippetNames) {
+      snippets.push(this.fromName(snippetName, snippetsPath, snippetFiles))
+    }
+
+    return Promise.all(snippets)
+  }
+
+  /**
+   * Create A Single Snippet From Its Name
+   * @param {string} snippetName  - Snippet name
+   * @param {string} snippetsPath - Collection's snippets folder
+   * @param {string[]} [snippetFiles] - Component's internal snippet files
+   * @returns {Promise<Snippet>}
+   */
+  static async fromName (snippetName, snippetsPath, snippetFiles) {
+    // Start by looking into the component's internal snippet files
+    if (!this.snippetCache[snippetName] && snippetFiles) {
+      for (const snippetFile of snippetFiles) {
+        if (snippetName === path.parse(snippetFile).name) {
+          logger.debug(`Snippet "${snippetName}" was found amongst component's internal snippet files.`)
+          this.snippetCache[snippetName] = await this.fromSingleFile(snippetName, snippetFile, snippetsPath)
+        }
+      }
+    }
+
+    // Alternatively, look into the collection snippets' workspace folder
+    if (!this.snippetCache[snippetName]) {
+      logger.debug(`Snippet "${snippetName}" was not found amongst component's internal snippet files. Building from folder.`)
+      this.snippetCache[snippetName] = await this.fromSnippetFolder(snippetName, snippetsPath)
+    }
+
+    return this.snippetCache[snippetName]
+  }
+
   /**
    * Build a full Snippet from its name by locating and scanning its home folder
    * @param {string} snippetName - Snippet name
@@ -49,11 +98,12 @@ class SnippetFactory {
       snippet.settingsSchema = await ComponentFilesUtils.getSettingsSchema(snippet.files.settingsSchemaFile)
     }
 
-    // Create Renders
-    snippet.renders = RenderFactory.fromLiquidCode(snippet.liquidCode, snippet.name)
-
-    // Create Snippets Recursively
-    snippet.renders = await SnippetFactory.fromRenders(snippet.renders, snippet.files.snippetFiles, snippetsPath)
+    const snippetNames = LiquidUtils.getSnippetNames(snippet.liquidCode)
+    if (snippetNames.length) {
+      logger.info(` └─> Snippet ${snippet.name} has the following snippets: ${snippetNames.join(', ')} `)
+      this.validateSnippetRecursion(snippet.name, snippetNames)
+      snippet.snippets = await SnippetFactory.fromNames(snippetNames, snippetsPath, snippet.files.snippetFiles)
+    }
 
     return snippet
   }
@@ -72,49 +122,25 @@ class SnippetFactory {
     snippet.files.liquidFiles = [snippetFile]
     snippet.liquidCode = await FileUtils.getFileContents(snippetFile)
 
-    // Non-Recursively Create Renders
-    snippet.renders = RenderFactory.fromLiquidCode(snippet.liquidCode, snippet.name)
-    // Create Snippets Within Renders
-    snippet.renders = await SnippetFactory.fromRenders(snippet.renders, snippet.files.snippetFiles, snippetsPath)
+    const snippetNames = LiquidUtils.getSnippetNames(snippet.liquidCode)
+    if (snippetNames.length) {
+      logger.info(` └─> Snippet ${snippet.name} has the following snippets: ${snippetNames.join(', ')} `)
+      this.validateSnippetRecursion(snippet.name, snippetNames)
+      snippet.snippets = await SnippetFactory.fromNames(snippetNames, snippetsPath)
+    }
 
     return snippet
   }
 
   /**
-   *
-   * @param {Render} render - Render model
-   * @param {string[]} componentInternalSnippetFiles
-   * @param {string} snippetsPath - Collection's snippets folder
-   * @return {Promise<Snippet>}
+   * Validate Snippet Recursion
+   * @param {string} sourceSnippetName
+   * @param {string[]} childSnippetsNames
    */
-  static async fromRender (render, componentInternalSnippetFiles, snippetsPath) {
-    // Look within the section's local snippets first
-    for (const snippetFile of componentInternalSnippetFiles) {
-      if (render.snippetName === path.parse(snippetFile).name) {
-        return await this.fromSingleFile(render.snippetName, snippetFile, snippetsPath)
-      }
+  static validateSnippetRecursion (sourceSnippetName, childSnippetsNames) {
+    if (childSnippetsNames.includes(sourceSnippetName)) {
+      throw new RecursionError(`Snippet ${sourceSnippetName} is trying to render itself. Please verify your source code.`)
     }
-
-    return this.fromSnippetFolder(render.snippetName, snippetsPath)
-  }
-
-  /**
-   * Create Snippets from Render items
-   * @param {Render[]} renders - Render models array
-   * @param {string[]} componentInternalSnippetFiles - The parent Section or Snippet's internal one-file snippet files
-   * @param {string} snippetsPath - Collection's snippets folder
-   * @return {Promise<Render[]>}
-   */
-  static async fromRenders (renders, componentInternalSnippetFiles, snippetsPath) {
-    const snippetCache = []
-    for (const render of renders) {
-      // Make sure snippets are processed only once.
-      if (!snippetCache[render.snippetName]) {
-        snippetCache[render.snippetName] = await this.fromRender(render, componentInternalSnippetFiles, snippetsPath)
-      }
-      render.snippet = snippetCache[render.snippetName]
-    }
-    return Promise.resolve(renders)
   }
 }
 

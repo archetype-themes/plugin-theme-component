@@ -10,7 +10,7 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import RecursiveRenderUtils from '../../utils/RecursiveRenderUtils.js'
+import SnippetUtils from '../../utils/SnippetUtils.js'
 import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
 
 class SectionBuilder {
@@ -28,7 +28,7 @@ class SectionBuilder {
     section.build.schemaLocales = LocaleUtils.buildLocales(section.name, section.schemaLocales)
 
     // Build Section Schema (this includes previously collated locales through factory methods
-    const snippetsSchema = RecursiveRenderUtils.getSnippetsBuildSchema(section.renders)
+    const snippetsSchema = SnippetUtils.buildSectionSchemaRecursively(section.snippets)
     if (section.schema || snippetsSchema) {
       section.build.schema = SectionSchemaUtils.build(section.schema, snippetsSchema)
     }
@@ -60,18 +60,18 @@ class SectionBuilder {
    * @param {string} collectionRootFolder
    * @param {string} sectionMainStylesheet
    * @param {string} sectionBuildStylesheet
-   * @param {Render[]} sectionRenders
+   * @param {Snippet[]} sectionSnippets
    * @return {Promise<string|void>}
    */
-  static async bundleStyles (collectionRootFolder, sectionMainStylesheet, sectionBuildStylesheet, sectionRenders) {
+  static async bundleStyles (collectionRootFolder, sectionMainStylesheet, sectionBuildStylesheet, sectionSnippets) {
     let mainStylesheets = []
 
     if (sectionMainStylesheet) {
       mainStylesheets.push(sectionMainStylesheet)
     }
 
-    if (sectionRenders) {
-      mainStylesheets = mainStylesheets.concat(RecursiveRenderUtils.getSnippetsMainStylesheet(sectionRenders))
+    if (sectionSnippets) {
+      mainStylesheets = mainStylesheets.concat(SnippetUtils.getMainStylesheetsRecursively(sectionSnippets))
     }
 
     if (mainStylesheets.length > 0) {
@@ -82,11 +82,11 @@ class SectionBuilder {
   /**
    * Reset Build Folders
    * @param {SectionFiles} sectionFiles
-   * @param {Render[]} sectionRenders
+   * @param {Snippet[]} sectionSnippets
    * @param {SectionBuild} sectionBuild
    * @return {Promise<Awaited<unknown>[]>}
    */
-  static async resetBuildFolders (sectionFiles, sectionRenders, sectionBuild) {
+  static async resetBuildFolders (sectionFiles, sectionSnippets, sectionBuild) {
     await rm(sectionBuild.rootFolder, { force: true, recursive: true })
     await mkdir(sectionBuild.rootFolder, { recursive: true })
 
@@ -104,7 +104,7 @@ class SectionBuilder {
       mkdirPromises.push(mkdir(sectionBuild.configFolder, { recursive: true }))
     }
 
-    if (sectionFiles.snippetFiles.length || !!sectionRenders.length) {
+    if (sectionFiles.snippetFiles.length || !!sectionSnippets.length) {
       mkdirPromises.push(mkdir(sectionBuild.snippetsFolder, { recursive: true }))
     }
 
@@ -124,7 +124,7 @@ class SectionBuilder {
         collectionRootFolder,
         section.files.mainStylesheet,
         section.build.stylesheet,
-        section.renders
+        section.snippets
       )
 
     // Attach CSS bundle file reference to liquid code
@@ -135,23 +135,23 @@ class SectionBuilder {
     }
 
     // Build Settings Schema
-    const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders)
+    const snippetsSettingsSchema = SnippetUtils.buildSettingsSchemaRecursively(section.snippets)
     if (section.settingsSchema?.length) {
-      section.build.settingsSchema = section.settingsSchema.concat(rendersSettingsSchema)
+      section.build.settingsSchema = section.settingsSchema.concat(snippetsSettingsSchema)
     } else {
-      section.build.settingsSchema = rendersSettingsSchema
+      section.build.settingsSchema = snippetsSettingsSchema
     }
 
     // Get all Section and Snippet Assets
     let assetFiles = section.files.assetFiles
-    assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
+    assetFiles = assetFiles.concat(SnippetUtils.getAssetsRecursively(section.snippets))
 
     // IMPORTANT: No disk write operation should occur BEFORE this
-    await this.resetBuildFolders(section.files, section.renders, section.build)
+    await this.resetBuildFolders(section.files, section.snippets, section.build)
 
     // Build & Write JS
     const jsFiles = section.files.javascriptIndex ? [section.files.javascriptIndex] : []
-    jsFiles.push(...RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders))
+    jsFiles.push(...SnippetUtils.getJavascriptIndexesRecursively(section.snippets))
 
     if (jsFiles.length) {
       // Generate Javascript Bundle File
@@ -163,10 +163,10 @@ class SectionBuilder {
         section.build.liquidCode
     }
 
-    const { liquidFilesWritePromise } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, section.build.snippetsFolder)
+    const { liquidFilesWritePromise } = SnippetUtils.getLiquidFilesWritePromisesRecursively(section.snippets, section.build.snippetsFolder)
     const filesWritePromises = [
-      LocaleUtils.writeLocales(this.assembleLocales(section.build.locales, section.renders), section.build.localesFolder),
-      LocaleUtils.writeLocales(this.assembleLocales(section.build.schemaLocales, section.renders, true), section.build.localesFolder, true),
+      LocaleUtils.writeLocales(this.assembleLocales(section.build.locales, section.snippets), section.build.localesFolder),
+      LocaleUtils.writeLocales(this.assembleLocales(section.build.schemaLocales, section.snippets, true), section.build.localesFolder, true),
       FileUtils.copyFilesToFolder(assetFiles, section.build.assetsFolder),
       FileUtils.writeFile(section.build.liquidFile, section.build.liquidCode),
       liquidFilesWritePromise
@@ -185,13 +185,13 @@ class SectionBuilder {
   /**
    * Assemble Locales
    * @param {Object} sectionLocales
-   * @param {Render[]} renders
+   * @param {Snippet[]} snippets
    * @param {boolean} [isSchemaLocales=false] Defaults to storefront locales
    * @returns {Object}
    */
-  static assembleLocales (sectionLocales, renders, isSchemaLocales = false) {
-    const renderLocales = RecursiveRenderUtils.getSnippetsBuildLocales(renders, isSchemaLocales)
-    return merge(sectionLocales, renderLocales)
+  static assembleLocales (sectionLocales, snippets, isSchemaLocales = false) {
+    const snippetLocales = SnippetUtils.buildLocalesRecursively(snippets, isSchemaLocales)
+    return merge(sectionLocales, snippetLocales)
   }
 }
 

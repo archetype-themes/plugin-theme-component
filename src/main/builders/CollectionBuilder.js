@@ -12,7 +12,7 @@ import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import RecursiveRenderUtils from '../../utils/RecursiveRenderUtils.js'
+import SnippetUtils from '../../utils/SnippetUtils.js'
 import SectionBuilder from './SectionBuilder.js'
 
 class CollectionBuilder {
@@ -60,7 +60,7 @@ class CollectionBuilder {
       fileOperationPromises.push(FileUtils.writeFile(join(collection.build.sectionsFolder, basename(section.build.liquidFile)), section.build.liquidCode))
       const {
         liquidFilesWritePromise, processedSnippets: processedSectionSnippets
-      } = RecursiveRenderUtils.getSnippetsLiquidFilesWritePromise(section.renders, collection.build.snippetsFolder, processedSnippets)
+      } = SnippetUtils.getLiquidFilesWritePromisesRecursively(section.snippets, collection.build.snippetsFolder, processedSnippets)
       processedSnippets.push(...processedSectionSnippets)
       fileOperationPromises.push(liquidFilesWritePromise)
     }
@@ -82,7 +82,7 @@ class CollectionBuilder {
     let buildLocales = {}
 
     for (const section of sections) {
-      const buildSchemaLocales = SectionBuilder.assembleLocales(section.build.schemaLocales, section.renders, isSchemaLocales)
+      const buildSchemaLocales = SectionBuilder.assembleLocales(section.build.schemaLocales, section.snippets, isSchemaLocales)
       buildLocales = merge(buildLocales, buildSchemaLocales)
     }
 
@@ -102,9 +102,9 @@ class CollectionBuilder {
       if (section.settingsSchema?.length) {
         settingsSchema.push(...section.settingsSchema)
       }
-      if (section.renders?.length) {
-        const rendersSettingsSchema = RecursiveRenderUtils.getSnippetsSettingsSchema(section.renders, processedSnippets)
-        settingsSchema.push(...rendersSettingsSchema)
+      if (section.snippets?.length) {
+        const snippetsSettingsSchema = SnippetUtils.buildSettingsSchemaRecursively(section.snippets, processedSnippets)
+        settingsSchema.push(...snippetsSettingsSchema)
       }
     }
 
@@ -123,8 +123,8 @@ class CollectionBuilder {
       if (section.files.assetFiles) {
         assetFiles = assetFiles.concat(section.files.assetFiles)
       }
-      if (section.renders?.length) {
-        assetFiles = assetFiles.concat(RecursiveRenderUtils.getSnippetAssets(section.renders))
+      if (section.snippets?.length) {
+        assetFiles = assetFiles.concat(SnippetUtils.getAssetsRecursively(section.snippets))
       }
     }
 
@@ -149,8 +149,8 @@ class CollectionBuilder {
       }
 
       // Add Section snippet files
-      if (section.renders?.length) {
-        jsFiles = jsFiles.concat(RecursiveRenderUtils.getSnippetsJavascriptIndex(section.renders))
+      if (section.snippets?.length) {
+        jsFiles = jsFiles.concat(SnippetUtils.getJavascriptIndexesRecursively(section.snippets))
       }
     }
 
@@ -172,8 +172,8 @@ class CollectionBuilder {
       if (section.files.mainStylesheet) {
         mainStylesheets.push(section.files.mainStylesheet)
       }
-      if (section.renders?.length) {
-        mainStylesheets.push(...RecursiveRenderUtils.getSnippetsMainStylesheet(section.renders))
+      if (section.snippets?.length) {
+        mainStylesheets.push(...SnippetUtils.getMainStylesheetsRecursively(section.snippets))
       }
     }
 

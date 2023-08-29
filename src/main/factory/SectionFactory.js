@@ -4,10 +4,11 @@ import path from 'path'
 // Archie Internal JS imports
 import Components from '../../config/Components.js'
 import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
+import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
+import logger from '../../utils/Logger.js'
 import NodeConfig from '../../cli/models/NodeConfig.js'
 import NodeUtils from '../../utils/NodeUtils.js'
-import RenderFactory from './RenderFactory.js'
 import SectionFiles from '../models/SectionFiles.js'
 import SnippetFactory from './SnippetFactory.js'
 import Section from '../models/Section.js'
@@ -59,12 +60,13 @@ class SectionFactory {
       section.settingsSchema = await ComponentFilesUtils.getSettingsSchema(section.files.settingsSchemaFile)
     }
 
-    // Create Renders
-    section.renders = RenderFactory.fromLiquidCode(section.liquidCode)
-
     // Create Snippets Recursively
-    const snippetsPath = path.join(section.rootFolder, '../../', Components.COLLECTION_SNIPPETS_FOLDER)
-    section.renders = await SnippetFactory.fromRenders(section.renders, section.files.snippetFiles, snippetsPath)
+    const snippetNames = LiquidUtils.getSnippetNames(section.liquidCode)
+    if (snippetNames.length) {
+      logger.info(`└─> Section ${section.name} has the following snippets: ${snippetNames.join(', ')} `)
+      const snippetsPath = path.join(section.rootFolder, '../../', Components.COLLECTION_SNIPPETS_FOLDER)
+      section.snippets = await SnippetFactory.fromNames(snippetNames, snippetsPath, section.files.snippetFiles)
+    }
 
     return section
   }
