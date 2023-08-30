@@ -175,13 +175,13 @@ class SnippetUtils {
   /**
    * Build Storefront Locales Or Schema Locales Recursively
    * @param {Snippet[]} snippets
-   * @param {boolean} [schemaLocales=false]
+   * @param {boolean} [isSchemaLocales=false]
    * @param {string[]} [processedSnippets=[]]
    * @return {Object}
    */
-  static buildLocalesRecursively (snippets, schemaLocales = false, processedSnippets = []) {
+  static buildLocalesRecursively (snippets, isSchemaLocales = false, processedSnippets = []) {
     let buildLocales = {}
-    const localesKey = schemaLocales ? 'schemaLocales' : 'locales'
+    const localesKey = isSchemaLocales ? 'schemaLocales' : 'locales'
 
     for (const snippet of snippets) {
       if (!processedSnippets.includes(snippet.name)) {
@@ -191,7 +191,7 @@ class SnippetUtils {
 
         // Recursively merge child Schema Locales
         if (snippet.snippets?.length) {
-          buildLocales = merge(buildLocales, this.buildLocalesRecursively(snippet.snippets, schemaLocales, processedSnippets))
+          buildLocales = merge(buildLocales, this.buildLocalesRecursively(snippet.snippets, isSchemaLocales, processedSnippets))
         }
 
         processedSnippets.push(snippet.name)

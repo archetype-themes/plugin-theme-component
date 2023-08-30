@@ -80,10 +80,11 @@ class CollectionBuilder {
    */
   static buildLocales (sections, isSchemaLocales = false) {
     let buildLocales = {}
+    const localesKey = isSchemaLocales ? 'schemaLocales' : 'locales'
 
     for (const section of sections) {
-      const buildSchemaLocales = SectionBuilder.assembleLocales(section.build.schemaLocales, section.snippets, isSchemaLocales)
-      buildLocales = merge(buildLocales, buildSchemaLocales)
+      const sectionWithSnippetsBuildLocales = SectionBuilder.assembleLocales(section.build[localesKey], section.snippets, isSchemaLocales)
+      buildLocales = merge(buildLocales, sectionWithSnippetsBuildLocales)
     }
 
     return buildLocales
