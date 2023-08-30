@@ -24,10 +24,8 @@ npm init -y --scope=@archetype-themes
 Now, let's set setup Archie
 
 ```shell
-# Install it first as a dev dependency to use it with your Collection.
-npm install archetype-themes/archie --save-dev
-# Install it as a per dependency as well. Theme owners will need archie to install your Collection
-npm install archetype-themes/archie --save-peer
+# Install it with NPM to use it with your Collection.
+npm install archetype-themes/archie
 ```
 
 ## Node Package Configuration
@@ -52,20 +50,23 @@ Next, you will need to edit your package.json in order to add/replace the follow
 ```
 
 - Add the **archie** group with
-    - The **"collection"** component type helps archie identify your package as a collection monorepo.
+  - The `component type` **"collection"**  helps archie identify your package as a collection monorepo.
+  - the `embedLocales` option can be set to boolean true or false. It defaults to false. If set to true, locales will be
+    automatically structured as if they were in the section's schema. As featured
+    in [Shopify Dev Themes Architecture: Sections Schema - Locales](https://shopify.dev/docs/themes/architecture/sections/section-schema#locales)
 - Add or change the **scripts**  groups
-    - The **"build"** script starts a Collection build with Archie CLI. This is a shortcut to the
-      full `npx archie build` command.
-    - The **"watch"** script starts a Collection build with Archie CLI and watches for file changes within the
-      Collection's source folders. It is a shortcut to the full `npx archie build --watch` command.
-    - Adding the **workspaces** group indicates that this is a monorepo with multiples child repositories split in three
-      groups.
-        - The **"sections"** is the main workspace where you can create and edit as many Sections as you need. Archie's
-          create command can help you generate files for a new Section.
-        - The **"shared"** workspace is intended for styles libraries, internal javascript libraries or other assets
-          that are shared by multiple sections.
-        - The **"snippets"** workspace can contain an unlimited amount of snippets for use in any of the sections.
-          Archie can help you create these Snippets.
+  - The **"build"** script starts a Collection build with Archie CLI. This is a shortcut to the
+    full `npx archie build` command.
+  - The **"watch"** script starts a Collection build with Archie CLI and watches for file changes within the
+    Collection's source folders. It is a shortcut to the full `npx archie build --watch` command.
+  - Adding the **workspaces** group indicates that this is a monorepo with multiples child repositories split in three
+    groups.
+    - The **"sections"** is the main workspace where you can create and edit as many Sections as you need. Archie's
+      create command can help you generate files for a new Section.
+    - The **"shared"** workspace is intended for styles libraries, internal javascript libraries or other assets
+      that are shared by multiple sections.
+    - The **"snippets"** workspace can contain an unlimited amount of snippets for use in any of the sections.
+      Archie can help you create these Snippets.
 
 Once installed and configured, you can always access Archie manually in the following way:
 

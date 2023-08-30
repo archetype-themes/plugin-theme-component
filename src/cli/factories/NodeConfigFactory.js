@@ -19,6 +19,10 @@ class NodeConfigFactory {
       NodeConfig.componentPath = packageJsonData.archie.componentPath
     }
 
+    if (packageJsonData.archie?.embedLocales) {
+      NodeConfig.embedLocales = packageJsonData.archie.embedLocales
+    }
+
     if (NodeConfig.isTheme()) {
       NodeConfig.collections = this.#findCollections(packageJsonData)
     }

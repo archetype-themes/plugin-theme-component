@@ -5,6 +5,7 @@ import { basename, join } from 'node:path'
 // External imports
 import merge from 'deepmerge'
 import { extname } from 'path'
+import NodeConfig from '../cli/models/NodeConfig.js'
 
 // Internal Imports
 import ComponentFilesUtils from './ComponentFilesUtils.js'
@@ -15,31 +16,34 @@ class LocaleUtils {
    * Build Locales
    * @param {string} componentName
    * @param {Object} [locales={}]
-   * @param {Object} [localesFromSchema={}]
+   * @param {Object} [localesFromSectionSchema={}]
    * @param {boolean} [isSnippet]
    * @return {{}|null}
    */
-  static buildLocales (componentName, locales = {}, localesFromSchema, isSnippet = false) {
+  static buildLocales (componentName, locales = {}, localesFromSectionSchema, isSnippet = false) {
     let buildLocales
     let buildLocalesFromSectionSchema
 
     if (locales) {
-      buildLocales = LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet)
+      buildLocales = NodeConfig.embedLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
     }
 
-    if (localesFromSchema) {
-      buildLocalesFromSectionSchema = LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSchema, isSnippet)
+    if (localesFromSectionSchema) {
+      buildLocalesFromSectionSchema = NodeConfig.embedLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSectionSchema, isSnippet) : localesFromSectionSchema
     }
 
     if (buildLocalesFromSectionSchema && buildLocales) {
       return merge(buildLocalesFromSectionSchema, buildLocales)
     }
+
     if (buildLocales) {
       return buildLocales
     }
+
     if (buildLocalesFromSectionSchema) {
       return buildLocalesFromSectionSchema
     }
+
     return null
   }
 
