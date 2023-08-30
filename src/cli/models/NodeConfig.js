@@ -10,6 +10,9 @@ class NodeConfig {
   /** @type {string}  **/
   static #componentPath
 
+  /** @type {boolean}  **/
+  static #embedLocales = false
+
   /**
    * Get Collections
    * @return {string[]}
@@ -65,6 +68,22 @@ class NodeConfig {
    */
   static getCollectionSections (collectionName) {
     return this.collections[collectionName] ? this.collections[collectionName] : []
+  }
+
+  /**
+   * Get Embed Locales option boolean value
+   * @returns {boolean}
+   */
+  static get embedLocales () {
+    return this.#embedLocales
+  }
+
+  /**
+   * Set Embed Locales option boolean value
+   * @param {boolean} value
+   */
+  static set embedLocales (value) {
+    this.#embedLocales = value
   }
 
   /**
