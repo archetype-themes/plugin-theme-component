@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.3]
+## [1.5.4] - 2023-09-02
+
+### Added
+
+- documentation: Added documentation regarding SVG Snippets
+- documentation: Added documentation regarding the postcss-import plugin
+
+### Changed
+
+- documentation: Mandatory `src` folder information replaced by an optional mention. It was also removed from some
+  examples.
+
+## [1.5.3] -2023-08-30
 
 ### Changed
 
@@ -163,9 +175,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Templates for new components
-    - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
-    - package.json now inherits "author", "license" and package scope from parent monorepo
-    - package.json now includes repository information
+  - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
+  - package.json now inherits "author", "license" and package scope from parent monorepo
+  - package.json now includes repository information
 - SVG Snippets are now processed through SVGO
 - vitest is now installed as a test framework
 - Tests for NodeUtils added

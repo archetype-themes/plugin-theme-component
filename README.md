@@ -43,9 +43,9 @@ respective workspaces.
 - [Create a Collection](docs/Creating-a-Collection.md)
 - [Using a Collection](docs/Using-a-Collection.md)
 
-#### Sections & Snippets Guide
+#### Section & Snippet Components Guide
 
-- [Sections & Snippets Components](docs/Sections-and-Snippets.md)
+- [Section & Snippet Components](docs/Sections-and-Snippets.md)
 
 #### Theme Guides
 
