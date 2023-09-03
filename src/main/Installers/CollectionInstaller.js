@@ -175,7 +175,7 @@ class CollectionInstaller {
 
     if (await FileUtils.exists(themeSettingsSchemaFile)) {
       const themeSettingsSchema = JSON.parse(await FileUtils.getFileContents(themeSettingsSchemaFile))
-      finalSettingsSchema = mergeObjectArraysByUniqueKey(themeSettingsSchema, collectionSettingsSchema, 'name')
+      finalSettingsSchema = mergeObjectArraysByUniqueKey(themeSettingsSchema, collectionSettingsSchema)
     } else if (!await FileUtils.exists(themeConfigFolder)) {
       await mkdir(themeConfigFolder)
       finalSettingsSchema = collectionSettingsSchema

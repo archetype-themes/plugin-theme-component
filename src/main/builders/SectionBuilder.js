@@ -2,6 +2,7 @@
 import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
+import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 
 // Archie Component imports
 import BuildFactory from '../factory/BuildFactory.js'
@@ -136,9 +137,11 @@ class SectionBuilder {
 
     // Build Settings Schema
     const snippetsSettingsSchema = SnippetUtils.buildSettingsSchemaRecursively(section.snippets)
-    if (section.settingsSchema?.length) {
-      section.build.settingsSchema = section.settingsSchema.concat(snippetsSettingsSchema)
-    } else {
+    if (section.settingsSchema?.length && snippetsSettingsSchema?.length) {
+      section.build.settingsSchema = mergeObjectArraysByUniqueKey(section.settingsSchema, snippetsSettingsSchema)
+    } else if (section.settingsSchema?.length) {
+      section.build.settingsSchema = section.settingsSchema
+    } else if (snippetsSettingsSchema?.length) {
       section.build.settingsSchema = snippetsSettingsSchema
     }
 

@@ -5,10 +5,10 @@ class ArrayUtils {
    * Merge Object Arrays By Unique Key
    * @param {Object[]} sourceArray Source Array
    * @param {Object[]} newArray New Array, it has priority over the source array
-   * @param {string} uniqueKey Unique Array Key to compare for duplicates
+   * @param {string} [uniqueKey='name'] Unique Array Key to compare for duplicates
    * @return {*[]}
    */
-  static mergeObjectArraysByUniqueKey = (sourceArray, newArray, uniqueKey) => {
+  static mergeObjectArraysByUniqueKey = (sourceArray, newArray, uniqueKey = 'name') => {
     const mergedArray = [...sourceArray]
 
     newArray.forEach((newObject) => {
@@ -24,7 +24,5 @@ class ArrayUtils {
     return mergedArray
   }
 }
-
-export default ArrayUtils
 
 export const mergeObjectArraysByUniqueKey = ArrayUtils.mergeObjectArraysByUniqueKey

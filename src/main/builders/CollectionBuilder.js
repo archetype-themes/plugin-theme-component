@@ -14,6 +14,7 @@ import FileUtils from '../../utils/FileUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import SnippetUtils from '../../utils/SnippetUtils.js'
 import SectionBuilder from './SectionBuilder.js'
+import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 
 class CollectionBuilder {
   /**
@@ -96,16 +97,18 @@ class CollectionBuilder {
    * @return {Object[]} Settings Schema
    */
   static buildSettingsSchema (sections) {
-    const settingsSchema = []
+    let settingsSchema = []
     const processedSnippets = []
 
     for (const section of sections) {
       if (section.settingsSchema?.length) {
-        settingsSchema.push(...section.settingsSchema)
+        settingsSchema = mergeObjectArraysByUniqueKey(settingsSchema, section.settingsSchema)
       }
       if (section.snippets?.length) {
         const snippetsSettingsSchema = SnippetUtils.buildSettingsSchemaRecursively(section.snippets, processedSnippets)
-        settingsSchema.push(...snippetsSettingsSchema)
+        if (snippetsSettingsSchema?.length) {
+          settingsSchema = mergeObjectArraysByUniqueKey(settingsSchema, snippetsSettingsSchema)
+        }
       }
     }
 

@@ -1,13 +1,16 @@
-// External Library imports
+// Node.js imports
+import { join } from 'node:path'
+
+// External imports
 import merge from 'deepmerge'
 import { union } from 'lodash-es'
-import { join } from 'path'
-import SnippetBuilder from '../main/builders/SnippetBuilder.js'
-import FileUtils from './FileUtils.js'
 
-// Archie imports
+// Internal imports
+import FileUtils from './FileUtils.js'
 import SectionSchema from '../main/models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
+import SnippetBuilder from '../main/builders/SnippetBuilder.js'
+import { mergeObjectArraysByUniqueKey } from './ArrayUtils.js'
 
 class SnippetUtils {
   /**
@@ -205,28 +208,31 @@ class SnippetUtils {
    * Build Settings Schema Recursively
    * @param {Snippet[]} snippets
    * @param {string[]} [processedSnippets=[]]
-   * @return {Object[]}
+   * @return {Object[]|null}
    */
   static buildSettingsSchemaRecursively (snippets, processedSnippets = []) {
-    const settingsSchema = []
+    let settingsSchema = []
 
     for (const snippet of snippets) {
       if (!processedSnippets.includes(snippet.name)) {
         // Merge Snippet schema
         if (snippet.settingsSchema) {
-          settingsSchema.push(...snippet.settingsSchema)
+          settingsSchema = mergeObjectArraysByUniqueKey(settingsSchema, snippet.settingsSchema)
         }
 
         // Recursively check child snippets for schema
         if (snippet.snippets?.length) {
-          settingsSchema.push(...this.buildSettingsSchemaRecursively(snippet.snippets, processedSnippets))
+          const childrenSettingsSchema = this.buildSettingsSchemaRecursively(snippet.snippets, processedSnippets)
+          if (childrenSettingsSchema?.length) {
+            settingsSchema = mergeObjectArraysByUniqueKey(settingsSchema, childrenSettingsSchema)
+          }
         }
 
         processedSnippets.push(snippet.name)
       }
     }
 
-    return settingsSchema
+    return settingsSchema.length ? settingsSchema : null
   }
 }
 
