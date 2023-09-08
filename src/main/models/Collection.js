@@ -10,6 +10,9 @@ class Collection {
   #rootFolder
 
   /** @type {string[]} **/
+  #componentsFolders
+
+  /** @type {string[]} **/
   #sectionNames
 
   /** @type {Section[]} **/
@@ -17,6 +20,9 @@ class Collection {
 
   /** @type {string} **/
   #sectionsFolder
+
+  /** @type {boolean} **/
+  #prefixStorefrontLocales
 
   constructor () {
     this.sectionNames = []
@@ -72,6 +78,22 @@ class Collection {
   }
 
   /**
+   * Get Components Folders
+   * @returns {string[]}
+   */
+  get componentsFolders () {
+    return this.#componentsFolders
+  }
+
+  /**
+   * Set Components Folders
+   * @param {string[]} value
+   */
+  set componentsFolders (value) {
+    this.#componentsFolders = value
+  }
+
+  /**
    * Get section names
    * @return {string[]}
    */
@@ -117,6 +139,22 @@ class Collection {
    */
   set sectionsFolder (value) {
     this.#sectionsFolder = value
+  }
+
+  /**
+   * Get Prefix Storefront Locales
+   * @returns {boolean}
+   */
+  get prefixStorefrontLocales () {
+    return this.#prefixStorefrontLocales
+  }
+
+  /**
+   * Set Prefix Storefront Locales
+   * @param {boolean} value
+   */
+  set prefixStorefrontLocales (value) {
+    this.#prefixStorefrontLocales = value
   }
 }
 
