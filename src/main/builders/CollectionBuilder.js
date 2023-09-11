@@ -6,14 +6,14 @@ import { basename, join } from 'node:path'
 import merge from 'deepmerge'
 
 // Archie imports
-import NodeConfig from '../../cli/models/NodeConfig.js'
 import BuildFactory from '../factory/BuildFactory.js'
+import CLISession from '../../cli/models/CLISession.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
-import StylesProcessor from '../processors/StylesProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import SnippetUtils from '../../utils/SnippetUtils.js'
 import SectionBuilder from './SectionBuilder.js'
+import SnippetUtils from '../../utils/SnippetUtils.js'
+import StylesProcessor from '../processors/StylesProcessor.js'
 import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 
 class CollectionBuilder {
@@ -49,7 +49,7 @@ class CollectionBuilder {
 
     // Write Schema Locales and Settings Schema to disk for Collection Build
     // On Theme Install, these contents are merged from collection.build values.
-    if (NodeConfig.isCollection()) {
+    if (CLISession.isCollection()) {
       await LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
       await LocaleUtils.writeLocales(collection.build.schemaLocales, collection.build.localesFolder, true)
       fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema, null, 2)))

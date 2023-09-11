@@ -1,11 +1,13 @@
 // Node.js imports
 import { access, constants, readdir } from 'node:fs/promises'
 import { join } from 'path'
-import NodeConfig from '../cli/models/NodeConfig.js'
+
+// Archie Imports
+import CLISession from '../cli/models/CLISession.js'
 import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
-import InternalError from '../errors/InternalError.js'
 import FileUtils from './FileUtils.js'
+import InternalError from '../errors/InternalError.js'
 import NodeUtils from './NodeUtils.js'
 
 // Archie imports
@@ -58,16 +60,13 @@ class CollectionUtils {
    * @returns {Promise<string>|string}
    */
   static async findRootFolder (collectionName) {
-    if (NodeConfig.isSection()) {
+    if (CLISession.isSection()) {
       return NodeUtils.getMonorepoRootFolder()
     }
-    if (NodeConfig.isCollection()) {
+    if (CLISession.isCollection()) {
       return NodeUtils.getPackageRootFolder()
     }
-    if (NodeConfig.isTheme()) {
-      if (!collectionName && NodeConfig.collections.length === 1) {
-        collectionName = NodeConfig.collections[0]
-      }
+    if (CLISession.isTheme()) {
       if (!collectionName) {
         throw new InternalError('Collection name is required when getting collection root folder from a theme.')
       }
