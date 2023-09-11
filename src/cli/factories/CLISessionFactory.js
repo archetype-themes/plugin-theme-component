@@ -1,27 +1,26 @@
 // Node JS imports
 import { exit } from 'node:process'
 import CommandLineInputError from '../../errors/CommandLineInputError.js'
-import InternalError from '../../errors/InternalError.js'
 
 // Archie imports
-import logger from '../../utils/Logger.js'
-import NodeUtils from '../../utils/NodeUtils.js'
-
-// Archie CLI imports
-import CLISession from '../models/CLISession.js'
-import NodeConfig from '../models/NodeConfig.js'
-import Components from '../../config/Components.js'
+import CLI from '../../config/CLI.js'
 import CLICommands from '../../config/CLICommands.js'
 import CLIFlags from '../../config/CLIFlags.js'
-import CLI from '../../config/CLI.js'
+import CLISession from '../models/CLISession.js'
+import Components from '../../config/Components.js'
+import ConfigError from '../../errors/ConfigError.js'
+import InternalError from '../../errors/InternalError.js'
+import logger from '../../utils/Logger.js'
+import NodeUtils from '../../utils/NodeUtils.js'
 
 class CLISessionFactory {
   /**
    * Factory method for ArchieCLI From Command Line Input
    * @param {string[]} commandLineArguments
+   * @param {Object} packageManifest
    * @return {CLISession}
    */
-  static fromCommandLineInput (commandLineArguments) {
+  static fromArgsAndManifest (commandLineArguments, packageManifest) {
     const [commands, flags] = this.#splitArgs(commandLineArguments)
 
     if (commands.length === 0) {
@@ -29,10 +28,13 @@ class CLISessionFactory {
       exit(0)
     }
 
-    const callerComponentType = NodeConfig.componentType
+    this.#validatePackageManifest(packageManifest)
+
+    CLISession.componentType = packageManifest.archie.componentType.toLowerCase()
     CLISession.command = commands[0].toLowerCase()
 
-    this.#validateCommand(callerComponentType, CLISession.command, CLI.AVAILABLE_COMMANDS)
+    this.#validateComponentType(CLISession.componentType)
+    this.#validateCommand(CLISession.componentType, CLISession.command, CLI.AVAILABLE_COMMANDS)
 
     if (commands[1] && commands[2]) {
       // If we have 2 further arguments, we have both the option and the target
@@ -51,17 +53,18 @@ class CLISessionFactory {
 
     // Use the default Command Option if one wasn't provided
     if (!CLISession.commandOption) {
-      CLISession.commandOption = this.#getCommandDefaultOption(CLISession.command, callerComponentType)
+      CLISession.commandOption = this.#getCommandDefaultOption(CLISession.command, CLISession.componentType)
     }
 
     // Use the default Target Component if one wasn't provided
     if (!CLISession.targetComponentName) {
       CLISession.targetComponentName =
         this.#getCommandDefaultTargetComponent(
-          callerComponentType,
+          CLISession.componentType,
           CLISession.command,
           CLISession.commandOption,
-          NodeUtils.getPackageName()
+          NodeUtils.getPackageName(),
+          packageManifest?.archie.collections
         )
     }
 
@@ -78,49 +81,13 @@ class CLISessionFactory {
     })
 
     this.#validateCommandArguments(
-      callerComponentType,
+      CLISession.componentType,
       CLISession.command,
       CLISession.commandOption,
       CLISession.targetComponentName,
       CLISession.watchMode
     )
     return CLISession
-  }
-
-  /**
-   *
-   * @param {string} callerComponentType
-   * @param {string} command
-   * @param {string[]} availableCommands
-   */
-  static #validateCommand (callerComponentType, command, availableCommands) {
-    if (!availableCommands.includes(command)) {
-      this.#sayHi()
-      throw new CommandLineInputError(`Unknown command "${command}"`)
-    }
-
-    // Validate that the Component is entitled to call this Command
-    const commandEnabledComponentTypes = this.#getCommandEnabledComponentTypes(command)
-    if (!commandEnabledComponentTypes.includes(callerComponentType)) {
-      throw new CommandLineInputError(`Invalid Component Type: "${callerComponentType}". This script can only be run from the following component(s): [${commandEnabledComponentTypes.join('/')}].`)
-    }
-  }
-
-  static #validateCommandArguments (callerComponentType, command, commandOption, targetComponent, watchFlag) {
-    logger.debug(`Caller Component Type: ${callerComponentType}`)
-
-    const availableCommandOptions = this.#getCommandAvailableOptions(command)
-    if (!availableCommandOptions.includes(commandOption)) {
-      throw new CommandLineInputError(`Invalid Command Option "${commandOption}". This command only accepts the following option(s): [${availableCommandOptions.join('/')}].`)
-    }
-
-    if (!targetComponent) {
-      throw new CommandLineInputError(`Please specify a ${commandOption} name. ie: npx archie ${command} ${commandOption} some-smart-${commandOption}-name`)
-    }
-
-    if (watchFlag && !CLIFlags.WATCH_FLAG_COMMANDS.includes(command)) {
-      logger.warn(`Watch flag received but ignored => it has no effect on the "${command}" command`)
-    }
   }
 
   /**
@@ -156,24 +123,25 @@ class CLISessionFactory {
 
   /**
    *
-   * @param {string} callerComponentType
+   * @param {string} componentType
    * @param {string} command
    * @param {string} commandOption
    * @param {string} packageName
+   * @param {string} collections
    * @return {null|string|Object}
    */
-  static #getCommandDefaultTargetComponent (callerComponentType, command, commandOption, packageName) {
+  static #getCommandDefaultTargetComponent (componentType, command, commandOption, packageName, collections) {
     switch (command) {
       case CLICommands.BUILD_COMMAND_NAME:
-        if (callerComponentType === commandOption) {
+        if (componentType === commandOption) {
           return packageName
         }
         return null
       case CLICommands.CREATE_COMMAND_NAME:
         return null
       case CLICommands.INSTALL_COMMAND_NAME:
-        if (Object.keys(NodeConfig.collections).length) {
-          return Object.keys(NodeConfig.collections)[0]
+        if (Object.keys(collections).length) {
+          return collections
         } else {
           throw new CommandLineInputError('No Default Collection found in configuration for install, please specify a collection name.')
         }
@@ -223,6 +191,72 @@ class CLISessionFactory {
     const commands = args.filter(arg => !arg.startsWith('-'))
     const flags = args.filter(arg => arg.startsWith('-'))
     return [commands, flags]
+  }
+
+  /**
+   *
+   * @param {string} callerComponentType
+   * @param {string} command
+   * @param {string[]} availableCommands
+   */
+  static #validateCommand (callerComponentType, command, availableCommands) {
+    if (!availableCommands.includes(command)) {
+      this.#sayHi()
+      throw new CommandLineInputError(`Unknown command "${command}"`)
+    }
+
+    // Validate that the Component is entitled to call this Command
+    const commandEnabledComponentTypes = this.#getCommandEnabledComponentTypes(command)
+    if (!commandEnabledComponentTypes.includes(callerComponentType)) {
+      throw new CommandLineInputError(`Invalid Component Type: "${callerComponentType}". This script can only be run from the following component(s): [${commandEnabledComponentTypes.join('/')}].`)
+    }
+  }
+
+  /**
+   * Validate Command Arguments
+   * @param {string} callerComponentType
+   * @param {string} command
+   * @param {string} commandOption
+   * @param {string} targetComponent
+   * @param {boolean} watchFlag
+   */
+  static #validateCommandArguments (callerComponentType, command, commandOption, targetComponent, watchFlag) {
+    logger.debug(`Caller Component Type: ${callerComponentType}`)
+
+    const availableCommandOptions = this.#getCommandAvailableOptions(command)
+    if (!availableCommandOptions.includes(commandOption)) {
+      throw new CommandLineInputError(`Invalid Command Option "${commandOption}". This command only accepts the following option(s): [${availableCommandOptions.join('/')}].`)
+    }
+
+    if (!targetComponent) {
+      throw new CommandLineInputError(`Please specify a ${commandOption} name. ie: npx archie ${command} ${commandOption} some-smart-${commandOption}-name`)
+    }
+
+    if (watchFlag && !CLIFlags.WATCH_FLAG_COMMANDS.includes(command)) {
+      logger.warn(`Watch flag received but ignored => it has no effect on the "${command}" command`)
+    }
+  }
+
+  /**
+   * Validate Package Manifest
+   * @param {Object} packageManifest
+   */
+  static #validatePackageManifest (packageManifest) {
+    if (!packageManifest.archie?.componentType) {
+      throw new ConfigError(`Couldn't find archie.componentType value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}`)
+    }
+  }
+
+  /**
+   * Validate Component Type
+   * @param {string} componentType
+   * @throws {ConfigError} When Component Type Is Invalid
+   * @return {void}
+   */
+  static #validateComponentType (componentType) {
+    if (!CLI.AVAILABLE_COMPONENT_TYPES.includes(componentType)) {
+      throw new ConfigError(`Invalid Archie Component Type: The value for archie.componentType from package.json must be changed to one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}, "${componentType}" is not an allowed value`)
+    }
   }
 }
 
