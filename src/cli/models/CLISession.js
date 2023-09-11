@@ -1,9 +1,14 @@
+import Components from '../../config/Components.js'
+
 class CLISession {
   /** @type {string}  **/
   static #command
 
   /** @type {string}  **/
   static #commandOption
+
+  /** @type {string}  **/
+  static #componentType
 
   /** @type {string|Object}  **/
   static #targetComponentName
@@ -44,6 +49,22 @@ class CLISession {
   }
 
   /**
+   * Get Component Type
+   * @returns {string}
+   */
+  static get componentType () {
+    return this.#componentType
+  }
+
+  /**
+   * Set Component Type
+   * @param {string} value
+   */
+  static set componentType (value) {
+    this.#componentType = value
+  }
+
+  /**
    * Get Target Component Name
    * @return {string|Object}
    */
@@ -73,6 +94,30 @@ class CLISession {
    */
   static set watchMode (value) {
     this.#watchMode = value
+  }
+
+  /**
+   * Is The Component Type a Collection
+   * @return {boolean}
+   */
+  static isCollection () {
+    return this.#componentType === Components.COLLECTION_COMPONENT_NAME
+  }
+
+  /**
+   * Is The Component Type a Section
+   * @return {boolean}
+   */
+  static isSection () {
+    return this.#componentType === Components.SECTION_COMPONENT_NAME
+  }
+
+  /**
+   * Is The Component Type a Theme
+   * @return {boolean}
+   */
+  static isTheme () {
+    return this.#componentType === Components.THEME_COMPONENT_NAME
   }
 }
 
