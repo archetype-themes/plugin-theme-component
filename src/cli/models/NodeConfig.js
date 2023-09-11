@@ -62,15 +62,6 @@ class NodeConfig {
   }
 
   /**
-   * Get Collection Sections List
-   * @param collectionName
-   * @return {string[]}
-   */
-  static getCollectionSections (collectionName) {
-    return this.collections[collectionName] ? this.collections[collectionName] : []
-  }
-
-  /**
    * Get Embed Locales option boolean value
    * @returns {boolean}
    */
@@ -84,6 +75,15 @@ class NodeConfig {
    */
   static set embedLocales (value) {
     this.#embedLocales = value
+  }
+
+  /**
+   * Get Collection Sections List
+   * @param collectionName
+   * @return {string[]}
+   */
+  static getCollectionSections (collectionName) {
+    return this.collections[collectionName] ? this.collections[collectionName] : []
   }
 
   /**
