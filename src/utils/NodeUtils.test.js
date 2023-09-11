@@ -21,18 +21,18 @@ describe('getArgs', () => {
   })
 })
 
-describe('getPackageJsonData', () => {
+describe('getPackageManifest', () => {
   test('Returns package.json as a javascript object when npm_package_json is valid', async () => {
     vi.stubEnv('npm_package_json', new URL('test/sample.package.json', import.meta.url).pathname)
-    const packageJsonData = await NodeUtils.getPackageJsonData()
-    expect(packageJsonData).toMatchFileSnapshot('./test/sample.package.json.snap')
+    const packageManifest = await NodeUtils.getPackageManifest()
+    expect(packageManifest).toMatchFileSnapshot('./test/sample.package.json.snap')
     vi.unstubAllEnvs()
   })
 
   test('Throws an Error if env.npm_package_json is missing', () => {
     const npmPackageJson = env.npm_package_json
     delete env.npm_package_json
-    expect(() => NodeUtils.getPackageJsonData()).rejects.toThrowError()
+    expect(() => NodeUtils.getPackageManifest()).rejects.toThrowError()
     env.npm_package_json = npmPackageJson
   })
 })

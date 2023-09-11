@@ -29,7 +29,7 @@ class NodeUtils {
    * Get Package JSON Content as an Object
    * @return {Promise<Object>}
    */
-  static async getPackageJsonData () {
+  static async getPackageManifest () {
     if (!env.npm_package_json) {
       throw new InternalError('Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.')
     }

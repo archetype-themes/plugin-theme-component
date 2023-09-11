@@ -51,7 +51,7 @@ class ComponentGenerator {
     const componentSources = path.join(archieRootFolder, 'resources/component-files')
     const sectionSources = path.join(archieRootFolder, 'resources/section-files')
 
-    const packageJsonData = await NodeUtils.getPackageJsonData()
+    const packageManifest = await NodeUtils.getPackageManifest()
 
     const packageScope = NodeUtils.getPackageScope()
     const packageScopeName = packageScope.charAt(0) === '@' ? packageScope.substring(1) : packageScope
@@ -59,14 +59,14 @@ class ComponentGenerator {
     const copyFolderOptions = {
       recursive: true,
       jsTemplateVariables: {
-        author: packageJsonData.author ? packageJsonData.author : 'Archetype Themes Limited Partnership',
+        author: packageManifest.author ? packageManifest.author : 'Archetype Themes Limited Partnership',
         collectionName: packageName,
         collectionScope: packageScope,
         componentName,
         componentType,
         componentFolder: `${workspaceFolder}/${componentName}`,
         gitUrl: `https://github.com/${packageScopeName}/${packageName}.git`,
-        license: packageJsonData.license ? packageJsonData.license : 'UNLICENSED',
+        license: packageManifest.license ? packageManifest.license : 'UNLICENSED',
         packageName: `${packageScope}/${componentName}-${componentType}`
       }
     }

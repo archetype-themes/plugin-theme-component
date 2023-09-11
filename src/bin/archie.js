@@ -11,7 +11,7 @@ import CLICommands from '../config/CLICommands.js'
 // Init NodeConfig & CLISession
 let cliSession
 try {
-  NodeConfigFactory.fromPackageJsonData(await NodeUtils.getPackageJsonData())
+  NodeConfigFactory.fromPackageJsonData(await NodeUtils.getPackageManifest())
   cliSession = CLISessionFactory.fromCommandLineInput(NodeUtils.getArgs())
 } catch (error) {
   NodeUtils.exitWithError(error)
