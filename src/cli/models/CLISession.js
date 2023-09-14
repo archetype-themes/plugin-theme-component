@@ -119,6 +119,14 @@ class CLISession {
   static isTheme () {
     return this.#componentType === Components.THEME_COMPONENT_NAME
   }
+
+  /**
+   * Is Watch Mode Enabled
+   * @return {boolean}
+   */
+  isWatchMode () {
+    return this.#watchMode
+  }
 }
 
 export default CLISession
