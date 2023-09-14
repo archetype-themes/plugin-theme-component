@@ -1,6 +1,9 @@
 import Components from '../../config/Components.js'
 
 class CLISession {
+  /** @type {object}  **/
+  static #archieConfig
+
   /** @type {string}  **/
   static #command
 
@@ -15,6 +18,22 @@ class CLISession {
 
   /** @type {boolean}  **/
   static #watchMode = false
+
+  /**
+   * Get Archie Config
+   * @returns {Object}
+   */
+  static get archieConfig () {
+    return this.#archieConfig
+  }
+
+  /**
+   * Set Archie Config
+   * @param {Object} value
+   */
+  static set archieConfig (value) {
+    this.#archieConfig = value
+  }
 
   /**
    * Get Command Name
