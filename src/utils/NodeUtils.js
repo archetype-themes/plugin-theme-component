@@ -100,6 +100,15 @@ class NodeUtils {
   }
 
   /**
+   * Check if variable is of type string
+   * @param {*} variable
+   * @returns {boolean}
+   */
+  static isString (variable) {
+    return (typeof variable === 'string' || variable instanceof String)
+  }
+
+  /**
    * Exit with Error
    * @param {Error|string} error
    */
