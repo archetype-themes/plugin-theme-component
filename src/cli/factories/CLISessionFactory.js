@@ -17,7 +17,7 @@ class CLISessionFactory {
   /**
    * Factory method for ArchieCLI From Command Line Input
    * @param {string[]} commandLineArguments
-   * @param {Object} packageManifest
+   * @param {{archie:ArchieConfig}} packageManifest
    * @return {CLISession}
    */
   static fromArgsAndManifest (commandLineArguments, packageManifest) {
@@ -30,7 +30,9 @@ class CLISessionFactory {
 
     this.#validatePackageManifest(packageManifest)
 
+    CLISession.archieConfig = packageManifest.archie
     CLISession.componentType = packageManifest.archie.componentType.toLowerCase()
+
     CLISession.command = commands[0].toLowerCase()
 
     this.#validateComponentType(CLISession.componentType)
@@ -127,7 +129,7 @@ class CLISessionFactory {
    * @param {string} command
    * @param {string} commandOption
    * @param {string} packageName
-   * @param {string} collections
+   * @param {Object.<string,string[]>} collections
    * @return {null|string|Object}
    */
   static #getCommandDefaultTargetComponent (componentType, command, commandOption, packageName, collections) {

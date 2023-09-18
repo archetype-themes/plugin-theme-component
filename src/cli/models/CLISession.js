@@ -1,7 +1,20 @@
 import Components from '../../config/Components.js'
 
+/**
+ * @typedef ArchieConfig
+ * @type {Object}
+ * @property {string} type - Component type (theme/collection/section/snippet)
+ * @property {string} path - Component path (ie: './src')
+ * FOR THEMES ONLY
+ * @property {Object.<string, string[]>} collections - In Collection mode, list of components to build.
+ * FOR COLLECTIONS ONLY
+ * @property {string} components - List of components to build.
+ * @property {string[]} componentFolders - Path to components
+ * @property {boolean} structuredLocales - Globally set locales to be structured per section (sections.[section-name].[translation-description]), as per https://shopify.dev/docs/themes/architecture/sections/section-schema#locales
+ **/
+
 class CLISession {
-  /** @type {object}  **/
+  /** @type {ArchieConfig}  **/
   static #archieConfig
 
   /** @type {string}  **/
@@ -21,7 +34,7 @@ class CLISession {
 
   /**
    * Get Archie Config
-   * @returns {Object}
+   * @returns {ArchieConfig}
    */
   static get archieConfig () {
     return this.#archieConfig
@@ -29,7 +42,7 @@ class CLISession {
 
   /**
    * Set Archie Config
-   * @param {Object} value
+   * @param {ArchieConfig} value
    */
   static set archieConfig (value) {
     this.#archieConfig = value
@@ -137,14 +150,6 @@ class CLISession {
    */
   static isTheme () {
     return this.#componentType === Components.THEME_COMPONENT_NAME
-  }
-
-  /**
-   * Is Watch Mode Enabled
-   * @return {boolean}
-   */
-  isWatchMode () {
-    return this.#watchMode
   }
 }
 

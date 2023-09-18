@@ -1,60 +1,75 @@
 // Node imports
 import path from 'node:path'
 
-// External Modules imports
-// eslint-disable-next-line no-unused-vars
-import { FSWatcher } from 'chokidar'
-
 // Archie imports
+import CLISession from '../models/CLISession.js'
 import CollectionBuilder from '../../main/builders/CollectionBuilder.js'
-import SectionBuilder from '../../main/builders/SectionBuilder.js'
 import CollectionFactory from '../../main/factory/CollectionFactory.js'
-import SectionFactory from '../../main/factory/SectionFactory.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
+import Components from '../../config/Components.js'
+import InternalError from '../../errors/InternalError.js'
 import logger from '../../utils/Logger.js'
+import NodeUtils from '../../utils/NodeUtils.js'
+import SectionBuilder from '../../main/builders/SectionBuilder.js'
+import SectionFactory from '../../main/factory/SectionFactory.js'
+import SnippetUtils from '../../utils/SnippetUtils.js'
 import Timer from '../../utils/Timer.js'
 import Watcher from '../../utils/Watcher.js'
-import NodeUtils from '../../utils/NodeUtils.js'
-import SnippetUtils from '../../utils/SnippetUtils.js'
-import Components from '../../config/Components.js'
 
 class BuildCommand {
   /**
    * Execute Build Command
-   * @param {string} commandOption
-   * @param {string} targetComponentName
-   * @param {boolean} watchMode
    * @returns {Promise<FSWatcher|module:models/Collection|Section>}
    */
-  static async execute (commandOption, targetComponentName, watchMode) {
-    if (commandOption === Components.COLLECTION_COMPONENT_NAME) {
-      const collectionName = NodeUtils.getPackageName()
-      if (watchMode) {
-        const collection = await this.buildCollection(collectionName)
-        return this.watchCollection(collection)
-      } else {
-        return this.buildCollection(collectionName)
-      }
-    } else if (commandOption === Components.SECTION_COMPONENT_NAME) {
-      if (watchMode) {
-        const section = await this.buildSection(targetComponentName)
-        return this.watchSection(section)
-      } else {
-        return this.buildSection(targetComponentName)
-      }
+  static async execute () {
+    switch (CLISession.commandOption) {
+      case Components.COLLECTION_COMPONENT_NAME:
+        return await this.handleCollection()
+      case Components.SECTION_COMPONENT_NAME:
+        return await this.handleSection()
+      default:
+        throw new InternalError('CRITICAL ERROR: A validated Build Command is in Error.')
     }
+  }
+
+  /**
+   * Handle Collection
+   * @returns {Promise<Collection|module:models/Collection|FSWatcher>}
+   */
+  static async handleCollection () {
+    const collectionName = NodeUtils.getPackageName()
+    const componentNames = CLISession.archieConfig?.components
+
+    if (CLISession.watchMode) {
+      const collection = await this.buildCollection(collectionName, componentNames)
+
+      return this.watchCollection(collection)
+    }
+
+    return this.buildCollection(collectionName, componentNames)
+  }
+
+  static async handleSection () {
+    if (CLISession.watchMode) {
+      const section = await this.buildSection(CLISession.targetComponentName)
+
+      return this.watchSection(section)
+    }
+
+    return this.buildSection(CLISession.targetComponentName)
   }
 
   /**
    * Build a Collection
    * @param {string} collectionName
+   * @param {string[]} sectionNames
    * @return {Promise<module:models/Collection>}
    */
-  static async buildCollection (collectionName) {
+  static async buildCollection (collectionName, sectionNames) {
     logger.info(`Starting ${collectionName}'s build...`)
     const startTime = Timer.getTimer()
 
-    const collection = await CollectionFactory.fromName(collectionName)
+    const collection = await CollectionFactory.fromName(collectionName, sectionNames)
     logger.info(`${collectionName}'s factory preparation completed in ${Timer.getEndTimerInSeconds(startTime)} seconds`)
 
     // Step 1: Start from the bottom: Build Snippets first, synchronously, but with a cache
@@ -157,7 +172,11 @@ class BuildCommand {
   static async onCollectionWatchEvent (watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${eventPath} detected`)
-    const collection = await this.buildCollection(NodeUtils.getPackageName())
+
+    const collectionName = NodeUtils.getPackageName()
+    const componentNames = CLISession.archieConfig?.components
+
+    const collection = await this.buildCollection(collectionName, componentNames)
     // Restart Watcher on liquid file change to make sure we do refresh watcher snippet folders
     if (filename.endsWith('.liquid')) {
       await watcher.close()

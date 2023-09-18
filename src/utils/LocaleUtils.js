@@ -1,13 +1,12 @@
 // Node.js imports
 import { writeFile } from 'node:fs/promises'
-import { basename, join } from 'node:path'
+import { basename, extname, join } from 'node:path'
 
 // External imports
 import merge from 'deepmerge'
-import { extname } from 'path'
-import NodeConfig from '../cli/models/NodeConfig.js'
 
-// Internal Imports
+// Archie Imports
+import CLISession from '../cli/models/CLISession.js'
 import ComponentFilesUtils from './ComponentFilesUtils.js'
 import FileUtils from './FileUtils.js'
 
@@ -25,11 +24,12 @@ class LocaleUtils {
     let buildLocalesFromSectionSchema
 
     if (locales) {
-      buildLocales = NodeConfig.embedLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
+      buildLocales = CLISession.archieConfig.structuredLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
     }
 
+    // Storefront Locales from Section Schema should always be prefixed, to restpect the Shopify Standard.
     if (localesFromSectionSchema) {
-      buildLocalesFromSectionSchema = NodeConfig.embedLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSectionSchema, isSnippet) : localesFromSectionSchema
+      buildLocalesFromSectionSchema = LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSectionSchema, isSnippet)
     }
 
     if (buildLocalesFromSectionSchema && buildLocales) {

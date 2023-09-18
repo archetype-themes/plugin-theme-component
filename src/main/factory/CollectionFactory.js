@@ -36,7 +36,7 @@ class CollectionFactory {
 
   /**
    * Get Component Names
-   * Returns the Archie collection item's inner components' list from package.json. Defaults to all components if empty..
+   * Returns the Archie collection item's inner components' list from package.json. Defaults to all components if empty.
    * @param {string} collectionName
    * @param {string} sectionsFolder
    * @param {string[]} componentNames
