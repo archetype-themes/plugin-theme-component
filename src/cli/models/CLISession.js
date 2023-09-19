@@ -9,7 +9,7 @@ import Components from '../../config/Components.js'
  * @property {Object.<string, string[]>} collections - In Collection mode, list of components to build.
  * FOR COLLECTIONS ONLY
  * @property {string} components - List of components to build.
- * @property {string[]} componentFolders - Path to components
+ * @property {string|string[]} componentFolders - Path to components
  * @property {boolean} structuredLocales - Globally set locales to be structured per section (sections.[section-name].[translation-description]), as per https://shopify.dev/docs/themes/architecture/sections/section-schema#locales
  **/
 

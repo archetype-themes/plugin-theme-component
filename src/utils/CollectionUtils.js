@@ -1,37 +1,64 @@
 // Node.js imports
-import { access, constants, readdir } from 'node:fs/promises'
-import { join } from 'path'
+import { access, constants } from 'node:fs/promises'
+import { basename, join } from 'node:path'
 
 // Archie Imports
 import CLISession from '../cli/models/CLISession.js'
 import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
-import FileUtils from './FileUtils.js'
 import InternalError from '../errors/InternalError.js'
+import FileUtils from './FileUtils.js'
 import NodeUtils from './NodeUtils.js'
-
-// Archie imports
 import SnippetUtils from './SnippetUtils.js'
 
 class CollectionUtils {
+  static async findComponentFolders (collectionRootFolder) {
+    const folderNames = await FileUtils.getFolders(collectionRootFolder, true)
+
+    return folderNames.filter(folderName => {
+      const folderBasename = basename(folderName)
+      return /(sections|components)/i.test(folderBasename)
+    })
+  }
+
   /**
-   * Find Section Names
-   * @param {string} sectionsFolder
+   * Find Component Names
+   * @param {string|string[]} componentFolders
    * @return {Promise<string[]>}
    */
-  static async findSectionNames (sectionsFolder) {
-    const sectionNames = []
-    const entries = await readdir(sectionsFolder, { withFileTypes: true })
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        try {
-          const sectionFolder = join(sectionsFolder, entry.name)
-          await access(sectionFolder + '/package.json', constants.R_OK)
-          sectionNames.push(entry.name)
-        } catch {}
-      }
+  static async findComponentNames (componentFolders) {
+    if (NodeUtils.isString(componentFolders)) {
+      componentFolders = [componentFolders]
     }
-    return sectionNames
+
+    // Asynchronously check all component folders for valid components in their sub-folders
+    const allComponentNamePromises = componentFolders.map(componentFolder => this.getNamesForComponentFolder(componentFolder))
+    // Flatten the 2D array structure into a single array
+    const allComponentNamesNested = (await Promise.all(allComponentNamePromises)).flat()
+
+    // Removes the null values
+    return allComponentNamesNested.filter(name => name)
+  }
+
+  static async getNamesForComponentFolder (componentFolder) {
+    const singleComponentFolders = await FileUtils.getFolders(componentFolder)
+    const componentNamesForThisFolder = singleComponentFolders.map(singleComponentFolder => this.getValidComponentName(singleComponentFolder))
+
+    return Promise.all(componentNamesForThisFolder)
+  }
+
+  /**
+   * Get Valid Component Name
+   * @param {string} singleComponentFolder
+   * @returns {Promise<null|string>}
+   */
+  static async getValidComponentName (singleComponentFolder) {
+    try {
+      await access(join(singleComponentFolder, 'package.json'), constants.R_OK)
+      return basename(singleComponentFolder) // return this for the .map
+    } catch (err) {
+      return null // Use null to signify that the file doesn't exist or isn't readable
+    }
   }
 
   /**

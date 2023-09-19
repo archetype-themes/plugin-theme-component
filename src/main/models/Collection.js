@@ -135,7 +135,7 @@ class Collection {
 
   /**
    * Set sections folder
-   * @param {string} value
+   * @param {string[]} value
    */
   set sectionsFolder (value) {
     this.#sectionsFolder = value

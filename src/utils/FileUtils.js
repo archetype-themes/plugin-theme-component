@@ -1,6 +1,6 @@
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
-import path from 'path'
+import { basename, join } from 'path'
 
 import logger from './Logger.js'
 
@@ -27,7 +27,7 @@ class FileUtils {
   static async copy (files) {
     const copyPromises = []
     for (const sourceFile of Object.keys(files)) {
-      logger.debug(`Copying ${path.basename(sourceFile)}`)
+      logger.debug(`Copying ${basename(sourceFile)}`)
       copyPromises.push(copyFile(sourceFile, files[sourceFile]))
     }
 
@@ -43,7 +43,7 @@ class FileUtils {
   static async copyFilesToFolder (files, targetFolder) {
     const copyPromises = []
     for (const file of files) {
-      copyPromises.push(copyFile(file, path.join(targetFolder, path.basename(file))))
+      copyPromises.push(copyFile(file, join(targetFolder, basename(file))))
     }
     return Promise.all(copyPromises)
   }
@@ -69,17 +69,17 @@ class FileUtils {
 
     for (const dirent of folderContent) {
       if (dirent.isFile()) {
-        const sourceFile = path.join(sourceFolder, dirent.name)
-        const targetFile = path.join(targetFolder, dirent.name)
+        const sourceFile = join(sourceFolder, dirent.name)
+        const targetFile = join(targetFolder, dirent.name)
         if (options.jsTemplateVariables) {
           fileOperations.push(this.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
         } else {
           fileOperations.push(copyFile(sourceFile, targetFile))
         }
       } else if (dirent.isDirectory() && options.recursive) {
-        const newTargetFolder = path.join(targetFolder, dirent.name)
+        const newTargetFolder = join(targetFolder, dirent.name)
         await mkdir(newTargetFolder, { recursive: options.recursive })
-        fileOperations.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, options))
+        fileOperations.push(this.copyFolder(join(sourceFolder, dirent.name), newTargetFolder, options))
       }
     }
     return Promise.all(fileOperations)
@@ -162,7 +162,7 @@ class FileUtils {
     const entries = await readdir(folder, { withFileTypes: true })
     const files = []
     for (const entry of entries) {
-      const absolutePath = path.join(folder, entry.name)
+      const absolutePath = join(folder, entry.name)
       if (entry.isDirectory()) {
         if (!this.#EXCLUDED_FOLDERS.includes(entry.name)) {
           files.push(...(await this.getFolderFilesRecursively(absolutePath)))
@@ -171,6 +171,30 @@ class FileUtils {
     }
 
     return files
+  }
+
+  /**
+   * Get Folders List
+   * @param {string} folder
+   * @param {boolean} recursive
+   * @returns {Promise<string[]>}
+   */
+  static async getFolders (folder, recursive = false) {
+    const entries = await readdir(folder, { withFileTypes: true })
+    const folders = []
+
+    const promises = entries.map(async (entry) => {
+      if (entry.isDirectory() && !this.#EXCLUDED_FOLDERS.includes(entry.name)) {
+        const absolutePath = join(folder, entry.name)
+        folders.push(absolutePath)
+        if (recursive) {
+          folders.push(...(await this.getFolders(absolutePath, recursive)))
+        }
+      }
+    })
+
+    await Promise.all(promises)
+    return folders
   }
 
   /**
