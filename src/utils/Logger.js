@@ -34,19 +34,13 @@ let loglevel = 'info'
 /*                                                                                      */
 /* YARN: argv works nicely with yarn berry                                              */
 /* NPM: argv is intercepted by npm, therefore we also check for env.npm_config_loglevel */
-
-if (argv.includes('--quiet') ||
-  (
-    env.npm_config_loglevel && ['error', 'warn', 'silent'].includes(env.npm_config_loglevel)
-  )) {
+console.log(env.npm_config_loglevel)
+if (argv.includes('--quiet') || (env.npm_config_loglevel && ['error', 'warn', 'silent'].includes(env.npm_config_loglevel))) {
   loglevel = 'error'
-} else if (
-  argv.includes('--verbose') ||
-  argv.includes('--debug') ||
-  (
-    env.npm_config_loglevel && ['verbose', 'silly'].includes(env.npm_config_loglevel)
-  )) {
+} else if (argv.includes('--verbose') || argv.includes('--debug') || (env.npm_config_loglevel && env.npm_config_loglevel === 'verbose')) {
   loglevel = 'debug'
+} else if (argv.includes('--trace') || (env.npm_config_loglevel && env.npm_config_loglevel === 'silly')) {
+  loglevel = 'trace'
 }
 
 /** @type{PrettyOptions} */
@@ -56,15 +50,11 @@ const prettyOptions = {
   singleLine: false
 }
 
-if (loglevel === 'debug') {
-  prettyOptions.messageFormat = '\n >>> {msg}'
-}
-
 const prettyPluginStream = PinoPretty(prettyOptions)
 
 let logger = pino({ level: loglevel }, prettyPluginStream)
 
-if (loglevel === 'debug') {
+if (['debug', 'trace'].includes(loglevel)) {
   logger = traceCaller(logger)
 }
 

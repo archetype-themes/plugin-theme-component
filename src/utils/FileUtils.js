@@ -193,7 +193,7 @@ class FileUtils {
    * @returns {Promise<string>}
    */
   static async getFileContents (file) {
-    logger.debug(`Reading from disk: ${file}`)
+    logger.trace(`Reading from disk: ${file}`)
     return readFile(file, this.#FILE_ENCODING_OPTION)
   }
 
@@ -204,7 +204,7 @@ class FileUtils {
    * @returns {Promise<void>}
    */
   static async writeFile (file, fileContents) {
-    logger.debug(`Writing to disk: ${file}`)
+    logger.trace(`Writing to disk: ${file}`)
 
     return writeFile(file, fileContents, this.#FILE_ENCODING_OPTION)
   }
