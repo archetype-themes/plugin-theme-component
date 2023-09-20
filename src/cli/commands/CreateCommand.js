@@ -4,7 +4,7 @@ import { access, constants, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 // Archie Imports
-import CLISession from '../models/CLISession.js'
+import Session from '../models/Session.js'
 import Components from '../../config/Components.js'
 import FileAccessError from '../../errors/FileAccessError.js'
 import FileUtils from '../../utils/FileUtils.js'
@@ -18,11 +18,11 @@ class CreateCommand {
    * @returns {Promise<ChildProcess>}
    */
   static async execute (packageManifest) {
-    const workspaceFolder = (CLISession.commandOption === Components.SECTION_COMPONENT_NAME) ? Components.COLLECTION_SECTIONS_FOLDER : Components.COLLECTION_SNIPPETS_FOLDER
-    const componentFolder = join(workspaceFolder, CLISession.targetComponentName)
+    const workspaceFolder = (Session.commandOption === Components.SECTION_COMPONENT_NAME) ? Components.COLLECTION_SECTIONS_FOLDER : Components.COLLECTION_SNIPPETS_FOLDER
+    const componentFolder = join(workspaceFolder, Session.targetComponentName)
     const componentRootFolder = join(NodeUtils.getPackageRootFolder(), componentFolder)
 
-    logger.info(`Creating "${CLISession.targetComponentName}" ${CLISession.commandOption}`)
+    logger.info(`Creating "${Session.targetComponentName}" ${Session.commandOption}`)
 
     // Exit if the folder already exists
     let folderExists = false
@@ -37,7 +37,7 @@ class CreateCommand {
 
     // Don't overwrite an existing section, throw an error
     if (folderExists) {
-      throw new FileAccessError(`The "${CLISession.targetComponentName}" ${CLISession.commandOption} folder already exists. Please remove it or choose a different name.`)
+      throw new FileAccessError(`The "${Session.targetComponentName}" ${Session.commandOption} folder already exists. Please remove it or choose a different name.`)
     }
 
     const archieRootFolder = NodeUtils.getArchieRootFolderName()
@@ -53,12 +53,12 @@ class CreateCommand {
         author: packageManifest.author ? packageManifest.author : 'Archetype Themes Limited Partnership',
         collectionName: packageName,
         collectionScope: packageScope,
-        componentName: CLISession.targetComponentName,
-        componentType: CLISession.commandOption,
-        componentFolder: `${workspaceFolder}/${CLISession.targetComponentName}`,
+        componentName: Session.targetComponentName,
+        componentType: Session.commandOption,
+        componentFolder: `${workspaceFolder}/${Session.targetComponentName}`,
         gitUrl: `https://github.com/${packageScopeName}/${packageName}.git`,
         license: packageManifest.license ? packageManifest.license : 'UNLICENSED',
-        packageName: `${packageScope}/${CLISession.targetComponentName}-${CLISession.commandOption}`
+        packageName: `${packageScope}/${Session.targetComponentName}-${Session.commandOption}`
       }
     }
 

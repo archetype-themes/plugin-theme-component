@@ -2,7 +2,7 @@
 import path from 'path'
 
 // Archie Internal JS imports
-import CLISession from '../../cli/models/CLISession.js'
+import Session from '../../cli/models/Session.js'
 import Components from '../../config/Components.js'
 import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
@@ -27,10 +27,10 @@ class SectionFactory {
     // Set root folder
     if (collectionRootFolder) {
       section.rootFolder = path.join(collectionRootFolder, Components.COLLECTION_SECTIONS_FOLDER, section.name)
-    } else if (CLISession.isCollection()) {
+    } else if (Session.isCollection()) {
       section.rootFolder =
         path.join(NodeUtils.getPackageRootFolder(), Components.COLLECTION_SECTIONS_FOLDER, section.name)
-    } else if (CLISession.isSection()) {
+    } else if (Session.isSection()) {
       section.rootFolder = NodeUtils.getPackageRootFolder()
     }
 

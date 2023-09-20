@@ -3,7 +3,7 @@ import path from 'node:path'
 
 // Archie imports
 import BuildCommand from './BuildCommand.js'
-import CLISession from '../models/CLISession.js'
+import Session from '../models/Session.js'
 import CollectionInstaller from '../../main/Installers/CollectionInstaller.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
 import logger from '../../utils/Logger.js'
@@ -21,17 +21,17 @@ class InstallCommand {
     const promises = []
 
     let collectionsList
-    if (NodeUtils.isString(CLISession.targetComponentName)) {
+    if (NodeUtils.isString(Session.targetComponentName)) {
       collectionsList = {}
-      collectionsList[CLISession.targetComponentName] = []
+      collectionsList[Session.targetComponentName] = []
     } else {
-      collectionsList = CLISession.targetComponentName
+      collectionsList = Session.targetComponentName
     }
 
     for (const [collectionName, sectionsList] of Object.entries(collectionsList)) {
       const collection = await InstallCommand.installOne(collectionName, sectionsList)
 
-      if (CLISession.watchMode) {
+      if (Session.watchMode) {
         promises.push(this.watch(collection))
       }
     }

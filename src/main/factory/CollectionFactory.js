@@ -1,5 +1,5 @@
 // Archie imports
-import CLISession from '../../cli/models/CLISession.js'
+import Session from '../../cli/models/Session.js'
 import NodeUtils from '../../utils/NodeUtils.js'
 import Collection from '../models/Collection.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
@@ -23,11 +23,11 @@ class CollectionFactory {
     // Set folder names
     collection.rootFolder = await CollectionUtils.findRootFolder(collectionName)
 
-    if (CLISession.archieConfig.componentFolders) {
-      if (Array.isArray(CLISession.archieConfig.componentFolders)) {
-        collection.componentsFolders = CLISession.archieConfig.componentFolders
-      } else if (NodeUtils.isString(CLISession.archieConfig.componentFolders)) {
-        collection.componentsFolders = [CLISession.archieConfig.componentFolders]
+    if (Session.archieConfig.componentFolders) {
+      if (Array.isArray(Session.archieConfig.componentFolders)) {
+        collection.componentsFolders = Session.archieConfig.componentFolders
+      } else if (NodeUtils.isString(Session.archieConfig.componentFolders)) {
+        collection.componentsFolders = [Session.archieConfig.componentFolders]
       }
     } else {
       collection.componentsFolders = await CollectionUtils.findComponentFolders(collection.rootFolder)
@@ -37,7 +37,7 @@ class CollectionFactory {
     if (componentNames && componentNames.length) {
       collection.sectionNames = componentNames
     } else {
-      if (CLISession.isTheme()) {
+      if (Session.isTheme()) {
         logger.warn(`No component list found for the "${collectionName}" collection; all components will be installed.`)
       }
       try {

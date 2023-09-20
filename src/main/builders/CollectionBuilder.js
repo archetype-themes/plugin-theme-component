@@ -7,7 +7,7 @@ import merge from 'deepmerge'
 
 // Archie imports
 import BuildFactory from '../factory/BuildFactory.js'
-import CLISession from '../../cli/models/CLISession.js'
+import Session from '../../cli/models/Session.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
@@ -49,7 +49,7 @@ class CollectionBuilder {
 
     // Write Schema Locales and Settings Schema to disk for Collection Build
     // On Theme Install, these contents are merged from collection.build values.
-    if (CLISession.isCollection()) {
+    if (Session.isCollection()) {
       await LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
       await LocaleUtils.writeLocales(collection.build.schemaLocales, collection.build.localesFolder, true)
       fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema, null, 2)))

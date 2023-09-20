@@ -2,7 +2,7 @@
 import path from 'node:path'
 
 // Archie imports
-import CLISession from '../models/CLISession.js'
+import Session from '../models/Session.js'
 import CollectionBuilder from '../../main/builders/CollectionBuilder.js'
 import CollectionFactory from '../../main/factory/CollectionFactory.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'
@@ -22,7 +22,7 @@ class BuildCommand {
    * @returns {Promise<FSWatcher|module:models/Collection|Section>}
    */
   static async execute () {
-    switch (CLISession.commandOption) {
+    switch (Session.commandOption) {
       case Components.COLLECTION_COMPONENT_NAME:
         return await this.handleCollection()
       case Components.SECTION_COMPONENT_NAME:
@@ -38,9 +38,9 @@ class BuildCommand {
    */
   static async handleCollection () {
     const collectionName = NodeUtils.getPackageName()
-    const componentNames = CLISession.archieConfig?.components
+    const componentNames = Session.archieConfig?.components
 
-    if (CLISession.watchMode) {
+    if (Session.watchMode) {
       const collection = await this.buildCollection(collectionName, componentNames)
 
       return this.watchCollection(collection)
@@ -50,13 +50,13 @@ class BuildCommand {
   }
 
   static async handleSection () {
-    if (CLISession.watchMode) {
-      const section = await this.buildSection(CLISession.targetComponentName)
+    if (Session.watchMode) {
+      const section = await this.buildSection(Session.targetComponentName)
 
       return this.watchSection(section)
     }
 
-    return this.buildSection(CLISession.targetComponentName)
+    return this.buildSection(Session.targetComponentName)
   }
 
   /**
@@ -174,7 +174,7 @@ class BuildCommand {
     logger.debug(`Watcher Event: "${event}" on file: ${eventPath} detected`)
 
     const collectionName = NodeUtils.getPackageName()
-    const componentNames = CLISession.archieConfig?.components
+    const componentNames = Session.archieConfig?.components
 
     const collection = await this.buildCollection(collectionName, componentNames)
     // Restart Watcher on liquid file change to make sure we do refresh watcher snippet folders

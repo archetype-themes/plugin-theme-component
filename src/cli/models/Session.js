@@ -13,7 +13,7 @@ import Components from '../../config/Components.js'
  * @property {boolean} structuredLocales - Globally set locales to be structured per section (sections.[section-name].[translation-description]), as per https://shopify.dev/docs/themes/architecture/sections/section-schema#locales
  **/
 
-class CLISession {
+class Session {
   /** @type {ArchieConfig}  **/
   static #archieConfig
 
@@ -153,4 +153,4 @@ class CLISession {
   }
 }
 
-export default CLISession
+export default Session

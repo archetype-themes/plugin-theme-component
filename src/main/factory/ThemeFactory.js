@@ -1,6 +1,6 @@
 // Node Imports
 import { join } from 'path'
-import CLISession from '../../cli/models/CLISession.js'
+import Session from '../../cli/models/Session.js'
 
 // Archie Imports
 import Theme from '../models/Theme.js'
@@ -17,8 +17,8 @@ class ThemeFactory {
 
     theme.name = NodeUtils.getPackageName()
     // Set folder names
-    if (CLISession.archieConfig.path) {
-      theme.rootFolder = join(NodeUtils.getPackageRootFolder(), CLISession.archieConfig.path)
+    if (Session.archieConfig.path) {
+      theme.rootFolder = join(NodeUtils.getPackageRootFolder(), Session.archieConfig.path)
     } else {
       theme.rootFolder = NodeUtils.getPackageRootFolder()
     }

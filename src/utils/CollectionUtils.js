@@ -3,7 +3,7 @@ import { access, constants } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
 // Archie Imports
-import CLISession from '../cli/models/CLISession.js'
+import Session from '../cli/models/Session.js'
 import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import InternalError from '../errors/InternalError.js'
@@ -92,13 +92,13 @@ class CollectionUtils {
    * @returns {Promise<string>|string}
    */
   static async findRootFolder (collectionName) {
-    if (CLISession.isSection()) {
+    if (Session.isSection()) {
       return NodeUtils.getMonorepoRootFolder()
     }
-    if (CLISession.isCollection()) {
+    if (Session.isCollection()) {
       return NodeUtils.getPackageRootFolder()
     }
-    if (CLISession.isTheme()) {
+    if (Session.isTheme()) {
       if (!collectionName) {
         throw new InternalError('Collection name is required when getting collection root folder from a theme.')
       }

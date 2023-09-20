@@ -6,7 +6,7 @@ import CommandLineInputError from '../../errors/CommandLineInputError.js'
 import CLI from '../../config/CLI.js'
 import CLICommands from '../../config/CLICommands.js'
 import CLIFlags from '../../config/CLIFlags.js'
-import CLISession from '../models/CLISession.js'
+import Session from '../models/Session.js'
 import Components from '../../config/Components.js'
 import ConfigError from '../../errors/ConfigError.js'
 import InternalError from '../../errors/InternalError.js'
@@ -18,7 +18,7 @@ class CLISessionFactory {
    * Factory method for ArchieCLI From Command Line Input
    * @param {string[]} commandLineArguments
    * @param {{archie:ArchieConfig}} packageManifest
-   * @return {CLISession}
+   * @return {Session}
    */
   static fromArgsAndManifest (commandLineArguments, packageManifest) {
     const [commands, flags] = this.#splitArgs(commandLineArguments)
@@ -30,66 +30,66 @@ class CLISessionFactory {
 
     this.#validatePackageManifest(packageManifest)
 
-    CLISession.archieConfig = packageManifest.archie
-    CLISession.componentType = packageManifest.archie.componentType.toLowerCase()
+    Session.archieConfig = packageManifest.archie
+    Session.componentType = packageManifest.archie.componentType.toLowerCase()
 
-    CLISession.command = commands[0].toLowerCase()
+    Session.command = commands[0].toLowerCase()
 
-    this.#validateComponentType(CLISession.componentType)
-    this.#validateCommand(CLISession.componentType, CLISession.command, CLI.AVAILABLE_COMMANDS)
+    this.#validateComponentType(Session.componentType)
+    this.#validateCommand(Session.componentType, Session.command, CLI.AVAILABLE_COMMANDS)
 
     if (commands[1] && commands[2]) {
       // If we have 2 further arguments, we have both the option and the target
-      CLISession.commandOption = commands[1].toLowerCase()
-      CLISession.targetComponentName = commands[2]
+      Session.commandOption = commands[1].toLowerCase()
+      Session.targetComponentName = commands[2]
     } else if (commands[1]) {
       // If we have only 1 further argument, check for a valid command option, or else, assume it is a Target Component Name
       const arg = commands[1].toLowerCase()
       // first check for an existing command option,
       if (CLI.AVAILABLE_COMMAND_OPTIONS.includes(arg)) {
-        CLISession.commandOption = arg
+        Session.commandOption = arg
       } else {
-        CLISession.targetComponentName = commands[1]
+        Session.targetComponentName = commands[1]
       }
     }
 
     // Use the default Command Option if one wasn't provided
-    if (!CLISession.commandOption) {
-      CLISession.commandOption = this.#getCommandDefaultOption(CLISession.command, CLISession.componentType)
+    if (!Session.commandOption) {
+      Session.commandOption = this.#getCommandDefaultOption(Session.command, Session.componentType)
     }
 
     // Use the default Target Component if one wasn't provided
-    if (!CLISession.targetComponentName) {
-      CLISession.targetComponentName =
+    if (!Session.targetComponentName) {
+      Session.targetComponentName =
         this.#getCommandDefaultTargetComponent(
-          CLISession.componentType,
-          CLISession.command,
-          CLISession.commandOption,
+          Session.componentType,
+          Session.command,
+          Session.commandOption,
           NodeUtils.getPackageName(),
           packageManifest?.archie.collections
         )
     }
 
     // Search for the Watch Mode flag
-    CLISession.watchMode = CLIFlags.WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
+    Session.watchMode = CLIFlags.WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
 
     logger.debug({
       'Archie CLI Computed Arguments': {
-        command: CLISession.command,
-        'command option': CLISession.commandOption,
-        'command watch mode': CLISession.watchMode,
-        'command target component(s)': CLISession.targetComponentName
+        command: Session.command,
+        'command option': Session.commandOption,
+        'command watch mode': Session.watchMode,
+        'command target component(s)': Session.targetComponentName
       }
     })
 
     this.#validateCommandArguments(
-      CLISession.componentType,
-      CLISession.command,
-      CLISession.commandOption,
-      CLISession.targetComponentName,
-      CLISession.watchMode
+      Session.componentType,
+      Session.command,
+      Session.commandOption,
+      Session.targetComponentName,
+      Session.watchMode
     )
-    return CLISession
+    return Session
   }
 
   /**

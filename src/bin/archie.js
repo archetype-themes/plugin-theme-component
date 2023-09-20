@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 import BuildCommand from '../cli/commands/BuildCommand.js'
-import CLISession from '../cli/models/CLISession.js'
+import Session from '../cli/models/Session.js'
 import CLICommands from '../config/CLICommands.js'
 import CLISessionFactory from '../cli/factories/CLISessionFactory.js'
 import CreateCommand from '../cli/commands/CreateCommand.js'
 import InstallCommand from '../cli/commands/InstallCommand.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
-// Init NodeConfig & CLISession
+// Init NodeConfig & Session
 let packageManifest
 try {
   packageManifest = await NodeUtils.getPackageManifest()
@@ -18,7 +18,7 @@ try {
 }
 
 try {
-  switch (CLISession.command) {
+  switch (Session.command) {
     case CLICommands.BUILD_COMMAND_NAME:
       await BuildCommand.execute()
       break

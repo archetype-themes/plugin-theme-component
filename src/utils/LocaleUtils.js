@@ -6,7 +6,7 @@ import { basename, extname, join } from 'node:path'
 import merge from 'deepmerge'
 
 // Archie Imports
-import CLISession from '../cli/models/CLISession.js'
+import Session from '../cli/models/Session.js'
 import ComponentFilesUtils from './ComponentFilesUtils.js'
 import FileUtils from './FileUtils.js'
 
@@ -24,7 +24,7 @@ class LocaleUtils {
     let buildLocalesFromSectionSchema
 
     if (locales) {
-      buildLocales = CLISession.archieConfig.structuredLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
+      buildLocales = Session.archieConfig.structuredLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
     }
 
     // Storefront Locales from Section Schema should always be prefixed, to restpect the Shopify Standard.
