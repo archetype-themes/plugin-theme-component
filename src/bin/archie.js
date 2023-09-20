@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import BuildCommand from '../cli/commands/BuildCommand.js'
+import BuildCommand from '../commands/BuildCommand.js'
 import Session from '../main/models/static/Session.js'
 import CLICommands from '../config/CLICommands.js'
 import SessionFactory from '../main/factory/SessionFactory.js'
-import CreateCommand from '../cli/commands/CreateCommand.js'
-import InstallCommand from '../cli/commands/InstallCommand.js'
+import CreateCommand from '../commands/CreateCommand.js'
+import InstallCommand from '../commands/InstallCommand.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
 // Init NodeConfig & Session

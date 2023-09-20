@@ -2,19 +2,19 @@
 import path from 'node:path'
 
 // Archie imports
-import Session from '../../main/models/static/Session.js'
-import CollectionBuilder from '../../main/builders/CollectionBuilder.js'
-import CollectionFactory from '../../main/factory/CollectionFactory.js'
-import CollectionUtils from '../../utils/CollectionUtils.js'
-import Components from '../../config/Components.js'
-import InternalError from '../../errors/InternalError.js'
-import logger from '../../utils/Logger.js'
-import NodeUtils from '../../utils/NodeUtils.js'
-import SectionBuilder from '../../main/builders/SectionBuilder.js'
-import SectionFactory from '../../main/factory/SectionFactory.js'
-import SnippetUtils from '../../utils/SnippetUtils.js'
-import Timer from '../../utils/Timer.js'
-import Watcher from '../../utils/Watcher.js'
+import Session from '../main/models/static/Session.js'
+import CollectionBuilder from '../main/builders/CollectionBuilder.js'
+import CollectionFactory from '../main/factory/CollectionFactory.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
+import Components from '../config/Components.js'
+import InternalError from '../errors/InternalError.js'
+import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import SectionBuilder from '../main/builders/SectionBuilder.js'
+import SectionFactory from '../main/factory/SectionFactory.js'
+import SnippetUtils from '../utils/SnippetUtils.js'
+import Timer from '../utils/Timer.js'
+import Watcher from '../utils/Watcher.js'
 
 class BuildCommand {
   /**

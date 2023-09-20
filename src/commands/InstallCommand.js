@@ -3,14 +3,14 @@ import path from 'node:path'
 
 // Archie imports
 import BuildCommand from './BuildCommand.js'
-import Session from '../../main/models/static/Session.js'
-import CollectionInstaller from '../../main/Installers/CollectionInstaller.js'
-import CollectionUtils from '../../utils/CollectionUtils.js'
-import logger from '../../utils/Logger.js'
-import NodeUtils from '../../utils/NodeUtils.js'
-import ThemeFactory from '../../main/factory/ThemeFactory.js'
-import Timer from '../../utils/Timer.js'
-import Watcher from '../../utils/Watcher.js'
+import Session from '../main/models/static/Session.js'
+import CollectionInstaller from '../main/Installers/CollectionInstaller.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
+import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import ThemeFactory from '../main/factory/ThemeFactory.js'
+import Timer from '../utils/Timer.js'
+import Watcher from '../utils/Watcher.js'
 
 class InstallCommand {
   /**

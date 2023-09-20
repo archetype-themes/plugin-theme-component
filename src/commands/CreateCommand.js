@@ -4,12 +4,12 @@ import { access, constants, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 // Archie Imports
-import Session from '../../main/models/static/Session.js'
-import Components from '../../config/Components.js'
-import FileAccessError from '../../errors/FileAccessError.js'
-import FileUtils from '../../utils/FileUtils.js'
-import logger from '../../utils/Logger.js'
-import NodeUtils from '../../utils/NodeUtils.js'
+import Session from '../main/models/static/Session.js'
+import Components from '../config/Components.js'
+import FileAccessError from '../errors/FileAccessError.js'
+import FileUtils from '../utils/FileUtils.js'
+import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
 class CreateCommand {
   /**
