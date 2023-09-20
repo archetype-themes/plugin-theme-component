@@ -12,6 +12,11 @@ import NodeUtils from './NodeUtils.js'
 import SnippetUtils from './SnippetUtils.js'
 
 class CollectionUtils {
+  /**
+   * Find Component Folders
+   * @param {string} collectionRootFolder
+   * @returns {Promise<string[]>}
+   */
   static async findComponentFolders (collectionRootFolder) {
     const folderNames = await FileUtils.getFolders(collectionRootFolder, true)
 
@@ -55,7 +60,7 @@ class CollectionUtils {
   static async getValidComponentName (singleComponentFolder) {
     try {
       await access(join(singleComponentFolder, 'package.json'), constants.R_OK)
-      return basename(singleComponentFolder) // return this for the .map
+      return basename(singleComponentFolder)
     } catch (err) {
       return null // Use null to signify that the file doesn't exist or isn't readable
     }
