@@ -13,7 +13,7 @@ import InternalError from '../../errors/InternalError.js'
 import logger from '../../utils/Logger.js'
 import NodeUtils from '../../utils/NodeUtils.js'
 
-class CLISessionFactory {
+class SessionFactory {
   /**
    * Factory method for ArchieCLI From Command Line Input
    * @param {string[]} commandLineArguments
@@ -262,4 +262,4 @@ class CLISessionFactory {
   }
 }
 
-export default CLISessionFactory
+export default SessionFactory

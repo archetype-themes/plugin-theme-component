@@ -3,7 +3,7 @@
 import BuildCommand from '../cli/commands/BuildCommand.js'
 import Session from '../cli/models/Session.js'
 import CLICommands from '../config/CLICommands.js'
-import CLISessionFactory from '../cli/factories/CLISessionFactory.js'
+import SessionFactory from '../cli/factories/SessionFactory.js'
 import CreateCommand from '../cli/commands/CreateCommand.js'
 import InstallCommand from '../cli/commands/InstallCommand.js'
 import NodeUtils from '../utils/NodeUtils.js'
@@ -12,7 +12,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 let packageManifest
 try {
   packageManifest = await NodeUtils.getPackageManifest()
-  CLISessionFactory.fromArgsAndManifest(NodeUtils.getArgs(), packageManifest)
+  SessionFactory.fromArgsAndManifest(NodeUtils.getArgs(), packageManifest)
 } catch (error) {
   NodeUtils.exitWithError(error)
 }
