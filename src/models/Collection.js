@@ -18,9 +18,6 @@ class Collection {
   /** @type {Section[]} **/
   #sections
 
-  /** @type {string} **/
-  #sectionsFolder
-
   /** @type {boolean} **/
   #prefixStorefrontLocales
 
@@ -123,22 +120,6 @@ class Collection {
    */
   set sections (value) {
     this.#sections = value
-  }
-
-  /**
-   * Get sections folder
-   * @return {string}
-   */
-  get sectionsFolder () {
-    return this.#sectionsFolder
-  }
-
-  /**
-   * Set sections folder
-   * @param {string[]} value
-   */
-  set sectionsFolder (value) {
-    this.#sectionsFolder = value
   }
 
   /**
