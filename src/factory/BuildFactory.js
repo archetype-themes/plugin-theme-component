@@ -1,6 +1,6 @@
 import Components from '../config/Components.js'
-import SectionBuild from '../main/models/SectionBuild.js'
-import CollectionBuild from '../main/models/CollectionBuild.js'
+import SectionBuild from '../models/SectionBuild.js'
+import CollectionBuild from '../models/CollectionBuild.js'
 
 class BuildFactory {
   static fromCollection (collection) {

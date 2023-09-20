@@ -8,8 +8,8 @@ import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 import logger from '../utils/Logger.js'
 import RecursionError from '../errors/RecursionError.js'
-import Snippet from '../main/models/Snippet.js'
-import SnippetFiles from '../main/models/SnippetFiles.js'
+import Snippet from '../models/Snippet.js'
+import SnippetFiles from '../models/SnippetFiles.js'
 
 class SnippetFactory {
   /** @type {Object<string, Snippet>} Snippet Cache to Avoid building them more than once **/

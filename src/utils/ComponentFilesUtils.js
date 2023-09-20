@@ -8,7 +8,7 @@ import FileMissingError from '../errors/FileMissingError.js'
 import FileUtils from './FileUtils.js'
 import JavascriptUtils from './JavascriptUtils.js'
 import logger from './Logger.js'
-import SectionSchema from '../main/models/SectionSchema.js'
+import SectionSchema from '../models/SectionSchema.js'
 import StylesUtils from './StylesUtils.js'
 
 class ComponentFilesUtils {

@@ -1,4 +1,4 @@
-import Components from '../../../config/Components.js'
+import Components from '../../config/Components.js'
 
 /**
  * @typedef ArchieConfig

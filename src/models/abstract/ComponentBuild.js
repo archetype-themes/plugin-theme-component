@@ -1,4 +1,4 @@
-import AbstractClassInstantiationError from '../../../errors/AbstractClassInstantiationError.js'
+import AbstractClassInstantiationError from '../../errors/AbstractClassInstantiationError.js'
 
 class ComponentBuild {
   /** @type {string} **/

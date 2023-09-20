@@ -2,7 +2,7 @@
 import path from 'node:path'
 
 // Archie imports
-import Session from '../main/models/static/Session.js'
+import Session from '../models/static/Session.js'
 import CollectionBuilder from './builders/CollectionBuilder.js'
 import CollectionFactory from '../factory/CollectionFactory.js'
 import CollectionUtils from '../utils/CollectionUtils.js'

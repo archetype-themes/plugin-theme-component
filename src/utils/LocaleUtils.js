@@ -6,7 +6,7 @@ import { basename, extname, join } from 'node:path'
 import merge from 'deepmerge'
 
 // Archie Imports
-import Session from '../main/models/static/Session.js'
+import Session from '../models/static/Session.js'
 import ComponentFilesUtils from './ComponentFilesUtils.js'
 import FileUtils from './FileUtils.js'
 

@@ -1,7 +1,7 @@
 // Archie imports
-import Session from '../main/models/static/Session.js'
+import Session from '../models/static/Session.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import Collection from '../main/models/Collection.js'
+import Collection from '../models/Collection.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import SectionFactory from './SectionFactory.js'

@@ -3,7 +3,7 @@ import { access, constants } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
 // Archie Imports
-import Session from '../main/models/static/Session.js'
+import Session from '../models/static/Session.js'
 import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import InternalError from '../errors/InternalError.js'
