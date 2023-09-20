@@ -8,7 +8,7 @@ import CollectionInstaller from './Installers/CollectionInstaller.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import ThemeFactory from '../main/factory/ThemeFactory.js'
+import ThemeFactory from '../factory/ThemeFactory.js'
 import Timer from '../utils/Timer.js'
 import Watcher from '../utils/Watcher.js'
 

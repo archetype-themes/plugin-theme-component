@@ -6,7 +6,7 @@ import { basename, join } from 'node:path'
 import merge from 'deepmerge'
 
 // Archie imports
-import BuildFactory from '../../main/factory/BuildFactory.js'
+import BuildFactory from '../../factory/BuildFactory.js'
 import Session from '../../main/models/static/Session.js'
 import JavaScriptProcessor from '../../main/processors/JavaScriptProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'

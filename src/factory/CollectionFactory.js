@@ -1,11 +1,11 @@
 // Archie imports
-import Session from '../models/static/Session.js'
-import NodeUtils from '../../utils/NodeUtils.js'
-import Collection from '../models/Collection.js'
-import CollectionUtils from '../../utils/CollectionUtils.js'
-import FileAccessError from '../../errors/FileAccessError.js'
+import Session from '../main/models/static/Session.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import Collection from '../main/models/Collection.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
+import FileAccessError from '../errors/FileAccessError.js'
 import SectionFactory from './SectionFactory.js'
-import logger from '../../utils/Logger.js'
+import logger from '../utils/Logger.js'
 
 class CollectionFactory {
   /**

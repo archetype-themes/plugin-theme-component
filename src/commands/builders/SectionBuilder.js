@@ -5,7 +5,7 @@ import path from 'path'
 import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 
 // Archie Component imports
-import BuildFactory from '../../main/factory/BuildFactory.js'
+import BuildFactory from '../../factory/BuildFactory.js'
 import JavaScriptProcessor from '../../main/processors/JavaScriptProcessor.js'
 import StylesProcessor from '../../main/processors/StylesProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'

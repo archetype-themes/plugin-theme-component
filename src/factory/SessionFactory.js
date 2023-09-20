@@ -1,17 +1,17 @@
 // Node JS imports
 import { exit } from 'node:process'
-import CommandLineInputError from '../../errors/CommandLineInputError.js'
+import CommandLineInputError from '../errors/CommandLineInputError.js'
 
 // Archie imports
-import CLI from '../../config/CLI.js'
-import CLICommands from '../../config/CLICommands.js'
-import CLIFlags from '../../config/CLIFlags.js'
-import Session from '../models/static/Session.js'
-import Components from '../../config/Components.js'
-import ConfigError from '../../errors/ConfigError.js'
-import InternalError from '../../errors/InternalError.js'
-import logger from '../../utils/Logger.js'
-import NodeUtils from '../../utils/NodeUtils.js'
+import CLI from '../config/CLI.js'
+import CLICommands from '../config/CLICommands.js'
+import CLIFlags from '../config/CLIFlags.js'
+import Session from '../main/models/static/Session.js'
+import Components from '../config/Components.js'
+import ConfigError from '../errors/ConfigError.js'
+import InternalError from '../errors/InternalError.js'
+import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
 class SessionFactory {
   /**

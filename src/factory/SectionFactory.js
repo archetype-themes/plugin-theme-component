@@ -2,16 +2,16 @@
 import path from 'path'
 
 // Archie Internal JS imports
-import Session from '../models/static/Session.js'
-import Components from '../../config/Components.js'
-import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
-import LiquidUtils from '../../utils/LiquidUtils.js'
-import LocaleUtils from '../../utils/LocaleUtils.js'
-import logger from '../../utils/Logger.js'
-import NodeUtils from '../../utils/NodeUtils.js'
-import SectionFiles from '../models/SectionFiles.js'
+import Session from '../main/models/static/Session.js'
+import Components from '../config/Components.js'
+import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
+import LiquidUtils from '../utils/LiquidUtils.js'
+import LocaleUtils from '../utils/LocaleUtils.js'
+import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import SectionFiles from '../main/models/SectionFiles.js'
 import SnippetFactory from './SnippetFactory.js'
-import Section from '../models/Section.js'
+import Section from '../main/models/Section.js'
 
 class SectionFactory {
   /**
