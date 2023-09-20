@@ -1,18 +1,28 @@
 class Component {
   /** @type {string} **/
-  #liquidCode
-
-  /** @type {Object } **/
-  #locales = {}
-
-  /** @type {string} **/
   #name
 
   /** @type {string} **/
   #rootFolder
 
+  /**
+   * @type {ComponentFiles}
+   */
+  #files
+
+  /**
+   * @type {ComponentBuild}
+   */
+  #build
+
+  /** @type {string} **/
+  #liquidCode
+
   /** @type {SectionSchema} **/
   #schema
+
+  /** @type {Object } **/
+  #locales = {}
 
   /** @type {Object} **/
   #schemaLocales = {}
@@ -22,38 +32,6 @@ class Component {
 
   /** @type {Snippet[]} **/
   #snippets = []
-
-  /**
-   * Get Liquid Code
-   * @returns {string}
-   */
-  get liquidCode () {
-    return this.#liquidCode
-  }
-
-  /**
-   * Liquid Code
-   * @param {string} value
-   */
-  set liquidCode (value) {
-    this.#liquidCode = value
-  }
-
-  /**
-   * Get Locales
-   * @return {Object}
-   */
-  get locales () {
-    return this.#locales
-  }
-
-  /**
-   * Set Locales
-   * @param {Object} value
-   */
-  set locales (value) {
-    this.#locales = value
-  }
 
   /**
    * Get Name
@@ -85,6 +63,70 @@ class Component {
    */
   set rootFolder (value) {
     this.#rootFolder = value
+  }
+
+  /**
+   * Get Files
+   * @returns {ComponentFiles}
+   */
+  get files () {
+    return this.#files
+  }
+
+  /**
+   * Set Files
+   * @param {ComponentFiles} value
+   */
+  set files (value) {
+    this.#files = value
+  }
+
+  /**
+   * Get Build
+   * @returns {ComponentBuild}
+   */
+  get build () {
+    return this.#build
+  }
+
+  /**
+   * Set Build
+   * @param {ComponentBuild} value
+   */
+  set build (value) {
+    this.#build = value
+  }
+
+  /**
+   * Get Liquid Code
+   * @returns {string}
+   */
+  get liquidCode () {
+    return this.#liquidCode
+  }
+
+  /**
+   * Liquid Code
+   * @param {string} value
+   */
+  set liquidCode (value) {
+    this.#liquidCode = value
+  }
+
+  /**
+   * Get Locales
+   * @return {Object}
+   */
+  get locales () {
+    return this.#locales
+  }
+
+  /**
+   * Set Locales
+   * @param {Object} value
+   */
+  set locales (value) {
+    this.#locales = value
   }
 
   /**
