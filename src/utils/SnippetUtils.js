@@ -9,7 +9,7 @@ import { union } from 'lodash-es'
 import FileUtils from './FileUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
-import SnippetBuilder from '../commands/builders/SnippetBuilder.js'
+import SnippetBuilder from '../commands/runners/SnippetBuilder.js'
 import { mergeObjectArraysByUniqueKey } from './ArrayUtils.js'
 
 class SnippetUtils {
