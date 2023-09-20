@@ -1,5 +1,3 @@
-import AbstractClassInstantiationError from '../../errors/AbstractClassInstantiationError.js'
-
 class Component {
   /** @type {string} **/
   #liquidCode
@@ -24,12 +22,6 @@ class Component {
 
   /** @type {Snippet[]} **/
   #snippets = []
-
-  constructor () {
-    if (new.target === Component) {
-      throw new AbstractClassInstantiationError('Cannot construct Component instances directly. It is meant to be used as an abstract class.')
-    }
-  }
 
   /**
    * Get Liquid Code
