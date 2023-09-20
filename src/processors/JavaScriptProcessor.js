@@ -3,8 +3,8 @@ import esbuild from 'esbuild'
 import { unlink } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import FileUtils from '../../utils/FileUtils.js'
-import JavascriptUtils from '../../utils/JavascriptUtils.js'
+import FileUtils from '../utils/FileUtils.js'
+import JavascriptUtils from '../utils/JavascriptUtils.js'
 
 // Internal Modules
 import EsbuildProcessor from './javascript/EsbuildProcessor.js'

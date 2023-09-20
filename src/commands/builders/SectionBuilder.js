@@ -6,8 +6,8 @@ import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 
 // Archie Component imports
 import BuildFactory from '../../factory/BuildFactory.js'
-import JavaScriptProcessor from '../../main/processors/JavaScriptProcessor.js'
-import StylesProcessor from '../../main/processors/StylesProcessor.js'
+import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
+import StylesProcessor from '../../processors/StylesProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'

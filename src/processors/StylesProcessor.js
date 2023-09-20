@@ -5,8 +5,8 @@ import path from 'node:path'
 
 // Archie Internal imports
 import PostCssProcessor from './styles/PostCssProcessor.js'
-import FileUtils from '../../utils/FileUtils.js'
-import StylesUtils from '../../utils/StylesUtils.js'
+import FileUtils from '../utils/FileUtils.js'
+import StylesUtils from '../utils/StylesUtils.js'
 
 class StylesProcessor {
   /**
