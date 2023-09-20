@@ -9,6 +9,9 @@ class Collection {
   /** @type {string} **/
   #rootFolder
 
+  /** @type {Component[]} **/
+  #components
+
   /** @type {string[]} **/
   #componentsFolders
 
@@ -72,6 +75,22 @@ class Collection {
    */
   set rootFolder (value) {
     this.#rootFolder = value
+  }
+
+  /**
+   * Get Components
+   * @returns {Component[]}
+   */
+  get components () {
+    return this.#components
+  }
+
+  /**
+   * Set Components
+   * @param {Component[]} value
+   */
+  set components (value) {
+    this.#components = value
   }
 
   /**
