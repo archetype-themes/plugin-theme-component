@@ -1,7 +1,7 @@
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
-import SnippetBuild from '../models/SnippetBuild.js'
-import SvgProcessor from '../processors/SvgProcessor.js'
+import SnippetBuild from '../../main/models/SnippetBuild.js'
+import SvgProcessor from '../../main/processors/SvgProcessor.js'
 
 class SnippetBuilder {
   /**
