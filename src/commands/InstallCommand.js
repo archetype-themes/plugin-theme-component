@@ -4,7 +4,7 @@ import path from 'node:path'
 // Archie imports
 import BuildCommand from './BuildCommand.js'
 import Session from '../models/static/Session.js'
-import CollectionInstaller from './Installers/CollectionInstaller.js'
+import CollectionInstaller from './installers2/CollectionInstaller.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
