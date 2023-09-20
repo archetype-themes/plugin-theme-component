@@ -7,7 +7,7 @@ import merge from 'deepmerge'
 
 // Archie imports
 import BuildFactory from '../factory/BuildFactory.js'
-import Session from '../../cli/models/Session.js'
+import Session from '../models/static/Session.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'

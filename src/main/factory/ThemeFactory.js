@@ -1,6 +1,6 @@
 // Node Imports
 import { join } from 'path'
-import Session from '../../cli/models/Session.js'
+import Session from '../models/static/Session.js'
 
 // Archie Imports
 import Theme from '../models/Theme.js'

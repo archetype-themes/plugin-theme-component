@@ -4,7 +4,7 @@ import { access, constants, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 // Archie Imports
-import Session from '../models/Session.js'
+import Session from '../../main/models/static/Session.js'
 import Components from '../../config/Components.js'
 import FileAccessError from '../../errors/FileAccessError.js'
 import FileUtils from '../../utils/FileUtils.js'

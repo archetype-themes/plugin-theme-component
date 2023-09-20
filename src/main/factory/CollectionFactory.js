@@ -1,5 +1,5 @@
 // Archie imports
-import Session from '../../cli/models/Session.js'
+import Session from '../models/static/Session.js'
 import NodeUtils from '../../utils/NodeUtils.js'
 import Collection from '../models/Collection.js'
 import CollectionUtils from '../../utils/CollectionUtils.js'

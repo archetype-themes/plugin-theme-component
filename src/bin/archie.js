@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import BuildCommand from '../cli/commands/BuildCommand.js'
-import Session from '../cli/models/Session.js'
+import Session from '../main/models/static/Session.js'
 import CLICommands from '../config/CLICommands.js'
 import SessionFactory from '../cli/factories/SessionFactory.js'
 import CreateCommand from '../cli/commands/CreateCommand.js'

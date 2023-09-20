@@ -2,7 +2,7 @@
 import path from 'path'
 
 // Archie Internal JS imports
-import Session from '../../cli/models/Session.js'
+import Session from '../models/static/Session.js'
 import Components from '../../config/Components.js'
 import ComponentFilesUtils from '../../utils/ComponentFilesUtils.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
