@@ -156,7 +156,7 @@ class ComponentFilesUtils {
     if (this.SCRIPT_EXTENSIONS.includes(extname(schemaFile))) {
       return Object.assign(sectionSchema, (await import(schemaFile)).default)
     }
-    const sectionSchemaJson = JSON.parse(await FileUtils.getFileContents(schemaFile))
+    const sectionSchemaJson = await FileUtils.getJsonFileContents(schemaFile)
     return Object.assign(sectionSchema, sectionSchemaJson)
   }
 
@@ -169,7 +169,7 @@ class ComponentFilesUtils {
     if (this.SCRIPT_EXTENSIONS.includes(extname(schemaFile))) {
       return (await import(schemaFile)).default
     }
-    return JSON.parse(await FileUtils.getFileContents(schemaFile))
+    return FileUtils.getJsonFileContents(schemaFile)
   }
 
   /**

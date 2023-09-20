@@ -27,7 +27,7 @@ class LocaleUtils {
       buildLocales = Session.archieConfig.structuredLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
     }
 
-    // Storefront Locales from Section Schema should always be prefixed, to restpect the Shopify Standard.
+    // Storefront Locales from Section Schema should always be prefixed, to respect the Shopify Standard.
     if (localesFromSectionSchema) {
       buildLocalesFromSectionSchema = LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSectionSchema, isSnippet)
     }
@@ -70,7 +70,7 @@ class LocaleUtils {
 
         let localeData
         if (extname(localeFileWithPath) === '.json') {
-          localeData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+          localeData = await FileUtils.getJsonFileContents(localeFileWithPath)
         } else {
           localeData = (await import(localeFileWithPath)).default
         }
@@ -90,7 +90,7 @@ class LocaleUtils {
         // Load locales.json file
         let localesData
         if (extname(localeFileWithPath) === '.json') {
-          localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+          localesData = await FileUtils.getJsonFileContents(localeFileWithPath)
         } else {
           localesData = (await import(localeFileWithPath)).default
         }

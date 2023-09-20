@@ -148,7 +148,7 @@ class CollectionInstaller {
       const collectionSchemaLocale = collectionSchemaLocales[locale]
       if (targetFileExists || defaultTargetFileExists) {
         const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
-        const themeSchemaLocale = JSON.parse(await FileUtils.getFileContents(realTargetFile))
+        const themeSchemaLocale = await FileUtils.getJsonFileContents(realTargetFile)
         const mergedSchemaLocale = merge(collectionSchemaLocale, themeSchemaLocale)
 
         fileOperations.push(FileUtils.writeFile(realTargetFile, JSON.stringify(mergedSchemaLocale, null, 2)))
@@ -174,7 +174,7 @@ class CollectionInstaller {
     const themeSettingsSchemaFile = join(themeConfigFolder, Components.THEME_SETTINGS_SCHEMA_FILENAME)
 
     if (await FileUtils.exists(themeSettingsSchemaFile)) {
-      const themeSettingsSchema = JSON.parse(await FileUtils.getFileContents(themeSettingsSchemaFile))
+      const themeSettingsSchema = await FileUtils.getJsonFileContents(themeSettingsSchemaFile)
       finalSettingsSchema = mergeObjectArraysByUniqueKey(themeSettingsSchema, collectionSettingsSchema)
     } else if (!await FileUtils.exists(themeConfigFolder)) {
       await mkdir(themeConfigFolder)

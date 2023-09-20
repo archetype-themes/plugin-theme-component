@@ -34,7 +34,7 @@ class NodeUtils {
       throw new InternalError('Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.')
     }
 
-    return JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
+    return await FileUtils.getJsonFileContents(env.npm_package_json)
   }
 
   /**

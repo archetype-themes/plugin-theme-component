@@ -212,6 +212,15 @@ class FileUtils {
   }
 
   /**
+   * Get JSON File Contents
+   * @param {string} file
+   * @returns {Promise<{}|[]>}
+   */
+  static async getJsonFileContents (file) {
+    return JSON.parse(await this.getFileContents(file))
+  }
+
+  /**
    * Get File Contents
    * @param {string} file
    * @returns {Promise<string>}
