@@ -26,10 +26,10 @@ class SectionFactory {
 
     // Set root folder
     if (collectionRootFolder) {
-      section.rootFolder = path.join(collectionRootFolder, Components.COLLECTION_SECTIONS_FOLDER, section.name)
+      section.rootFolder = path.join(collectionRootFolder, Components.SECTIONS_FOLDER_NAME, section.name)
     } else if (Session.isCollection()) {
       section.rootFolder =
-        path.join(NodeUtils.getPackageRootFolder(), Components.COLLECTION_SECTIONS_FOLDER, section.name)
+        path.join(NodeUtils.getPackageRootFolder(), Components.SECTIONS_FOLDER_NAME, section.name)
     } else if (Session.isSection()) {
       section.rootFolder = NodeUtils.getPackageRootFolder()
     }
@@ -64,7 +64,7 @@ class SectionFactory {
     const snippetNames = LiquidUtils.getSnippetNames(section.liquidCode)
     if (snippetNames.length) {
       logger.info(`└─> Section ${section.name} has the following snippets: ${snippetNames.join(', ')} `)
-      const snippetsPath = path.join(section.rootFolder, '../../', Components.COLLECTION_SNIPPETS_FOLDER)
+      const snippetsPath = path.join(section.rootFolder, '../../', Components.SNIPPETS_FOLDER_NAME)
       section.snippets = await SnippetFactory.fromNames(snippetNames, snippetsPath, section.files.snippetFiles)
     }
 

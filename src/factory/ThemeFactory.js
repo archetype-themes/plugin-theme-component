@@ -23,11 +23,11 @@ class ThemeFactory {
       theme.rootFolder = NodeUtils.getPackageRootFolder()
     }
 
-    theme.assetsFolder = join(theme.rootFolder, Components.THEME_ASSETS_FOLDER)
-    theme.configFolder = join(theme.rootFolder, Components.THEME_CONFIG_FOLDER)
-    theme.localesFolder = join(theme.rootFolder, Components.THEME_LOCALES_FOLDER)
-    theme.sectionsFolder = join(theme.rootFolder, Components.THEME_SECTIONS_FOLDER)
-    theme.snippetsFolder = join(theme.rootFolder, Components.THEME_SNIPPETS_FOLDER)
+    theme.assetsFolder = join(theme.rootFolder, Components.ASSETS_FOLDER_NAME)
+    theme.configFolder = join(theme.rootFolder, Components.CONFIG_FOLDER_NAME)
+    theme.localesFolder = join(theme.rootFolder, Components.LOCALES_FOLDER_NAME)
+    theme.sectionsFolder = join(theme.rootFolder, Components.SECTIONS_FOLDER_NAME)
+    theme.snippetsFolder = join(theme.rootFolder, Components.SNIPPETS_FOLDER_NAME)
 
     return theme
   }

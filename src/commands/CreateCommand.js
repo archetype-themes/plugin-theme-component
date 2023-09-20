@@ -18,7 +18,7 @@ class CreateCommand {
    * @returns {Promise<ChildProcess>}
    */
   static async execute (packageManifest) {
-    const workspaceFolder = (Session.commandOption === Components.SECTION_COMPONENT_NAME) ? Components.COLLECTION_SECTIONS_FOLDER : Components.COLLECTION_SNIPPETS_FOLDER
+    const workspaceFolder = (Session.commandOption === Components.SECTION_COMPONENT_TYPE_NAME) ? Components.SECTIONS_FOLDER_NAME : Components.SNIPPETS_FOLDER_NAME
     const componentFolder = join(workspaceFolder, Session.targetComponentName)
     const componentRootFolder = join(NodeUtils.getPackageRootFolder(), componentFolder)
 

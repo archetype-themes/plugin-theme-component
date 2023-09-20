@@ -133,7 +133,7 @@ class Session {
    * @return {boolean}
    */
   static isCollection () {
-    return this.#componentType === Components.COLLECTION_COMPONENT_NAME
+    return this.#componentType === Components.COLLECTION_COMPONENT_TYPE_NAME
   }
 
   /**
@@ -141,7 +141,7 @@ class Session {
    * @return {boolean}
    */
   static isSection () {
-    return this.#componentType === Components.SECTION_COMPONENT_NAME
+    return this.#componentType === Components.SECTION_COMPONENT_TYPE_NAME
   }
 
   /**
@@ -149,7 +149,7 @@ class Session {
    * @return {boolean}
    */
   static isTheme () {
-    return this.#componentType === Components.THEME_COMPONENT_NAME
+    return this.#componentType === Components.THEME_COMPONENT_TYPE_NAME
   }
 }
 

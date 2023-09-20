@@ -63,7 +63,7 @@ class ComponentFilesUtils {
       const folder = dirname(file).toLowerCase()
       const filename = basename(file).toLowerCase()
 
-      if (folder.endsWith(`/${Components.THEME_ASSETS_FOLDER}`)) {
+      if (folder.endsWith(`/${Components.ASSETS_FOLDER_NAME}`)) {
         componentFiles.assetFiles.push(file)
         continue
       }
@@ -78,7 +78,7 @@ class ComponentFilesUtils {
           componentFiles.schemaFile = file
           continue
         }
-        if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME.replace('.json', extension)) {
+        if (filename === Components.SETTINGS_SCHEMA_FILENAME.replace('.json', extension)) {
           componentFiles.settingsSchemaFile = file
           continue
         }
@@ -112,7 +112,7 @@ class ComponentFilesUtils {
             componentFiles.schemaFile = file
             break
           }
-          if (filename === Components.THEME_SETTINGS_SCHEMA_FILENAME) {
+          if (filename === Components.SETTINGS_SCHEMA_FILENAME) {
             componentFiles.settingsSchemaFile = file
             break
           }

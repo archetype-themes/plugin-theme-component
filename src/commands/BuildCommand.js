@@ -23,9 +23,9 @@ class BuildCommand {
    */
   static async execute () {
     switch (Session.commandOption) {
-      case Components.COLLECTION_COMPONENT_NAME:
+      case Components.COLLECTION_COMPONENT_TYPE_NAME:
         return await this.handleCollection()
-      case Components.SECTION_COMPONENT_NAME:
+      case Components.SECTION_COMPONENT_TYPE_NAME:
         return await this.handleSection()
       default:
         throw new InternalError('CRITICAL ERROR: A validated Build Command is in Error.')

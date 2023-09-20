@@ -115,9 +115,9 @@ class SessionFactory {
       case CLICommands.BUILD_COMMAND_NAME:
         return callerComponentType
       case CLICommands.CREATE_COMMAND_NAME:
-        return Components.SECTION_COMPONENT_NAME
+        return Components.SECTION_COMPONENT_TYPE_NAME
       case CLICommands.INSTALL_COMMAND_NAME:
-        return Components.COLLECTION_COMPONENT_NAME
+        return Components.COLLECTION_COMPONENT_TYPE_NAME
       default:
         throw new InternalError(`Invalid command ${command}`)
     }
