@@ -1,4 +1,4 @@
-import ComponentBuild from './abstract/ComponentBuild.js'
+import ComponentBuild from './ComponentBuild.js'
 
 class CollectionBuild extends ComponentBuild {
   /** @type {string} **/

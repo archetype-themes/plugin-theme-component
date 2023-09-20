@@ -1,4 +1,4 @@
-import Component from './abstract/Component.js'
+import Component from './Component.js'
 
 class Snippet extends Component {
   /**

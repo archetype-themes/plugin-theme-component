@@ -1,4 +1,4 @@
-import ComponentFiles from './abstract/ComponentFiles.js'
+import ComponentFiles from './ComponentFiles.js'
 
 class SectionFiles extends ComponentFiles {
 
