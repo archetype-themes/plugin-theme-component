@@ -10,6 +10,9 @@ class Components {
   static COLLECTION_COMPONENT_TYPE_NAME = 'collection'
 
   /** @type {string}  **/
+  static COMPONENT_TYPE_NAME = 'component'
+
+  /** @type {string}  **/
   static SECTION_COMPONENT_TYPE_NAME = 'section'
 
   /** @type {string}  **/
