@@ -34,6 +34,16 @@ class Component {
   #snippets = []
 
   /**
+   * Constructor
+   * @param {string} [name] - Component Name
+   * @param {string} [path] - Component Path
+   */
+  constructor (name, path) {
+    if (name) this.name = name
+    if (path) this.rootFolder = path
+  }
+
+  /**
    * Get Name
    * @returns {string}
    */
