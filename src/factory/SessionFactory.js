@@ -31,7 +31,7 @@ class SessionFactory {
     this.#validatePackageManifest(packageManifest)
 
     Session.archieConfig = packageManifest.archie
-    Session.componentType = packageManifest.archie.componentType.toLowerCase()
+    Session.componentType = packageManifest.archie.type.toLowerCase()
 
     Session.command = commands[0].toLowerCase()
 
@@ -244,8 +244,8 @@ class SessionFactory {
    * @param {Object} packageManifest
    */
   static #validatePackageManifest (packageManifest) {
-    if (!packageManifest.archie?.componentType) {
-      throw new ConfigError(`Couldn't find archie.componentType value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}`)
+    if (!packageManifest.archie?.type) {
+      throw new ConfigError(`Couldn't find archie.type value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}`)
     }
   }
 
@@ -257,7 +257,7 @@ class SessionFactory {
    */
   static #validateComponentType (componentType) {
     if (!CLI.AVAILABLE_COMPONENT_TYPES.includes(componentType)) {
-      throw new ConfigError(`Invalid Archie Component Type: The value for archie.componentType from package.json must be changed to one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}, "${componentType}" is not an allowed value`)
+      throw new ConfigError(`Invalid Archie Component Type: The value for archie.type from package.json must be changed to one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}, "${componentType}" is not an allowed value`)
     }
   }
 }

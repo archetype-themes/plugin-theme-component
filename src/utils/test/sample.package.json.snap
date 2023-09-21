@@ -1,6 +1,6 @@
 {
   "archie": {
-    "componentType": "collection",
+    "type": "collection",
   },
   "author": "Archetype Themes Limited Partnership",
   "dependencies": {

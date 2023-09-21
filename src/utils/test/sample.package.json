@@ -23,7 +23,7 @@
     "./snippets/*"
   ],
   "archie": {
-    "componentType": "collection"
+    "type": "collection"
   },
   "dependencies": {
     "@archetype-themes/archie": "^1.2.0",

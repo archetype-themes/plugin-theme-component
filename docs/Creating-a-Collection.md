@@ -35,7 +35,7 @@ Next, you will need to edit your package.json in order to add/replace the follow
 ```json
 {
   "archie": {
-    "componentType": "collection"
+    "type": "collection"
   },
   "scripts": {
     "build": "archie build",
