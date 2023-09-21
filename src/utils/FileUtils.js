@@ -231,6 +231,35 @@ class FileUtils {
   }
 
   /**
+   * Search for a file in a specified path.
+   * @param {string} path
+   * @param {string} filename
+   * @param {boolean} [recursive]
+   * @returns {Promise<string[]>}
+   */
+  static async searchFile (path, filename, recursive = false) {
+    let files = []
+
+    try {
+      const entries = await readdir(path, { withFileTypes: true })
+
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          if (recursive && !this.#EXCLUDED_FOLDERS.includes(entry.name)) {
+            files = files.concat(await this.searchFile(join(path, entry.name), filename, recursive))
+          }
+        } else if (entry.name === filename) {
+          files.push(join(path, entry.name))
+        }
+      }
+    } catch (err) {
+      console.error(`Error reading directory ${path}:`, err)
+    }
+
+    return files
+  }
+
+  /**
    *
    * @param {string} file
    * @param {string} fileContents
