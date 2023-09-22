@@ -1,7 +1,7 @@
+import SnippetBuild from '../../models/SnippetBuild.js'
+import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
-import SnippetBuild from '../../models/SnippetBuild.js'
-import SvgProcessor from '../../processors/SvgProcessor.js'
 
 class SnippetBuilder {
   /**
@@ -22,25 +22,11 @@ class SnippetBuilder {
     }
 
     // Build Liquid Code
-    snippet.build.liquidCode = await this.buildLiquid(snippet.name, snippet.liquidCode)
+    snippet.build.liquidCode = await LiquidUtils.buildLiquid(snippet.name, snippet.liquidCode)
 
     // Build recursively
 
     return snippet
-  }
-
-  /**
-   * Build Liquid Code
-   * @param {string} snippetName
-   * @param {string} snippetLiquidCode
-   * @return {Promise<string>}
-   */
-  static async buildLiquid (snippetName, snippetLiquidCode) {
-    if (snippetName.startsWith('icon-') || snippetName.endsWith('-svg') || snippetName.endsWith('.svg')) {
-      return SvgProcessor.buildSvg(snippetName, snippetLiquidCode)
-    }
-
-    return snippetLiquidCode
   }
 }
 
