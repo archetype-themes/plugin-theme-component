@@ -1,14 +1,10 @@
 import Component from './Component.js'
 
 class Section extends Component {
-  /**
-   * @type {SectionBuild}
-   */
+  /** @type {SectionBuild} **/
   #build
 
-  /**
-   * @type {SectionFiles}
-   */
+  /** @type {SectionFiles} **/
   #files
 
   /**
