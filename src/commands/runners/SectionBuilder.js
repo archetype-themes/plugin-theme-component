@@ -2,17 +2,17 @@
 import merge from 'deepmerge'
 import { mkdir, rm } from 'node:fs/promises'
 import path from 'path'
-import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 
 // Archie Component imports
 import BuildFactory from '../../factory/BuildFactory.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
+import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 import FileUtils from '../../utils/FileUtils.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import SnippetUtils from '../../utils/SnippetUtils.js'
 import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
+import SnippetUtils from '../../utils/SnippetUtils.js'
 
 class SectionBuilder {
   /**
@@ -34,25 +34,7 @@ class SectionBuilder {
       section.build.schema = SectionSchemaUtils.build(section.schema, snippetsSchema)
     }
 
-    section.build.liquidCode = await this.buildLiquid(section.liquidCode, section.build.schema)
-  }
-
-  /**
-   * Build Liquid
-   * @override
-   * @param {string} liquidCode
-   * @param {SectionSchema} schema
-   * @return {Promise<string>}
-   */
-  static async buildLiquid (liquidCode, schema) {
-    let buildLiquidCode = liquidCode
-
-    // Append section schema to liquid code
-    if (schema) {
-      buildLiquidCode += `\n{% schema %}\n${JSON.stringify(schema, null, 2)}\n{% endschema %}`
-    }
-
-    return buildLiquidCode
+    section.build.liquidCode = await LiquidUtils.buildLiquid(section.name, section.liquidCode, section.build.schema)
   }
 
   /**
