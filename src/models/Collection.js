@@ -16,10 +16,16 @@ class Collection {
   #componentsFolders
 
   /** @type {string[]} **/
+  #packageJsonFiles
+
+  /** @type {string[]} **/
   #sectionNames
 
   /** @type {Section[]} **/
   #sections
+
+  /** @type {Snippet[]} **/
+  #snippets
 
   /** @type {boolean} **/
   #prefixStorefrontLocales

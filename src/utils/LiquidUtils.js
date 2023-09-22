@@ -1,3 +1,5 @@
+import SvgProcessor from '../processors/SvgProcessor.js'
+
 class LiquidUtils {
   /**
    * Finds snippet names from render tags in liquid code
@@ -43,6 +45,28 @@ class LiquidUtils {
       return `{{ '${stylesheetName}' | global_asset_url | stylesheet_tag: preload: ${preload} }}`
     }
     return `{{ '${stylesheetName}' | global_asset_url | stylesheet_tag }}`
+  }
+
+  /**
+   * Build Liquid Code
+   * @param {string} name
+   * @param {string} liquidCode
+   * @param {Object} [schema]
+   * @return {Promise<string>}
+   */
+  static async buildLiquid (name, liquidCode, schema) {
+    let buildLiquidCode = liquidCode
+    // Process as SVG if applicable
+    if (name.startsWith('icon-') || name.endsWith('-svg') || name.endsWith('.svg')) {
+      buildLiquidCode = SvgProcessor.buildSvg(name, liquidCode)
+    }
+    // Append Section Schema Data if provided
+    if (schema) {
+      // Append section schema to liquid code
+      buildLiquidCode += `\n{% schema %}\n${JSON.stringify(schema, null, 2)}\n{% endschema %}`
+    }
+
+    return buildLiquidCode
   }
 }
 
