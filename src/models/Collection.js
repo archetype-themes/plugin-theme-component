@@ -13,9 +13,6 @@ class Collection {
   #components
 
   /** @type {string[]} **/
-  #componentsFolders
-
-  /** @type {string[]} **/
   #packageJsonFiles
 
   /** @type {string[]} **/
@@ -100,19 +97,19 @@ class Collection {
   }
 
   /**
-   * Get Components Folders
+   * Get package.json file list
    * @returns {string[]}
    */
-  get componentsFolders () {
-    return this.#componentsFolders
+  get packageJsonFiles () {
+    return this.#packageJsonFiles
   }
 
   /**
-   * Set Components Folders
+   * Set package.json file list
    * @param {string[]} value
    */
-  set componentsFolders (value) {
-    this.#componentsFolders = value
+  set packageJsonFiles (value) {
+    this.#packageJsonFiles = value
   }
 
   /**
@@ -145,6 +142,22 @@ class Collection {
    */
   set sections (value) {
     this.#sections = value
+  }
+
+  /**
+   * Get Snippets
+   * @returns {Snippet[]}
+   */
+  get snippets () {
+    return this.#snippets
+  }
+
+  /**
+   * Set Snippets
+   * @param {Snippet[]} value
+   */
+  set snippets (value) {
+    this.#snippets = value
   }
 
   /**
