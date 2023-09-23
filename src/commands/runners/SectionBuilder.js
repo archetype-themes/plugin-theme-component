@@ -18,7 +18,7 @@ class SectionBuilder {
   /**
    * Build Section
    * @param {Section} section - The Section model instance
-   * @returns {Promise<void>}
+   * @returns {Promise<Section>}
    */
   static async build (section) {
     // Create build module
@@ -35,6 +35,8 @@ class SectionBuilder {
     }
 
     section.build.liquidCode = await LiquidUtils.buildLiquid(section.name, section.liquidCode, section.build.schema)
+
+    return section
   }
 
   /**
