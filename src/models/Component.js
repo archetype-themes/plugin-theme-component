@@ -30,6 +30,9 @@ class Component {
   /** @type {Object[]} **/
   #settingsSchema
 
+  /** @type {string[]} **/
+  #snippetNames
+
   /** @type {Snippet[]} **/
   #snippets = []
 
@@ -185,6 +188,22 @@ class Component {
    */
   set settingsSchema (value) {
     this.#settingsSchema = value
+  }
+
+  /**
+   * Get Snippet Names
+   * @returns {string[]}
+   */
+  get snippetNames () {
+    return this.#snippetNames
+  }
+
+  /**
+   * Set Snippet Names
+   * @param {string[]}value
+   */
+  set snippetNames (value) {
+    this.#snippetNames = value
   }
 
   /**
