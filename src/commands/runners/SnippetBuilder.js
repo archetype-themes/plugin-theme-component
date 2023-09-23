@@ -24,8 +24,6 @@ class SnippetBuilder {
     // Build Liquid Code
     snippet.build.liquidCode = await LiquidUtils.buildLiquid(snippet.name, snippet.liquidCode)
 
-    // Build recursively
-
     return snippet
   }
 }
