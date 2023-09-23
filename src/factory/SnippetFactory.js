@@ -45,7 +45,7 @@ class SnippetFactory {
       for (const snippetFile of snippetFiles) {
         if (snippetName === path.parse(snippetFile).name) {
           logger.debug(`Snippet "${snippetName}" was found amongst component's internal snippet files.`)
-          this.snippetCache[snippetName] = await this.fromSingleFile(snippetName, snippetFile, snippetsPath)
+          return this.fromSingleFile(snippetName, snippetFile, snippetsPath)
         }
       }
     }
