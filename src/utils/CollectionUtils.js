@@ -1,13 +1,18 @@
 // Node.js imports
 import { access, constants } from 'node:fs/promises'
-import { basename, join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 
 // Archie Imports
-import Session from '../models/static/Session.js'
 import Components from '../config/Components.js'
+import ConfigError from '../errors/ConfigError.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import InternalError from '../errors/InternalError.js'
+import Component from '../models/Component.js'
+import Section from '../models/Section.js'
+import Snippet from '../models/Snippet.js'
+import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
+import logger from './Logger.js'
 import NodeUtils from './NodeUtils.js'
 import SnippetUtils from './SnippetUtils.js'
 
@@ -115,6 +120,52 @@ class CollectionUtils {
 
       throw new FileAccessError(`${collectionName} Collection not found or not accessible. Is it installed?`)
     }
+  }
+
+  /**
+   * Find Components From package.json files
+   * @param packageJsonFiles
+   * @returns {Promise<[Component[], Section[], Snippet[]]>}
+   */
+  static async findComponentsFromPackageJsonFiles (packageJsonFiles) {
+    const components = []
+    const sections = []
+    const snippets = []
+
+    for (const packageJsonFile of packageJsonFiles) {
+      const componentPackageJson = await FileUtils.getJsonFileContents(packageJsonFile)
+      let componentPath = dirname(packageJsonFile)
+      if (componentPackageJson.archie?.path) {
+        componentPath = join(componentPath, componentPackageJson.archie.path)
+      }
+
+      if (componentPackageJson.archie && !componentPackageJson.archie.type) {
+        logger.warn(`No archie component type specified in package.json file in ${componentPath}, ignoring component folder.`)
+        continue
+      }
+
+      if (componentPackageJson.archie?.type) {
+        if (!componentPackageJson.name) {
+          throw new ConfigError(`A Component's package.json file does not provide a package name in "${packageJsonFile}"`)
+        }
+
+        let componentName = componentPackageJson.name.includes('/') ? componentPackageJson.name.split('/')[1] : componentPackageJson.name
+        const componentType = componentPackageJson.archie.type.toLowerCase()
+
+        // Strip component type from name
+        componentName = componentName.replace(/-(section|snippet|component)$/, '')
+
+        if (componentType === Components.COMPONENT_TYPE_NAME) {
+          components.push(new Component(componentName, componentPath))
+        } else if (componentType === Components.SECTION_COMPONENT_TYPE_NAME) {
+          sections.push(new Section(componentName, componentPath))
+        } else if (componentType === Components.SNIPPET_COMPONENT_TYPE_NAME) {
+          snippets.push(new Snippet(componentName, componentPath))
+        }
+      }
+    }
+
+    return [components, sections, snippets]
   }
 }
 
