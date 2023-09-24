@@ -2,19 +2,23 @@
 import path from 'node:path'
 
 // Archie imports
-import Session from '../models/static/Session.js'
 import CollectionBuilder from './runners/CollectionBuilder.js'
 import CollectionFactory from '../factory/CollectionFactory.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
+import ComponentBuilder from './runners/ComponentBuilder.js'
+import ComponentFactory from '../factory/ComponentFactory.js'
 import Components from '../config/Components.js'
 import InternalError from '../errors/InternalError.js'
-import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import SectionBuilder from './runners/SectionBuilder.js'
 import SectionFactory from '../factory/SectionFactory.js'
+import SectionBuilder from './runners/SectionBuilder.js'
+import Session from '../models/static/Session.js'
+import SnippetBuilder from './runners/SnippetBuilder.js'
+import SnippetFactory from '../factory/SnippetFactory.js'
 import SnippetUtils from '../utils/SnippetUtils.js'
 import Timer from '../utils/Timer.js'
 import Watcher from '../utils/Watcher.js'
+import logger from '../utils/Logger.js'
 
 class BuildCommand {
   /**
@@ -66,41 +70,163 @@ class BuildCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async buildCollection (collectionName, sectionNames) {
-    logger.info(`Starting ${collectionName}'s build...`)
-    const startTime = Timer.getTimer()
+    logger.info(`${collectionName} => Initializing Components`)
+    const initStartTime = Timer.getTimer()
 
     const collection = await CollectionFactory.fromName(collectionName, sectionNames)
-    logger.info(`${collectionName}'s factory preparation completed in ${Timer.getEndTimerInSeconds(startTime)} seconds`)
 
-    // Step 1: Start from the bottom: Build Snippets first, synchronously, but with a cache
-    logger.info(`Step 1/3 - Beginning Snippets' build for ${collection.name}`)
-    const stepOneStartTime = Timer.getTimer()
+    const initializedComponents = await Promise.all([
+      this.initializeSections(collection.sections),
+      this.initializeSnippets(collection.snippets),
+      this.initializeComponents(collection.components)
+    ]);
 
+    // Destructuring the results to get each result separately
+    [collection.sections, collection.snippets, collection.components] = initializedComponents
+
+    logger.info(`${collectionName} => Found ${collection.components.length} components, ${collection.sections.length} sections and  ${collection.snippets.length} snippets.`)
+    logger.info(`${collectionName} => Initialization complete (${Timer.getEndTimerInSeconds(initStartTime)} seconds)`)
+    logger.info('')
+
+    logger.info(`${collectionName} => Building Individual Components`)
+    const buildStartTime = Timer.getTimer()
+    collection.snippets = await this.buildSnippets(collection.snippets)
+
+    const builtComponents = await Promise.all([
+      this.buildSections(collection.sections),
+      this.buildComponents(collection.components)
+    ]);
+
+    [collection.sections, collection.components] = builtComponents
+
+    logger.info(`${collectionName} => Build complete (${Timer.getEndTimerInSeconds(buildStartTime)} seconds)`)
+    logger.info('')
+
+    logger.info(`${collectionName} => Structuring Components Tree`)
+    const treeStartTime = Timer.getTimer()
+
+    // Component Hierarchy
     for (const section of collection.sections) {
-      if (section.snippets?.length) {
-        await SnippetUtils.buildRecursively(section.snippets)
+      for (const snippetName of section.snippetNames) {
+        section.snippets.push(await SnippetUtils.buildRecursivelyNew(snippetName, section.files.snippetFiles, collection.snippets))
       }
     }
-    logger.info(`Step 1/3 - Finished Snippets' build in ${Timer.getEndTimerInSeconds(stepOneStartTime)} seconds`)
 
-    // Step 2: Build Sections Concurrently
-    const stepTwoStartTime = Timer.getTimer()
-    logger.info(`Step 2/3 - Starting Sections' build for: ${collection.name}`)
-    const promises = []
+    logger.info('')
+    logger.info(`${collectionName}/`)
     for (const section of collection.sections) {
-      promises.push(SectionBuilder.build(section))
+      this.folderTreeLog(section)
     }
-    await Promise.all(promises)
-    logger.info(`Step 2/3 - Finished Sections' build in ${Timer.getEndTimerInSeconds(stepTwoStartTime)} seconds`)
+    logger.info('')
 
-    // Step 3: Build The Collection
-    const stepThreeStartTime = Timer.getTimer()
-    logger.info(`Step 3/3 - Starting Final Collection build for: ${collection.name}`)
+    logger.info(`${collectionName} => Tree complete (${Timer.getEndTimerInSeconds(treeStartTime)} seconds)`)
+    logger.info('')
+
+    logger.info(`${collectionName} => Building Collection`)
+    const collectionStartTime = Timer.getTimer()
+
     await CollectionBuilder.build(collection)
-    logger.info(`Step 3/3 - Finished Collection's build in ${Timer.getEndTimerInSeconds(stepThreeStartTime)} seconds`)
-    logger.info(`Completed all three steps for ${collectionName}'s build in ${Timer.getEndTimerInSeconds(startTime)} seconds`)
 
+    logger.info(`${collectionName} => Collection Build complete (${Timer.getEndTimerInSeconds(collectionStartTime)} seconds)`)
+    logger.info('')
+    logger.info(`${collectionName} => Build Command Total Time: ${Timer.getEndTimerInSeconds(initStartTime)} seconds`)
+    logger.info('')
     return Promise.resolve(collection)
+  }
+
+  /**
+   * Initialize Components
+   * @param {Component[]}components
+   * @returns {Promise<Component[]>}
+   */
+  static async initializeComponents (components) {
+    const initializePromises = []
+    for (const component of components) {
+      initializePromises.push(ComponentFactory.initializeComponent(component))
+    }
+    return Promise.all(initializePromises)
+  }
+
+  /**
+   * Initialize Sections
+   * @param {Section[]} sections
+   * @returns {Promise<Section[]>}
+   */
+  static async initializeSections (sections) {
+    const initializePromises = []
+    for (const section of sections) {
+      initializePromises.push(SectionFactory.initializeSection(section))
+    }
+    return Promise.all(initializePromises)
+  }
+
+  /**
+   * Folder Tree Log
+   * @param {Section|Snippet|Component} component
+   * @param {string} [prefix= '│ ']
+   * @param {boolean} [last=false]
+   * @returns {void}
+   */
+  static folderTreeLog (component, prefix = '', last = false) {
+    const ascii = last ? '└──' : '├──'
+    logger.info(`${prefix}${ascii} ${component.name}`)
+
+    for (const [i, snippet] of component.snippets.entries()) {
+      const last = i === component.snippets.length - 1
+      this.folderTreeLog(snippet, `│    ${prefix}`, last)
+    }
+  }
+
+  /**
+   * Initialize Snippets
+   * @param {Snippet[]}snippets
+   * @returns {Promise<Snippet[]>}
+   */
+  static async initializeSnippets (snippets) {
+    const initializePromises = []
+    for (const snippet of snippets) {
+      initializePromises.push(SnippetFactory.initializeSnippet(snippet))
+    }
+    return Promise.all(initializePromises)
+  }
+
+  /**
+   * Build Sections
+   * @param {Section[]}sections
+   * @returns {Promise<Awaited<Section>[]>}
+   */
+  static async buildSections (sections) {
+    const buildPromises = []
+    for (const section of sections) {
+      buildPromises.push(SectionBuilder.build(section))
+    }
+    return Promise.all(buildPromises)
+  }
+
+  /**
+   * Build Snippets
+   * @param {Snippet[]}snippets
+   * @returns {Promise<Awaited<Snippet>[]>}
+   */
+  static async buildSnippets (snippets) {
+    const buildPromises = []
+    for (const snippet of snippets) {
+      buildPromises.push(SnippetBuilder.build(snippet))
+    }
+    return Promise.all(buildPromises)
+  }
+
+  /**
+   * Build Components
+   * @param {Component[]}components
+   * @returns {Promise<Awaited<Component>[]>}
+   */
+  static async buildComponents (components) {
+    const buildPromises = []
+    for (const component of components) {
+      buildPromises.push(ComponentBuilder.build(component))
+    }
+    return Promise.all(buildPromises)
   }
 
   /**
