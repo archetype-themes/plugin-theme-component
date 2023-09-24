@@ -1,5 +1,5 @@
 // Node.js imports
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 
 // External imports
 import merge from 'deepmerge'
@@ -10,6 +10,7 @@ import FileUtils from './FileUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 import SnippetBuilder from '../commands/runners/SnippetBuilder.js'
+import SnippetFactory from '../factory/SnippetFactory.js'
 import { mergeObjectArraysByUniqueKey } from './ArrayUtils.js'
 
 class SnippetUtils {
@@ -26,6 +27,48 @@ class SnippetUtils {
       }
     }
     return snippets
+  }
+
+  /**
+   * Build Recursively NEW - From Collection only ATM
+   * @param {string} snippetName
+   * @param {string[]} snippetFiles
+   * @param {Snippet[]} snippets
+   * @returns {Promise<*>}
+   */
+  static async buildRecursivelyNew (snippetName, snippetFiles, snippets) {
+    let snippet
+    // Searching Internal Component Files
+    const snippetFile = snippetFiles.find(snippetFile => basename(snippetFile).split('.')[0] === snippetName)
+
+    // Snippet Found In Internal Component File
+    if (snippetFile) {
+      snippet = await SnippetFactory.fromSingleFile2(snippetName, snippetFile, snippetFiles, snippets)
+      snippet = SnippetBuilder.build(snippet)
+
+      if (snippet.snippetNames) {
+        for (const snippetName of snippet.snippetNames) {
+          snippet.snippets.push(await this.buildRecursivelyNew(snippetName, snippetFiles, snippets))
+        }
+      }
+    } else {
+      // Alternatively, Searching Collection Snippets
+      snippet = snippets.find(snippet => snippet.name === snippetName)
+
+      // Throw An Error If Nothing Was Found
+      if (snippet === undefined) {
+        throw ReferenceError(`Unable to find "${snippetName}" amongst Single File Snippets (${snippetFiles.map(snippetFile => basename(snippetFile)).join(', ')}) Collection Snippets (${snippets.map(snippet => snippet.name).join(', ')})`)
+      }
+
+      // If we have child snippets, and they haven't been built yet.
+      if (snippet.snippetNames && !snippet.snippets?.length) {
+        for (const snippetName of snippet.snippetNames) {
+          snippet.snippets.push(await this.buildRecursivelyNew(snippetName, snippet.files.snippetFiles, snippets))
+        }
+      }
+    }
+
+    return snippet
   }
 
   /**
