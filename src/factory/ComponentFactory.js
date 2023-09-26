@@ -14,7 +14,7 @@ class ComponentFactory {
     component.files = await ComponentFilesUtils.indexFiles(component.name, component.rootFolder, new SnippetFiles())
 
     // Load Liquid Code
-    component.liquidCode = await ComponentFilesUtils.getLiquidCode(component.name, component.files)
+    component.liquidCode = await ComponentFilesUtils.getLiquidCode(component.name, component.files.liquidFiles)
 
     // Load Schema
     if (component.files.schemaFile) {

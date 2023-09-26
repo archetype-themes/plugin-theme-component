@@ -137,13 +137,13 @@ class ComponentFilesUtils {
   /**
    * Get Liquid Code From Component Liquid Files
    * @param {string} componentName
-   * @param {SectionFiles|SnippetFiles} componentFiles
+   * @param {string[]} liquidFiles
    * @return {Promise<string>}
    */
-  static async getLiquidCode (componentName, componentFiles) {
-    const pluralForm = componentFiles.liquidFiles.length > 1 ? 's' : ''
-    logger.debug(`${componentName}: ${componentFiles.liquidFiles.length} liquid file${pluralForm} found`)
-    return FileUtils.getMergedFilesContent(componentFiles.liquidFiles)
+  static async getLiquidCode (componentName, liquidFiles) {
+    const pluralForm = liquidFiles.length > 1 ? 's' : ''
+    logger.debug(`${componentName}: ${liquidFiles.length} liquid file${pluralForm} found`)
+    return FileUtils.getMergedFilesContent(liquidFiles)
   }
 
   /**

@@ -88,7 +88,7 @@ class SnippetFactory {
     snippet.files = await ComponentFilesUtils.indexFiles(snippet.name, snippet.rootFolder, new SnippetFiles())
 
     // Load Liquid Code
-    snippet.liquidCode = await ComponentFilesUtils.getLiquidCode(snippet.name, snippet.files)
+    snippet.liquidCode = await ComponentFilesUtils.getLiquidCode(snippet.name, snippet.files.liquidFiles)
 
     // Load Schema
     if (snippet.files.schemaFile) {

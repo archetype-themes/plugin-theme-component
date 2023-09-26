@@ -42,7 +42,7 @@ class SectionFactory {
   }
 
   /**
-   *
+   * Initialize Section
    * @param {Section} section
    * @returns {Promise<Section>}
    */
@@ -51,7 +51,7 @@ class SectionFactory {
     section.files = await ComponentFilesUtils.indexFiles(section.name, section.rootFolder, new SectionFiles())
 
     // Load Liquid Code
-    section.liquidCode = await ComponentFilesUtils.getLiquidCode(section.name, section.files)
+    section.liquidCode = await ComponentFilesUtils.getLiquidCode(section.name, section.files.liquidFiles)
 
     // Load Schema
     if (section.files.schemaFile) {
