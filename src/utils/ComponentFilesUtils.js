@@ -6,6 +6,7 @@ import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import FileUtils from './FileUtils.js'
+import InputFileError from '../errors/InputFileError.js'
 import JavascriptUtils from './JavascriptUtils.js'
 import logger from './Logger.js'
 import SectionSchema from '../models/SectionSchema.js'
@@ -36,7 +37,7 @@ class ComponentFilesUtils {
     ComponentFilesUtils.filterFiles(files, filesModel)
 
     // Validation: Make sure that a liquid file was found
-    if (filesModel.liquidFiles.length === 0) {
+    if (!filesModel.liquidFile) {
       throw new FileMissingError(`Section Factory: No liquid files file found for the "${componentName}" section`)
     }
 
@@ -101,7 +102,10 @@ class ComponentFilesUtils {
             componentFiles.snippetFiles.push(file)
             break
           }
-          componentFiles.liquidFiles.push(file)
+          if (componentFiles.liquidFile) {
+            throw new InputFileError(`Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`)
+          }
+          componentFiles.liquidFile = file
           break
         case '.json':
           if (filename === 'package.json') {
@@ -132,18 +136,6 @@ class ComponentFilesUtils {
           break
       }
     }
-  }
-
-  /**
-   * Get Liquid Code From Component Liquid Files
-   * @param {string} componentName
-   * @param {string[]} liquidFiles
-   * @return {Promise<string>}
-   */
-  static async getLiquidCode (componentName, liquidFiles) {
-    const pluralForm = liquidFiles.length > 1 ? 's' : ''
-    logger.debug(`${componentName}: ${liquidFiles.length} liquid file${pluralForm} found`)
-    return FileUtils.getMergedFilesContent(liquidFiles)
   }
 
   /**

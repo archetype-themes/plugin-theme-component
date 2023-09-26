@@ -3,14 +3,15 @@ import path from 'path'
 
 // Archie Internal JS imports
 import Components from '../config/Components.js'
-import Section from '../models/Section.js'
-import SectionFiles from '../models/SectionFiles.js'
-import Session from '../models/static/Session.js'
 import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
+import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
+import Section from '../models/Section.js'
+import SectionFiles from '../models/SectionFiles.js'
+import Session from '../models/static/Session.js'
 import SnippetFactory from './SnippetFactory.js'
 
 class SectionFactory {
@@ -51,7 +52,7 @@ class SectionFactory {
     section.files = await ComponentFilesUtils.indexFiles(section.name, section.rootFolder, new SectionFiles())
 
     // Load Liquid Code
-    section.liquidCode = await ComponentFilesUtils.getLiquidCode(section.name, section.files.liquidFiles)
+    section.liquidCode = await FileUtils.getFileContents(section.files.liquidFile)
 
     // Load Schema
     if (section.files.schemaFile) {

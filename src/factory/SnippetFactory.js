@@ -88,7 +88,7 @@ class SnippetFactory {
     snippet.files = await ComponentFilesUtils.indexFiles(snippet.name, snippet.rootFolder, new SnippetFiles())
 
     // Load Liquid Code
-    snippet.liquidCode = await ComponentFilesUtils.getLiquidCode(snippet.name, snippet.files.liquidFiles)
+    snippet.liquidCode = await FileUtils.getFileContents(snippet.files.liquidFile)
 
     // Load Schema
     if (snippet.files.schemaFile) {
@@ -129,7 +129,7 @@ class SnippetFactory {
     snippet.name = snippetName
     snippet.rootFolder = dirname(snippetFile)
     snippet.files = new SnippetFiles()
-    snippet.files.liquidFiles = [snippetFile]
+    snippet.files.liquidFile = snippetFile
     snippet.liquidCode = await FileUtils.getFileContents(snippetFile)
     snippet.snippetNames = LiquidUtils.getSnippetNames(snippet.liquidCode)
 
@@ -231,7 +231,7 @@ class SnippetFactory {
     const snippet = new Snippet()
     snippet.name = snippetName
     snippet.files = new SnippetFiles()
-    snippet.files.liquidFiles = [snippetFile]
+    snippet.files.liquidFile = snippetFile
     snippet.liquidCode = await FileUtils.getFileContents(snippetFile)
 
     const snippetNames = LiquidUtils.getSnippetNames(snippet.liquidCode)

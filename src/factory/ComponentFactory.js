@@ -1,7 +1,8 @@
-import SnippetFiles from '../models/SnippetFiles.js'
 import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
+import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
+import SnippetFiles from '../models/SnippetFiles.js'
 
 class ComponentFactory {
   /**
@@ -14,7 +15,7 @@ class ComponentFactory {
     component.files = await ComponentFilesUtils.indexFiles(component.name, component.rootFolder, new SnippetFiles())
 
     // Load Liquid Code
-    component.liquidCode = await ComponentFilesUtils.getLiquidCode(component.name, component.files.liquidFiles)
+    component.liquidCode = await FileUtils.getFileContents(component.files.liquidFile)
 
     // Load Schema
     if (component.files.schemaFile) {

@@ -9,8 +9,8 @@ class ComponentFiles {
   /** @type {string} **/
   #javascriptIndex
 
-  /** @type {string[]} **/
-  #liquidFiles = []
+  /** @type {string} **/
+  #liquidFile
 
   /** @type {string[]} **/
   #localeFiles = []
@@ -85,19 +85,19 @@ class ComponentFiles {
   }
 
   /**
-   * Get Liquid Files' locations
-   * @returns {string[]}
+   * Get path to the component's main liquid file
+   * @returns {string}
    */
-  get liquidFiles () {
-    return this.#liquidFiles
+  get liquidFile () {
+    return this.#liquidFile
   }
 
   /**
-   * Set Liquid Files' locations
-   * @param {string[]} value
+   * Set path to the component's main liquid file
+   * @param {string} value
    */
-  set liquidFiles (value) {
-    this.#liquidFiles = value
+  set liquidFile (value) {
+    this.#liquidFile = value
   }
 
   /**

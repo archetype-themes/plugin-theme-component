@@ -5,14 +5,10 @@ class Component {
   /** @type {string} **/
   #rootFolder
 
-  /**
-   * @type {ComponentFiles}
-   */
+  /** @type {ComponentFiles} **/
   #files
 
-  /**
-   * @type {ComponentBuild}
-   */
+  /** @type {ComponentBuild} **/
   #build
 
   /** @type {string} **/
