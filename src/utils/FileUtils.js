@@ -22,30 +22,23 @@ class FileUtils {
   /**
    * Copy Files from an associative array
    * @param {Object.<string, string>} files
-   * @return {Promise<Awaited<unknown>[]>}
+   * @return {Promise<Awaited<void>[]>}
    */
   static async copy (files) {
-    const copyPromises = []
-    for (const sourceFile of Object.keys(files)) {
-      logger.debug(`Copying ${basename(sourceFile)}`)
-      copyPromises.push(copyFile(sourceFile, files[sourceFile]))
-    }
+    const copyPromises = Object.entries(files).map(
+      ([sourceFile, destination]) => copyFile(sourceFile, destination))
 
     return Promise.all(copyPromises)
   }
 
   /**
    * Copy All Files to a Specified Folder
-   * @param files
-   * @param targetFolder
+   * @param {string[]} files
+   * @param {string} targetFolder
    * @return {Promise<Awaited<void>[]>}
    */
   static async copyFilesToFolder (files, targetFolder) {
-    const copyPromises = []
-    for (const file of files) {
-      copyPromises.push(copyFile(file, join(targetFolder, basename(file))))
-    }
-    return Promise.all(copyPromises)
+    return Promise.all(files.map(file => copyFile(file, join(targetFolder, basename(file)))))
   }
 
   /**
