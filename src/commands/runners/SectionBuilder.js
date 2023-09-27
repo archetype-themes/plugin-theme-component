@@ -21,8 +21,8 @@ class SectionBuilder {
    * @returns {Promise<Section>}
    */
   static async build (section) {
-    // Create build module
-    section.build = BuildFactory.fromSection(section)
+    // Create build model
+    section.build = new ComponentBuild()
 
     // Build Locales
     section.build.locales = LocaleUtils.buildLocales(section.name, section.locales, section.schema?.locales)
