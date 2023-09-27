@@ -194,8 +194,6 @@ class CollectionBuilder {
     await rm(collection.build.rootFolder, { force: true, recursive: true })
     await mkdir(collection.build.rootFolder, { recursive: true })
 
-    const mkdirPromises = []
-
     const buildFolders = [
       collection.build.assetsFolder,
       collection.build.configFolder,
@@ -203,10 +201,7 @@ class CollectionBuilder {
       collection.build.sectionsFolder,
       collection.build.snippetsFolder
     ]
-
-    for (const buildFolder of buildFolders) {
-      mkdirPromises.push(buildFolder, { recursive: true })
-    }
+    const mkdirPromises = buildFolders.map(buildFolder => mkdir(buildFolder, { recursive: true }))
 
     return Promise.all(mkdirPromises)
   }
