@@ -109,11 +109,11 @@ class BuildCommand {
     const buildStartTime = Timer.getTimer();
 
     // Build Components
-    [collection.sections, collection.snippets, collection.components] = await Promise.all([
-      this.buildSections(collection.sections),
-      this.buildSnippets(collection.snippets),
-      this.buildComponents(collection.components)
-    ])
+    [collection.sections, collection.snippets, collection.components] = (await Promise.all([
+      Promise.all(collection.sections.map(section => SectionBuilder.build(section))),
+      Promise.all(collection.snippets.map(snippet => SnippetBuilder.build(snippet))),
+      Promise.all(collection.components.map(component => ComponentBuilder.build(component)))
+    ]))
 
     logger.info(`${childPrefix}Build complete (${Timer.getEndTimerInSeconds(buildStartTime)} seconds)`)
     logger.info('')
@@ -159,8 +159,7 @@ class BuildCommand {
    * @param {(Component|Section|Snippet)[]}components
    * @returns {Promise<(Component|Section|Snippet)[]>}
    */
-  static
-  async initializeComponents (components) {
+  static async initializeComponents (components) {
     const initializePromises = []
     for (const component of components) {
       initializePromises.push(ComponentFactory.initializeComponent(component))
@@ -194,7 +193,7 @@ class BuildCommand {
    */
   static async setComponentHierarchy (topComponents, availableComponents) {
     for (const topComponent of topComponents) {
-      if (!topComponent.snippets?.length) {
+      if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
         for (const snippetName of topComponent.snippetNames) {
           const snippet = availableComponents.find(component => component.name === snippetName)
           if (snippet !== undefined) {
@@ -232,48 +231,6 @@ class BuildCommand {
         lastChild && grid.pop()
       }
     }
-  }
-
-  /**
-   * Build Sections
-   * @param {Section[]}sections
-   * @returns {Promise<Awaited<Section>[]>}
-   */
-  static
-  async buildSections (sections) {
-    const buildPromises = []
-    for (const section of sections) {
-      buildPromises.push(SectionBuilder.build(section))
-    }
-    return Promise.all(buildPromises)
-  }
-
-  /**
-   * Build Snippets
-   * @param {Snippet[]}snippets
-   * @returns {Promise<Awaited<Snippet>[]>}
-   */
-  static
-  async buildSnippets (snippets) {
-    const buildPromises = []
-    for (const snippet of snippets) {
-      buildPromises.push(SnippetBuilder.build(snippet))
-    }
-    return Promise.all(buildPromises)
-  }
-
-  /**
-   * Build Components
-   * @param {Component[]}components
-   * @returns {Promise<Awaited<Component>[]>}
-   */
-  static
-  async buildComponents (components) {
-    const buildPromises = []
-    for (const component of components) {
-      buildPromises.push(ComponentBuilder.build(component))
-    }
-    return Promise.all(buildPromises)
   }
 
   /**
