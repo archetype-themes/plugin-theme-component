@@ -6,7 +6,7 @@ import ComponentFactory from '../factory/ComponentFactory.js'
 import Snippet from '../models/Snippet.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
-import logger from '../utils/Logger.js'
+import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import SnippetUtils from '../utils/SnippetUtils.js'
 import { plural } from '../utils/SyntaxUtils.js'
@@ -48,10 +48,7 @@ class BuildCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async buildCollection (collectionName, sectionNames) {
-    const topPrefix = '════▶ '
-    const childPrefix = '  ╚══▶  '
-
-    logger.info(`${topPrefix}Initializing Components for "${Session.targetComponentName}"`)
+    logTitleItem(`Initializing Components for "${Session.targetComponentName}"`)
     const initStartTime = Timer.getTimer()
 
     // Init Collection
@@ -59,7 +56,7 @@ class BuildCommand {
 
     // Filter Out Sections When Applicable
     if (sectionNames?.length) {
-      logger.info(`${childPrefix}Packaging the following component${plural(sectionNames)}: ${sectionNames.join(', ')}`)
+      logChildItem(`Packaging the following component${plural(sectionNames)}: ${sectionNames.join(', ')}`)
       collection.sections = collection.sections.filter(section => sectionNames.includes(section.name))
     }
 
@@ -81,7 +78,7 @@ class BuildCommand {
     embeddedSnippets = await Promise.all(embeddedSnippets.map(component => ComponentFactory.initializeComponent(component)))
     collection.snippets = collection.snippets.concat(embeddedSnippets)
 
-    logger.info(`${childPrefix}Found ${collection.components.length} component${plural(collection.components)}, ${collection.sections.length} section${plural(collection.sections)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
+    logChildItem(`Found ${collection.components.length} component${plural(collection.components)}, ${collection.sections.length} section${plural(collection.sections)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
     // Filter Out Snippets When Applicable
     if (sectionNames?.length) {
@@ -94,12 +91,12 @@ class BuildCommand {
       collection.snippets = collection.snippets.filter(snippet => allSnippetNames.includes(snippet.name))
     }
 
-    logger.info(`${childPrefix}Assembling ${collection.components.length} component${plural(collection.components)}, ${collection.sections.length} section${plural(collection.sections)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
+    logChildItem(`Assembling ${collection.components.length} component${plural(collection.components)}, ${collection.sections.length} section${plural(collection.sections)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
-    logger.info(`${childPrefix}Initialization complete (${Timer.getEndTimerInSeconds(initStartTime)} seconds)`)
-    logger.info('')
+    logChildItem(`Initialization complete (${Timer.getEndTimerInSeconds(initStartTime)} seconds)`)
+    logSpacer()
 
-    logger.info(`${topPrefix}Building Individual Components for ${Session.targetComponentName}`)
+    logTitleItem(`Building Individual Components for ${Session.targetComponentName}`)
     const buildStartTime = Timer.getTimer();
 
     // Build Components
@@ -109,10 +106,10 @@ class BuildCommand {
       Promise.all(collection.components.map(component => ComponentBuilder.build(component)))
     ]))
 
-    logger.info(`${childPrefix}Build complete (${Timer.getEndTimerInSeconds(buildStartTime)} seconds)`)
-    logger.info('')
+    logChildItem(`Build complete (${Timer.getEndTimerInSeconds(buildStartTime)} seconds)`)
+    logSpacer()
 
-    logger.info(`${topPrefix}Structuring Components Tree for ${Session.targetComponentName}`)
+    logTitleItem(`Structuring Components Tree for ${Session.targetComponentName}`)
     const treeStartTime = Timer.getTimer()
 
     // Build Component Hierarchy Structure
@@ -123,28 +120,27 @@ class BuildCommand {
     await this.setComponentHierarchy(collection.snippets, snippets)
     await this.setComponentHierarchy(collection.components, snippets)
 
-    const indent = '  ║     '
-    logger.info(indent)
-    logger.info(`${indent}${collectionName}/`)
+    logChildMessage()
+    logChildMessage(`${collectionName}/`)
 
     for (const [i, section] of collection.sections.entries()) {
       const last = i === collection.sections.length - 1
-      this.folderTreeLog(section, last, indent)
+      this.folderTreeLog(section, last)
     }
-    logger.info(indent)
+    logChildMessage()
 
-    logger.info(`${childPrefix}Tree complete (${Timer.getEndTimerInSeconds(treeStartTime)} seconds)`)
-    logger.info('')
+    logChildItem(`Tree complete (${Timer.getEndTimerInSeconds(treeStartTime)} seconds)`)
+    logSpacer()
 
-    logger.info(`${topPrefix}Building Collection`)
+    logTitleItem('Building Collection')
     const collectionStartTime = Timer.getTimer()
 
     await CollectionBuilder.build(collection)
 
-    logger.info(`${childPrefix}Collection Build complete (${Timer.getEndTimerInSeconds(collectionStartTime)} seconds)`)
-    logger.info('')
-    logger.info(`${topPrefix}Build Command Total Time: ${Timer.getEndTimerInSeconds(initStartTime)} seconds`)
-    logger.info('')
+    logChildItem(`Collection Build complete (${Timer.getEndTimerInSeconds(collectionStartTime)} seconds)`)
+    logSpacer()
+    logTitleItem(`Build Command Total Time: ${Timer.getEndTimerInSeconds(initStartTime)} seconds`)
+    logSpacer()
     return Promise.resolve(collection)
   }
 
@@ -185,23 +181,22 @@ class BuildCommand {
    * Folder Tree Log
    * @param {Section|Snippet|Component} component
    * @param {boolean} [last=false]
-   * @param {string} [indent='']
    * @param {Array} [grid=[true]]
    * @returns {void}
    */
-  static folderTreeLog (component, last = false, indent = '', grid = []) {
+  static folderTreeLog (component, last = false, grid = []) {
     const ascii = last ? '└──' : '├──'
 
     let prefix = ''
     grid.forEach(gridItem => { prefix += gridItem ? '│    ' : '     ' })
 
-    logger.info(`${indent}${prefix}${ascii} ${component.name}`)
+    logChildMessage(`${prefix}${ascii} ${component.name}`)
 
     if (component.snippets?.length) {
       grid.push(!last)
       for (const [i, snippet] of component.snippets.entries()) {
         const lastChild = i === component.snippets.length - 1
-        this.folderTreeLog(snippet, lastChild, indent, grid)
+        this.folderTreeLog(snippet, lastChild, grid)
 
         lastChild && grid.pop()
       }

@@ -11,6 +11,8 @@ import Components from '../../config/Components.js'
 import FileUtils from '../../utils/FileUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
+import { logChildItem } from '../../utils/Logger.js'
+import Timer from '../../utils/Timer.js'
 import SectionBuilder from './SectionBuilder.js'
 import Session from '../../models/static/Session.js'
 import SnippetUtils from '../../utils/SnippetUtils.js'
@@ -27,26 +29,38 @@ class CollectionBuilder {
     const fileOperationPromises = []
 
     // Create build model and prepare folders
+    const buildCollectionTimer = Timer.getTimer()
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection)
+    logChildItem(`Collection Build Initialized (${Timer.getEndTimerInSeconds(buildCollectionTimer)} seconds)`)
 
     // Gather and build Stylesheets
     const mainStylesheets = this.getMainStylesheets(collection)
+    const buildStylesTimer = Timer.getTimer()
     collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.rootFolder)
+    logChildItem(`Styles Ready (${Timer.getEndTimerInSeconds(buildStylesTimer)} seconds)`)
     fileOperationPromises.push(FileUtils.writeFile(collection.build.stylesheet, collection.build.styles))
 
     // Gather and Build Collection JS Files
     const jsFiles = this.getJsFiles(collection)
     if (jsFiles.length) {
+      const buildScriptsTimer = Timer.getTimer()
       await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.javascriptFile, collection.rootFolder)
+      logChildItem(`Scripts Ready (${Timer.getEndTimerInSeconds(buildScriptsTimer)} seconds)`)
     }
 
     // Build Locales
+    const buildLocalesTimer = Timer.getTimer()
     collection.build.locales = this.buildLocales(collection.sections)
+    logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
+    const buildSchemaLocalesTimer = Timer.getTimer()
     collection.build.schemaLocales = this.buildLocales(collection.sections, true)
+    logChildItem(`Schema Locales Ready (${Timer.getEndTimerInSeconds(buildSchemaLocalesTimer)} seconds)`)
 
     // Build Settings Schema
+    const buildSettingsSchemaTimer = Timer.getTimer()
     collection.build.settingsSchema = this.buildSettingsSchema(collection.sections)
+    logChildItem(`Settings Schema Ready (${Timer.getEndTimerInSeconds(buildSettingsSchemaTimer)} seconds)`)
 
     // Write Schema Locales and Settings Schema to disk for Collection Build
     // On Theme Install, these contents are merged from collection.build values.

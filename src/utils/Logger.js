@@ -58,3 +58,38 @@ if (['debug', 'trace'].includes(loglevel)) {
 }
 
 export default logger
+
+export const topPrefix = '════▶ '
+export const childPrefix = '  ╚══▶  '
+export const childSpacer = '  ║     '
+
+/**
+ * Log Top Item
+ * @param {string} message
+ */
+export function logTitleItem (message) {
+  logger.info(`${topPrefix}${message}`)
+}
+
+/**
+ * Log Child Item
+ * @param {string} message
+ */
+export function logChildItem (message) {
+  logger.info(`${childPrefix}${message}`)
+}
+
+/**
+ * Logs an empty line as a spacer element
+ */
+export function logSpacer () {
+  logger.info('')
+}
+
+/**
+ * Log Child Message
+ * @param {string} [message='']
+ */
+export function logChildMessage (message = '') {
+  logger.info(childSpacer + message)
+}
