@@ -8,7 +8,6 @@ import CollectionUtils from '../utils/CollectionUtils.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
 import ComponentFactory from '../factory/ComponentFactory.js'
 import Components from '../config/Components.js'
-import InternalError from '../errors/InternalError.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import SectionBuilder from './runners/SectionBuilder.js'
 import Session from '../models/static/Session.js'
@@ -28,15 +27,10 @@ class BuildCommand {
   static async execute () {
     const collectionName = NodeUtils.getPackageName()
     let componentNames
-    switch (Session.commandOption) {
-      case Components.COLLECTION_COMPONENT_TYPE_NAME:
-        componentNames = Session.archieConfig?.components
-        break
-      case Components.SECTION_COMPONENT_TYPE_NAME:
-        componentNames = [Session.targetComponentName]
-        break
-      default:
-        throw new InternalError('CRITICAL ERROR: A validated Build Command is in Error.')
+    if (Session.commandOption === Components.COLLECTION_COMPONENT_TYPE_NAME) {
+      componentNames = Session.archieConfig?.components
+    } else if (Session.commandOption === Components.SECTION_COMPONENT_TYPE_NAME) {
+      componentNames = [Session.targetComponentName]
     }
 
     if (Session.watchMode) {
@@ -84,8 +78,8 @@ class BuildCommand {
       this.createEmbeddedSnippets(collection.components)
     ])).flat()
 
-    embeddedSnippets = Promise.all(embeddedSnippets.map(component => ComponentFactory.initializeComponent(component)))
-    collection.snippets.concat(embeddedSnippets)
+    embeddedSnippets = await Promise.all(embeddedSnippets.map(component => ComponentFactory.initializeComponent(component)))
+    collection.snippets = collection.snippets.concat(embeddedSnippets)
 
     logger.info(`${childPrefix}Found ${collection.components.length} component${plural(collection.components)}, ${collection.sections.length} section${plural(collection.sections)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
