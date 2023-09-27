@@ -58,7 +58,6 @@ class CollectionBuilder {
 
     // Gather & Copy Sections & Snippets Liquid Files
     for (const componentType of [Components.COMPONENT_TYPE_NAME + 's', Components.SECTION_COMPONENT_TYPE_NAME + 's', Components.SNIPPET_COMPONENT_TYPE_NAME + 's']) {
-      console.log(componentType)
       for (const component of collection[componentType]) {
         fileOperationPromises.push(FileUtils.writeFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
       }

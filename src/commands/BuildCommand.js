@@ -1,23 +1,23 @@
 // Node imports
 import path, { dirname, parse } from 'node:path'
+import Components from '../config/Components.js'
+import CollectionFactory from '../factory/CollectionFactory.js'
+import ComponentFactory from '../factory/ComponentFactory.js'
+import Snippet from '../models/Snippet.js'
+import Session from '../models/static/Session.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
+import logger from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import SnippetUtils from '../utils/SnippetUtils.js'
+import { plural } from '../utils/SyntaxUtils.js'
+import Timer from '../utils/Timer.js'
+import Watcher from '../utils/Watcher.js'
 
 // Archie imports
 import CollectionBuilder from './runners/CollectionBuilder.js'
-import CollectionFactory from '../factory/CollectionFactory.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
-import ComponentFactory from '../factory/ComponentFactory.js'
-import Components from '../config/Components.js'
-import NodeUtils from '../utils/NodeUtils.js'
 import SectionBuilder from './runners/SectionBuilder.js'
-import Session from '../models/static/Session.js'
-import Snippet from '../models/Snippet.js'
 import SnippetBuilder from './runners/SnippetBuilder.js'
-import SnippetUtils from '../utils/SnippetUtils.js'
-import Timer from '../utils/Timer.js'
-import Watcher from '../utils/Watcher.js'
-import logger from '../utils/Logger.js'
-import { plural } from '../utils/SyntaxUtils.js'
 
 class BuildCommand {
   /**
@@ -156,13 +156,11 @@ class BuildCommand {
   static createEmbeddedSnippets (components) {
     const filteredComponents = components.filter(component => component.files?.snippetFiles)
 
-    const snippets = filteredComponents.map(component =>
+    return filteredComponents.map(component =>
       component.files.snippetFiles.map(snippetFile =>
         new Snippet(parse(snippetFile).name, dirname(snippetFile))
       )
     ).flat()
-    console.log(snippets)
-    return snippets
   }
 
   /**
