@@ -65,15 +65,15 @@ class BuildCommand {
 
     // Filter Out Sections When Applicable
     if (sectionNames?.length) {
-      logger.info(`${childPrefix}Packaging the following component${sectionNames.length > 1 ? 's' : ''}: ${sectionNames.join(', ')}`)
+      logger.info(`${childPrefix}Packaging the following component${plural(sectionNames)}: ${sectionNames.join(', ')}`)
       collection.sections = collection.sections.filter(section => sectionNames.includes(section.name))
     }
 
     // Initialize Individual Components
     [collection.sections, collection.snippets, collection.components] = await Promise.all([
-      this.initializeComponents(collection.sections),
-      this.initializeComponents(collection.snippets),
-      this.initializeComponents(collection.components)
+      Promise.all(collection.sections.map(component => ComponentFactory.initializeComponent(component))),
+      Promise.all(collection.snippets.map(component => ComponentFactory.initializeComponent(component))),
+      Promise.all(collection.components.map(component => ComponentFactory.initializeComponent(component)))
     ])
 
     // Initialize Embedded Snippets
@@ -84,7 +84,7 @@ class BuildCommand {
       this.createEmbeddedSnippets(collection.components)
     ])).flat()
 
-    embeddedSnippets = await this.initializeComponents(embeddedSnippets)
+    embeddedSnippets = Promise.all(embeddedSnippets.map(component => ComponentFactory.initializeComponent(component)))
     collection.snippets.concat(embeddedSnippets)
 
     logger.info(`${childPrefix}Found ${collection.components.length} component${plural(collection.components)}, ${collection.sections.length} section${plural(collection.sections)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
@@ -155,34 +155,19 @@ class BuildCommand {
   }
 
   /**
-   * Initialize Components
-   * @param {(Component|Section|Snippet)[]}components
-   * @returns {Promise<(Component|Section|Snippet)[]>}
-   */
-  static async initializeComponents (components) {
-    const initializePromises = []
-    for (const component of components) {
-      initializePromises.push(ComponentFactory.initializeComponent(component))
-    }
-    return Promise.all(initializePromises)
-  }
-
-  /**
    * Create Embedded Snippets
    * @param {Section[]|Snippet[]|Component[]} components
    * @returns {Snippet[]}
    */
   static createEmbeddedSnippets (components) {
-    const snippets = []
+    const filteredComponents = components.filter(component => component.files?.snippetFiles)
 
-    for (const component of components) {
-      if (component.files?.snippetFiles) {
-        for (const snippetFile of component.files.snippetFiles) {
-          snippets.push(new Snippet(parse(snippetFile).name, dirname(snippetFile)))
-        }
-      }
-    }
-
+    const snippets = filteredComponents.map(component =>
+      component.files.snippetFiles.map(snippetFile =>
+        new Snippet(parse(snippetFile).name, dirname(snippetFile))
+      )
+    ).flat()
+    console.log(snippets)
     return snippets
   }
 
@@ -216,9 +201,7 @@ class BuildCommand {
     const ascii = last ? '└──' : '├──'
 
     let prefix = ''
-    for (const gridItem of grid) {
-      prefix += gridItem ? '│    ' : '     '
-    }
+    grid.forEach(gridItem => { prefix += gridItem ? '│    ' : '     ' })
 
     logger.info(`${indent}${prefix}${ascii} ${component.name}`)
 
@@ -251,7 +234,7 @@ class BuildCommand {
   }
 
   /**
-   *
+   * Action Taken On Collection Watch Event
    * @param {FSWatcher} watcher
    * @param {string} event
    * @param {string} eventPath
