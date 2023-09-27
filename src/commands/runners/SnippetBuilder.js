@@ -10,6 +10,7 @@ class SnippetBuilder {
    * @return {Promise<Snippet>}
    */
   static async build (snippet) {
+    // Create build model
     snippet.build = new ComponentBuild()
 
     // Build Locales
