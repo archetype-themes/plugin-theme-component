@@ -7,17 +7,15 @@ import merge from 'deepmerge'
 
 // Archie imports
 import BuildFactory from '../../factory/BuildFactory.js'
-import Components from '../../config/Components.js'
 import FileUtils from '../../utils/FileUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import { logChildItem } from '../../utils/Logger.js'
-import Timer from '../../utils/Timer.js'
-import SectionBuilder from './SectionBuilder.js'
 import Session from '../../models/static/Session.js'
 import SnippetUtils from '../../utils/SnippetUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
+import Timer from '../../utils/Timer.js'
 import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
+import { logChildItem } from '../../utils/Logger.js'
 
 class CollectionBuilder {
   /**
@@ -26,6 +24,9 @@ class CollectionBuilder {
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async build (collection) {
+    const allSnippets = [...collection.components, ...collection.snippets]
+    const allComponents = [...collection.components, ...collection.snippets, ...collection.sections]
+
     const fileOperationPromises = []
 
     // Create build model and prepare folders
@@ -35,14 +36,17 @@ class CollectionBuilder {
     logChildItem(`Collection Build Initialized (${Timer.getEndTimerInSeconds(buildCollectionTimer)} seconds)`)
 
     // Gather and build Stylesheets
-    const mainStylesheets = this.getMainStylesheets(collection)
-    const buildStylesTimer = Timer.getTimer()
-    collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.rootFolder)
-    logChildItem(`Styles Ready (${Timer.getEndTimerInSeconds(buildStylesTimer)} seconds)`)
-    fileOperationPromises.push(FileUtils.writeFile(collection.build.stylesheet, collection.build.styles))
+    const mainStylesheets = this.getMainStylesheets(allComponents)
 
+    if (mainStylesheets.length) {
+      const buildStylesTimer = Timer.getTimer()
+      collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.rootFolder)
+      logChildItem(`Styles Ready (${Timer.getEndTimerInSeconds(buildStylesTimer)} seconds)`)
+      fileOperationPromises.push(FileUtils.writeFile(collection.build.stylesheet, collection.build.styles))
+    }
     // Gather and Build Collection JS Files
-    const jsFiles = this.getJsFiles(collection)
+    const jsFiles = this.getJsFiles(allComponents)
+
     if (jsFiles.length) {
       const buildScriptsTimer = Timer.getTimer()
       await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.javascriptFile, collection.rootFolder)
@@ -70,18 +74,21 @@ class CollectionBuilder {
       fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema, null, 2)))
     }
 
-    // Gather & Copy Sections & Snippets Liquid Files
-    for (const componentType of [Components.COMPONENT_TYPE_NAME + 's', Components.SECTION_COMPONENT_TYPE_NAME + 's', Components.SNIPPET_COMPONENT_TYPE_NAME + 's']) {
-      for (const component of collection[componentType]) {
-        fileOperationPromises.push(FileUtils.writeFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
-      }
-    }
+    // Write Component Liquid Files
+    const sectionFilesWritePromises = collection.sections.map(section =>
+      FileUtils.writeFile(join(collection.build.sectionsFolder, `${section.name}.liquid`), section.build.liquidCode))
+    const snippetFilesWritePromises = allSnippets.map(component =>
+      FileUtils.writeFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
 
     // Gather & Copy Assets Files
-    const assetFiles = this.getAssetFiles(collection.sections)
-    fileOperationPromises.push(FileUtils.copyFilesToFolder(assetFiles, collection.build.assetsFolder))
+    const allAssetFiles = this.getAssetFiles(allComponents)
+    fileOperationPromises.push(FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder))
 
-    return Promise.all(fileOperationPromises)
+    return Promise.all([
+      ...fileOperationPromises,
+      ...sectionFilesWritePromises,
+      ...snippetFilesWritePromises
+    ])
   }
 
   /**
@@ -128,74 +135,33 @@ class CollectionBuilder {
 
   /**
    *
-   * @param {Section[]} sections
+   * @param {(Component|Section|Snippet)[]} components
    * @return {string[]}
    */
-  static getAssetFiles (sections) {
-    let assetFiles = []
+  static getAssetFiles (components) {
+    const filteredComponents = components.filter(component => component.files.assetFiles?.length)
 
-    for (const section of sections) {
-      if (section.files.assetFiles) {
-        assetFiles = assetFiles.concat(section.files.assetFiles)
-      }
-      if (section.snippets?.length) {
-        assetFiles = assetFiles.concat(SnippetUtils.getAssetsRecursively(section.snippets))
-      }
-    }
-
-    // Remove dupes
-    assetFiles = [...new Set(assetFiles)]
-
-    return assetFiles
+    return (filteredComponents.map(component => component.files.assetFiles)).flat()
   }
 
   /**
    * Get Collection JavaScript Files
-   * @param collection
+   * @param {(Section|Snippet|Component)[]} components
    * @return {string[]}
    */
-  static getJsFiles (collection) {
-    let jsFiles = []
-
-    for (const section of collection.sections) {
-      // Add Section file
-      if (section.files.javascriptIndex) {
-        jsFiles.push(section.files.javascriptIndex)
-      }
-
-      // Add Section snippet files
-      if (section.snippets?.length) {
-        jsFiles = jsFiles.concat(SnippetUtils.getJavascriptIndexesRecursively(section.snippets))
-      }
-    }
-
-    // Remove dupes
-    jsFiles = [...new Set(jsFiles)]
-
-    return jsFiles
+  static getJsFiles (components) {
+    const componentsWithScriptFiles = components.filter(component => component.files.javascriptIndex)
+    return componentsWithScriptFiles.map(component => component.files.javascriptIndex)
   }
 
   /**
    * Get Main Stylesheets from all sections and snippets
-   * @param {module:models/Collection} collection
+   * @param {(Component|Section|Snippet)[]} components
    * @return {string[]}
    */
-  static getMainStylesheets (collection) {
-    let mainStylesheets = []
-
-    for (const section of collection.sections) {
-      if (section.files.mainStylesheet) {
-        mainStylesheets.push(section.files.mainStylesheet)
-      }
-      if (section.snippets?.length) {
-        mainStylesheets.push(...SnippetUtils.getMainStylesheetsRecursively(section.snippets))
-      }
-    }
-
-    // Remove dupes
-    mainStylesheets = [...new Set(mainStylesheets)]
-
-    return mainStylesheets
+  static getMainStylesheets (components) {
+    const componentsWithStylesheets = components.filter(component => component.files.mainStylesheet)
+    return componentsWithStylesheets.map(component => component.files.mainStylesheet)
   }
 
   /**
