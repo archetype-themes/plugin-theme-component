@@ -113,12 +113,10 @@ class BuildCommand {
     const treeStartTime = Timer.getTimer()
 
     // Build Component Hierarchy Structure
-    const snippets = []
-    snippets.push(...collection.components)
-    snippets.push(...collection.snippets)
-    await this.setComponentHierarchy(collection.sections, snippets)
-    await this.setComponentHierarchy(collection.snippets, snippets)
-    await this.setComponentHierarchy(collection.components, snippets)
+    const allSnippets = [...collection.components, ...collection.snippets]
+    await this.setComponentHierarchy(collection.sections, allSnippets)
+    await this.setComponentHierarchy(collection.snippets, allSnippets)
+    await this.setComponentHierarchy(collection.components, allSnippets)
 
     logChildMessage()
     logChildMessage(`${collectionName}/`)
