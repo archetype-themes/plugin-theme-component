@@ -1,17 +1,18 @@
 // Node imports
 import { mkdir, rm } from 'node:fs/promises'
-import { basename, join } from 'node:path'
+import { join } from 'node:path'
 
 // External Packages
 import merge from 'deepmerge'
 
 // Archie imports
 import BuildFactory from '../../factory/BuildFactory.js'
-import Session from '../../models/static/Session.js'
-import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
+import Components from '../../config/Components.js'
 import FileUtils from '../../utils/FileUtils.js'
+import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import SectionBuilder from './SectionBuilder.js'
+import Session from '../../models/static/Session.js'
 import SnippetUtils from '../../utils/SnippetUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
@@ -56,14 +57,11 @@ class CollectionBuilder {
     }
 
     // Gather & Copy Sections & Snippets Liquid Files
-    const processedSnippets = []
-    for (const section of collection.sections) {
-      fileOperationPromises.push(FileUtils.writeFile(join(collection.build.sectionsFolder, basename(section.build.liquidFile)), section.build.liquidCode))
-      const {
-        liquidFilesWritePromise, processedSnippets: processedSectionSnippets
-      } = SnippetUtils.getLiquidFilesWritePromisesRecursively(section.snippets, collection.build.snippetsFolder, processedSnippets)
-      processedSnippets.push(...processedSectionSnippets)
-      fileOperationPromises.push(liquidFilesWritePromise)
+    for (const componentType of [Components.COMPONENT_TYPE_NAME + 's', Components.SECTION_COMPONENT_TYPE_NAME + 's', Components.SNIPPET_COMPONENT_TYPE_NAME + 's']) {
+      console.log(componentType)
+      for (const component of collection[componentType]) {
+        fileOperationPromises.push(FileUtils.writeFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
+      }
     }
 
     // Gather & Copy Assets Files
@@ -198,11 +196,17 @@ class CollectionBuilder {
 
     const mkdirPromises = []
 
-    mkdirPromises.push(mkdir(collection.build.assetsFolder, { recursive: true }))
-    mkdirPromises.push(mkdir(collection.build.configFolder, { recursive: true }))
-    mkdirPromises.push(mkdir(collection.build.localesFolder, { recursive: true }))
-    mkdirPromises.push(mkdir(collection.build.sectionsFolder, { recursive: true }))
-    mkdirPromises.push(mkdir(collection.build.snippetsFolder, { recursive: true }))
+    const buildFolders = [
+      collection.build.assetsFolder,
+      collection.build.configFolder,
+      collection.build.localesFolder,
+      collection.build.sectionsFolder,
+      collection.build.snippetsFolder
+    ]
+
+    for (const buildFolder of buildFolders) {
+      mkdirPromises.push(buildFolder, { recursive: true })
+    }
 
     return Promise.all(mkdirPromises)
   }

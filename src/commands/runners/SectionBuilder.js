@@ -66,9 +66,9 @@ class SectionBuilder {
 
   /**
    * Reset Build Folders
-   * @param {SectionFiles} sectionFiles
+   * @param {ComponentFiles} sectionFiles
    * @param {Snippet[]} sectionSnippets
-   * @param {SectionBuild} sectionBuild
+   * @param {ComponentBuild} sectionBuild
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async resetBuildFolders (sectionFiles, sectionSnippets, sectionBuild) {

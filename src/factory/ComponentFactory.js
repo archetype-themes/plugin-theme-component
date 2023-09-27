@@ -1,18 +1,18 @@
+import ComponentFiles from '../models/ComponentFiles.js'
 import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
-import SnippetFiles from '../models/SnippetFiles.js'
 
 class ComponentFactory {
   /**
    * Initialize Component
-   * @param {Component} component
-   * @returns {Promise<Component>}
+   * @param {Component|Section|Snippet} component
+   * @returns {Promise<Component|Section|Snippet>}
    */
   static async initializeComponent (component) {
     // Index Snippet Files
-    component.files = await ComponentFilesUtils.indexFiles(component.name, component.rootFolder, new SnippetFiles())
+    component.files = await ComponentFilesUtils.indexFiles(component.name, component.rootFolder, new ComponentFiles())
 
     // Load Liquid Code
     component.liquidCode = await FileUtils.getFileContents(component.files.liquidFile)

@@ -21,6 +21,7 @@ class InstallCommand {
     const promises = []
 
     let collectionsList
+    // If we have only one element as a string, convert it to object form.
     if (NodeUtils.isString(Session.targetComponentName)) {
       collectionsList = {}
       collectionsList[Session.targetComponentName] = []

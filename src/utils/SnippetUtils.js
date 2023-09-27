@@ -1,74 +1,29 @@
 // Node.js imports
-import { basename, join } from 'node:path'
+import { join } from 'node:path'
 
 // External imports
 import merge from 'deepmerge'
-import { union } from 'lodash-es'
 
 // Internal imports
 import FileUtils from './FileUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
-import SnippetBuilder from '../commands/runners/SnippetBuilder.js'
-import SnippetFactory from '../factory/SnippetFactory.js'
 import { mergeObjectArraysByUniqueKey } from './ArrayUtils.js'
 
 class SnippetUtils {
   /**
-   * Build Snippets Recursively
-   * @param {Snippet[]} snippets
+   * Get Components' Snippet Names
+   * @param {(Component|Section|Snippet)[]}components
+   * @returns {*[]}
    */
-  static async buildRecursively (snippets) {
-    for (const snippet of snippets) {
-      await SnippetBuilder.build(snippet)
-      // Recursively check child snippets for schema
-      if (snippet.snippets?.length) {
-        await this.buildRecursively(snippet.snippets)
+  static getSnippetNames (components) {
+    let snippetNames = []
+    for (const component of components) {
+      if (component.snippetNames?.length) {
+        snippetNames = snippetNames.concat(component.snippetNames)
       }
     }
-    return snippets
-  }
-
-  /**
-   * Build Recursively NEW - From Collection only ATM
-   * @param {string} snippetName
-   * @param {string[]} snippetFiles
-   * @param {Snippet[]} snippets
-   * @returns {Promise<*>}
-   */
-  static async buildRecursivelyNew (snippetName, snippetFiles, snippets) {
-    let snippet
-    // Searching Internal Component Files
-    const snippetFile = snippetFiles.find(snippetFile => basename(snippetFile).split('.')[0] === snippetName)
-
-    // Snippet Found In Internal Component File
-    if (snippetFile) {
-      snippet = await SnippetFactory.fromSingleFile2(snippetName, snippetFile, snippetFiles, snippets)
-      snippet = SnippetBuilder.build(snippet)
-
-      if (snippet.snippetNames) {
-        for (const snippetName of snippet.snippetNames) {
-          snippet.snippets.push(await this.buildRecursivelyNew(snippetName, snippetFiles, snippets))
-        }
-      }
-    } else {
-      // Alternatively, Searching Collection Snippets
-      snippet = snippets.find(snippet => snippet.name === snippetName)
-
-      // Throw An Error If Nothing Was Found
-      if (snippet === undefined) {
-        throw ReferenceError(`Unable to find "${snippetName}" amongst Single File Snippets (${snippetFiles.map(snippetFile => basename(snippetFile)).join(', ')}) Collection Snippets (${snippets.map(snippet => snippet.name).join(', ')})`)
-      }
-
-      // If we have child snippets, and they haven't been built yet.
-      if (snippet.snippetNames && !snippet.snippets?.length) {
-        for (const snippetName of snippet.snippetNames) {
-          snippet.snippets.push(await this.buildRecursivelyNew(snippetName, snippet.files.snippetFiles, snippets))
-        }
-      }
-    }
-
-    return snippet
+    return [...new Set(snippetNames)]
   }
 
   /**
@@ -167,27 +122,6 @@ class SnippetUtils {
       }
     }
     return stylesheets
-  }
-
-  /**
-   * Get All Snippet Root Folders Recursively
-   * @param {Snippet[]} snippets
-   * @return {string[]}
-   */
-  static getRootFoldersRecursively (snippets) {
-    let snippetRootFolders = []
-    for (const snippet of snippets) {
-      if (snippet) {
-        if (snippet.rootFolder && !snippetRootFolders.includes(snippet.rootFolder)) {
-          snippetRootFolders.push(snippet.rootFolder)
-        }
-        if (snippet.snippets?.length) {
-          const childSnippetRootFolders = this.getRootFoldersRecursively(snippet.snippets)
-          snippetRootFolders = union(snippetRootFolders, childSnippetRootFolders)
-        }
-      }
-    }
-    return snippetRootFolders
   }
 
   /**

@@ -22,11 +22,11 @@ class ComponentFilesUtils {
   static GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP = new RegExp(`^locales?\\.schema\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
 
   /**
-   * Index Component Files in a SectionFiles or SnippetFiles model
+   * Index Component Files
    * @param {string} componentName
    * @param {string} folder
-   * @param {SectionFiles|SnippetFiles} filesModel
-   * @return {Promise<SectionFiles|SnippetFiles>}
+   * @param {ComponentFiles} filesModel
+   * @return {Promise<ComponentFiles>}
    */
   static async indexFiles (componentName, folder, filesModel) {
     // Validation: make sure the folder is readable.
@@ -34,11 +34,11 @@ class ComponentFilesUtils {
 
     const files = await FileUtils.getFolderFilesRecursively(folder)
 
-    ComponentFilesUtils.filterFiles(files, filesModel)
+    ComponentFilesUtils.filterFiles(files, filesModel, componentName)
 
     // Validation: Make sure that a liquid file was found
     if (!filesModel.liquidFile) {
-      throw new FileMissingError(`Section Factory: No liquid files file found for the "${componentName}" section`)
+      throw new FileMissingError(`No liquid files file found for the "${componentName}" component`)
     }
 
     if (filesModel.javascriptFiles.length) {
@@ -55,9 +55,10 @@ class ComponentFilesUtils {
   /**
    * Filter Section/Snippet Files by Type
    * @param {string[]} files
-   * @param {SectionFiles|SnippetFiles} componentFiles
+   * @param {ComponentFiles} componentFiles
+   * @param {string} componentName
    */
-  static filterFiles (files, componentFiles) {
+  static filterFiles (files, componentFiles, componentName) {
     // Categorize files for the build steps
     for (const file of files) {
       const extension = extname(file).toLowerCase()
@@ -98,14 +99,18 @@ class ComponentFilesUtils {
 
       switch (extension) {
         case '.liquid':
+          if (filename.startsWith(componentName) || filename === 'index.liquid') {
+            if (componentFiles.liquidFile) {
+              throw new InputFileError(`Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`)
+            }
+            componentFiles.liquidFile = file
+            break
+          }
           if (folder.endsWith('/snippets')) {
             componentFiles.snippetFiles.push(file)
             break
           }
-          if (componentFiles.liquidFile) {
-            throw new InputFileError(`Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`)
-          }
-          componentFiles.liquidFile = file
+          logger.warn(`Ignored liquid file ${filename}`)
           break
         case '.json':
           if (filename === 'package.json') {

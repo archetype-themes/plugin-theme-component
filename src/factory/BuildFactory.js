@@ -1,6 +1,6 @@
-import Components from '../config/Components.js'
-import SectionBuild from '../models/SectionBuild.js'
 import CollectionBuild from '../models/CollectionBuild.js'
+import Components from '../config/Components.js'
+import ComponentBuild from '../models/ComponentBuild.js'
 
 class BuildFactory {
   static fromCollection (collection) {
@@ -22,10 +22,10 @@ class BuildFactory {
   /**
    *
    * @param section
-   * @returns {SectionBuild}
+   * @returns {ComponentBuild}
    */
   static fromSection (section) {
-    const build = new SectionBuild()
+    const build = new ComponentBuild()
     build.rootFolder = `${section.rootFolder}/build`
     build.assetsFolder = `${build.rootFolder}/${Components.ASSETS_FOLDER_NAME}`
     build.configFolder = `${build.rootFolder}/${Components.CONFIG_FOLDER_NAME}`

@@ -1,4 +1,4 @@
-import SnippetBuild from '../../models/SnippetBuild.js'
+import ComponentBuild from '../../models/ComponentBuild.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
@@ -10,7 +10,7 @@ class SnippetBuilder {
    * @return {Promise<Snippet>}
    */
   static async build (snippet) {
-    snippet.build = new SnippetBuild()
+    snippet.build = new ComponentBuild()
 
     // Build Locales
     snippet.build.locales = LocaleUtils.buildLocales(snippet.name, snippet.locales, snippet.schema?.locales, true)
