@@ -99,7 +99,7 @@ class ComponentFilesUtils {
 
       switch (extension) {
         case '.liquid':
-          if (filename.startsWith(componentName) || filename === 'index.liquid') {
+          if (filename.split('.')[0] === componentName || filename === 'index.liquid') {
             if (componentFiles.liquidFile) {
               throw new InputFileError(`Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`)
             }
