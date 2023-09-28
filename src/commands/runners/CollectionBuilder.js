@@ -102,7 +102,8 @@ class CollectionBuilder {
     const localesKey = isSchemaLocales ? 'schemaLocales' : 'locales'
 
     for (const section of sections) {
-      const sectionWithSnippetsBuildLocales = SectionBuilder.assembleLocales(section.build[localesKey], section.snippets, isSchemaLocales)
+      const snippetLocales = SnippetUtils.buildLocalesRecursively(section.snippets, isSchemaLocales)
+      const sectionWithSnippetsBuildLocales = merge(section.build[localesKey], snippetLocales)
       buildLocales = merge(buildLocales, sectionWithSnippetsBuildLocales)
     }
 

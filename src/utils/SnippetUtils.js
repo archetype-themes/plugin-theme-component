@@ -1,11 +1,7 @@
-// Node.js imports
-import { join } from 'node:path'
-
 // External imports
 import merge from 'deepmerge'
 
 // Internal imports
-import FileUtils from './FileUtils.js'
 import SectionSchema from '../models/SectionSchema.js'
 import SectionSchemaUtils from './SectionSchemaUtils.js'
 import { mergeObjectArraysByUniqueKey } from './ArrayUtils.js'
@@ -17,111 +13,10 @@ class SnippetUtils {
    * @returns {*[]}
    */
   static getSnippetNames (components) {
-    let snippetNames = []
-    for (const component of components) {
-      if (component.snippetNames?.length) {
-        snippetNames = snippetNames.concat(component.snippetNames)
-      }
-    }
+    const componentsWithSnippetNames = components.filter(component => component.snippetNames?.length)
+    const snippetNames = (componentsWithSnippetNames.map(component => component.snippetNames)).flat()
+
     return [...new Set(snippetNames)]
-  }
-
-  /**
-   * Recursively Get Asset Files
-   * @param {Snippet[]} snippets
-   * @param {string[]} [processedSnippets=[]]
-   * @return {string[]}
-   */
-  static getAssetsRecursively (snippets, processedSnippets = []) {
-    let assets = []
-
-    for (const snippet of snippets) {
-      if (!processedSnippets.includes(snippet.name)) {
-        if (snippet.files.assetFiles?.length) {
-          assets = assets.concat(snippet.files.assetFiles)
-        }
-
-        if (snippet.snippets?.length) {
-          assets = assets.concat(this.getAssetsRecursively(snippet.snippets, processedSnippets))
-        }
-
-        processedSnippets.push(snippet.name)
-      }
-    }
-
-    return assets
-  }
-
-  /**
-   * Recursively Get Javascript Indexes
-   * @param {Snippet[]} snippets
-   * @param {string[]} [processedSnippets=[]]
-   * @return {string[]}
-   */
-  static getJavascriptIndexesRecursively (snippets, processedSnippets = []) {
-    let jsFiles = []
-    for (const snippet of snippets) {
-      if (!processedSnippets.includes(snippet.name)) {
-        if (snippet.files.javascriptIndex) {
-          jsFiles.push(snippet.files.javascriptIndex)
-        }
-
-        if (snippet.snippets?.length) {
-          jsFiles = jsFiles.concat(this.getJavascriptIndexesRecursively(snippet.snippets, processedSnippets))
-        }
-      }
-      processedSnippets.push(snippet.name)
-    }
-
-    return jsFiles
-  }
-
-  /**
-   * Recursively Get Liquid Files' Write Promises
-   * @param {Snippet[]} snippets
-   * @param {string} targetFolder
-   * @param {string[]} [processedSnippets=[]]
-   * @return {{liquidFilesWritePromise: Promise<Awaited<unknown>[]>, processedSnippets: string[]}}
-   */
-  static getLiquidFilesWritePromisesRecursively (snippets, targetFolder, processedSnippets = []) {
-    const liquidFilesWritePromises = []
-
-    for (const snippet of snippets) {
-      if (!processedSnippets.includes(snippet.name)) {
-        liquidFilesWritePromises.push(FileUtils.writeFile(join(targetFolder, `${snippet.name}.liquid`), snippet.build.liquidCode))
-      }
-
-      // Recursively check child snippets for liquid files
-      if (snippet.snippets?.length) {
-        const { liquidFilesWritePromise: childLiquidFilesWritePromises } = this.getLiquidFilesWritePromisesRecursively(snippet.snippets, targetFolder, processedSnippets)
-        liquidFilesWritePromises.push(childLiquidFilesWritePromises)
-      }
-    }
-
-    return { liquidFilesWritePromise: Promise.all(liquidFilesWritePromises), processedSnippets }
-  }
-
-  /**
-   * Get Main Stylesheets Recursively
-   * @param {Snippet[]} snippets
-   * @param {string[]} [processedSnippets=[]]
-   * @return {string[]}
-   */
-  static getMainStylesheetsRecursively (snippets, processedSnippets = []) {
-    const stylesheets = []
-    for (const snippet of snippets) {
-      if (!processedSnippets.includes(snippet.name)) {
-        if (snippet.files.mainStylesheet) {
-          stylesheets.push(snippet.files.mainStylesheet)
-
-          if (snippet.snippets?.length) {
-            stylesheets.push(...this.getMainStylesheetsRecursively(snippet.snippets, processedSnippets))
-          }
-        }
-        processedSnippets.push(snippet.name)
-      }
-    }
-    return stylesheets
   }
 
   /**

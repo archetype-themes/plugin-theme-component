@@ -82,12 +82,9 @@ class BuildCommand {
 
     // Filter Out Snippets When Applicable
     if (sectionNames?.length) {
-      let allSnippetNames = SnippetUtils.getSnippetNames(collection.components)
-      allSnippetNames = allSnippetNames.concat(SnippetUtils.getSnippetNames(collection.sections))
-      allSnippetNames = allSnippetNames.concat(SnippetUtils.getSnippetNames(collection.snippets))
+      const allComponents = [...collection.components, ...collection.snippets, ...collection.sections]
+      const allSnippetNames = SnippetUtils.getSnippetNames(allComponents)
 
-      // Remove Duplicates
-      allSnippetNames = [...new Set(allSnippetNames)]
       collection.snippets = collection.snippets.filter(snippet => allSnippetNames.includes(snippet.name))
     }
 
@@ -106,6 +103,8 @@ class BuildCommand {
       Promise.all(collection.components.map(component => ComponentBuilder.build(component)))
     ]))
 
+    const allSnippets = [...collection.components, ...collection.snippets]
+
     logChildItem(`Build complete (${Timer.getEndTimerInSeconds(buildStartTime)} seconds)`)
     logSpacer()
 
@@ -113,7 +112,6 @@ class BuildCommand {
     const treeStartTime = Timer.getTimer()
 
     // Build Component Hierarchy Structure
-    const allSnippets = [...collection.components, ...collection.snippets]
     await this.setComponentHierarchy(collection.sections, allSnippets)
     await this.setComponentHierarchy(collection.snippets, allSnippets)
     await this.setComponentHierarchy(collection.components, allSnippets)

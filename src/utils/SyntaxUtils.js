@@ -5,5 +5,4 @@ class SyntaxUtils {
   }
 }
 
-export default SyntaxUtils
 export const plural = SyntaxUtils.plural

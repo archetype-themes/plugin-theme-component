@@ -10,11 +10,7 @@ class ComponentBuilder {
    * @returns {Promise<Component>}
    */
   static async build (component) {
-    // Await Recursive Children Build First
-    if (component.snippets?.length) {
-      component.snippets = await this.recursivelyBuildChildren(component.snippets)
-    }
-
+    // Create build model
     component.build = new ComponentBuild()
 
     // Build Locales
@@ -38,13 +34,8 @@ class ComponentBuilder {
    * @returns {Promise<Snippet[]>}
    */
   static async recursivelyBuildChildren (snippets) {
-    const builtSnippets = []
-    for (const snippet of snippets) {
-      if (!snippet.build) {
-        builtSnippets.push(await ComponentBuilder.build(snippet))
-      }
-    }
-    return builtSnippets
+    const snippetsToBuild = snippets.filter(snippet => !snippet.build)
+    return Promise.all(snippetsToBuild.map(snippet => ComponentBuilder.build(snippet)))
   }
 }
 
