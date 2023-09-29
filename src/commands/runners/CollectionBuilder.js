@@ -10,7 +10,6 @@ import BuildFactory from '../../factory/BuildFactory.js'
 import FileUtils from '../../utils/FileUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import SnippetUtils from '../../utils/SnippetUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import Timer from '../../utils/Timer.js'
 import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
@@ -20,7 +19,7 @@ class CollectionBuilder {
   /**
    * Build Collection
    * @param {module:models/Collection} collection
-   * @return {Promise<Awaited<unknown>[]>}
+   * @return {Promise<module:models/Collection>}
    */
   static async build (collection) {
     const allComponents = [...collection.components, ...collection.snippets, ...collection.sections]
@@ -60,7 +59,7 @@ class CollectionBuilder {
 
     // Build Settings Schema
     const buildSettingsSchemaTimer = Timer.getTimer()
-    collection.build.settingsSchema = this.buildSettingsSchema(collection.sections)
+    collection.build.settingsSchema = this.buildSettingsSchema(allComponents)
     logChildItem(`Settings Schema Ready (${Timer.getEndTimerInSeconds(buildSettingsSchemaTimer)} seconds)`)
 
     return collection
@@ -102,18 +101,16 @@ class CollectionBuilder {
 
   /**
    * Build Collection Locales (Storefront or Schema)
-   * @param {Section[]} sections
+   * @param {(Section|Snippet|Component)[]} components
    * @param {boolean} [isSchemaLocales=false] Defaults to Storefront Locales
    * @return {Object}
    */
-  static buildLocales (sections, isSchemaLocales = false) {
+  static buildLocales (components, isSchemaLocales = false) {
     let buildLocales = {}
     const localesKey = isSchemaLocales ? 'schemaLocales' : 'locales'
 
-    for (const section of sections) {
-      const snippetLocales = SnippetUtils.buildLocalesRecursively(section.snippets, isSchemaLocales)
-      const sectionWithSnippetsBuildLocales = merge(section.build[localesKey], snippetLocales)
-      buildLocales = merge(buildLocales, sectionWithSnippetsBuildLocales)
+    for (const component of components) {
+      buildLocales = merge(buildLocales, component.build[localesKey])
     }
 
     return buildLocales
@@ -121,26 +118,13 @@ class CollectionBuilder {
 
   /**
    * Build Settings Schema
-   * @param {Section[]} sections
+   * @param {(Section|Snippet|Component)[]} components
    * @return {Object[]} Settings Schema
    */
-  static buildSettingsSchema (sections) {
-    let settingsSchema = []
-    const processedSnippets = []
+  static buildSettingsSchema (components) {
+    const componentsWithSettingSchema = components.filter(component => component.settingsSchema?.length)
 
-    for (const section of sections) {
-      if (section.settingsSchema?.length) {
-        settingsSchema = mergeObjectArraysByUniqueKey(settingsSchema, section.settingsSchema)
-      }
-      if (section.snippets?.length) {
-        const snippetsSettingsSchema = SnippetUtils.buildSettingsSchemaRecursively(section.snippets, processedSnippets)
-        if (snippetsSettingsSchema?.length) {
-          settingsSchema = mergeObjectArraysByUniqueKey(settingsSchema, snippetsSettingsSchema)
-        }
-      }
-    }
-
-    return settingsSchema
+    return componentsWithSettingSchema.reduce((settingsSchema, component) => mergeObjectArraysByUniqueKey(settingsSchema, component.settingsSchema), [])
   }
 
   /**
