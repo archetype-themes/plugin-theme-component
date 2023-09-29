@@ -22,7 +22,7 @@ import SnippetBuilder from './runners/SnippetBuilder.js'
 class BuildCommand {
   /**
    * Execute Build Command
-   * @returns {Promise<FSWatcher|module:models/Collection|Section>}
+   * @returns {Promise<FSWatcher|void>}
    */
   static async execute () {
     const collectionName = NodeUtils.getPackageName()
@@ -35,10 +35,12 @@ class BuildCommand {
 
     if (Session.watchMode) {
       const collection = await this.buildCollection(collectionName, componentNames)
+      await this.deployCollection(collection)
       return this.watchCollection(collection)
     }
 
-    return this.buildCollection(collectionName, componentNames)
+    const collection = await this.buildCollection(collectionName, componentNames)
+    return this.deployCollection(collection)
   }
 
   /**
@@ -52,7 +54,7 @@ class BuildCommand {
     const initStartTime = Timer.getTimer()
 
     // Init Collection
-    const collection = await CollectionFactory.fromName(collectionName, sectionNames)
+    let collection = await CollectionFactory.fromName(collectionName, sectionNames)
 
     // Filter Out Sections When Applicable
     if (sectionNames?.length) {
@@ -128,13 +130,14 @@ class BuildCommand {
     logChildItem(`Tree complete (${Timer.getEndTimerInSeconds(treeStartTime)} seconds)`)
     logSpacer()
 
+    // Build Collection
     logTitleItem('Building Collection')
     const collectionStartTime = Timer.getTimer()
-
-    await CollectionBuilder.build(collection)
-
+    collection = await CollectionBuilder.build(collection)
     logChildItem(`Collection Build complete (${Timer.getEndTimerInSeconds(collectionStartTime)} seconds)`)
     logSpacer()
+
+    // Total Timer Output
     logTitleItem(`Build Command Total Time: ${Timer.getEndTimerInSeconds(initStartTime)} seconds`)
     logSpacer()
     return Promise.resolve(collection)
@@ -200,6 +203,20 @@ class BuildCommand {
   }
 
   /**
+   * Deploy Collection
+   * @param {module:models/Collection} collection
+   * @returns {Promise<void>}
+   */
+  static async deployCollection (collection) {
+    // Deploy Collection To Disk
+    logTitleItem('Writing Collection Build To Disk')
+    const collectionDeployStartTime = Timer.getTimer()
+    await CollectionBuilder.deployToBuildFolder(collection)
+    logChildItem(`Build Deployment Complete (${Timer.getEndTimerInSeconds(collectionDeployStartTime)} seconds)`)
+    logSpacer()
+  }
+
+  /**
    * Watch a Collection
    * @param {module:models/Collection} collection
    * @return {FSWatcher}
@@ -231,6 +248,7 @@ class BuildCommand {
     const componentNames = Session.archieConfig?.components
 
     const collection = await this.buildCollection(collectionName, componentNames)
+    await this.deployCollection(collection)
     // Restart Watcher on liquid file change to make sure we do refresh watcher snippet folders
     if (filename.endsWith('.liquid')) {
       await watcher.close()

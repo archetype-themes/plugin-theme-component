@@ -10,7 +10,6 @@ import BuildFactory from '../../factory/BuildFactory.js'
 import FileUtils from '../../utils/FileUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import Session from '../../models/static/Session.js'
 import SnippetUtils from '../../utils/SnippetUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import Timer from '../../utils/Timer.js'
@@ -24,12 +23,9 @@ class CollectionBuilder {
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async build (collection) {
-    const allSnippets = [...collection.components, ...collection.snippets]
     const allComponents = [...collection.components, ...collection.snippets, ...collection.sections]
 
-    const fileOperationPromises = []
-
-    // Create build model and prepare folders
+    // Create Collection Build model and reset folders
     const buildCollectionTimer = Timer.getTimer()
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection)
@@ -42,9 +38,8 @@ class CollectionBuilder {
       const buildStylesTimer = Timer.getTimer()
       collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.rootFolder)
       logChildItem(`Styles Ready (${Timer.getEndTimerInSeconds(buildStylesTimer)} seconds)`)
-      fileOperationPromises.push(FileUtils.writeFile(collection.build.stylesheet, collection.build.styles))
     }
-    // Gather and Build Collection JS Files
+    // Build Collection JS Files
     const jsFiles = this.getJsFiles(allComponents)
 
     if (jsFiles.length) {
@@ -57,6 +52,8 @@ class CollectionBuilder {
     const buildLocalesTimer = Timer.getTimer()
     collection.build.locales = this.buildLocales(collection.sections)
     logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
+
+    // Build Schema Locales
     const buildSchemaLocalesTimer = Timer.getTimer()
     collection.build.schemaLocales = this.buildLocales(collection.sections, true)
     logChildItem(`Schema Locales Ready (${Timer.getEndTimerInSeconds(buildSchemaLocalesTimer)} seconds)`)
@@ -66,13 +63,21 @@ class CollectionBuilder {
     collection.build.settingsSchema = this.buildSettingsSchema(collection.sections)
     logChildItem(`Settings Schema Ready (${Timer.getEndTimerInSeconds(buildSettingsSchemaTimer)} seconds)`)
 
-    // Write Schema Locales and Settings Schema to disk for Collection Build
-    // On Theme Install, these contents are merged from collection.build values.
-    if (Session.isCollection()) {
-      await LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
-      await LocaleUtils.writeLocales(collection.build.schemaLocales, collection.build.localesFolder, true)
-      fileOperationPromises.push(FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema, null, 2)))
-    }
+    return collection
+  }
+
+  /**
+   * Deploy Collection To Folder
+   * @param collection
+   * @returns {Promise<Awaited<unknown>[]>}
+   */
+  static async deployToBuildFolder (collection) {
+    const allComponents = [...collection.components, ...collection.snippets, ...collection.sections]
+    const allSnippets = [...collection.components, ...collection.snippets]
+
+    const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
+    const schemaLocalesWritePromise = LocaleUtils.writeLocales(collection.build.schemaLocales, collection.build.localesFolder, true)
+    const settingsSchemaWritePromise = FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema, null, 2))
 
     // Write Component Liquid Files
     const sectionFilesWritePromises = collection.sections.map(section =>
@@ -82,12 +87,16 @@ class CollectionBuilder {
 
     // Gather & Copy Assets Files
     const allAssetFiles = this.getAssetFiles(allComponents)
-    fileOperationPromises.push(FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder))
+    const copyAssetsPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
 
     return Promise.all([
-      ...fileOperationPromises,
+      FileUtils.writeFile(collection.build.stylesheet, collection.build.styles),
+      localesWritePromise,
+      schemaLocalesWritePromise,
+      settingsSchemaWritePromise,
       ...sectionFilesWritePromises,
-      ...snippetFilesWritePromises
+      ...snippetFilesWritePromises,
+      copyAssetsPromise
     ])
   }
 
