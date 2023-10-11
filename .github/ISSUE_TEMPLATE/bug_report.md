@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report an issue to help us improve the DevKit CLI
+about: Report an issue with the DevKit CLI
 title: ''
 labels: bug
 assignees: ''
