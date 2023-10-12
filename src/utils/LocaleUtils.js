@@ -1,13 +1,12 @@
 // Node.js imports
 import { writeFile } from 'node:fs/promises'
-import { basename, join } from 'node:path'
+import { basename, extname, join } from 'node:path'
 
 // External imports
 import merge from 'deepmerge'
-import { extname } from 'path'
-import NodeConfig from '../cli/models/NodeConfig.js'
 
-// Internal Imports
+// Archie Imports
+import Session from '../models/static/Session.js'
 import ComponentFilesUtils from './ComponentFilesUtils.js'
 import FileUtils from './FileUtils.js'
 
@@ -25,11 +24,12 @@ class LocaleUtils {
     let buildLocalesFromSectionSchema
 
     if (locales) {
-      buildLocales = NodeConfig.embedLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
+      buildLocales = Session.archieConfig.structuredLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
     }
 
+    // Storefront Locales from Section Schema should always be prefixed, to respect the Shopify Standard.
     if (localesFromSectionSchema) {
-      buildLocalesFromSectionSchema = NodeConfig.embedLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSectionSchema, isSnippet) : localesFromSectionSchema
+      buildLocalesFromSectionSchema = LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSectionSchema, isSnippet)
     }
 
     if (buildLocalesFromSectionSchema && buildLocales) {
@@ -70,7 +70,7 @@ class LocaleUtils {
 
         let localeData
         if (extname(localeFileWithPath) === '.json') {
-          localeData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+          localeData = await FileUtils.getJsonFileContents(localeFileWithPath)
         } else {
           localeData = (await import(localeFileWithPath)).default
         }
@@ -90,7 +90,7 @@ class LocaleUtils {
         // Load locales.json file
         let localesData
         if (extname(localeFileWithPath) === '.json') {
-          localesData = JSON.parse(await FileUtils.getFileContents(localeFileWithPath))
+          localesData = await FileUtils.getJsonFileContents(localeFileWithPath)
         } else {
           localesData = (await import(localeFileWithPath)).default
         }

@@ -131,7 +131,7 @@ will be replaced upon each build. It will be ignored by Git and can be deleted s
 └── src                                    [ Section sources ]
 ```
 
-The use of a sources folder is optional. It is only used here as an exmaple of clear separation of source files, build
+The use of a sources folder is optional. It is only used here as an example of clear separation of source files, build
 files and Node.js package files.
 
 #### Main Liquid file

@@ -29,12 +29,12 @@ class NodeUtils {
    * Get Package JSON Content as an Object
    * @return {Promise<Object>}
    */
-  static async getPackageJsonData () {
+  static async getPackageManifest () {
     if (!env.npm_package_json) {
       throw new InternalError('Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.')
     }
 
-    return JSON.parse(await FileUtils.getFileContents(env.npm_package_json))
+    return await FileUtils.getJsonFileContents(env.npm_package_json)
   }
 
   /**
@@ -97,6 +97,15 @@ class NodeUtils {
    */
   static getArchieRootFolderName () {
     return new URL('../../', import.meta.url).pathname
+  }
+
+  /**
+   * Check if variable is of type string
+   * @param {*} variable
+   * @returns {boolean}
+   */
+  static isString (variable) {
+    return (typeof variable === 'string' || variable instanceof String)
   }
 
   /**

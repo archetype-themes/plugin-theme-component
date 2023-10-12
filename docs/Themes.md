@@ -35,8 +35,8 @@ npm link [collection-namespace]/[collection-name]
 
 Next, you will need to edit your package.json to add the archie configuration element, at the location of your choice
 
-* Make sure you indicate your `componentType` as a **"theme"**
-* *Optional:* Follow with `componentPath` to point to your theme source files if they are not at the root folder of the
+* Make sure you indicate your `type` as a **"theme"**
+* *Optional:* Follow with `path` to point to your theme source files if they are not at the root folder of the
   repository.
 * *Optional:* Include a list of sections from your collection for a partial install
 * *Optional:* Create shortcuts to archie commands in the scripts section
@@ -44,8 +44,8 @@ Next, you will need to edit your package.json to add the archie configuration el
 ```json
 {
   "archie": {
-    "componentType": "theme",
-    "componentPath": "./src",
+    "type": "theme",
+    "path": "./src",
     "my-awesome-collection": [
       "section-one",
       "section-two",

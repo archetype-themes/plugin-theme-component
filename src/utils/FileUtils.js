@@ -1,6 +1,6 @@
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
-import path from 'path'
+import { basename, join } from 'path'
 
 import logger from './Logger.js'
 
@@ -22,30 +22,23 @@ class FileUtils {
   /**
    * Copy Files from an associative array
    * @param {Object.<string, string>} files
-   * @return {Promise<Awaited<unknown>[]>}
+   * @return {Promise<Awaited<void>[]>}
    */
   static async copy (files) {
-    const copyPromises = []
-    for (const sourceFile of Object.keys(files)) {
-      logger.debug(`Copying ${path.basename(sourceFile)}`)
-      copyPromises.push(copyFile(sourceFile, files[sourceFile]))
-    }
+    const copyPromises = Object.entries(files).map(
+      ([sourceFile, destination]) => copyFile(sourceFile, destination))
 
     return Promise.all(copyPromises)
   }
 
   /**
    * Copy All Files to a Specified Folder
-   * @param files
-   * @param targetFolder
+   * @param {string[]} files
+   * @param {string} targetFolder
    * @return {Promise<Awaited<void>[]>}
    */
   static async copyFilesToFolder (files, targetFolder) {
-    const copyPromises = []
-    for (const file of files) {
-      copyPromises.push(copyFile(file, path.join(targetFolder, path.basename(file))))
-    }
-    return Promise.all(copyPromises)
+    return Promise.all(files.map(file => copyFile(file, join(targetFolder, basename(file)))))
   }
 
   /**
@@ -69,17 +62,17 @@ class FileUtils {
 
     for (const dirent of folderContent) {
       if (dirent.isFile()) {
-        const sourceFile = path.join(sourceFolder, dirent.name)
-        const targetFile = path.join(targetFolder, dirent.name)
+        const sourceFile = join(sourceFolder, dirent.name)
+        const targetFile = join(targetFolder, dirent.name)
         if (options.jsTemplateVariables) {
           fileOperations.push(this.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
         } else {
           fileOperations.push(copyFile(sourceFile, targetFile))
         }
       } else if (dirent.isDirectory() && options.recursive) {
-        const newTargetFolder = path.join(targetFolder, dirent.name)
+        const newTargetFolder = join(targetFolder, dirent.name)
         await mkdir(newTargetFolder, { recursive: options.recursive })
-        fileOperations.push(this.copyFolder(path.join(sourceFolder, dirent.name), newTargetFolder, options))
+        fileOperations.push(this.copyFolder(join(sourceFolder, dirent.name), newTargetFolder, options))
       }
     }
     return Promise.all(fileOperations)
@@ -162,7 +155,7 @@ class FileUtils {
     const entries = await readdir(folder, { withFileTypes: true })
     const files = []
     for (const entry of entries) {
-      const absolutePath = path.join(folder, entry.name)
+      const absolutePath = join(folder, entry.name)
       if (entry.isDirectory()) {
         if (!this.#EXCLUDED_FOLDERS.includes(entry.name)) {
           files.push(...(await this.getFolderFilesRecursively(absolutePath)))
@@ -171,6 +164,30 @@ class FileUtils {
     }
 
     return files
+  }
+
+  /**
+   * Get Folders List
+   * @param {string} folder
+   * @param {boolean} recursive
+   * @returns {Promise<string[]>}
+   */
+  static async getFolders (folder, recursive = false) {
+    const entries = await readdir(folder, { withFileTypes: true })
+    const folders = []
+
+    const promises = entries.map(async (entry) => {
+      if (entry.isDirectory() && !this.#EXCLUDED_FOLDERS.includes(entry.name)) {
+        const absolutePath = join(folder, entry.name)
+        folders.push(absolutePath)
+        if (recursive) {
+          folders.push(...(await this.getFolders(absolutePath, recursive)))
+        }
+      }
+    })
+
+    await Promise.all(promises)
+    return folders
   }
 
   /**
@@ -188,13 +205,51 @@ class FileUtils {
   }
 
   /**
+   * Get JSON File Contents
+   * @param {string} file
+   * @returns {Promise<{}|[]>}
+   */
+  static async getJsonFileContents (file) {
+    return JSON.parse(await this.getFileContents(file))
+  }
+
+  /**
    * Get File Contents
    * @param {string} file
    * @returns {Promise<string>}
    */
   static async getFileContents (file) {
-    logger.debug(`Reading from disk: ${file}`)
+    logger.trace(`Reading from disk: ${file}`)
     return readFile(file, this.#FILE_ENCODING_OPTION)
+  }
+
+  /**
+   * Search for a file in a specified path.
+   * @param {string} path
+   * @param {string} filename
+   * @param {boolean} [recursive]
+   * @returns {Promise<string[]>}
+   */
+  static async searchFile (path, filename, recursive = false) {
+    let files = []
+
+    try {
+      const entries = await readdir(path, { withFileTypes: true })
+
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          if (recursive && !this.#EXCLUDED_FOLDERS.includes(entry.name)) {
+            files = files.concat(await this.searchFile(join(path, entry.name), filename, recursive))
+          }
+        } else if (entry.name === filename) {
+          files.push(join(path, entry.name))
+        }
+      }
+    } catch (err) {
+      console.error(`Error reading directory ${path}:`, err)
+    }
+
+    return files
   }
 
   /**
@@ -204,7 +259,7 @@ class FileUtils {
    * @returns {Promise<void>}
    */
   static async writeFile (file, fileContents) {
-    logger.debug(`Writing to disk: ${file}`)
+    logger.trace(`Writing to disk: ${file}`)
 
     return writeFile(file, fileContents, this.#FILE_ENCODING_OPTION)
   }

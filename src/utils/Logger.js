@@ -34,19 +34,12 @@ let loglevel = 'info'
 /*                                                                                      */
 /* YARN: argv works nicely with yarn berry                                              */
 /* NPM: argv is intercepted by npm, therefore we also check for env.npm_config_loglevel */
-
-if (argv.includes('--quiet') ||
-  (
-    env.npm_config_loglevel && ['error', 'warn', 'silent'].includes(env.npm_config_loglevel)
-  )) {
+if (argv.includes('--quiet') || (env.npm_config_loglevel && ['error', 'warn', 'silent'].includes(env.npm_config_loglevel))) {
   loglevel = 'error'
-} else if (
-  argv.includes('--verbose') ||
-  argv.includes('--debug') ||
-  (
-    env.npm_config_loglevel && ['verbose', 'silly'].includes(env.npm_config_loglevel)
-  )) {
+} else if (argv.includes('--verbose') || argv.includes('--debug') || (env.npm_config_loglevel && env.npm_config_loglevel === 'verbose')) {
   loglevel = 'debug'
+} else if (argv.includes('--trace') || (env.npm_config_loglevel && env.npm_config_loglevel === 'silly')) {
+  loglevel = 'trace'
 }
 
 /** @type{PrettyOptions} */
@@ -56,16 +49,47 @@ const prettyOptions = {
   singleLine: false
 }
 
-if (loglevel === 'debug') {
-  prettyOptions.messageFormat = '\n >>> {msg}'
-}
-
 const prettyPluginStream = PinoPretty(prettyOptions)
 
 let logger = pino({ level: loglevel }, prettyPluginStream)
 
-if (loglevel === 'debug') {
+if (['debug', 'trace'].includes(loglevel)) {
   logger = traceCaller(logger)
 }
 
 export default logger
+
+export const topPrefix = '════▶ '
+export const childPrefix = '  ╚══▶  '
+export const childSpacer = '  ║     '
+
+/**
+ * Log Top Item
+ * @param {string} message
+ */
+export function logTitleItem (message) {
+  logger.info(`${topPrefix}${message}`)
+}
+
+/**
+ * Log Child Item
+ * @param {string} message
+ */
+export function logChildItem (message) {
+  logger.info(`${childPrefix}${message}`)
+}
+
+/**
+ * Logs an empty line as a spacer element
+ */
+export function logSpacer () {
+  logger.info('')
+}
+
+/**
+ * Log Child Message
+ * @param {string} [message='']
+ */
+export function logChildMessage (message = '') {
+  logger.info(childSpacer + message)
+}

@@ -1,37 +1,20 @@
 // Node.js imports
-import { access, constants, readdir } from 'node:fs/promises'
-import { join } from 'path'
-import NodeConfig from '../cli/models/NodeConfig.js'
+import { dirname, join } from 'node:path'
+
+// Archie Imports
 import Components from '../config/Components.js'
+import ConfigError from '../errors/ConfigError.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import InternalError from '../errors/InternalError.js'
+import Component from '../models/Component.js'
+import Section from '../models/Section.js'
+import Snippet from '../models/Snippet.js'
+import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
+import logger from './Logger.js'
 import NodeUtils from './NodeUtils.js'
 
-// Archie imports
-import SnippetUtils from './SnippetUtils.js'
-
 class CollectionUtils {
-  /**
-   * Find Section Names
-   * @param {string} sectionsFolder
-   * @return {Promise<string[]>}
-   */
-  static async findSectionNames (sectionsFolder) {
-    const sectionNames = []
-    const entries = await readdir(sectionsFolder, { withFileTypes: true })
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        try {
-          const sectionFolder = join(sectionsFolder, entry.name)
-          await access(sectionFolder + '/package.json', constants.R_OK)
-          sectionNames.push(entry.name)
-        } catch {}
-      }
-    }
-    return sectionNames
-  }
-
   /**
    * Get Watch Folders for a Collection
    * @param collection
@@ -42,14 +25,17 @@ class CollectionUtils {
 
     for (const section of collection.sections) {
       watchFolders.push(section.rootFolder)
-      for (const snippetRootFolder of SnippetUtils.getRootFoldersRecursively(section.snippets)) {
-        if (!watchFolders.includes(snippetRootFolder)) {
-          watchFolders.push(snippetRootFolder)
-        }
-      }
     }
 
-    return watchFolders.map(folder => join(folder, 'src'))
+    for (const snippet of collection.snippets) {
+      watchFolders.push(snippet.rootFolder)
+    }
+
+    for (const component of collection.components) {
+      watchFolders.push(component.rootFolder)
+    }
+
+    return watchFolders
   }
 
   /**
@@ -58,16 +44,13 @@ class CollectionUtils {
    * @returns {Promise<string>|string}
    */
   static async findRootFolder (collectionName) {
-    if (NodeConfig.isSection()) {
+    if (Session.isSection()) {
       return NodeUtils.getMonorepoRootFolder()
     }
-    if (NodeConfig.isCollection()) {
+    if (Session.isCollection()) {
       return NodeUtils.getPackageRootFolder()
     }
-    if (NodeConfig.isTheme()) {
-      if (!collectionName && NodeConfig.collections.length === 1) {
-        collectionName = NodeConfig.collections[0]
-      }
+    if (Session.isTheme()) {
       if (!collectionName) {
         throw new InternalError('Collection name is required when getting collection root folder from a theme.')
       }
@@ -84,6 +67,52 @@ class CollectionUtils {
 
       throw new FileAccessError(`${collectionName} Collection not found or not accessible. Is it installed?`)
     }
+  }
+
+  /**
+   * Find Components From package.json files
+   * @param packageJsonFiles
+   * @returns {Promise<[Component[], Section[], Snippet[]]>}
+   */
+  static async findComponentsFromPackageJsonFiles (packageJsonFiles) {
+    const components = []
+    const sections = []
+    const snippets = []
+
+    for (const packageJsonFile of packageJsonFiles) {
+      const componentPackageJson = await FileUtils.getJsonFileContents(packageJsonFile)
+      let componentPath = dirname(packageJsonFile)
+      if (componentPackageJson.archie?.path) {
+        componentPath = join(componentPath, componentPackageJson.archie.path)
+      }
+
+      if (componentPackageJson.archie && !componentPackageJson.archie.type) {
+        logger.warn(`No archie component type specified in package.json file in ${componentPath}, ignoring component folder.`)
+        continue
+      }
+
+      if (componentPackageJson.archie?.type) {
+        if (!componentPackageJson.name) {
+          throw new ConfigError(`A Component's package.json file does not provide a package name in "${packageJsonFile}"`)
+        }
+
+        let componentName = componentPackageJson.name.includes('/') ? componentPackageJson.name.split('/')[1] : componentPackageJson.name
+        const componentType = componentPackageJson.archie.type.toLowerCase()
+
+        // Strip component type from name
+        componentName = componentName.replace(/-(section|snippet|component)$/, '')
+
+        if (componentType === Components.COMPONENT_TYPE_NAME) {
+          components.push(new Component(componentName, componentPath))
+        } else if (componentType === Components.SECTION_COMPONENT_TYPE_NAME) {
+          sections.push(new Section(componentName, componentPath))
+        } else if (componentType === Components.SNIPPET_COMPONENT_TYPE_NAME) {
+          snippets.push(new Snippet(componentName, componentPath))
+        }
+      }
+    }
+
+    return [components, sections, snippets]
   }
 }
 

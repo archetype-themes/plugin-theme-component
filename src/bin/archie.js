@@ -1,32 +1,32 @@
 #!/usr/bin/env node
 
-import BuildCommand from '../cli/commands/BuildCommand.js'
-import CreateCommand from '../cli/commands/CreateCommand.js'
-import InstallCommand from '../cli/commands/InstallCommand.js'
-import CLISessionFactory from '../cli/factories/CLISessionFactory.js'
-import NodeConfigFactory from '../cli/factories/NodeConfigFactory.js'
-import NodeUtils from '../utils/NodeUtils.js'
+import BuildCommand from '../commands/BuildCommand.js'
+import Session from '../models/static/Session.js'
 import CLICommands from '../config/CLICommands.js'
+import SessionFactory from '../factory/SessionFactory.js'
+import CreateCommand from '../commands/CreateCommand.js'
+import InstallCommand from '../commands/InstallCommand.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
-// Init NodeConfig & CLISession
-let cliSession
+// Init NodeConfig & Session
+let packageManifest
 try {
-  NodeConfigFactory.fromPackageJsonData(await NodeUtils.getPackageJsonData())
-  cliSession = CLISessionFactory.fromCommandLineInput(NodeUtils.getArgs())
+  packageManifest = await NodeUtils.getPackageManifest()
+  SessionFactory.fromArgsAndManifest(NodeUtils.getArgs(), packageManifest)
 } catch (error) {
   NodeUtils.exitWithError(error)
 }
 
 try {
-  switch (cliSession.command) {
+  switch (Session.command) {
     case CLICommands.BUILD_COMMAND_NAME:
-      await BuildCommand.execute(cliSession.commandOption, cliSession.targetComponentName, cliSession.watchMode)
+      await BuildCommand.execute()
       break
     case CLICommands.CREATE_COMMAND_NAME:
-      await CreateCommand.execute(cliSession.commandOption, cliSession.targetComponentName)
+      await CreateCommand.execute(packageManifest)
       break
     case CLICommands.INSTALL_COMMAND_NAME:
-      await InstallCommand.execute(cliSession.targetComponentName, cliSession.watchMode)
+      await InstallCommand.execute()
       break
     // There is no need for a default case - "Invalid command" was already handled in ArchieCLIFactory call above
   }

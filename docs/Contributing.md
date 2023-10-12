@@ -78,7 +78,7 @@ Please follow the guidelines listed below.
 └── src
     ├── bin
     │   ├── archie.js   [ archie entrypoint ]
-    ├── builders        [ component builders ]
+    ├── runners        [ component runners ]
     ├── cli
     │   └── commands    [ CLI commands ]
     │   └── flags        [ CLI command flags ]
