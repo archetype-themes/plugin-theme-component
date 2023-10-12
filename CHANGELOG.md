@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED] - 2023-09-00
+## [1.6.0] - 2023-10-12
 
 ### Added
 
+- Added Components support (WIP)
+- CLI scans all folders for Components, Sections and Snippets, enforced structure is removed
 - Added a trace log level with pino, using silly log level as a proxy with Node.js
 
 ## [1.5.5] - 2023-09-02
@@ -188,9 +190,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Templates for new components
-    - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
-    - package.json now inherits "author", "license" and package scope from parent monorepo
-    - package.json now includes repository information
+  - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
+  - package.json now inherits "author", "license" and package scope from parent monorepo
+  - package.json now includes repository information
 - SVG Snippets are now processed through SVGO
 - vitest is now installed as a test framework
 - Tests for NodeUtils added
