@@ -41,8 +41,11 @@ class ComponentFilesUtils {
       throw new FileMissingError(`No liquid files file found for the "${componentName}" component`)
     }
 
-    if (filesModel.javascriptFiles.length) {
-      filesModel.javascriptIndex = JavascriptUtils.getMainJavascriptFile(filesModel.javascriptFiles)
+    if (files) {
+      filesModel.javascriptIndex = JavascriptUtils.getMainJavascriptFile(
+        Array.isArray(files) ? files : [files],
+        componentName
+      )
     }
 
     if (filesModel.stylesheets.length) {
@@ -59,13 +62,14 @@ class ComponentFilesUtils {
    * @param {string} componentName
    */
   static filterFiles (files, componentFiles, componentName) {
+    const regex = JavascriptUtils.mainJavaScriptFileRegex(componentName)
     // Categorize files for the build steps
     for (const file of files) {
       const extension = extname(file).toLowerCase()
       const folder = dirname(file).toLowerCase()
       const filename = basename(file).toLowerCase()
 
-      if (folder.endsWith(`/${Components.ASSETS_FOLDER_NAME}`)) {
+      if (folder.endsWith(`/${Components.ASSETS_FOLDER_NAME}`) && !regex.test(file)) {
         componentFiles.assetFiles.push(file)
         continue
       }

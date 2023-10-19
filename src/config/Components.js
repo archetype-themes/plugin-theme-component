@@ -46,6 +46,9 @@ class Components {
 
   /** @type {string} **/
   static SECTION_SCHEMA_FILENAME = 'schema.json'
+
+  /** @type {string} **/
+  static IMPORT_MAP_FILENAME = 'importmap-tags.liquid'
 }
 
 export default Components

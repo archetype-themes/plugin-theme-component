@@ -11,6 +11,7 @@ class BuildFactory {
     build.sectionsFolder = `${build.rootFolder}/${Components.SECTIONS_FOLDER_NAME}`
     build.snippetsFolder = `${build.rootFolder}/${Components.SNIPPETS_FOLDER_NAME}`
 
+    build.importMapFile = `${build.snippetsFolder}/${Components.IMPORT_MAP_FILENAME}`
     build.javascriptFile = `${build.assetsFolder}/${collection.name}.js`
     build.stylesheet = `${build.assetsFolder}/${collection.name}.css.liquid`
 
