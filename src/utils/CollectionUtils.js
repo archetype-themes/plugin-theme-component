@@ -30,11 +30,14 @@ class CollectionUtils {
    * @param collection
    */
   static async getIgnorePatterns (collection) {
-    const gitIgnoreContents = await FileUtils.getFileContents(join(collection.gitIgnoreFile[0]))
-    const ignorePatterns = [
-      ...parse(gitIgnoreContents),
-      ...IGNORE_PATTERNS
-    ]
+    let gitIgnoreContents
+    let gitIgnorePatterns
+    const ignorePatterns = IGNORE_PATTERNS
+    if (collection.gitIgnoreFile) {
+      gitIgnoreContents = await FileUtils.getFileContents(join(collection.gitIgnoreFile))
+      gitIgnorePatterns = parse(gitIgnoreContents)
+      ignorePatterns.push(...gitIgnorePatterns)
+    }
     return ignorePatterns
   }
 

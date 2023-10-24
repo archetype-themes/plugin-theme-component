@@ -12,7 +12,7 @@ class Collection {
   /** @type {Component[]} **/
   #components
 
-  /** @type {string[]} **/
+  /** @type {string | undefined} **/
   #gitIgnoreFile
 
   /** @type {string[]} **/
@@ -101,7 +101,7 @@ class Collection {
 
   /**
    * Get gitignore file list
-   * @returns {string[]}
+   * @returns {string | undefined}
    */
   get gitIgnoreFile () {
     return this.#gitIgnoreFile
@@ -109,7 +109,7 @@ class Collection {
 
   /**
    * Set gitignore file list
-   * @param {string[]} value
+   * @param {string | undefined} value
    */
   set gitIgnoreFile (value) {
     this.#gitIgnoreFile = value
