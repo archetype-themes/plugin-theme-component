@@ -5,6 +5,7 @@ import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import { join } from 'node:path'
 
 class CollectionFactory {
   /**
@@ -21,6 +22,12 @@ class CollectionFactory {
 
     // Set folder names
     collection.rootFolder = await CollectionUtils.findRootFolder(collectionName)
+
+    // Find .gitignore file
+    const gitignoreFile = join(collection.rootFolder, '.gitignore')
+    if (await FileUtils.exists(gitignoreFile)) {
+      collection.gitIgnoreFile = gitignoreFile
+    }
 
     // Recursively find all package.json files
     collection.packageJsonFiles = await FileUtils.searchFile(collection.rootFolder, 'package.json', true)

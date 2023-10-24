@@ -12,6 +12,9 @@ class Collection {
   /** @type {Component[]} **/
   #components
 
+  /** @type {string | undefined} **/
+  #gitIgnoreFile
+
   /** @type {string[]} **/
   #packageJsonFiles
 
@@ -94,6 +97,22 @@ class Collection {
    */
   set components (value) {
     this.#components = value
+  }
+
+  /**
+   * Get gitignore file list
+   * @returns {string | undefined}
+   */
+  get gitIgnoreFile () {
+    return this.#gitIgnoreFile
+  }
+
+  /**
+   * Set gitignore file list
+   * @param {string | undefined} value
+   */
+  set gitIgnoreFile (value) {
+    this.#gitIgnoreFile = value
   }
 
   /**

@@ -1,5 +1,6 @@
 // Node.js imports
 import { dirname, join } from 'node:path'
+import parse from 'parse-gitignore'
 
 // Archie Imports
 import Components from '../config/Components.js'
@@ -14,28 +15,30 @@ import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 import NodeUtils from './NodeUtils.js'
 
+const IGNORE_PATTERNS = [
+  'package.json',
+  'package-lock.json',
+  '.git',
+  '.github',
+  '**/.*',
+  '**/*.md'
+]
+
 class CollectionUtils {
   /**
    * Get Watch Folders for a Collection
    * @param collection
-   * @return {string[]}
    */
-  static getWatchFolders (collection) {
-    const watchFolders = []
-
-    for (const section of collection.sections) {
-      watchFolders.push(section.rootFolder)
+  static async getIgnorePatterns (collection) {
+    let gitIgnoreContents
+    let gitIgnorePatterns
+    const ignorePatterns = IGNORE_PATTERNS
+    if (collection.gitIgnoreFile) {
+      gitIgnoreContents = await FileUtils.getFileContents(join(collection.gitIgnoreFile))
+      gitIgnorePatterns = parse(gitIgnoreContents)
+      ignorePatterns.push(...gitIgnorePatterns)
     }
-
-    for (const snippet of collection.snippets) {
-      watchFolders.push(snippet.rootFolder)
-    }
-
-    for (const component of collection.components) {
-      watchFolders.push(component.rootFolder)
-    }
-
-    return watchFolders
+    return ignorePatterns
   }
 
   /**
