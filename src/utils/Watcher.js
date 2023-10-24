@@ -5,22 +5,22 @@ import logger from './Logger.js'
 class Watcher {
   /**
    * Watch target files and folders
-   * @param {string[]} targets target paths
-   * @param {string} [rootFolder] Use if target paths are relative
+   * @param {string} rootFolder
+   * @param {string[]} ignorePatterns
    * @return {FSWatcher}
    */
-  static getWatcher (targets, rootFolder) {
+  static getWatcher (rootFolder, ignorePatterns) {
+    const targets = [
+      rootFolder
+    ]
+
+    /** @type {import('chokidar').WatchOptions} */
     const watchOptions = {
-      awaitWriteFinish: {
-        pollInterval: 20,
-        stabilityThreshold: 60
-      },
-      ignoreInitial: true
+      cwd: rootFolder,
+      ignoreInitial: true,
+      ignored: ignorePatterns
     }
 
-    if (rootFolder) {
-      watchOptions.cwd = rootFolder
-    }
     logger.debug('Chokidar will watch the following files & folders:')
     logger.debug(targets)
     return watch(targets, watchOptions)

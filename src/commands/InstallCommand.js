@@ -94,9 +94,9 @@ class InstallCommand {
    * @return {Promise<module: models/Collection>}
    */
   static async watch (collection) {
-    const watchFolders = CollectionUtils.getWatchFolders(collection)
+    const ignorePatterns = await CollectionUtils.getIgnorePatterns(collection)
 
-    const watcher = Watcher.getWatcher(watchFolders)
+    const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
 
     const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.sectionNames, watcher)
     Watcher.watch(watcher, onCollectionWatchEvent)

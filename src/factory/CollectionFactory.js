@@ -22,6 +22,9 @@ class CollectionFactory {
     // Set folder names
     collection.rootFolder = await CollectionUtils.findRootFolder(collectionName)
 
+    // Find .gitignore file
+    collection.gitIgnoreFile = await FileUtils.searchFile(collection.rootFolder, '.gitignore')
+
     // Recursively find all package.json files
     collection.packageJsonFiles = await FileUtils.searchFile(collection.rootFolder, 'package.json', true)
 
