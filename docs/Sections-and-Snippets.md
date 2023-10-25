@@ -198,7 +198,7 @@ folders or in your Collection's `shared` namespace.
 ```shell
 .
 └── src                                   [ Section sources ]
-    └── assets                                [ Section locales and schema locales ]
+    └── locales                                [ Section locales ]
 ```
 
 Locales can be organized in one of two ways. You can use the traditional way, which is one file per locale, or you can
@@ -207,9 +207,6 @@ regroup all your locales in a single **locales.json** file.
 Locales Grouping is a feature inspired by an existing Section-Schema "Locales"
 element[*](https://shopify.dev/themes/architecture/sections/section-schema#locales). In fact, this is exactly where
 Archie will output the final contents of your locales during the build phase.
-
-Since Schema Locales can not be embedded within the Section-Schema, Archie will generate individual files for each
-language at build time. Upon install, their content will be merged with the Theme's Schema-Locale files.
 
 **Default Locale file**
 
@@ -265,7 +262,7 @@ Group[*](https://shopify.dev/themes/architecture/locales#schema). These will be 
 .
 └── locales
     ├── en.json                       [ English Universal Locale File ]
-    └── fr-CA.json                    [ French Canada Schema Locales File ]
+    └── fr-CA.json                    [ French Canada Locales File ]
 
 ```
 

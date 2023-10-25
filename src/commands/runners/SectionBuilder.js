@@ -17,7 +17,6 @@ class SectionBuilder {
 
     // Build Locales
     section.build.locales = LocaleUtils.buildLocales(section.name, section.locales, section.schema?.locales)
-    section.build.schemaLocales = LocaleUtils.buildLocales(section.name, section.schemaLocales)
 
     // Build Section Schema (this includes previously collated locales through factory methods
     const snippetsSchema = SnippetUtils.buildSectionSchemaRecursively(section.snippets)

@@ -102,9 +102,6 @@ Stylesheet are built using [esbuild](https://esbuild.github.io/) bundler
 
 Storefront locales will be brought back as is under the Section's schema file.*
 
-Since Schema Locales can not be embedded in the section schema, they will be split in the classic one file per locale
-structure. Mapped category will always be "sections" and mapped group will always be your section name.**
-
 Archie will check for used Snippets at build time and will merge Snippet Locales with the Section's Locales, if any.
 
 <sup>* To learn more about this structure, please refer to shopify.dev under

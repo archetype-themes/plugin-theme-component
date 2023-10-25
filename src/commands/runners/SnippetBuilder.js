@@ -15,7 +15,6 @@ class SnippetBuilder {
 
     // Build Locales
     snippet.build.locales = LocaleUtils.buildLocales(snippet.name, snippet.locales, snippet.schema?.locales, true)
-    snippet.build.schemaLocales = LocaleUtils.buildLocales(snippet.name, snippet.schemaLocales, null, true)
 
     // Build Schema
     if (snippet.schema) {

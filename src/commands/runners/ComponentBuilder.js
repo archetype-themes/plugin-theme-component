@@ -15,7 +15,6 @@ class ComponentBuilder {
 
     // Build Locales
     component.build.locales = LocaleUtils.buildLocales(component.name, component.locales, component.schema?.locales, true)
-    component.build.schemaLocales = LocaleUtils.buildLocales(component.name, component.schemaLocales, null, true)
 
     // Build Schema
     if (component.schema) {

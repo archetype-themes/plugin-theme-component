@@ -127,19 +127,17 @@ class LocaleUtils {
   }
 
   /**
-   * Write Schema Locales
+   * Write Locales
    * @param {Object} locales
    * @param {string} localesFolder
-   * @param {boolean} schemaLocales
    * @return {Promise<Awaited<void>[]>}
    */
-  static async writeLocales (locales, localesFolder, schemaLocales = false) {
+  static async writeLocales (locales, localesFolder) {
     const promises = []
-    const schemaSuffix = schemaLocales ? '.schema' : ''
 
     // Create one file per locale key
     for (const locale of Object.keys(locales)) {
-      const localeFilename = join(localesFolder, `${locale}${schemaSuffix}.json`)
+      const localeFilename = join(localesFolder, `${locale}.json`)
       const localeJsonString = JSON.stringify(locales[locale], null, 2)
       promises.push(writeFile(localeFilename, localeJsonString))
     }

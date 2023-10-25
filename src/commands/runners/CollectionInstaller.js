@@ -1,9 +1,6 @@
 // Node Core imports
 import { basename, join } from 'node:path'
 
-// External Packages
-import merge from 'deepmerge'
-
 // Archie imports
 import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
@@ -25,11 +22,6 @@ class CollectionInstaller {
 
     // Copy Snippets Folder
     fileOperations.push(FileUtils.copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
-
-    // Merge & Copy Schema Locales
-    if (collection.build.schemaLocales) {
-      fileOperations.push(this.writeSchemaLocales(collection.build.schemaLocales, theme.localesFolder))
-    }
 
     // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
     fileOperations.push(this.injectAssetReferences(collection, theme))
@@ -114,45 +106,6 @@ class CollectionInstaller {
     themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
 
     await FileUtils.writeFile(themeLiquidFile, themeLiquid)
-  }
-
-  /**
-   * Write Schema Locales, merging them atop of the theme's Schema Locales
-   * @param {Object} collectionSchemaLocales
-   * @param {string} themeLocalesPath
-   * @return {Promise<Awaited<unknown>[]>}
-   */
-  static async writeSchemaLocales (collectionSchemaLocales, themeLocalesPath) {
-    logger.debug('Merging Collection Schema Locales with the Theme\'s Schema Locales')
-    const fileOperations = []
-
-    // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
-    for (const locale of Object.keys(collectionSchemaLocales)) {
-      const schemaLocaleFilename = `${locale}.schema.json`
-
-      const defaultSchemaLocaleFilename = `${locale}.default.schema.json`
-
-      const targetFile = join(themeLocalesPath, schemaLocaleFilename)
-      const defaultTargetFile = join(themeLocalesPath, defaultSchemaLocaleFilename)
-
-      const targetFileExists = await FileUtils.exists(targetFile)
-      const defaultTargetFileExists = await FileUtils.exists(defaultTargetFile)
-      const collectionSchemaLocale = collectionSchemaLocales[locale]
-      if (targetFileExists || defaultTargetFileExists) {
-        const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
-        const themeSchemaLocale = await FileUtils.getJsonFileContents(realTargetFile)
-        const mergedSchemaLocale = merge(collectionSchemaLocale, themeSchemaLocale)
-
-        fileOperations.push(FileUtils.writeFile(realTargetFile, JSON.stringify(mergedSchemaLocale, null, 2)))
-      } else {
-        // if No Theme Schema Locale File was found for the current locale, check for a Default Theme Regular Locale File in order to determine 'default' status for the locale.
-        const defaultLocaleFilename = `${locale}.default.json`
-        const realTargetFile = await FileUtils.exists(join(themeLocalesPath, defaultLocaleFilename)) ? defaultTargetFile : targetFile
-
-        fileOperations.push(FileUtils.writeFile(realTargetFile, JSON.stringify(collectionSchemaLocale, null, 2)))
-      }
-    }
-    return Promise.all(fileOperations)
   }
 
   static injectionFailureWarning (message, injections) {
