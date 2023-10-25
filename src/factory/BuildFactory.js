@@ -12,7 +12,6 @@ class BuildFactory {
     build.snippetsFolder = `${build.rootFolder}/${Components.SNIPPETS_FOLDER_NAME}`
 
     build.javascriptFile = `${build.assetsFolder}/${collection.name}.js`
-    build.settingsSchemaFile = `${build.configFolder}/${Components.SETTINGS_SCHEMA_FILENAME}`
     build.stylesheet = `${build.assetsFolder}/${collection.name}.css.liquid`
 
     return build

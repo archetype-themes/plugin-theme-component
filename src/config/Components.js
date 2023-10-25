@@ -41,14 +41,11 @@ class Components {
   static SNIPPETS_FOLDER_NAME = 'snippets'
 
   /******************/
-  /** FILE NAMES **/
+  /**  FILE NAMES  **/
   /******************/
 
   /** @type {string} **/
   static SECTION_SCHEMA_FILENAME = 'schema.json'
-
-  /** @type {string} **/
-  static SETTINGS_SCHEMA_FILENAME = 'settings_schema.json'
 }
 
 export default Components

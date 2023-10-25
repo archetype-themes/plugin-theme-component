@@ -19,12 +19,6 @@ class CollectionBuild extends ComponentBuild {
   /** @type {string} **/
   #sectionsFolder
 
-  /** @type {Object[]} **/
-  #settingsSchema
-
-  /** @type {string} **/
-  #settingsSchemaFile
-
   /** @type {string} **/
   #snippetsFolder
 
@@ -128,38 +122,6 @@ class CollectionBuild extends ComponentBuild {
    */
   set sectionsFolder (value) {
     this.#sectionsFolder = value
-  }
-
-  /**
-   * Get Settings Schema
-   * @return {Object[]}
-   */
-  get settingsSchema () {
-    return this.#settingsSchema
-  }
-
-  /**
-   * Set Settings Schema
-   * @param {Object[]} value
-   */
-  set settingsSchema (value) {
-    this.#settingsSchema = value
-  }
-
-  /**
-   * Get Settings Schema File
-   * @return {string}
-   */
-  get settingsSchemaFile () {
-    return this.#settingsSchemaFile
-  }
-
-  /**
-   * Set Settings Schema File
-   * @param {string} value
-   */
-  set settingsSchemaFile (value) {
-    this.#settingsSchemaFile = value
   }
 
   /**
