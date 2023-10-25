@@ -47,8 +47,7 @@ images, fonts, etc.
     ├── some-nice-section-name.liquid     [ Mandatory Main Liquid File ]
     ├── locales.json                      [ Optional Multilingual Locales File ]
     ├── locales.schema.json               [ Optional Multilingual Shema Locales File ]
-    ├── schema.json                       [ Optional External Section Schema JSON file ]
-    └── settings_schema.json              [ Optional Settings Schema JSON file ]
+    └── schema.json                       [ Optional External Section Schema JSON file ]
 ```
 
 **Think Big!**
@@ -175,12 +174,6 @@ liquid files to avoid problems. Refer to:
 
 * [Issue 33](https://github.com/archetype-themes/archie/issues/33): Section Schema must be in an external JSON file. Any
   section schema json in a liquid file is ignored.
-
-#### Settings Schema JSON File
-
-Settings Schema can be input on a component level. For both Section and Snippet you can use a JSON of javascript file to
-enter component specific settings. With the use of javascript instead of JSON files, you can benefit from importing
-parts of you settings from a global file in a separate workspace.
 
 ---
 

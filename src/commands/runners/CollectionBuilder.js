@@ -12,7 +12,6 @@ import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import Timer from '../../utils/Timer.js'
-import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 import { logChildItem } from '../../utils/Logger.js'
 
 class CollectionBuilder {
@@ -57,11 +56,6 @@ class CollectionBuilder {
     collection.build.schemaLocales = this.buildLocales(collection.sections, true)
     logChildItem(`Schema Locales Ready (${Timer.getEndTimerInSeconds(buildSchemaLocalesTimer)} seconds)`)
 
-    // Build Settings Schema
-    const buildSettingsSchemaTimer = Timer.getTimer()
-    collection.build.settingsSchema = this.buildSettingsSchema(allComponents)
-    logChildItem(`Settings Schema Ready (${Timer.getEndTimerInSeconds(buildSettingsSchemaTimer)} seconds)`)
-
     return collection
   }
 
@@ -76,7 +70,6 @@ class CollectionBuilder {
 
     const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
     const schemaLocalesWritePromise = LocaleUtils.writeLocales(collection.build.schemaLocales, collection.build.localesFolder, true)
-    const settingsSchemaWritePromise = FileUtils.writeFile(collection.build.settingsSchemaFile, JSON.stringify(collection.build.settingsSchema, null, 2))
 
     // Write Component Liquid Files
     const sectionFilesWritePromises = collection.sections.map(section =>
@@ -92,7 +85,6 @@ class CollectionBuilder {
       FileUtils.writeFile(collection.build.stylesheet, collection.build.styles),
       localesWritePromise,
       schemaLocalesWritePromise,
-      settingsSchemaWritePromise,
       ...sectionFilesWritePromises,
       ...snippetFilesWritePromises,
       copyAssetsPromise
@@ -114,17 +106,6 @@ class CollectionBuilder {
     }
 
     return buildLocales
-  }
-
-  /**
-   * Build Settings Schema
-   * @param {(Section|Snippet|Component)[]} components
-   * @return {Object[]} Settings Schema
-   */
-  static buildSettingsSchema (components) {
-    const componentsWithSettingSchema = components.filter(component => component.settingsSchema?.length)
-
-    return componentsWithSettingSchema.reduce((settingsSchema, component) => mergeObjectArraysByUniqueKey(settingsSchema, component.settingsSchema), [])
   }
 
   /**

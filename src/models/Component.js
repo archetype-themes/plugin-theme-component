@@ -23,9 +23,6 @@ class Component {
   /** @type {Object} **/
   #schemaLocales = {}
 
-  /** @type {Object[]} **/
-  #settingsSchema
-
   /** @type {string[]} **/
   #snippetNames
 
@@ -168,22 +165,6 @@ class Component {
    */
   set schemaLocales (value) {
     this.#schemaLocales = value
-  }
-
-  /**
-   * Get Settings Schema
-   * @return {Object[]}
-   */
-  get settingsSchema () {
-    return this.#settingsSchema
-  }
-
-  /**
-   * Set Settings Schema
-   * @param {Object[]} value
-   */
-  set settingsSchema (value) {
-    this.#settingsSchema = value
   }
 
   /**

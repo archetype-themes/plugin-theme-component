@@ -1,13 +1,10 @@
 // Node Core imports
-import { mkdir } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 
 // External Packages
 import merge from 'deepmerge'
 
 // Archie imports
-import Components from '../../config/Components.js'
-import { mergeObjectArraysByUniqueKey } from '../../utils/ArrayUtils.js'
 import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
 
@@ -32,11 +29,6 @@ class CollectionInstaller {
     // Merge & Copy Schema Locales
     if (collection.build.schemaLocales) {
       fileOperations.push(this.writeSchemaLocales(collection.build.schemaLocales, theme.localesFolder))
-    }
-
-    // Merge & Copy Settings Schema
-    if (collection.build.settingsSchema) {
-      fileOperations.push(this.writeSettingsSchema(theme.configFolder, collection.build.settingsSchema))
     }
 
     // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
@@ -161,27 +153,6 @@ class CollectionInstaller {
       }
     }
     return Promise.all(fileOperations)
-  }
-
-  /**
-   * Write Settings Schema
-   * @param {string} themeConfigFolder
-   * @param {Object[]} collectionSettingsSchema
-   * @return {Promise<void>}
-   */
-  static async writeSettingsSchema (themeConfigFolder, collectionSettingsSchema) {
-    let finalSettingsSchema
-    const themeSettingsSchemaFile = join(themeConfigFolder, Components.SETTINGS_SCHEMA_FILENAME)
-
-    if (await FileUtils.exists(themeSettingsSchemaFile)) {
-      const themeSettingsSchema = await FileUtils.getJsonFileContents(themeSettingsSchemaFile)
-      finalSettingsSchema = mergeObjectArraysByUniqueKey(themeSettingsSchema, collectionSettingsSchema)
-    } else if (!await FileUtils.exists(themeConfigFolder)) {
-      await mkdir(themeConfigFolder)
-      finalSettingsSchema = collectionSettingsSchema
-    }
-
-    return FileUtils.writeFile(themeSettingsSchemaFile, JSON.stringify(finalSettingsSchema, null, 2))
   }
 
   static injectionFailureWarning (message, injections) {
