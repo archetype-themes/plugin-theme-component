@@ -108,7 +108,4 @@ The following files will be edited or created if need be:
 ```shell
 # Adding JavaScript and Styles references if needed
 src/layout/theme.liquid
-
-# Adding/editing Schema locales if needed
-src/locales/[some-locale].schema.json
 ```

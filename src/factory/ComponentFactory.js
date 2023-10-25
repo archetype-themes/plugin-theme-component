@@ -27,11 +27,6 @@ class ComponentFactory {
       component.locales = await LocaleUtils.parseLocaleFilesContent(component.files.localeFiles)
     }
 
-    // Load Schema Locales
-    if (component.files.schemaLocaleFiles?.length) {
-      component.schemaLocales = await LocaleUtils.parseLocaleFilesContent(component.files.schemaLocaleFiles)
-    }
-
     // Find snippet names in render tags
     component.snippetNames = LiquidUtils.getSnippetNames(component.liquidCode)
 

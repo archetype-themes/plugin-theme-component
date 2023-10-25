@@ -5,7 +5,7 @@
   "main": "src/bin/archie.js",
   "name": "@archetype-themes/archie",
   "type": "module",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "bin": "src/bin/archie.js",
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/archie.js",

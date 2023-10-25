@@ -51,11 +51,6 @@ class CollectionBuilder {
     collection.build.locales = this.buildLocales(collection.sections)
     logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
 
-    // Build Schema Locales
-    const buildSchemaLocalesTimer = Timer.getTimer()
-    collection.build.schemaLocales = this.buildLocales(collection.sections, true)
-    logChildItem(`Schema Locales Ready (${Timer.getEndTimerInSeconds(buildSchemaLocalesTimer)} seconds)`)
-
     return collection
   }
 
@@ -69,7 +64,6 @@ class CollectionBuilder {
     const allSnippets = [...collection.components, ...collection.snippets]
 
     const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
-    const schemaLocalesWritePromise = LocaleUtils.writeLocales(collection.build.schemaLocales, collection.build.localesFolder, true)
 
     // Write Component Liquid Files
     const sectionFilesWritePromises = collection.sections.map(section =>
@@ -84,7 +78,6 @@ class CollectionBuilder {
     return Promise.all([
       FileUtils.writeFile(collection.build.stylesheet, collection.build.styles),
       localesWritePromise,
-      schemaLocalesWritePromise,
       ...sectionFilesWritePromises,
       ...snippetFilesWritePromises,
       copyAssetsPromise
@@ -92,17 +85,15 @@ class CollectionBuilder {
   }
 
   /**
-   * Build Collection Locales (Storefront or Schema)
+   * Build Collection Storefront Locales
    * @param {(Section|Snippet|Component)[]} components
-   * @param {boolean} [isSchemaLocales=false] Defaults to Storefront Locales
    * @return {Object}
    */
-  static buildLocales (components, isSchemaLocales = false) {
+  static buildLocales (components) {
     let buildLocales = {}
-    const localesKey = isSchemaLocales ? 'schemaLocales' : 'locales'
 
     for (const component of components) {
-      buildLocales = merge(buildLocales, component.build[localesKey])
+      buildLocales = merge(buildLocales, component.build.locales)
     }
 
     return buildLocales
