@@ -41,8 +41,8 @@ class ComponentFilesUtils {
       throw new FileMissingError(`No liquid files file found for the "${componentName}" component`)
     }
 
-    if (filesModel.javascriptFiles.length) {
-      filesModel.javascriptIndex = JavascriptUtils.getMainJavascriptFile(filesModel.javascriptFiles)
+    if (files) {
+      filesModel.javascriptIndex = JavascriptUtils.findMainJavaScriptFile(files, componentName)
     }
 
     if (filesModel.stylesheets.length) {

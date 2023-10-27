@@ -20,6 +20,9 @@ class CollectionBuild extends ComponentBuild {
   #sectionsFolder
 
   /** @type {string} **/
+  #importMapFile
+
+  /** @type {string} **/
   #snippetsFolder
 
   /** @type {string} **/
@@ -170,6 +173,20 @@ class CollectionBuild extends ComponentBuild {
    */
   set stylesheet (value) {
     this.#stylesheet = value
+  }
+
+  /**
+   * Get Import Map File Location
+   */
+  get importMapFile () {
+    return this.#importMapFile
+  }
+
+  /**
+   * Set Import Map File Location
+   */
+  set importMapFile (value) {
+    this.#importMapFile = value
   }
 }
 
