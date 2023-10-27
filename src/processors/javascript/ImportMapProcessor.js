@@ -3,25 +3,24 @@ import glob from 'fast-glob'
 import picomatch from 'picomatch'
 import { init, parse } from 'es-module-lexer'
 import FileUtils from '../../utils/FileUtils.js'
-
-const URL_REGEX = /^(http:\/\/|https:\/\/|\/\/)/
+import WebUtils from '../../utils/WebUtils.js'
 
 class ImportMapProcessor {
   static ImportMapFile = 'importmap.json'
 
   /**
-   * @param {string[]} jsFiles
+   * @param {Set<string>} jsFiles
    * @param {string} outputFile
    * @param {string} rootFolder
-   * @param {string} assetsFolder
    */
-  static async build (jsFiles, outputFile, rootFolder, assetsFolder) {
+  static async build (jsFiles, outputFile, rootFolder) {
     /** @type {{imports: Map<string, string>}} */
     const importMap = await FileUtils.getJsonFileContents(this.ImportMapFile)
     const importMapEntries = this.resolveImportMapEntries(importMap.imports)
     const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries, rootFolder)
     const importMapTags = this.generateImportMapTags(buildEntries)
-    return Promise.all([this.deployImportMapFiles(buildEntries, assetsFolder), FileUtils.writeFile(outputFile, importMapTags)])
+    await FileUtils.writeFile(outputFile, importMapTags)
+    return this.filterBuildEntries(buildEntries, jsFiles)
   }
 
   /**
@@ -34,7 +33,7 @@ class ImportMapProcessor {
     const modulePatterns = entries.map(([, modulePattern]) => modulePattern)
     const files = glob.sync(modulePatterns)
     for (const [specifierPattern, modulePattern] of entries) {
-      if (this.isUrl(modulePattern)) {
+      if (WebUtils.isUrl(modulePattern)) {
         map.set(specifierPattern, modulePattern)
         continue
       }
@@ -67,7 +66,7 @@ class ImportMapProcessor {
   }
 
   /**
-   * @param {string[]} jsFiles
+   * @param {Set<string>} jsFiles
    * @param {Map<string, string>} importMapEntries
    * @param {string} rootFolder
    */
@@ -103,7 +102,7 @@ class ImportMapProcessor {
       if (!moduleSpecifier) continue
       const modulePath = importMapEntries.get(moduleSpecifier)
       if (!modulePath) continue
-      if (this.isUrl(modulePath)) {
+      if (WebUtils.isUrl(modulePath)) {
         buildEntries.set(moduleSpecifier, modulePath)
         continue
       }
@@ -158,26 +157,17 @@ class ImportMapProcessor {
 
   /**
    * @param {Map<string, string>} buildEntries
-   * @param {string} assetsFolder
+   * @param {Set<string>} jsFiles
    */
-  static async deployImportMapFiles (buildEntries, assetsFolder) {
-    const localFiles = []
-    const remoteFiles = []
-    for (const [, modulePath] of buildEntries) {
-      if (this.isUrl(modulePath)) {
-        remoteFiles.push(modulePath)
-      } else {
-        localFiles.push(modulePath)
+  static filterBuildEntries (buildEntries, jsFiles) {
+    /** @type {Map<string, string>} */
+    const map = new Map()
+    for (const [specifier, modulePath] of buildEntries) {
+      if (!jsFiles.has(modulePath)) {
+        map.set(specifier, modulePath)
       }
     }
-    return Promise.all([FileUtils.copyFilesToFolder(localFiles, assetsFolder), FileUtils.downloadFiles(remoteFiles, assetsFolder)])
-  }
-
-  /**
-   * @param {string} possibleUrl
-   */
-  static isUrl (possibleUrl) {
-    return URL_REGEX.test(possibleUrl)
+    return map
   }
 }
 

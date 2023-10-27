@@ -59,14 +59,13 @@ class ComponentFilesUtils {
    * @param {string} componentName
    */
   static filterFiles (files, componentFiles, componentName) {
-    const regex = JavascriptUtils.mainJavaScriptFileRegex(componentName)
     // Categorize files for the build steps
     for (const file of files) {
       const extension = extname(file).toLowerCase()
       const folder = dirname(file).toLowerCase()
       const filename = basename(file).toLowerCase()
 
-      if (folder.endsWith(`/${Components.ASSETS_FOLDER_NAME}`) && !regex.test(file)) {
+      if (folder.endsWith(`/${Components.ASSETS_FOLDER_NAME}`)) {
         componentFiles.assetFiles.push(file)
         continue
       }

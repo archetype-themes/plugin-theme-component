@@ -8,14 +8,13 @@ class JavaScriptProcessor {
    * @param {string[]} jsFiles
    * @param {string} outputFile
    * @param {string} collectionRootFolder
-   * @param {string} assetsFolder
    * @throws {FileMissingError}
    */
-  static async buildJavaScript (jsFiles, outputFile, collectionRootFolder, assetsFolder) {
+  static async buildJavaScript (jsFiles, outputFile, collectionRootFolder) {
     const importMapFile = ImportMapProcessor.ImportMapFile
 
     if (await FileUtils.exists(importMapFile)) {
-      return ImportMapProcessor.build(jsFiles, outputFile, collectionRootFolder, assetsFolder)
+      return ImportMapProcessor.build(new Set(jsFiles), outputFile, collectionRootFolder)
     }
 
     throw new FileMissingError('ImportMap file not found, unable to process javascript')

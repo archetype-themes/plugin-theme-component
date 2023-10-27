@@ -1,6 +1,5 @@
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
-import https from 'node:https'
 import { basename, join } from 'path'
 
 import logger from './Logger.js'
@@ -264,36 +263,6 @@ class FileUtils {
     logger.trace(`Writing to disk: ${file}`)
 
     return writeFile(file, fileContents, this.#FILE_ENCODING_OPTION)
-  }
-
-  /**
-   * @param {string[]} remoteFiles
-   * @param {string} targetFolder
-   */
-  static async downloadFiles (remoteFiles, targetFolder) {
-    const downloadPromises = remoteFiles.map(file => this.downloadFile(file, targetFolder))
-
-    return Promise.all(downloadPromises)
-  }
-
-  /**
-   * @param {string} remoteFile
-   * @param {string} targetFolder
-   */
-  static async downloadFile (remoteFile, targetFolder) {
-    return new Promise((resolve, reject) => {
-      https.get(remoteFile, (response) => {
-        let data = ''
-        response.on('data', (chunk) => {
-          data += chunk
-        })
-        response.on('end', () => {
-          resolve(this.writeFile(join(targetFolder, basename(remoteFile)), data))
-        })
-      }).on('error', (error) => {
-        reject(error)
-      })
-    })
   }
 }
 

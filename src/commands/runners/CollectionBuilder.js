@@ -8,6 +8,7 @@ import merge from 'deepmerge'
 // Archie imports
 import BuildFactory from '../../factory/BuildFactory.js'
 import FileUtils from '../../utils/FileUtils.js'
+import WebUtils from '../../utils/WebUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
@@ -42,7 +43,7 @@ class CollectionBuilder {
 
     if (jsFiles.length) {
       const buildScriptsTimer = Timer.getTimer()
-      await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder, collection.build.assetsFolder)
+      collection.build.importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder)
       logChildItem(`Scripts Ready (${Timer.getEndTimerInSeconds(buildScriptsTimer)} seconds)`)
     } else {
       logger.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
@@ -82,8 +83,26 @@ class CollectionBuilder {
       localesWritePromise,
       ...sectionFilesWritePromises,
       ...snippetFilesWritePromises,
-      copyAssetsPromise
+      copyAssetsPromise,
+      this.deployImportMapFiles(collection.build.importMapEntries, collection.build.assetsFolder)
     ])
+  }
+
+  /**
+   * @param {Map<string, string>} buildEntries
+   * @param {string} assetsFolder
+   */
+  static async deployImportMapFiles (buildEntries, assetsFolder) {
+    const localFiles = []
+    const remoteFiles = []
+    for (const [, modulePath] of buildEntries) {
+      if (WebUtils.isUrl(modulePath)) {
+        remoteFiles.push(modulePath)
+      } else {
+        localFiles.push(modulePath)
+      }
+    }
+    return Promise.all([FileUtils.copyFilesToFolder(localFiles, assetsFolder), WebUtils.downloadFiles(remoteFiles, assetsFolder)])
   }
 
   /**
