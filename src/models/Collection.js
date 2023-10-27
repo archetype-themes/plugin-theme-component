@@ -30,6 +30,9 @@ class Collection {
   /** @type {boolean} **/
   #prefixStorefrontLocales
 
+  /** @type {Map<string, string> | undefined} **/
+  #importMapEntries
+
   constructor () {
     this.sectionNames = []
     this.sections = []
@@ -193,6 +196,14 @@ class Collection {
    */
   set prefixStorefrontLocales (value) {
     this.#prefixStorefrontLocales = value
+  }
+
+  get importMapEntries () {
+    return this.#importMapEntries
+  }
+
+  set importMapEntries (value) {
+    this.#importMapEntries = value
   }
 }
 

@@ -8,11 +8,12 @@ import merge from 'deepmerge'
 // Archie imports
 import BuildFactory from '../../factory/BuildFactory.js'
 import FileUtils from '../../utils/FileUtils.js'
+import WebUtils from '../../utils/WebUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import Timer from '../../utils/Timer.js'
-import { logChildItem } from '../../utils/Logger.js'
+import logger, { logChildItem } from '../../utils/Logger.js'
 
 class CollectionBuilder {
   /**
@@ -42,8 +43,10 @@ class CollectionBuilder {
 
     if (jsFiles.length) {
       const buildScriptsTimer = Timer.getTimer()
-      await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.javascriptFile, collection.rootFolder)
+      collection.importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder)
       logChildItem(`Scripts Ready (${Timer.getEndTimerInSeconds(buildScriptsTimer)} seconds)`)
+    } else {
+      logger.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
     }
 
     // Build Locales
@@ -56,7 +59,7 @@ class CollectionBuilder {
 
   /**
    * Deploy Collection To Folder
-   * @param collection
+   * @param {module:models/Collection} collection
    * @returns {Promise<Awaited<unknown>[]>}
    */
   static async deployToBuildFolder (collection) {
@@ -75,13 +78,36 @@ class CollectionBuilder {
     const allAssetFiles = this.getAssetFiles(allComponents)
     const copyAssetsPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
 
-    return Promise.all([
+    const promises = [
       FileUtils.writeFile(collection.build.stylesheet, collection.build.styles),
       localesWritePromise,
       ...sectionFilesWritePromises,
       ...snippetFilesWritePromises,
       copyAssetsPromise
-    ])
+    ]
+
+    if (collection.importMapEntries && collection.importMapEntries.size) {
+      promises.push(this.deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder))
+    }
+
+    return Promise.all(promises)
+  }
+
+  /**
+   * @param {Map<string, string>} buildEntries
+   * @param {string} assetsFolder
+   */
+  static async deployImportMapFiles (buildEntries, assetsFolder) {
+    const localFiles = []
+    const remoteFiles = []
+    for (const [, modulePath] of buildEntries) {
+      if (WebUtils.isUrl(modulePath)) {
+        remoteFiles.push(modulePath)
+      } else {
+        localFiles.push(modulePath)
+      }
+    }
+    return Promise.all([FileUtils.copyFilesToFolder(localFiles, assetsFolder), WebUtils.downloadFiles(remoteFiles, assetsFolder)])
   }
 
   /**
