@@ -42,10 +42,7 @@ class ComponentFilesUtils {
     }
 
     if (files) {
-      filesModel.javascriptIndex = JavascriptUtils.getMainJavascriptFile(
-        Array.isArray(files) ? files : [files],
-        componentName
-      )
+      filesModel.javascriptIndex = JavascriptUtils.getMainJavascriptFile(files, componentName)
     }
 
     if (filesModel.stylesheets.length) {

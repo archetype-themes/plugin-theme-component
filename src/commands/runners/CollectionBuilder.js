@@ -12,7 +12,7 @@ import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import Timer from '../../utils/Timer.js'
-import { logChildItem } from '../../utils/Logger.js'
+import logger, { logChildItem } from '../../utils/Logger.js'
 
 class CollectionBuilder {
   /**
@@ -44,6 +44,8 @@ class CollectionBuilder {
       const buildScriptsTimer = Timer.getTimer()
       await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder, collection.build.assetsFolder)
       logChildItem(`Scripts Ready (${Timer.getEndTimerInSeconds(buildScriptsTimer)} seconds)`)
+    } else {
+      logger.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
     }
 
     // Build Locales

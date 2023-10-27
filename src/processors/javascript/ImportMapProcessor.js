@@ -16,7 +16,8 @@ class ImportMapProcessor {
    * @param {string} assetsFolder
    */
   static async build (jsFiles, outputFile, rootFolder, assetsFolder) {
-    const importMap = await this.resolveImportMap(this.ImportMapFile)
+    /** @type {{imports: Map<string, string>}} */
+    const importMap = await FileUtils.getJsonFileContents(this.ImportMapFile)
     const importMapEntries = this.resolveImportMapEntries(importMap.imports)
     const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries, rootFolder)
     const importMapTags = this.generateImportMapTags(buildEntries)
@@ -118,14 +119,14 @@ class ImportMapProcessor {
    * @param {Map<string, string>} buildEntries
    */
   static generateImportMapTags (buildEntries) {
-    const entriesWithAssetUrl = this.getEntriesWithAsetUrl(buildEntries)
+    const entriesWithAssetUrl = this.getEntriesWithAssetUrl(buildEntries)
     return [this.generateImportMapTag(entriesWithAssetUrl), ...this.generateModulePreloadTags(entriesWithAssetUrl)].join('\n')
   }
 
   /**
    * @param {Map<string, string>} buildEntries
    */
-  static getEntriesWithAsetUrl (buildEntries) {
+  static getEntriesWithAssetUrl (buildEntries) {
     /** @type {Map<string, string>} */
     const map = new Map()
     for (const [specifier, modulePath] of buildEntries) {
@@ -177,15 +178,6 @@ class ImportMapProcessor {
    */
   static isUrl (possibleUrl) {
     return URL_REGEX.test(possibleUrl)
-  }
-
-  /**
-   * @param {string} importMapFile
-   */
-  static async resolveImportMap (importMapFile) {
-    /** @type {{imports: Map.<string, string>}} */
-    const importMap = await FileUtils.getJsonFileContents(importMapFile)
-    return importMap
   }
 }
 
