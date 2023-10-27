@@ -78,14 +78,19 @@ class CollectionBuilder {
     const allAssetFiles = this.getAssetFiles(allComponents)
     const copyAssetsPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
 
-    return Promise.all([
+    const promises = [
       FileUtils.writeFile(collection.build.stylesheet, collection.build.styles),
       localesWritePromise,
       ...sectionFilesWritePromises,
       ...snippetFilesWritePromises,
-      copyAssetsPromise,
-      this.deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder)
-    ])
+      copyAssetsPromise
+    ]
+
+    if (collection.importMapEntries && collection.importMapEntries.size) {
+      promises.push(this.deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder))
+    }
+
+    return Promise.all(promises)
   }
 
   /**

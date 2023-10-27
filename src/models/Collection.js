@@ -30,7 +30,7 @@ class Collection {
   /** @type {boolean} **/
   #prefixStorefrontLocales
 
-  /** @type {Map<string, string>} **/
+  /** @type {Map<string, string> | undefined} **/
   #importMapEntries
 
   constructor () {
