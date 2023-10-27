@@ -59,7 +59,7 @@ class CollectionBuilder {
 
   /**
    * Deploy Collection To Folder
-   * @param collection
+   * @param {module:models/Collection} collection
    * @returns {Promise<Awaited<unknown>[]>}
    */
   static async deployToBuildFolder (collection) {
