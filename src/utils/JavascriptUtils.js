@@ -30,17 +30,6 @@ class JavascriptUtils {
   }
 
   /**
-   * Get the main/index javascript file within the provided file list
-   * @param {string[]} files
-   * @param {string} componentName
-   * @returns {string | undefined}
-   * @throws Error
-   */
-  static getMainJavascriptFile (files, componentName) {
-    return this.findMainJavaScriptFile(files, componentName)
-  }
-
-  /**
    * Generate JS Bundle Index
    * @param {string[]} javascriptFiles
    * @return string
