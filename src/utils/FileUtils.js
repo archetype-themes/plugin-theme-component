@@ -148,7 +148,7 @@ class FileUtils {
   /**
    * Get directory file listing recursively
    * @param folder
-   * @returns {Promise<FlatArray[] | string>}
+   * @returns {Promise<string[]>}
    * @link https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
    */
   static async getFolderFilesRecursively (folder) {
