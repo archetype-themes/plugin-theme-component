@@ -43,7 +43,7 @@ class CollectionBuilder {
 
     if (jsFiles.length) {
       const buildScriptsTimer = Timer.getTimer()
-      collection.build.importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder)
+      collection.importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder)
       logChildItem(`Scripts Ready (${Timer.getEndTimerInSeconds(buildScriptsTimer)} seconds)`)
     } else {
       logger.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
@@ -84,7 +84,7 @@ class CollectionBuilder {
       ...sectionFilesWritePromises,
       ...snippetFilesWritePromises,
       copyAssetsPromise,
-      this.deployImportMapFiles(collection.build.importMapEntries, collection.build.assetsFolder)
+      this.deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder)
     ])
   }
 

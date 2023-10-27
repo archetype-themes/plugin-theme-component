@@ -22,9 +22,6 @@ class CollectionBuild extends ComponentBuild {
   /** @type {string} **/
   #importMapFile
 
-  /** @type {Map<string, string>} **/
-  #importMapEntries
-
   /** @type {string} **/
   #snippetsFolder
 
@@ -190,14 +187,6 @@ class CollectionBuild extends ComponentBuild {
    */
   set importMapFile (value) {
     this.#importMapFile = value
-  }
-
-  get importMapEntries () {
-    return this.#importMapEntries
-  }
-
-  set importMapEntries (value) {
-    this.#importMapEntries = value
   }
 }
 
