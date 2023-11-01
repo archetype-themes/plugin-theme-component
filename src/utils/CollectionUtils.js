@@ -1,6 +1,6 @@
 // Node.js imports
 import { dirname, join } from 'node:path'
-import parse from 'parse-gitignore'
+import gitignore from 'parse-gitignore'
 
 // Archie Imports
 import Components from '../config/Components.js'
@@ -30,12 +30,9 @@ class CollectionUtils {
    * @param collection
    */
   static async getIgnorePatterns (collection) {
-    let gitIgnoreContents
-    let gitIgnorePatterns
     const ignorePatterns = IGNORE_PATTERNS
     if (collection.gitIgnoreFile) {
-      gitIgnoreContents = await FileUtils.getFileContents(join(collection.gitIgnoreFile))
-      gitIgnorePatterns = parse(gitIgnoreContents)
+      const gitIgnorePatterns = gitignore.parse(collection.gitIgnoreFile).patterns
       ignorePatterns.push(...gitIgnorePatterns)
     }
     return ignorePatterns
