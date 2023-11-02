@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.7.2] - 2023-11-01
 
-### Changed
+### Fixed
 
-- Usage of the parse-gitignore library
+- Fixed the computation of gitignore patterns during watch mode ([#228](https://github.com/archetype-themes/archie/pull/228))
 
 ## [1.7.1] - 2023-10-31
 
