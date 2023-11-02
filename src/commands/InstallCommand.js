@@ -94,7 +94,7 @@ class InstallCommand {
    * @return {Promise<module: models/Collection>}
    */
   static async watch (collection) {
-    const ignorePatterns = await CollectionUtils.getIgnorePatterns(collection)
+    const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
 
     const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
 

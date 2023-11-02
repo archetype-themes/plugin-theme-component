@@ -29,7 +29,7 @@ class CollectionUtils {
    * Get Watch Folders for a Collection
    * @param collection
    */
-  static async getIgnorePatterns (collection) {
+  static getIgnorePatterns (collection) {
     const ignorePatterns = IGNORE_PATTERNS
     if (collection.gitIgnoreFile) {
       const gitIgnorePatterns = gitignore.parse(collection.gitIgnoreFile).patterns
