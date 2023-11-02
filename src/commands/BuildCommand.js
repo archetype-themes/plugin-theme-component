@@ -221,8 +221,8 @@ class BuildCommand {
    * @param {module:models/Collection} collection
    * @return {FSWatcher}
    */
-  static async watchCollection (collection) {
-    const ignorePatterns = await CollectionUtils.getIgnorePatterns(collection)
+  static watchCollection (collection) {
+    const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
 
     const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
     const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(this, watcher)
