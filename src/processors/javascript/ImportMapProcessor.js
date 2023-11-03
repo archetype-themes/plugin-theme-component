@@ -63,12 +63,7 @@ class ImportMapProcessor {
    */
   static filterFiles (files, modulePattern) {
     const isMatch = picomatch(modulePattern)
-    return files.filter(file => {
-      if (!isMatch(file)) {
-        return false
-      }
-      return true
-    })
+    return files.filter(file => isMatch(file))
   }
 
   /**
