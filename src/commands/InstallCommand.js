@@ -29,8 +29,8 @@ class InstallCommand {
       collectionsList = Session.targetName
     }
 
-    for (const [collectionName, sectionsList] of Object.entries(collectionsList)) {
-      const collection = await InstallCommand.installOne(collectionName, sectionsList)
+    for (const [collectionName, componentNames] of Object.entries(collectionsList)) {
+      const collection = await InstallCommand.installOne(collectionName, componentNames)
 
       if (Session.watchMode) {
         promises.push(this.watch(collection))
@@ -43,10 +43,10 @@ class InstallCommand {
   /**
    * Install a Collection
    * @param {string} collectionName
-   * @param {string[]} sectionNames
+   * @param {string[]} componentNames
    * @return {Promise<module:models/Collection>}
    */
-  static async installOne (collectionName, sectionNames) {
+  static async installOne (collectionName, componentNames) {
     logger.info(`Building & Installing the ${collectionName} Collection.`)
     const startTime = Timer.getTimer()
 
@@ -54,7 +54,7 @@ class InstallCommand {
     const theme = ThemeFactory.fromThemeInstallCommand()
 
     // Build using the Build Command
-    const collection = await BuildCommand.buildCollection(collectionName, sectionNames)
+    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
 
     // Install and time it!
     logger.info(`Installing the ${collectionName} Collection for the ${theme.name} Theme.`)
@@ -68,17 +68,17 @@ class InstallCommand {
   /**
    * On Collection Watch Event
    * @param {string} collectionName
-   * @param {string[]} sectionNames
+   * @param {string[]} componentNames
    * @param {FSWatcher} watcher
    * @param event
    * @param eventPath
    * @return {Promise<module: models/Collection>}
    */
-  static async onCollectionWatchEvent (collectionName, sectionNames, watcher, event, eventPath) {
+  static async onCollectionWatchEvent (collectionName, componentNames, watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${filename} detected`)
 
-    const collection = await InstallCommand.installOne(collectionName, sectionNames)
+    const collection = await InstallCommand.installOne(collectionName, componentNames)
 
     // The Watcher is restarted on any liquid file change.
     // This is useful if any render tags were added or removed, it will reset snippet watched folders.
@@ -98,7 +98,7 @@ class InstallCommand {
 
     const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
 
-    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.sectionNames, watcher)
+    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, watcher)
     Watcher.watch(watcher, onCollectionWatchEvent)
   }
 }

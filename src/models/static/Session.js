@@ -3,7 +3,7 @@ import Components from '../../config/Components.js'
 /**
  * @typedef CLIConfig
  * @type {Object}
- * @property {string} type - Component type (theme/collection/section/snippet)
+ * @property {string} type - Component type (theme/collection/component)
  * @property {string} path - Component path (ie: './src')
  * FOR THEMES ONLY
  * @property {Object.<string, string[]>} collections - In Collection mode, list of components to build.
@@ -137,11 +137,11 @@ class Session {
   }
 
   /**
-   * Is The Component Type a Section
+   * Is The CLI Caller Of A Component Type
    * @return {boolean}
    */
-  static isSection () {
-    return this.#componentType === Components.SECTION_COMPONENT_TYPE_NAME
+  static isComponent () {
+    return this.#componentType === Components.COMPONENT_TYPE_NAME
   }
 
   /**
