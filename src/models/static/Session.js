@@ -10,18 +10,17 @@ import Components from '../../config/Components.js'
  * FOR COLLECTIONS ONLY
  * @property {string} components - List of components to build.
  * @property {string|string[]} componentFolders - Path to components
- * @property {boolean} structuredLocales - Globally set locales to be structured per section (sections.[section-name].[translation-description]), as per https://shopify.dev/docs/themes/architecture/sections/section-schema#locales
  **/
 
 class Session {
   /** @type {CLIConfig}  **/
   static #config
 
-  /** @type {string}  **/
-  static #command
+  /** @type {string} CLI Caller Component Type **/
+  static #callerType
 
   /** @type {string}  **/
-  static #componentType
+  static #command
 
   /** @type {string|Object}  **/
   static #targetName
@@ -46,6 +45,22 @@ class Session {
    */
   static set config (value) {
     this.#config = value
+  }
+
+  /**
+   * Get CLI Caller Component Type
+   * @returns {string}
+   */
+  static get callerType () {
+    return this.#callerType
+  }
+
+  /**
+   * Set CLI Caller Component Type
+   * @param {string} value
+   */
+  static set callerType (value) {
+    this.#callerType = value
   }
 
   /**
@@ -78,22 +93,6 @@ class Session {
    */
   static set targetType (value) {
     this.#targetType = value
-  }
-
-  /**
-   * Get Component Type
-   * @returns {string}
-   */
-  static get componentType () {
-    return this.#componentType
-  }
-
-  /**
-   * Set Component Type
-   * @param {string} value
-   */
-  static set componentType (value) {
-    this.#componentType = value
   }
 
   /**
@@ -133,7 +132,7 @@ class Session {
    * @return {boolean}
    */
   static isCollection () {
-    return this.#componentType === Components.COLLECTION_TYPE_NAME
+    return this.#callerType === Components.COLLECTION_TYPE_NAME
   }
 
   /**
@@ -141,7 +140,7 @@ class Session {
    * @return {boolean}
    */
   static isComponent () {
-    return this.#componentType === Components.COMPONENT_TYPE_NAME
+    return this.#callerType === Components.COMPONENT_TYPE_NAME
   }
 
   /**
@@ -149,7 +148,7 @@ class Session {
    * @return {boolean}
    */
   static isTheme () {
-    return this.#componentType === Components.THEME_COMPONENT_TYPE_NAME
+    return this.#callerType === Components.THEME_COMPONENT_TYPE_NAME
   }
 }
 

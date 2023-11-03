@@ -31,12 +31,12 @@ class SessionFactory {
     this.#validatePackageManifest(packageManifest)
 
     Session.config = packageManifest.archie
-    Session.componentType = packageManifest.archie.type.toLowerCase()
+    Session.callerType = packageManifest.archie.type.toLowerCase()
 
     Session.command = args[0].toLowerCase()
 
-    this.#validateCallerComponentType(Session.componentType)
-    this.#validateCommand(Session.componentType, Session.command, CLI.AVAILABLE_COMMANDS)
+    this.#validateCallerComponentType(Session.callerType)
+    this.#validateCommand(Session.callerType, Session.command, CLI.AVAILABLE_COMMANDS)
 
     if (args[1] && args[2]) {
       Session.targetType = args[1].toLowerCase()
@@ -54,14 +54,14 @@ class SessionFactory {
 
     // Use the default Command Option if one wasn't provided
     if (!Session.targetType) {
-      Session.targetType = this.#getDefaultTargetType(Session.command, Session.componentType)
+      Session.targetType = this.#getDefaultTargetType(Session.command, Session.callerType)
     }
 
     // Use the default Target Component if one wasn't provided
     if (!Session.targetName) {
       Session.targetName =
         this.#getDefaultTargetName(
-          Session.componentType,
+          Session.callerType,
           Session.command,
           Session.targetType,
           NodeUtils.getPackageName(),
@@ -82,7 +82,7 @@ class SessionFactory {
     })
 
     this.#validateCommandArguments(
-      Session.componentType,
+      Session.callerType,
       Session.command,
       Session.targetType,
       Session.targetName,
