@@ -76,19 +76,6 @@ class ComponentFilesUtils {
       }
 
       if (this.SCRIPT_EXTENSIONS.includes(extension)) {
-        if (filename === Components.SECTION_SCHEMA_FILENAME.replace('.json', extension)) {
-          componentFiles.schemaFile = file
-          continue
-        }
-        if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
-          componentFiles.localeFiles.push(file)
-          continue
-        }
-        if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
-          componentFiles.schemaLocaleFiles.push(file)
-          continue
-        }
-
         componentFiles.javascriptFiles.push(file)
         continue
       }
@@ -113,18 +100,7 @@ class ComponentFilesUtils {
             componentFiles.packageJson = file
             break
           }
-          if (filename === Components.SECTION_SCHEMA_FILENAME) {
-            componentFiles.schemaFile = file
-            break
-          }
-          if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
-            componentFiles.localeFiles.push(file)
-            break
-          }
-          if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
-            componentFiles.schemaLocaleFiles.push(file)
-            break
-          }
+
           logger.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
           break
 
