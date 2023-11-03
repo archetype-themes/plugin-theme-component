@@ -1,7 +1,6 @@
 import ComponentBuild from '../../models/ComponentBuild.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
 
 class SnippetBuilder {
   /**
@@ -15,11 +14,6 @@ class SnippetBuilder {
 
     // Build Locales
     snippet.build.locales = LocaleUtils.buildLocales(snippet.name, snippet.locales, snippet.schema?.locales, true)
-
-    // Build Schema
-    if (snippet.schema) {
-      snippet.build.schema = SectionSchemaUtils.build(snippet.schema)
-    }
 
     // Build Liquid Code
     snippet.build.liquidCode = await LiquidUtils.buildLiquid(snippet.name, snippet.liquidCode)

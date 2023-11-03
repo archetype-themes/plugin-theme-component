@@ -1,7 +1,6 @@
 import ComponentBuild from '../../models/ComponentBuild.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
 
 class ComponentBuilder {
   /**
@@ -15,11 +14,6 @@ class ComponentBuilder {
 
     // Build Locales
     component.build.locales = LocaleUtils.buildLocales(component.name, component.locales, component.schema?.locales, true)
-
-    // Build Schema
-    if (component.schema) {
-      component.build.schema = SectionSchemaUtils.build(component.schema)
-    }
 
     // Build Liquid Code
     component.build.liquidCode = await LiquidUtils.buildLiquid(component.name, component.liquidCode)

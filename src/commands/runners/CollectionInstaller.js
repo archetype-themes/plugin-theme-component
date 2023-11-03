@@ -17,9 +17,6 @@ class CollectionInstaller {
     // Copy Asset Folder
     fileOperations.push(FileUtils.copyFolder(collection.build.assetsFolder, theme.assetsFolder))
 
-    // Copy Sections Folder
-    fileOperations.push(FileUtils.copyFolder(collection.build.sectionsFolder, theme.sectionsFolder))
-
     // Copy Snippets Folder
     fileOperations.push(FileUtils.copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
 
