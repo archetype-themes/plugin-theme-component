@@ -5,8 +5,6 @@ import { init, parse } from 'es-module-lexer'
 import FileUtils from '../../utils/FileUtils.js'
 import WebUtils from '../../utils/WebUtils.js'
 
-const COMPONENTS_DIR = 'components'
-
 class ImportMapProcessor {
   static ImportMapFile = 'importmap.json'
 
@@ -66,18 +64,10 @@ class ImportMapProcessor {
   static filterFiles (files, modulePattern) {
     const isMatch = picomatch(modulePattern)
     return files.filter(file => {
-      if (isMatch(file)) {
-        // Non-component entry
-        if (!file.includes(COMPONENTS_DIR)) {
-          return true
-        }
-        // Component entry
-        const parsedPath = path.parse(file)
-        if (parsedPath.dir.includes(parsedPath.name)) {
-          return true
-        }
+      if (!isMatch(file)) {
+        return false
       }
-      return false
+      return true
     })
   }
 
