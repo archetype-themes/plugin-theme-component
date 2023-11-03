@@ -17,53 +17,54 @@ class SessionFactory {
   /**
    * Factory method for ArchieCLI From Command Line Input
    * @param {string[]} commandLineArguments
-   * @param {{archie:CLIConfig}} packageManifest
+   * @param {{archie:ArchieConfig}} packageManifest
    * @return {Session}
    */
   static fromArgsAndManifest (commandLineArguments, packageManifest) {
-    const [args, flags] = this.#splitArgs(commandLineArguments)
+    const [commands, flags] = this.#splitArgs(commandLineArguments)
 
-    if (args.length === 0) {
+    if (commands.length === 0) {
       this.#sayHi()
       exit(0)
     }
 
     this.#validatePackageManifest(packageManifest)
 
-    Session.config = packageManifest.archie
-    Session.callerType = packageManifest.archie.type.toLowerCase()
+    Session.archieConfig = packageManifest.archie
+    Session.componentType = packageManifest.archie.type.toLowerCase()
 
-    Session.command = args[0].toLowerCase()
+    Session.command = commands[0].toLowerCase()
 
-    this.#validateCallerComponentType(Session.callerType)
-    this.#validateCommand(Session.callerType, Session.command, CLI.AVAILABLE_COMMANDS)
+    this.#validateComponentType(Session.componentType)
+    this.#validateCommand(Session.componentType, Session.command, CLI.AVAILABLE_COMMANDS)
 
-    if (args[1] && args[2]) {
-      Session.targetType = args[1].toLowerCase()
-      Session.targetName = args[2]
-    } else if (args[1]) {
+    if (commands[1] && commands[2]) {
+      // If we have 2 further arguments, we have both the option and the target
+      Session.commandOption = commands[1].toLowerCase()
+      Session.targetComponentName = commands[2]
+    } else if (commands[1]) {
       // If we have only 1 further argument, check for a valid command option, or else, assume it is a Target Component Name
-      const arg1 = args[1].toLowerCase()
+      const arg = commands[1].toLowerCase()
       // first check for an existing command option,
-      if (CLI.AVAILABLE_TARGET_TYPES.includes(arg1)) {
-        Session.targetType = arg1
+      if (CLI.AVAILABLE_COMMAND_OPTIONS.includes(arg)) {
+        Session.commandOption = arg
       } else {
-        Session.targetName = args[1]
+        Session.targetComponentName = commands[1]
       }
     }
 
     // Use the default Command Option if one wasn't provided
-    if (!Session.targetType) {
-      Session.targetType = this.#getDefaultTargetType(Session.command, Session.callerType)
+    if (!Session.commandOption) {
+      Session.commandOption = this.#getCommandDefaultOption(Session.command, Session.componentType)
     }
 
     // Use the default Target Component if one wasn't provided
-    if (!Session.targetName) {
-      Session.targetName =
-        this.#getDefaultTargetName(
-          Session.callerType,
+    if (!Session.targetComponentName) {
+      Session.targetComponentName =
+        this.#getCommandDefaultTargetComponent(
+          Session.componentType,
           Session.command,
-          Session.targetType,
+          Session.commandOption,
           NodeUtils.getPackageName(),
           packageManifest?.archie.collections
         )
@@ -75,17 +76,17 @@ class SessionFactory {
     logger.debug({
       'Archie CLI Computed Arguments': {
         command: Session.command,
-        'Command Target Type': Session.targetType,
-        'Command Target Component(s)': Session.targetName,
-        'Command Watch Mode': Session.watchMode
+        'command option': Session.commandOption,
+        'command watch mode': Session.watchMode,
+        'command target component(s)': Session.targetComponentName
       }
     })
 
     this.#validateCommandArguments(
-      Session.callerType,
+      Session.componentType,
       Session.command,
-      Session.targetType,
-      Session.targetName,
+      Session.commandOption,
+      Session.targetComponentName,
       Session.watchMode
     )
     return Session
@@ -96,34 +97,34 @@ class SessionFactory {
    * @param {string} command
    * @return {string[]}
    */
-  static #getEnabledComponentTypes (command) {
+  static #getCommandAvailableOptions (command) {
     switch (command) {
       case CLICommands.BUILD_COMMAND_NAME:
-        return CLICommands.BUILD_COMMAND_ENABLED_COMPONENT_TYPES
+        return CLICommands.BUILD_COMMAND_OPTIONS
       case CLICommands.CREATE_COMMAND_NAME:
-        return CLICommands.CREATE_COMMAND_ENABLED_COMPONENT_TYPES
+        return CLICommands.CREATE_COMMAND_OPTIONS
       case CLICommands.INSTALL_COMMAND_NAME:
-        return CLICommands.INSTALL_COMMAND_ENABLED_COMPONENT_TYPES
+        return CLICommands.INSTALL_COMMAND_OPTIONS
       default:
         throw new InternalError(`Invalid command "${command}"`)
     }
   }
 
-  static #getDefaultTargetType (command, callerComponentType) {
+  static #getCommandDefaultOption (command, callerComponentType) {
     switch (command) {
       case CLICommands.BUILD_COMMAND_NAME:
         return callerComponentType
       case CLICommands.CREATE_COMMAND_NAME:
-        return Components.COMPONENT_TYPE_NAME
+        return Components.SECTION_COMPONENT_TYPE_NAME
       case CLICommands.INSTALL_COMMAND_NAME:
-        return Components.COLLECTION_TYPE_NAME
+        return Components.COLLECTION_COMPONENT_TYPE_NAME
       default:
         throw new InternalError(`Invalid command ${command}`)
     }
   }
 
   /**
-   * Get Default CLI Command Target Name
+   *
    * @param {string} componentType
    * @param {string} command
    * @param {string} commandOption
@@ -131,7 +132,7 @@ class SessionFactory {
    * @param {Object.<string,string[]>} collections
    * @return {null|string|Object}
    */
-  static #getDefaultTargetName (componentType, command, commandOption, packageName, collections) {
+  static #getCommandDefaultTargetComponent (componentType, command, commandOption, packageName, collections) {
     switch (command) {
       case CLICommands.BUILD_COMMAND_NAME:
         if (componentType === commandOption) {
@@ -146,6 +147,26 @@ class SessionFactory {
         } else {
           throw new CommandLineInputError('No Default Collection found in configuration for install, please specify a collection name.')
         }
+      default:
+        throw new InternalError(`Invalid command ${command}`)
+    }
+  }
+
+  /**
+   * Get a list of Components that are allowed to call the specified command
+   * @param {string} command
+   * @return {string[]}
+   */
+  static #getCommandEnabledComponentTypes (command) {
+    switch (command) {
+      case CLICommands.BUILD_COMMAND_NAME:
+        return CLICommands.BUILD_COMMAND_COMPONENTS
+      case CLICommands.CREATE_COMMAND_NAME:
+        return CLICommands.CREATE_COMMAND_COMPONENTS
+      case CLICommands.INSTALL_COMMAND_NAME:
+        return CLICommands.INSTALL_COMMAND_COMPONENTS
+      default:
+        throw new InternalError(`Invalid command ${command}`)
     }
   }
 
@@ -187,30 +208,30 @@ class SessionFactory {
     }
 
     // Validate that the Component is entitled to call this Command
-    const enabledComponentTypes = this.#getEnabledComponentTypes(command)
-    if (!enabledComponentTypes.includes(callerComponentType)) {
-      throw new CommandLineInputError(`Invalid Component Type: "${callerComponentType}". The "${command}" command must be run from one of the following component type(s): [${enabledComponentTypes.join('/')}].`)
+    const commandEnabledComponentTypes = this.#getCommandEnabledComponentTypes(command)
+    if (!commandEnabledComponentTypes.includes(callerComponentType)) {
+      throw new CommandLineInputError(`Invalid Component Type: "${callerComponentType}". This script can only be run from the following component(s): [${commandEnabledComponentTypes.join('/')}].`)
     }
   }
 
   /**
    * Validate Command Arguments
-   * @param {string} callerType - CLI Caller Component Type
-   * @param {string} command - CLI Command
-   * @param {string} targetType - CLI Command Target Type
-   * @param {string} targetName - CLI Command Target Name
-   * @param {boolean} watchFlag - CLI Watch Flag Value
+   * @param {string} callerComponentType
+   * @param {string} command
+   * @param {string} commandOption
+   * @param {string} targetComponent
+   * @param {boolean} watchFlag
    */
-  static #validateCommandArguments (callerType, command, targetType, targetName, watchFlag) {
-    logger.debug(`Caller Component Type: ${callerType}`)
+  static #validateCommandArguments (callerComponentType, command, commandOption, targetComponent, watchFlag) {
+    logger.debug(`Caller Component Type: ${callerComponentType}`)
 
-    const commandComponentTypes = this.#getEnabledComponentTypes(command)
-    if (!commandComponentTypes.includes(targetType)) {
-      throw new CommandLineInputError(`Invalid Command Option "${targetType}". This command only accepts the following option(s): [${commandComponentTypes.join('/')}].`)
+    const availableCommandOptions = this.#getCommandAvailableOptions(command)
+    if (!availableCommandOptions.includes(commandOption)) {
+      throw new CommandLineInputError(`Invalid Command Option "${commandOption}". This command only accepts the following option(s): [${availableCommandOptions.join('/')}].`)
     }
 
-    if (!targetName) {
-      throw new CommandLineInputError(`Please specify a ${targetType} name. ie: npx archie ${command} ${targetType} some-smart-${targetType}-name`)
+    if (!targetComponent) {
+      throw new CommandLineInputError(`Please specify a ${commandOption} name. ie: npx archie ${command} ${commandOption} some-smart-${commandOption}-name`)
     }
 
     if (watchFlag && !CLIFlags.WATCH_FLAG_COMMANDS.includes(command)) {
@@ -224,7 +245,7 @@ class SessionFactory {
    */
   static #validatePackageManifest (packageManifest) {
     if (!packageManifest.archie?.type) {
-      throw new ConfigError(`Couldn't find archie.type value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_CALLER_TYPES.join('/')}`)
+      throw new ConfigError(`Couldn't find archie.type value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}`)
     }
   }
 
@@ -234,9 +255,9 @@ class SessionFactory {
    * @throws {ConfigError} When Component Type Is Invalid
    * @return {void}
    */
-  static #validateCallerComponentType (componentType) {
-    if (!CLI.AVAILABLE_CALLER_TYPES.includes(componentType)) {
-      throw new ConfigError(`Invalid Archie Component Type: The value for archie.type from package.json must be changed to one of these: ${CLI.AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
+  static #validateComponentType (componentType) {
+    if (!CLI.AVAILABLE_COMPONENT_TYPES.includes(componentType)) {
+      throw new ConfigError(`Invalid Archie Component Type: The value for archie.type from package.json must be changed to one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}, "${componentType}" is not an allowed value`)
     }
   }
 }

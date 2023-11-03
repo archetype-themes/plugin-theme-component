@@ -1,66 +1,51 @@
 import Components from '../../config/Components.js'
 
 /**
- * @typedef CLIConfig
+ * @typedef ArchieConfig
  * @type {Object}
- * @property {string} type - Component type (theme/collection/component)
+ * @property {string} type - Component type (theme/collection/section/snippet)
  * @property {string} path - Component path (ie: './src')
  * FOR THEMES ONLY
  * @property {Object.<string, string[]>} collections - In Collection mode, list of components to build.
  * FOR COLLECTIONS ONLY
  * @property {string} components - List of components to build.
  * @property {string|string[]} componentFolders - Path to components
+ * @property {boolean} structuredLocales - Globally set locales to be structured per section (sections.[section-name].[translation-description]), as per https://shopify.dev/docs/themes/architecture/sections/section-schema#locales
  **/
 
 class Session {
-  /** @type {CLIConfig}  **/
-  static #config
-
-  /** @type {string} CLI Caller Component Type **/
-  static #callerType
+  /** @type {ArchieConfig}  **/
+  static #archieConfig
 
   /** @type {string}  **/
   static #command
 
-  /** @type {string|Object}  **/
-  static #targetName
+  /** @type {string}  **/
+  static #commandOption
 
   /** @type {string}  **/
-  static #targetType
+  static #componentType
+
+  /** @type {string|Object}  **/
+  static #targetComponentName
 
   /** @type {boolean}  **/
   static #watchMode = false
 
   /**
    * Get Archie Config
-   * @returns {CLIConfig}
+   * @returns {ArchieConfig}
    */
-  static get config () {
-    return this.#config
+  static get archieConfig () {
+    return this.#archieConfig
   }
 
   /**
    * Set Archie Config
-   * @param {CLIConfig} value
+   * @param {ArchieConfig} value
    */
-  static set config (value) {
-    this.#config = value
-  }
-
-  /**
-   * Get CLI Caller Component Type
-   * @returns {string}
-   */
-  static get callerType () {
-    return this.#callerType
-  }
-
-  /**
-   * Set CLI Caller Component Type
-   * @param {string} value
-   */
-  static set callerType (value) {
-    this.#callerType = value
+  static set archieConfig (value) {
+    this.#archieConfig = value
   }
 
   /**
@@ -83,32 +68,48 @@ class Session {
    * Get Command Option
    * @return {string}
    */
-  static get targetType () {
-    return this.#targetType
+  static get commandOption () {
+    return this.#commandOption
   }
 
   /**
    * Set Command Option
    * @param {string} value
    */
-  static set targetType (value) {
-    this.#targetType = value
+  static set commandOption (value) {
+    this.#commandOption = value
+  }
+
+  /**
+   * Get Component Type
+   * @returns {string}
+   */
+  static get componentType () {
+    return this.#componentType
+  }
+
+  /**
+   * Set Component Type
+   * @param {string} value
+   */
+  static set componentType (value) {
+    this.#componentType = value
   }
 
   /**
    * Get Target Component Name
    * @return {string|Object}
    */
-  static get targetName () {
-    return this.#targetName
+  static get targetComponentName () {
+    return this.#targetComponentName
   }
 
   /**
    * Set Target Component Name
    * @param {string|Object} value
    */
-  static set targetName (value) {
-    this.#targetName = value
+  static set targetComponentName (value) {
+    this.#targetComponentName = value
   }
 
   /**
@@ -132,15 +133,15 @@ class Session {
    * @return {boolean}
    */
   static isCollection () {
-    return this.#callerType === Components.COLLECTION_TYPE_NAME
+    return this.#componentType === Components.COLLECTION_COMPONENT_TYPE_NAME
   }
 
   /**
-   * Is The CLI Caller Of A Component Type
+   * Is The Component Type a Section
    * @return {boolean}
    */
-  static isComponent () {
-    return this.#callerType === Components.COMPONENT_TYPE_NAME
+  static isSection () {
+    return this.#componentType === Components.SECTION_COMPONENT_TYPE_NAME
   }
 
   /**
@@ -148,7 +149,7 @@ class Session {
    * @return {boolean}
    */
   static isTheme () {
-    return this.#callerType === Components.THEME_COMPONENT_TYPE_NAME
+    return this.#componentType === Components.THEME_COMPONENT_TYPE_NAME
   }
 }
 

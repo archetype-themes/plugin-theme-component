@@ -17,8 +17,8 @@ class ThemeFactory {
 
     theme.name = NodeUtils.getPackageName()
     // Set folder names
-    if (Session.config.path) {
-      theme.rootFolder = join(NodeUtils.getPackageRootFolder(), Session.config.path)
+    if (Session.archieConfig.path) {
+      theme.rootFolder = join(NodeUtils.getPackageRootFolder(), Session.archieConfig.path)
     } else {
       theme.rootFolder = NodeUtils.getPackageRootFolder()
     }

@@ -8,6 +8,8 @@ import ConfigError from '../errors/ConfigError.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
+import Section from '../models/Section.js'
+import Snippet from '../models/Snippet.js'
 import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
@@ -45,7 +47,7 @@ class CollectionUtils {
    * @returns {Promise<string>|string}
    */
   static async findRootFolder (collectionName) {
-    if (Session.isComponent()) {
+    if (Session.isSection()) {
       return NodeUtils.getMonorepoRootFolder()
     }
     if (Session.isCollection()) {
@@ -73,10 +75,12 @@ class CollectionUtils {
   /**
    * Find Components From package.json files
    * @param packageJsonFiles
-   * @returns {Promise<Component[]>}
+   * @returns {Promise<[Component[], Section[], Snippet[]]>}
    */
-  static async findComponents (packageJsonFiles) {
+  static async findComponentsFromPackageJsonFiles (packageJsonFiles) {
     const components = []
+    const sections = []
+    const snippets = []
 
     for (const packageJsonFile of packageJsonFiles) {
       const componentPackageJson = await FileUtils.getJsonFileContents(packageJsonFile)
@@ -85,25 +89,33 @@ class CollectionUtils {
         componentPath = join(componentPath, componentPackageJson.archie.path)
       }
 
+      if (componentPackageJson.archie && !componentPackageJson.archie.type) {
+        logger.warn(`No archie component type specified in package.json file in ${componentPath}, ignoring component folder.`)
+        continue
+      }
+
       if (componentPackageJson.archie?.type) {
         if (!componentPackageJson.name) {
-          throw new ConfigError(`Component Folder Ignored: Missing Package Name In package.json File At "${packageJsonFile}"`)
+          throw new ConfigError(`A Component's package.json file does not provide a package name in "${packageJsonFile}"`)
         }
 
-        const componentName = componentPackageJson.name.includes('/') ? componentPackageJson.name.split('/')[1] : componentPackageJson.name
+        let componentName = componentPackageJson.name.includes('/') ? componentPackageJson.name.split('/')[1] : componentPackageJson.name
         const componentType = componentPackageJson.archie.type.toLowerCase()
+
+        // Strip component type from name
+        componentName = componentName.replace(/-(section|snippet|component)$/, '')
 
         if (componentType === Components.COMPONENT_TYPE_NAME) {
           components.push(new Component(componentName, componentPath))
-        } else {
-          logger.warn(`Component Folder Ignored: Unrecognized Component Type In package.json File At ${componentPath}.`)
+        } else if (componentType === Components.SECTION_COMPONENT_TYPE_NAME) {
+          sections.push(new Section(componentName, componentPath))
+        } else if (componentType === Components.SNIPPET_COMPONENT_TYPE_NAME) {
+          snippets.push(new Snippet(componentName, componentPath))
         }
-      } else {
-        logger.warn(`Component Folder Ignored: No Component Type Specified In package.json File At ${componentPath}.`)
       }
     }
 
-    return components
+    return [components, sections, snippets]
   }
 }
 

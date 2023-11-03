@@ -16,6 +16,7 @@ import Watcher from '../utils/Watcher.js'
 // Archie imports
 import CollectionBuilder from './runners/CollectionBuilder.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
+import SectionBuilder from './runners/SectionBuilder.js'
 import SnippetBuilder from './runners/SnippetBuilder.js'
 
 class BuildCommand {
@@ -26,10 +27,10 @@ class BuildCommand {
   static async execute () {
     const collectionName = NodeUtils.getPackageName()
     let componentNames
-    if (Session.targetType === Components.COLLECTION_TYPE_NAME) {
-      componentNames = Session.config?.components
-    } else if (Session.targetType === Components.COMPONENT_TYPE_NAME) {
-      componentNames = [Session.targetName]
+    if (Session.commandOption === Components.COLLECTION_COMPONENT_TYPE_NAME) {
+      componentNames = Session.archieConfig?.components
+    } else if (Session.commandOption === Components.SECTION_COMPONENT_TYPE_NAME) {
+      componentNames = [Session.targetComponentName]
     }
 
     if (Session.watchMode) {
@@ -45,53 +46,63 @@ class BuildCommand {
   /**
    * Build a Collection
    * @param {string} collectionName
-   * @param {string[]} componentNames
+   * @param {string[]} sectionNames
    * @return {Promise<module:models/Collection>}
    */
-  static async buildCollection (collectionName, componentNames) {
-    logTitleItem(`Initializing Components for "${Session.targetName}"`)
+  static async buildCollection (collectionName, sectionNames) {
+    logTitleItem(`Initializing Components for "${Session.targetComponentName}"`)
     const initStartTime = Timer.getTimer()
 
     // Init Collection
-    let collection = await CollectionFactory.fromName(collectionName, componentNames)
+    let collection = await CollectionFactory.fromName(collectionName, sectionNames)
 
-    // Filter Out Components When Applicable
-    if (componentNames?.length) {
-      logChildItem(`Packaging the following component${plural(componentNames)}: ${componentNames.join(', ')}`)
-      collection.components = collection.components.filter(component => componentNames.includes(component.name))
+    // Filter Out Sections When Applicable
+    if (sectionNames?.length) {
+      logChildItem(`Packaging the following component${plural(sectionNames)}: ${sectionNames.join(', ')}`)
+      collection.sections = collection.sections.filter(section => sectionNames.includes(section.name))
     }
 
     // Initialize Individual Components
-    collection.components = await Promise.all(collection.components.map(component => ComponentFactory.initializeComponent(component)))
+    [collection.sections, collection.snippets, collection.components] = await Promise.all([
+      Promise.all(collection.sections.map(component => ComponentFactory.initializeComponent(component))),
+      Promise.all(collection.snippets.map(component => ComponentFactory.initializeComponent(component))),
+      Promise.all(collection.components.map(component => ComponentFactory.initializeComponent(component)))
+    ])
 
-    // Create Embedded Snippets from Components
-    collection.snippets = this.createEmbeddedSnippets(collection.components)
+    // Initialize Embedded Snippets
+    // This requires other components to be initialized first in order to access their embedded snippet file list
+    let embeddedSnippets = (await Promise.all([
+      this.createEmbeddedSnippets(collection.sections),
+      this.createEmbeddedSnippets(collection.snippets),
+      this.createEmbeddedSnippets(collection.components)
+    ])).flat()
 
-    logChildItem(`Found ${collection.components.length} component${plural(collection.components)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
+    embeddedSnippets = await Promise.all(embeddedSnippets.map(component => ComponentFactory.initializeComponent(component)))
+    collection.snippets = collection.snippets.concat(embeddedSnippets)
+
+    logChildItem(`Found ${collection.components.length} component${plural(collection.components)}, ${collection.sections.length} section${plural(collection.sections)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
     // Filter Out Snippets When Applicable
-    if (componentNames?.length) {
-      const allComponents = [...collection.components, ...collection.snippets]
+    if (sectionNames?.length) {
+      const allComponents = [...collection.components, ...collection.snippets, ...collection.sections]
       const allSnippetNames = SnippetUtils.getSnippetNames(allComponents)
 
       collection.snippets = collection.snippets.filter(snippet => allSnippetNames.includes(snippet.name))
     }
 
-    // Initialize Embedded Snippets
-    collection.snippets = await Promise.all(collection.snippets.map(component => ComponentFactory.initializeComponent(component)))
-
-    logChildItem(`Assembling ${collection.components.length} component${plural(collection.components)} and ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
+    logChildItem(`Assembling ${collection.components.length} component${plural(collection.components)}, ${collection.sections.length} section${plural(collection.sections)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
     logChildItem(`Initialization complete (${Timer.getEndTimerInSeconds(initStartTime)} seconds)`)
     logSpacer()
 
-    logTitleItem(`Building Individual Components for ${Session.targetName}`)
+    logTitleItem(`Building Individual Components for ${Session.targetComponentName}`)
     const buildStartTime = Timer.getTimer();
 
     // Build Components
-    [collection.components, collection.snippets] = (await Promise.all([
-      Promise.all(collection.components.map(component => ComponentBuilder.build(component))),
-      Promise.all(collection.snippets.map(snippet => SnippetBuilder.build(snippet)))
+    [collection.sections, collection.snippets, collection.components] = (await Promise.all([
+      Promise.all(collection.sections.map(section => SectionBuilder.build(section))),
+      Promise.all(collection.snippets.map(snippet => SnippetBuilder.build(snippet))),
+      Promise.all(collection.components.map(component => ComponentBuilder.build(component)))
     ]))
 
     const allSnippets = [...collection.components, ...collection.snippets]
@@ -99,19 +110,20 @@ class BuildCommand {
     logChildItem(`Build complete (${Timer.getEndTimerInSeconds(buildStartTime)} seconds)`)
     logSpacer()
 
-    logTitleItem(`Structuring Components Tree for ${Session.targetName}`)
+    logTitleItem(`Structuring Components Tree for ${Session.targetComponentName}`)
     const treeStartTime = Timer.getTimer()
 
     // Build Component Hierarchy Structure
-    await this.setComponentHierarchy(collection.components, allSnippets)
+    await this.setComponentHierarchy(collection.sections, allSnippets)
     await this.setComponentHierarchy(collection.snippets, allSnippets)
+    await this.setComponentHierarchy(collection.components, allSnippets)
 
     logChildMessage()
     logChildMessage(`${collectionName}/`)
 
-    for (const [i, component] of collection.components.entries()) {
-      const last = i === collection.components.length - 1
-      this.folderTreeLog(component, last)
+    for (const [i, section] of collection.sections.entries()) {
+      const last = i === collection.sections.length - 1
+      this.folderTreeLog(section, last)
     }
     logChildMessage()
 
@@ -133,7 +145,7 @@ class BuildCommand {
 
   /**
    * Create Embedded Snippets
-   * @param {Component[]} components
+   * @param {Section[]|Snippet[]|Component[]} components
    * @returns {Snippet[]}
    */
   static createEmbeddedSnippets (components) {
@@ -148,7 +160,7 @@ class BuildCommand {
 
   /**
    * Attach Child Components
-   * @param {Component[]|Snippet[]} topComponents
+   * @param {Component[]|Section[]|Snippet[]} topComponents
    * @param {(Component|Snippet)[]} availableComponents
    */
   static async setComponentHierarchy (topComponents, availableComponents) {
@@ -166,7 +178,7 @@ class BuildCommand {
 
   /**
    * Folder Tree Log
-   * @param {Component|Snippet} component
+   * @param {Section|Snippet|Component} component
    * @param {boolean} [last=false]
    * @param {Array} [grid=[true]]
    * @returns {void}
@@ -233,7 +245,7 @@ class BuildCommand {
     logger.debug(`Watcher Event: "${event}" on file: ${eventPath} detected`)
 
     const collectionName = NodeUtils.getPackageName()
-    const componentNames = Session.config?.components
+    const componentNames = Session.archieConfig?.components
 
     const collection = await this.buildCollection(collectionName, componentNames)
     await this.deployCollection(collection)

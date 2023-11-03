@@ -1,18 +1,17 @@
 // Node.js imports
-import { join } from 'node:path'
-
 // Archie imports
 import Collection from '../models/Collection.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
+import { join } from 'node:path'
 
 class CollectionFactory {
   /**
    * From Collection Build Script
-   * @param {string} collectionName - Collection Name
-   * @param {string[]} componentNames - List of Components To Bundle With The Collection
+   * @param {string} collectionName - Collection name
+   * @param {string[]} componentNames - List of Components to build as part of the Collection
    * @return {Promise<module:models/Collection>}
    */
   static async fromName (collectionName, componentNames) {
@@ -21,24 +20,28 @@ class CollectionFactory {
     // Set Collection name
     collection.name = collectionName
 
-    // Set Folder Names
+    // Set folder names
     collection.rootFolder = await CollectionUtils.findRootFolder(collectionName)
 
-    // Find .gitignore File
+    // Find .gitignore file
     const gitignoreFile = join(collection.rootFolder, '.gitignore')
     if (await FileUtils.exists(gitignoreFile)) {
       collection.gitIgnoreFile = gitignoreFile
     }
 
-    // Recursively Find All package.json Files
+    // Recursively find all package.json files
     collection.packageJsonFiles = await FileUtils.searchFile(collection.rootFolder, 'package.json', true)
 
-    // Create Components From package.json Files Data
-    collection.components = await CollectionUtils.findComponents(collection.packageJsonFiles)
+    // Create Components and Sections from package.json files data
+    const [components, sections, snippets] = await CollectionUtils.findComponentsFromPackageJsonFiles(collection.packageJsonFiles)
 
-    // Get Component Names and Create Them
+    collection.components = components
+    collection.sections = sections
+    collection.snippets = snippets
+
+    // Get Section Names and create Sections
     if (componentNames && componentNames.length) {
-      collection.componentNames = componentNames
+      collection.sectionNames = componentNames
     } else if (Session.isTheme()) {
       logger.warn(`No component list found for the "${collectionName}" collection; all components will be installed.`)
     }

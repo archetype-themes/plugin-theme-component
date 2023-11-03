@@ -24,7 +24,7 @@ class LocaleUtils {
     let buildLocalesFromSectionSchema
 
     if (locales) {
-      buildLocales = Session.config.structuredLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
+      buildLocales = Session.archieConfig.structuredLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
     }
 
     // Storefront Locales from Section Schema should always be prefixed, to respect the Shopify Standard.

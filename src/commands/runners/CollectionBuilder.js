@@ -22,7 +22,7 @@ class CollectionBuilder {
    * @return {Promise<module:models/Collection>}
    */
   static async build (collection) {
-    const allComponents = [...collection.components, ...collection.snippets]
+    const allComponents = [...collection.components, ...collection.snippets, ...collection.sections]
 
     // Create Collection Build model and reset folders
     const buildCollectionTimer = Timer.getTimer()
@@ -51,7 +51,7 @@ class CollectionBuilder {
 
     // Build Locales
     const buildLocalesTimer = Timer.getTimer()
-    collection.build.locales = this.buildLocales(collection.components)
+    collection.build.locales = this.buildLocales(collection.sections)
     logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
 
     return collection
@@ -63,12 +63,14 @@ class CollectionBuilder {
    * @returns {Promise<Awaited<unknown>[]>}
    */
   static async deployToBuildFolder (collection) {
-    const allComponents = [...collection.components, ...collection.snippets]
+    const allComponents = [...collection.components, ...collection.snippets, ...collection.sections]
     const allSnippets = [...collection.components, ...collection.snippets]
 
     const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
 
     // Write Component Liquid Files
+    const sectionFilesWritePromises = collection.sections.map(section =>
+      FileUtils.writeFile(join(collection.build.sectionsFolder, `${section.name}.liquid`), section.build.liquidCode))
     const snippetFilesWritePromises = allSnippets.map(component =>
       FileUtils.writeFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
 
@@ -79,6 +81,7 @@ class CollectionBuilder {
     const promises = [
       FileUtils.writeFile(collection.build.stylesheet, collection.build.styles),
       localesWritePromise,
+      ...sectionFilesWritePromises,
       ...snippetFilesWritePromises,
       copyAssetsPromise
     ]
@@ -109,7 +112,7 @@ class CollectionBuilder {
 
   /**
    * Build Collection Storefront Locales
-   * @param {(Component|Snippet)[]} components
+   * @param {(Section|Snippet|Component)[]} components
    * @return {Object}
    */
   static buildLocales (components) {
@@ -124,7 +127,7 @@ class CollectionBuilder {
 
   /**
    *
-   * @param {(Component|Snippet)[]} components
+   * @param {(Component|Section|Snippet)[]} components
    * @return {string[]}
    */
   static getAssetFiles (components) {
@@ -135,7 +138,7 @@ class CollectionBuilder {
 
   /**
    * Get Collection JavaScript Files
-   * @param {(Component|Snippet)[]} components
+   * @param {(Section|Snippet|Component)[]} components
    * @return {string[]}
    */
   static getJsFiles (components) {
@@ -144,8 +147,8 @@ class CollectionBuilder {
   }
 
   /**
-   * Get Main Stylesheets from all components and snippets
-   * @param {(Component|Snippet)[]} components
+   * Get Main Stylesheets from all sections and snippets
+   * @param {(Component|Section|Snippet)[]} components
    * @return {string[]}
    */
   static getMainStylesheets (components) {
