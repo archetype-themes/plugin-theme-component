@@ -14,7 +14,7 @@ class JavaScriptProcessor {
     const importMapFile = ImportMapProcessor.ImportMapFile
 
     if (await FileUtils.exists(importMapFile)) {
-      return ImportMapProcessor.build(new Set(jsFiles), outputFile, collectionRootFolder)
+      return ImportMapProcessor.build(new Set(jsFiles), outputFile)
     }
 
     throw new FileMissingError('ImportMap file not found, unable to process javascript')

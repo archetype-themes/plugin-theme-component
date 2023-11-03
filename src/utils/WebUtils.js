@@ -6,6 +6,7 @@ const URL_REGEX = /^(http:\/\/|https:\/\/|\/\/)/
 
 class WebUtils {
   /**
+   * Download a list of files to a target folder
    * @param {string[]} remoteFiles
    * @param {string} targetFolder
    */
@@ -16,6 +17,7 @@ class WebUtils {
   }
 
   /**
+   * Download a file to a target folder
    * @param {string} remoteFile
    * @param {string} targetFolder
    */
@@ -36,6 +38,7 @@ class WebUtils {
   }
 
   /**
+   * Check if a string is a URL
    * @param {string} possibleUrl
    */
   static isUrl (possibleUrl) {

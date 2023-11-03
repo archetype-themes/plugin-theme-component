@@ -9,28 +9,29 @@ class ImportMapProcessor {
   static ImportMapFile = 'importmap.json'
 
   /**
+   * Build import map file and return build entries
    * @param {Set<string>} jsFiles
    * @param {string} outputFile
-   * @param {string} rootFolder
    */
-  static async build (jsFiles, outputFile, rootFolder) {
-    /** @type {{imports: Map<string, string>}} */
+  static async build (jsFiles, outputFile) {
+    /** @type {{imports: Object<string, string>}} */
     const importMap = await FileUtils.getJsonFileContents(this.ImportMapFile)
     const importMapEntries = this.resolveImportMapEntries(importMap.imports)
-    const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries, rootFolder)
+    const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries)
     const importMapTags = this.generateImportMapTags(buildEntries)
     await FileUtils.writeFile(outputFile, importMapTags)
     return this.filterBuildEntries(buildEntries, jsFiles)
   }
 
   /**
-   * @param {Map<string, string>} imports
+   * Resolve import map entries
+   * @param {Object<string, string>} imports
    */
   static resolveImportMapEntries (imports) {
     /** @type {Map<string, string>} */
     const map = new Map()
     const entries = Object.entries(imports)
-    const modulePatterns = entries.map(([, modulePattern]) => modulePattern)
+    const modulePatterns = this.resolveModulePatterns(entries)
     const files = glob.sync(modulePatterns)
     for (const [specifierPattern, modulePattern] of entries) {
       if (WebUtils.isUrl(modulePattern)) {
@@ -46,49 +47,47 @@ class ImportMapProcessor {
   }
 
   /**
-   * @param {Map<string, string>} importMapEntries
+   * Resolve glob patterns from import map entries
+   * @param {[string, string][]} entries
    */
-  static invertImportMapEntries (importMapEntries) {
-    /** @type {Map<string, string>} */
-    const map = new Map()
-    for (const [specifier, modulePath] of importMapEntries) {
-      map.set(modulePath, specifier)
-    }
-    return map
+  static resolveModulePatterns (entries) {
+    return entries
+      .map(([, modulePattern]) => modulePattern)
+      .filter(modulePattern => !WebUtils.isUrl(modulePattern))
   }
 
   /**
+   * Get the module specifier for a given JS file
    * @param {string} file
    * @param {string} specifierPattern
    */
   static getModuleSpecifier (file, specifierPattern) {
-    return specifierPattern.replace('*', path.parse(file).name)
+    return specifierPattern.replace(/\*$/, path.parse(file).name)
   }
 
   /**
+   * Resolve build entries from component JS entry points
    * @param {Set<string>} jsFiles
    * @param {Map<string, string>} importMapEntries
-   * @param {string} rootFolder
    */
-  static async resolveBuildEntries (jsFiles, importMapEntries, rootFolder) {
+  static async resolveBuildEntries (jsFiles, importMapEntries) {
     await init
-    const invertedImportMapEntries = this.invertImportMapEntries(importMapEntries)
     /** @type {Map<string, string>} */
     const map = new Map()
     const promises = []
-    for (const file of jsFiles) {
-      const modulePath = path.relative(rootFolder, file)
-      const moduleSpecifier = invertedImportMapEntries.get(modulePath)
-      if (moduleSpecifier) {
-        map.set(moduleSpecifier, file)
-        promises.push(this.processJsFile(file, importMapEntries, map))
+    for (const [moduleSpecifier, modulePath] of importMapEntries) {
+      if (!jsFiles.has(path.resolve(modulePath))) {
+        continue
       }
+      map.set(moduleSpecifier, modulePath)
+      promises.push(this.processJsFile(modulePath, importMapEntries, map))
     }
     await Promise.all(promises)
     return map
   }
 
   /**
+   * Process the given JS file and add its dependencies to build entries
    * @param {string} file
    * @param {Map<string, string>} importMapEntries
    * @param {Map<string, string>} buildEntries
@@ -115,6 +114,7 @@ class ImportMapProcessor {
   }
 
   /**
+   * Generate import map tags
    * @param {Map<string, string>} buildEntries
    */
   static generateImportMapTags (buildEntries) {
@@ -123,6 +123,7 @@ class ImportMapProcessor {
   }
 
   /**
+   * Get import map entries with asset URLs
    * @param {Map<string, string>} buildEntries
    */
   static getEntriesWithAssetUrl (buildEntries) {
@@ -135,6 +136,7 @@ class ImportMapProcessor {
   }
 
   /**
+   * Generate the tag for the import map
    * @param {Map<string, string>} entriesWithAssetUrl
    */
   static generateImportMapTag (entriesWithAssetUrl) {
@@ -142,6 +144,7 @@ class ImportMapProcessor {
   }
 
   /**
+   * Generate module preload tags for the entries in the import map
    * @param {Map<string, string>} entriesWithAssetUrl
    */
   static generateModulePreloadTags (entriesWithAssetUrl) {
@@ -149,6 +152,7 @@ class ImportMapProcessor {
   }
 
   /**
+   * Get the asset URL for a given asset path
    * @param {string} assetPath
    */
   static assetUrl (assetPath) {
@@ -156,6 +160,7 @@ class ImportMapProcessor {
   }
 
   /**
+   * Filter build entries by excluding component JS entry points
    * @param {Map<string, string>} buildEntries
    * @param {Set<string>} jsFiles
    */

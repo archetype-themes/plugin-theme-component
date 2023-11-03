@@ -86,7 +86,7 @@ class CollectionBuilder {
       copyAssetsPromise
     ]
 
-    if (collection.importMapEntries && collection.importMapEntries.size) {
+    if (collection.importMapEntries?.size) {
       promises.push(this.deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder))
     }
 
@@ -94,6 +94,7 @@ class CollectionBuilder {
   }
 
   /**
+   * Deploy import map files to the assets folder
    * @param {Map<string, string>} buildEntries
    * @param {string} assetsFolder
    */
