@@ -18,7 +18,7 @@ class CreateCommand {
    * @returns {Promise<ChildProcess>}
    */
   static async execute (packageManifest) {
-    const workspaceFolder = (Session.targetType === Components.SECTION_COMPONENT_TYPE_NAME) ? Components.SECTIONS_FOLDER_NAME : Components.SNIPPETS_FOLDER_NAME
+    const workspaceFolder = Components.SNIPPETS_FOLDER_NAME
     const componentFolder = join(workspaceFolder, Session.targetName)
     const componentRootFolder = join(NodeUtils.getPackageRootFolder(), componentFolder)
 
@@ -35,14 +35,13 @@ class CreateCommand {
       // An error is expected since the folder shouldn't exist
     }
 
-    // Don't overwrite an existing section, throw an error
+    // Don't overwrite an existing component, throw an error
     if (folderExists) {
       throw new FileAccessError(`The "${Session.targetName}" ${Session.targetType} folder already exists. Please remove it or choose a different name.`)
     }
 
     const archieRootFolder = NodeUtils.getArchieRootFolderName()
     const componentSources = join(archieRootFolder, 'resources/component-files')
-    const sectionSources = join(archieRootFolder, 'resources/section-files')
 
     const packageScope = NodeUtils.getPackageScope()
     const packageScopeName = packageScope.charAt(0) === '@' ? packageScope.substring(1) : packageScope
@@ -65,7 +64,6 @@ class CreateCommand {
     // Copy files recursively
     await mkdir(componentRootFolder)
     await FileUtils.copyFolder(componentSources, componentRootFolder, copyFolderOptions)
-    await FileUtils.copyFolder(sectionSources, componentRootFolder, copyFolderOptions)
 
     // Run npm install; this must be done or npm will send error messages relating to monorepo integrity
     return exec('npm install', { cwd: componentRootFolder })
