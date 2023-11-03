@@ -5,9 +5,6 @@ class ComponentBuild {
   /** @type {Object} **/
   #locales
 
-  /** @type {SectionSchema} **/
-  #schema
-
   /**
    * Get liquid code
    * @return {string}
@@ -38,22 +35,6 @@ class ComponentBuild {
    */
   set locales (value) {
     this.#locales = value
-  }
-
-  /**
-   * Get Section schema
-   * @return {SectionSchema}
-   */
-  get schema () {
-    return this.#schema
-  }
-
-  /**
-   * Set Section schema
-   * @param {SectionSchema} value
-   */
-  set schema (value) {
-    this.#schema = value
   }
 }
 

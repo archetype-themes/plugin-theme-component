@@ -21,9 +21,6 @@ class Collection {
   /** @type {string[]} **/
   #componentNames
 
-  /** @type {Section[]} **/
-  #sections
-
   /** @type {Snippet[]} **/
   #snippets
 
@@ -132,7 +129,7 @@ class Collection {
   }
 
   /**
-   * Get section names
+   * Get component names
    * @return {string[]}
    */
   get componentNames () {
@@ -140,27 +137,11 @@ class Collection {
   }
 
   /**
-   * Set section names
+   * Set component names
    * @param {string[]} value
    */
   set componentNames (value) {
     this.#componentNames = value
-  }
-
-  /**
-   * Get sections
-   * @return {Section[]}
-   */
-  get sections () {
-    return this.#sections
-  }
-
-  /**
-   * Set sections
-   * @param value
-   */
-  set sections (value) {
-    this.#sections = value
   }
 
   /**
