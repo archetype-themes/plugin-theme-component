@@ -77,7 +77,7 @@ class ImportMapProcessor {
    * @param {string} specifierPattern
    */
   static getModuleSpecifier (file, specifierPattern) {
-    return specifierPattern.replace('*', path.parse(file).name)
+    return specifierPattern.replace(/\*$/, path.parse(file).name)
   }
 
   /**
