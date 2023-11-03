@@ -14,7 +14,7 @@ const { build, BuildResult } = esbuild
 
 class EsbuildProcessor {
   /**
-   * Build JavaScript files for a section or snippet
+   * Build JavaScript files for a component
    * @param {string} mainJavaScriptFile
    * @param {string} outputFile
    * @param {string} configFilePath
