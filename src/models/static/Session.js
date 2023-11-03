@@ -148,7 +148,7 @@ class Session {
    * @return {boolean}
    */
   static isTheme () {
-    return this.#callerType === Components.THEME_COMPONENT_TYPE_NAME
+    return this.#callerType === Components.THEME_TYPE_NAME
   }
 }
 

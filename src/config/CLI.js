@@ -10,13 +10,13 @@ class CLI {
   static AVAILABLE_TARGET_TYPES = [
     Components.COLLECTION_TYPE_NAME,
     Components.COMPONENT_TYPE_NAME,
-    Components.THEME_COMPONENT_TYPE_NAME
+    Components.THEME_TYPE_NAME
   ]
 
   static AVAILABLE_CALLER_TYPES = [
     Components.COLLECTION_TYPE_NAME,
     Components.COMPONENT_TYPE_NAME,
-    Components.THEME_COMPONENT_TYPE_NAME
+    Components.THEME_TYPE_NAME
   ]
 }
 
