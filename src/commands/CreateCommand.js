@@ -18,11 +18,11 @@ class CreateCommand {
    * @returns {Promise<ChildProcess>}
    */
   static async execute (packageManifest) {
-    const workspaceFolder = (Session.commandOption === Components.SECTION_COMPONENT_TYPE_NAME) ? Components.SECTIONS_FOLDER_NAME : Components.SNIPPETS_FOLDER_NAME
-    const componentFolder = join(workspaceFolder, Session.targetComponentName)
+    const workspaceFolder = (Session.targetType === Components.SECTION_COMPONENT_TYPE_NAME) ? Components.SECTIONS_FOLDER_NAME : Components.SNIPPETS_FOLDER_NAME
+    const componentFolder = join(workspaceFolder, Session.targetName)
     const componentRootFolder = join(NodeUtils.getPackageRootFolder(), componentFolder)
 
-    logger.info(`Creating "${Session.targetComponentName}" ${Session.commandOption}`)
+    logger.info(`Creating "${Session.targetName}" ${Session.targetType}`)
 
     // Exit if the folder already exists
     let folderExists = false
@@ -37,7 +37,7 @@ class CreateCommand {
 
     // Don't overwrite an existing section, throw an error
     if (folderExists) {
-      throw new FileAccessError(`The "${Session.targetComponentName}" ${Session.commandOption} folder already exists. Please remove it or choose a different name.`)
+      throw new FileAccessError(`The "${Session.targetName}" ${Session.targetType} folder already exists. Please remove it or choose a different name.`)
     }
 
     const archieRootFolder = NodeUtils.getArchieRootFolderName()
@@ -53,12 +53,12 @@ class CreateCommand {
         author: packageManifest.author ? packageManifest.author : 'Archetype Themes Limited Partnership',
         collectionName: packageName,
         collectionScope: packageScope,
-        componentName: Session.targetComponentName,
-        componentType: Session.commandOption,
-        componentFolder: `${workspaceFolder}/${Session.targetComponentName}`,
+        componentName: Session.targetName,
+        componentType: Session.targetType,
+        componentFolder: `${workspaceFolder}/${Session.targetName}`,
         gitUrl: `https://github.com/${packageScopeName}/${packageName}.git`,
         license: packageManifest.license ? packageManifest.license : 'UNLICENSED',
-        packageName: `${packageScope}/${Session.targetComponentName}-${Session.commandOption}`
+        packageName: `${packageScope}/${Session.targetName}-${Session.targetType}`
       }
     }
 

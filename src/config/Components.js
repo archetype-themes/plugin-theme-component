@@ -7,7 +7,7 @@ class Components {
   /**************************/
 
   /** @type {string}  **/
-  static COLLECTION_COMPONENT_TYPE_NAME = 'collection'
+  static COLLECTION_TYPE_NAME = 'collection'
 
   /** @type {string}  **/
   static COMPONENT_TYPE_NAME = 'component'
