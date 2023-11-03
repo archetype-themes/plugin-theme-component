@@ -13,10 +13,9 @@ class CLI {
     Components.THEME_COMPONENT_TYPE_NAME
   ]
 
-  static AVAILABLE_COMPONENT_TYPES = [
+  static AVAILABLE_CALLER_TYPES = [
     Components.COLLECTION_TYPE_NAME,
-    Components.SECTION_COMPONENT_TYPE_NAME,
-    Components.SNIPPET_COMPONENT_TYPE_NAME,
+    Components.COMPONENT_TYPE_NAME,
     Components.THEME_COMPONENT_TYPE_NAME
   ]
 }

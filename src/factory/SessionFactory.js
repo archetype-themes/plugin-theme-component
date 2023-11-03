@@ -35,7 +35,7 @@ class SessionFactory {
 
     Session.command = args[0].toLowerCase()
 
-    this.#validateComponentType(Session.componentType)
+    this.#validateCallerComponentType(Session.componentType)
     this.#validateCommand(Session.componentType, Session.command, CLI.AVAILABLE_COMMANDS)
 
     if (args[1] && args[2]) {
@@ -224,7 +224,7 @@ class SessionFactory {
    */
   static #validatePackageManifest (packageManifest) {
     if (!packageManifest.archie?.type) {
-      throw new ConfigError(`Couldn't find archie.type value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}`)
+      throw new ConfigError(`Couldn't find archie.type value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_CALLER_TYPES.join('/')}`)
     }
   }
 
@@ -234,9 +234,9 @@ class SessionFactory {
    * @throws {ConfigError} When Component Type Is Invalid
    * @return {void}
    */
-  static #validateComponentType (componentType) {
-    if (!CLI.AVAILABLE_COMPONENT_TYPES.includes(componentType)) {
-      throw new ConfigError(`Invalid Archie Component Type: The value for archie.type from package.json must be changed to one of these: ${CLI.AVAILABLE_COMPONENT_TYPES.join('/')}, "${componentType}" is not an allowed value`)
+  static #validateCallerComponentType (componentType) {
+    if (!CLI.AVAILABLE_CALLER_TYPES.includes(componentType)) {
+      throw new ConfigError(`Invalid Archie Component Type: The value for archie.type from package.json must be changed to one of these: ${CLI.AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
     }
   }
 }
