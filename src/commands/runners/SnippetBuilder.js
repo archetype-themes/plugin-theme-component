@@ -13,7 +13,7 @@ class SnippetBuilder {
     snippet.build = new ComponentBuild()
 
     // Build Locales
-    snippet.build.locales = LocaleUtils.buildLocales(snippet.name, snippet.locales, snippet.schema?.locales, true)
+    snippet.build.locales = LocaleUtils.buildLocales(snippet.name, snippet.locales, true)
 
     // Build Liquid Code
     snippet.build.liquidCode = await LiquidUtils.buildLiquid(snippet.name, snippet.liquidCode)

@@ -9,7 +9,6 @@ import FileUtils from './FileUtils.js'
 import InputFileError from '../errors/InputFileError.js'
 import JavascriptUtils from './JavascriptUtils.js'
 import logger from './Logger.js'
-import SectionSchema from '../models/SectionSchema.js'
 import StylesUtils from './StylesUtils.js'
 
 class ComponentFilesUtils {
@@ -53,7 +52,7 @@ class ComponentFilesUtils {
   }
 
   /**
-   * Filter Section/Snippet Files by Type
+   * Filter Component Files by Type
    * @param {string[]} files
    * @param {ComponentFiles} componentFiles
    * @param {string} componentName
@@ -112,20 +111,6 @@ class ComponentFilesUtils {
   }
 
   /**
-   * Get Section Schema from schema file.
-   * @param {string} schemaFile
-   * @return {Promise<SectionSchema>}
-   */
-  static async getSectionSchema (schemaFile) {
-    const sectionSchema = new SectionSchema()
-    if (this.SCRIPT_EXTENSIONS.includes(extname(schemaFile))) {
-      return Object.assign(sectionSchema, (await import(schemaFile)).default)
-    }
-    const sectionSchemaJson = await FileUtils.getJsonFileContents(schemaFile)
-    return Object.assign(sectionSchema, sectionSchemaJson)
-  }
-
-  /**
    * Validate Folder access before indexing files
    * @param {string} folder
    * @param {string} componentName
@@ -135,7 +120,7 @@ class ComponentFilesUtils {
   static async validateFolderAccess (folder, componentName) {
     if (!await FileUtils.isReadable(folder)) {
       logger.debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
-      throw new FileAccessError(`Unable to access the "${componentName}" section on disk. Tips: Is it spelled properly? Is the collection installed?`)
+      throw new FileAccessError(`Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`)
     }
   }
 }

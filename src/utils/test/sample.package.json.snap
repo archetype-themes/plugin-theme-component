@@ -38,8 +38,8 @@
   "type": "module",
   "version": "0.24.9",
   "workspaces": [
-    "./sections/*",
-    "./shared/*",
-    "./snippets/*",
+    "components/*",
+    "scripts",
+    "styles"
   ],
 }

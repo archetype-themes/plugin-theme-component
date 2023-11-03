@@ -39,7 +39,7 @@ class JavascriptUtils {
     const processedJavascriptFiles = []
 
     for (const javascriptFile of javascriptFiles) {
-      // When building a Collection, multiple Sections might include the same snippet,
+      // When building a Collection, multiple Components might include the same snippet,
       // Therefore we check for duplicates
       if (!processedJavascriptFiles.includes(javascriptFile)) {
         jsBundleIndexContents += `import '${javascriptFile}'\n`

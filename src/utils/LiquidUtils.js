@@ -51,19 +51,13 @@ class LiquidUtils {
    * Build Liquid Code
    * @param {string} name
    * @param {string} liquidCode
-   * @param {Object} [schema]
    * @return {Promise<string>}
    */
-  static async buildLiquid (name, liquidCode, schema) {
+  static async buildLiquid (name, liquidCode) {
     let buildLiquidCode = liquidCode
     // Process as SVG if applicable
     if (name.startsWith('icon-') || name.endsWith('-svg') || name.endsWith('.svg')) {
       buildLiquidCode = SvgProcessor.buildSvg(name, liquidCode)
-    }
-    // Append Section Schema Data if provided
-    if (schema) {
-      // Append section schema to liquid code
-      buildLiquidCode += `\n{% schema %}\n${JSON.stringify(schema, null, 2)}\n{% endschema %}`
     }
 
     return buildLiquidCode
