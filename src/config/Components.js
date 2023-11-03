@@ -13,9 +13,6 @@ class Components {
   static COMPONENT_TYPE_NAME = 'component'
 
   /** @type {string}  **/
-  static SNIPPET_TYPE_NAME = 'snippet'
-
-  /** @type {string}  **/
   static THEME_TYPE_NAME = 'theme'
 
   /******************/
