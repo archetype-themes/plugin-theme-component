@@ -38,7 +38,7 @@ class ImportMapProcessor {
         map.set(specifierPattern, modulePattern)
         continue
       }
-      const filteredFiles = this.filterFiles(files, modulePattern)
+      const filteredFiles = files.filter(file => picomatch.isMatch(file, modulePattern))
       for (const file of filteredFiles) {
         map.set(this.getModuleSpecifier(file, specifierPattern), file)
       }
@@ -54,16 +54,6 @@ class ImportMapProcessor {
     return entries
       .map(([, modulePattern]) => modulePattern)
       .filter(modulePattern => !WebUtils.isUrl(modulePattern))
-  }
-
-  /**
-   * Filter files by module pattern
-   * @param {string[]} files
-   * @param {string} modulePattern
-   */
-  static filterFiles (files, modulePattern) {
-    const isMatch = picomatch(modulePattern)
-    return files.filter(file => isMatch(file))
   }
 
   /**
