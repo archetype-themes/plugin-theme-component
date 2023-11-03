@@ -1,7 +1,7 @@
 import Components from '../../config/Components.js'
 
 /**
- * @typedef ArchieConfig
+ * @typedef CLIConfig
  * @type {Object}
  * @property {string} type - Component type (theme/collection/section/snippet)
  * @property {string} path - Component path (ie: './src')
@@ -14,38 +14,38 @@ import Components from '../../config/Components.js'
  **/
 
 class Session {
-  /** @type {ArchieConfig}  **/
-  static #archieConfig
+  /** @type {CLIConfig}  **/
+  static #config
 
   /** @type {string}  **/
   static #command
 
   /** @type {string}  **/
-  static #commandOption
-
-  /** @type {string}  **/
   static #componentType
 
   /** @type {string|Object}  **/
-  static #targetComponentName
+  static #targetName
+
+  /** @type {string}  **/
+  static #targetType
 
   /** @type {boolean}  **/
   static #watchMode = false
 
   /**
    * Get Archie Config
-   * @returns {ArchieConfig}
+   * @returns {CLIConfig}
    */
-  static get archieConfig () {
-    return this.#archieConfig
+  static get config () {
+    return this.#config
   }
 
   /**
    * Set Archie Config
-   * @param {ArchieConfig} value
+   * @param {CLIConfig} value
    */
-  static set archieConfig (value) {
-    this.#archieConfig = value
+  static set config (value) {
+    this.#config = value
   }
 
   /**
@@ -68,16 +68,16 @@ class Session {
    * Get Command Option
    * @return {string}
    */
-  static get commandOption () {
-    return this.#commandOption
+  static get targetType () {
+    return this.#targetType
   }
 
   /**
    * Set Command Option
    * @param {string} value
    */
-  static set commandOption (value) {
-    this.#commandOption = value
+  static set targetType (value) {
+    this.#targetType = value
   }
 
   /**
@@ -100,16 +100,16 @@ class Session {
    * Get Target Component Name
    * @return {string|Object}
    */
-  static get targetComponentName () {
-    return this.#targetComponentName
+  static get targetName () {
+    return this.#targetName
   }
 
   /**
    * Set Target Component Name
    * @param {string|Object} value
    */
-  static set targetComponentName (value) {
-    this.#targetComponentName = value
+  static set targetName (value) {
+    this.#targetName = value
   }
 
   /**
@@ -133,7 +133,7 @@ class Session {
    * @return {boolean}
    */
   static isCollection () {
-    return this.#componentType === Components.COLLECTION_COMPONENT_TYPE_NAME
+    return this.#componentType === Components.COLLECTION_TYPE_NAME
   }
 
   /**

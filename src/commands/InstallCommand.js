@@ -22,11 +22,11 @@ class InstallCommand {
 
     let collectionsList
     // If we have only one element as a string, convert it to object form.
-    if (NodeUtils.isString(Session.targetComponentName)) {
+    if (NodeUtils.isString(Session.targetName)) {
       collectionsList = {}
-      collectionsList[Session.targetComponentName] = []
+      collectionsList[Session.targetName] = []
     } else {
-      collectionsList = Session.targetComponentName
+      collectionsList = Session.targetName
     }
 
     for (const [collectionName, sectionsList] of Object.entries(collectionsList)) {

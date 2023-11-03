@@ -27,10 +27,10 @@ class BuildCommand {
   static async execute () {
     const collectionName = NodeUtils.getPackageName()
     let componentNames
-    if (Session.commandOption === Components.COLLECTION_COMPONENT_TYPE_NAME) {
-      componentNames = Session.archieConfig?.components
-    } else if (Session.commandOption === Components.SECTION_COMPONENT_TYPE_NAME) {
-      componentNames = [Session.targetComponentName]
+    if (Session.targetType === Components.COLLECTION_TYPE_NAME) {
+      componentNames = Session.config?.components
+    } else if (Session.targetType === Components.SECTION_COMPONENT_TYPE_NAME) {
+      componentNames = [Session.targetName]
     }
 
     if (Session.watchMode) {
@@ -50,7 +50,7 @@ class BuildCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async buildCollection (collectionName, sectionNames) {
-    logTitleItem(`Initializing Components for "${Session.targetComponentName}"`)
+    logTitleItem(`Initializing Components for "${Session.targetName}"`)
     const initStartTime = Timer.getTimer()
 
     // Init Collection
@@ -95,7 +95,7 @@ class BuildCommand {
     logChildItem(`Initialization complete (${Timer.getEndTimerInSeconds(initStartTime)} seconds)`)
     logSpacer()
 
-    logTitleItem(`Building Individual Components for ${Session.targetComponentName}`)
+    logTitleItem(`Building Individual Components for ${Session.targetName}`)
     const buildStartTime = Timer.getTimer();
 
     // Build Components
@@ -110,7 +110,7 @@ class BuildCommand {
     logChildItem(`Build complete (${Timer.getEndTimerInSeconds(buildStartTime)} seconds)`)
     logSpacer()
 
-    logTitleItem(`Structuring Components Tree for ${Session.targetComponentName}`)
+    logTitleItem(`Structuring Components Tree for ${Session.targetName}`)
     const treeStartTime = Timer.getTimer()
 
     // Build Component Hierarchy Structure
@@ -245,7 +245,7 @@ class BuildCommand {
     logger.debug(`Watcher Event: "${event}" on file: ${eventPath} detected`)
 
     const collectionName = NodeUtils.getPackageName()
-    const componentNames = Session.archieConfig?.components
+    const componentNames = Session.config?.components
 
     const collection = await this.buildCollection(collectionName, componentNames)
     await this.deployCollection(collection)
