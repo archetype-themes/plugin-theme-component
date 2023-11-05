@@ -45,7 +45,7 @@ more advanced stylesheets structure. Note that, `locales` folder uses the classi
 
 ```shell
 .
-├── README.md                         [ Section README ]
+├── README.md                         [ Component README ]
 ├── package.json                      [ NodeJS Package ]
 ├── assets                            [ Static assets folder ]
 │   ├── [component-name].js           [ Main Javascript File ]
@@ -72,7 +72,7 @@ and the likes.
 
 **README.md**
 
-The root folder will contain a README that you should fill with the Section Details.
+The root folder will contain a README that you should fill with the Component Details.
 
 Here are a few pointers on what it could contain.
 
@@ -83,11 +83,11 @@ Here are a few pointers on what it could contain.
 - Release Date
 - Change log, if not using CHANGES.md
 
-**Pro Tip:** Try to be consistent and keep the same structure in all your Sections' README
+**Pro Tip:** Try to be consistent and keep the same structure in all your Components' README
 
 #### Main Liquid file
 
-The root folder should contain your section's main liquid file. We recommend using your component's name as a filename
+The root folder should contain your component's main liquid file. We recommend using your component's name as a filename
 but this is not mandatory. Any ".liquid" file outside the "snippets" sub-folder will be considered as part of your
 component's liquid content.
 
@@ -100,18 +100,18 @@ Install. You can use them in the same way a Shopify Theme Dev would.
 
 #### JavaScript Files
 
-You must start your section's JavaScript code with an `[component-name].(js|mjs)` file and use ESM imports. Our CLI
+You must start your component's JavaScript code with an `[component-name].(js|mjs)` file and use ESM imports. Our CLI
 takes care of the rest.
 
-Include JavaScript libraries as npm dependencies to your section. If multiple sections require the same dependency, our
-CLI will handle this through node's monorepo library management.
+Include JavaScript libraries as npm dependencies to your component. If multiple components require the same dependency,
+our CLI will handle this through node's monorepo library management.
 
 **Pro Tip:** Downloading a static Javascript library and putting it in your `assets` folder will circumvent any CLI
 optimizations from happening. Therefore, it is considered an Anti-Pattern.
 
 #### Shared JavaScript Core
 
-If multiple Sections share some internal JS code, two options are available:
+If multiple Components share some internal JS code, two options are available:
 
 **Internal NodeJS Module**
 
@@ -123,8 +123,7 @@ further Collections.
 ```json
 {
   "workspaces": [
-    "sections/*",
-    "snippets/*",
+    "components/*",
     "shared/*"
   ]
 }
@@ -140,7 +139,7 @@ npm init
 
 ```
 
-- Include the new Node.js module as a Section dependency.
+- Include the new Node.js module as a Component dependency.
 
 **package.json**
 
@@ -155,7 +154,7 @@ npm init
 **External NodeJS Module**
 
 - Create an external Node.js module inside a new Git repository
-- Include the new Node.js module with npm as a Section dependency.
+- Include the new Node.js module with npm as a Component dependency.
 
 ```shell
 # Add a package from our GitHub Package Repository
@@ -168,7 +167,7 @@ npm install @archetype-themes/js-core#1.14.5
 
 ### The Snippets Folder
 
-The snippets folder is reserved for **Internal Snippets** If you need to avoid duplicate code within your Section's
+The snippets folder is reserved for **Internal Snippets** If you need to avoid duplicate code within your Component's
 liquid file, you can create an **Internal Snippet** in that folder, in the form of a single liquid file.
 
 #### Internal Snippets Limitations
@@ -210,23 +209,23 @@ Any one of these name patterns, or any combination of them, will trigger SVG Opt
 #### Process for the files
 
 - The files will be optimized through SVGO
-  - Options for SVGO optimization can be set using an `svgo.config.js` file at the root of your Collection repository.
-    - See the SVGO [Configuration](https://github.com/svg/svgo#configuration) documentation for available options.
+    - Options for SVGO optimization can be set using an `svgo.config.js` file at the root of your Collection repository.
+        - See the SVGO [Configuration](https://github.com/svg/svgo#configuration) documentation for available options.
 - The HTML `<svg>` tag will be added the following attributes:
-  - `"aria-hidden"="true"`
-  - `"focusable"="false"`
-  - `"role"="presentation"`
+    - `"aria-hidden"="true"`
+    - `"focusable"="false"`
+    - `"role"="presentation"`
 - Their HTML `<svg>` tag will be added the following classes:
-  - The `icon` CSS class.
-  - The `[filename]` CSS class. I.e.: `"class"="star-svg"`
-  - The `icon--wide` CSS class **if** the Width to Height ratio being above 1.5.
-  - The `icon--full-color` CSS class ** if** the svg file name contains `-full-color`.
+    - The `icon` CSS class.
+    - The `[filename]` CSS class. I.e.: `"class"="star-svg"`
+    - The `icon--wide` CSS class **if** the Width to Height ratio being above 1.5.
+    - The `icon--full-color` CSS class ** if** the svg file name contains `-full-color`.
 
 ---
 
 ### The Styles Folder
 
-Start writing your section's styles in a main.css file. Include additional sheets from there and our CLI takes care of
+Start writing your component's styles in a main.css file. Include additional sheets from there and our CLI takes care of
 the rest.
 
 #### Shared Common Styles Library

@@ -109,7 +109,7 @@ input and call appropriate Factories, Builders and Installers when necessary.
 Factories create Component instances. When creating a Component instance, a Factory should load all necessary data from
 disk expecting a "transformation" for an upcoming Build process.
 
-Factories should load items recursively. If you create a Section using the SectionFactory, it should create instances
+Factories should load items recursively. If you create a Component using the ComponentFactory, it should create instances
 and load data from its children Snippet Model using the SnippetFactory through a recursive check.
 
 - Load all necessary data from disk for upcoming merge and/or transformation done during the Builder step.
@@ -144,7 +144,7 @@ Contains custom Internal Errors used within the CLI
 
 ### Generators
 
-CLI **create** commands will invoke Generators to help create content within a Collection (Sections and Snippets).
+CLI **create** commands will invoke Generators to help create components within a Collection.
 Create commands execution will not run Phase 2,3 and 4
 
 ### Models

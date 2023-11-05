@@ -37,7 +37,7 @@ Next, you will need to edit your package.json to add the archie configuration el
 * Make sure you indicate your `type` as a **"theme"**
 * *Optional:* Follow with `path` to point to your theme source files if they are not at the root folder of the
   repository.
-* *Optional:* Include a list of sections from your collection for a partial install
+* *Optional:* Include a list of components from your collection for a partial install
 * *Optional:* Create shortcuts to the CLI commands in the scripts section
 
 ```json
@@ -46,9 +46,9 @@ Next, you will need to edit your package.json to add the archie configuration el
     "type": "theme",
     "path": "./src",
     "my-awesome-collection": [
-      "section-one",
-      "section-two",
-      "section-four"
+      "component-one",
+      "component-two",
+      "component-four"
     ]
   },
   "scripts": {
@@ -90,21 +90,21 @@ The newly added files should look something like that:
 
 ```shell
 # Collection Styles
-src/assets/[my-awesome-collection].cs
+assets/[collection-name].cs
 # Collection JavaScript
-src/assets/[my-awesome-collection].js
+assets/[collection-name].js
 
-# Collection Sections
-src/sections/[section-one].liquid
-src/sections/[section-two].liquid
+# Collection Components
+snippets/[component-one].liquid
+snippets/[component-two].liquid
 
-# Collection Snippets (only if invoked as a for loop)
-src/snippets/[snippet-one].liquid
+# Collection Snippets
+snippets/[snippet-one].liquid
 ```
 
 The following files will be edited or created if need be:
 
 ```shell
 # Adding JavaScript and Styles references if needed
-src/layout/theme.liquid
+layout/theme.liquid
 ```

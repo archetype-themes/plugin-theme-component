@@ -28,16 +28,15 @@ The files contain variables in the form of JavaScript Template Strings. These va
 actual value upon creation. The available variables are:
 
 ````javascript
-${collectionName}   // The name of the parent collection
-${componentName}    // The name of the component
-${componentType}    // The type of the component (section or snippet)
-${packageName}      // The name of the NPM package for the component with scope
+${collectionName}   // The collection's name
+${componentName}    // The component's name
+${componentType}    // The component's type
+${packageName}      // The component's NPM package name (including scope)
 ````
 
 **Pro Tip:** As an Archetype Themes developer, you can edit these files to your liking. You can also add new files to
-the
-[``resources/component-files``](../resources/component-files) folder and they will be copied over to the new
-section/snippet.
+the [``resources/component-files``](../resources/component-files) folder, and they will be copied over to the new
+component.
 
 ## Building your collection
 
@@ -53,7 +52,7 @@ This will bundle your collection's components as snippets inside the **build** s
 **PostCSS Build Pro Tips:**
 When using PostCSS, use of a PostCSS config file at the root of your Collection is recommended. The CLI will load it
 through the use of [postcss-load-config](https://www.npmjs.com/package/postcss-load-config) and take it into
-consideration when building a section, a collection or even when installing to a theme.
+consideration when building a component, a collection or even when installing to a theme.
 
 - Reference to some [postcss.config.js usage examples](https://github.com/postcss/postcss#usage)
 - Reference to [available postcss process options](https://postcss.org/api/#processoptions)

@@ -4,20 +4,16 @@ Let's see what happens behind the curtains
 
 ## Liquid files
 
-By default, any Liquid file detected in the section folders (recursively) will be merged in a single liquid file bearing
-the name of the section and put at the root of the `build` folder. Files are processed in alphabetical order.
+By default, any Liquid file detected in the component folders (recursively) will be merged in a single liquid file bearing
+the name of the component and put at the root of the `build` folder. Files are processed in alphabetical order.
 
 - Schema will be appended. The content will consist of an assembly of locales.json and schema.json
 
 Output files :
 ```shell
-# For Collections
-build/sections/[section-name-one].liquid
-build/sections/[section-name-two].liquid
-build/sections/[section-name-three].liquid
-
-# For Sections
-build/section-name.liquid
+build/snippets/[component-name-one].liquid
+build/snippets/[component-name-two].liquid
+build/snippets/[component-name-three].liquid
 ```
 
 ### JavaScript Build Process
@@ -36,16 +32,16 @@ used by your main file will automatically be processed.
 # For Collections
 build/assets/[collection-name].js
 
-# For Sections
-build/assets/[section-name].js
+# For Components
+build/assets/[component-name].js
 ```
 
 A reference to this JavaScript file will be inserted
-- For A Section Build: At the end of the section's liquid file
+- For A Component Build: At the end of the component's liquid file
 - For A Theme Install: Just before the closing </head> tag of a `theme.liquid` file (only if missing - won't add twice)
 
 ```liquid
-<script src="{{ '[collection-name||section-name].js' | asset_url }}" async></script>
+<script src="{{ '[collection-name||component-name].js' | asset_url }}" async></script>
 ```
 
 **Note**
