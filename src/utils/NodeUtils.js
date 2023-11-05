@@ -2,7 +2,7 @@
 import { argv, env, exit } from 'node:process'
 import { dirname } from 'node:path'
 
-// Archie imports
+// Internal Imports
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 import InternalError from '../errors/InternalError.js'
@@ -69,7 +69,7 @@ class NodeUtils {
       return dirname(env.npm_package_json)
     }
 
-    throw new InternalError('Unable to get Package Root Folder through Environment Variables. Please make sure you are running Archie from within a Node Package folder.')
+    throw new InternalError('Unable to get Package Root Folder through Environment Variables. Please make sure you are running this CLI from within a Node Package folder.')
   }
 
   /**
@@ -88,14 +88,14 @@ class NodeUtils {
       return env.PROJECT_CWD.toString()
     }
 
-    throw new InternalError('Monorepo Root Folder couldn\'t be found in the environment variables. Please make sure you are running Archie from within a Node Package folder.')
+    throw new InternalError('Monorepo Root Folder couldn\'t be found in the environment variables. Please make sure you are running the CLI from within a Node Package folder.')
   }
 
   /**
    * Shortcut to a method to get root folder username
    * @returns {string}
    */
-  static getArchieRootFolderName () {
+  static getCLIRootFolderName () {
     return new URL('../../', import.meta.url).pathname
   }
 

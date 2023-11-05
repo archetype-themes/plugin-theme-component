@@ -3,7 +3,7 @@ import { exec } from 'node:child_process'
 import { access, constants, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
-// Archie Imports
+// Internal Imports
 import Session from '../models/static/Session.js'
 import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
@@ -13,7 +13,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 
 class CreateCommand {
   /**
-   * Execute Archie's CLI Create Command
+   * Execute The CLI's Create Command
    * @param {Object} packageManifest - package.json contents
    * @returns {Promise<ChildProcess>}
    */
@@ -40,8 +40,8 @@ class CreateCommand {
       throw new FileAccessError(`The "${Session.targetName}" ${Session.targetType} folder already exists. Please remove it or choose a different name.`)
     }
 
-    const archieRootFolder = NodeUtils.getArchieRootFolderName()
-    const componentSources = join(archieRootFolder, 'resources/component-files')
+    const cliRootFolder = NodeUtils.getCLIRootFolderName()
+    const componentSources = join(cliRootFolder, 'resources/component-files')
 
     const packageScope = NodeUtils.getPackageScope()
     const packageScopeName = packageScope.charAt(0) === '@' ? packageScope.substring(1) : packageScope

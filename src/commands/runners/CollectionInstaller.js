@@ -1,7 +1,7 @@
 // Node Core imports
 import { basename, join } from 'node:path'
 
-// Archie imports
+// Internal Imports
 import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
 

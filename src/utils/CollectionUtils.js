@@ -2,7 +2,7 @@
 import { dirname, join } from 'node:path'
 import gitignore from 'parse-gitignore'
 
-// Archie Imports
+// Internal Imports
 import Components from '../config/Components.js'
 import ConfigError from '../errors/ConfigError.js'
 import FileAccessError from '../errors/FileAccessError.js'

@@ -28,7 +28,7 @@ try {
     case CLICommands.INSTALL_COMMAND_NAME:
       await InstallCommand.execute()
       break
-    // There is no need for a default case - "Invalid command" was already handled in ArchieCLIFactory call above
+    // There is no need for a default case - "Invalid command" was already handled in the SessionFactory call above
   }
 } catch (error) {
   NodeUtils.exitWithError(error)

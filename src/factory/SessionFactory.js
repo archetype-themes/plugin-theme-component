@@ -2,7 +2,7 @@
 import { exit } from 'node:process'
 import CommandLineInputError from '../errors/CommandLineInputError.js'
 
-// Archie imports
+// Internal Imports
 import CLI from '../config/CLI.js'
 import CLICommands from '../config/CLICommands.js'
 import CLIFlags from '../config/CLIFlags.js'
@@ -15,7 +15,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 
 class SessionFactory {
   /**
-   * Factory method for ArchieCLI From Command Line Input
+   * Session Factory method From Command Line Input
    * @param {string[]} commandLineArguments
    * @param {{archie:CLIConfig}} packageManifest
    * @return {Session}
@@ -73,7 +73,7 @@ class SessionFactory {
     Session.watchMode = CLIFlags.WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
 
     logger.debug({
-      'Archie CLI Computed Arguments': {
+      'CLI Computed Arguments': {
         command: Session.command,
         'Command Target Type': Session.targetType,
         'Command Target Component(s)': Session.targetName,
@@ -150,12 +150,12 @@ class SessionFactory {
   }
 
   /**
-   * Archie Says Hi!
+   * CLI Says Hi!
    * @param {string} [command]
    * @param {string[]} [commandOptions]
    */
   static #sayHi (command, commandOptions) {
-    console.log('Archie says hi!')
+    console.log('The Archetype THeme CLI says hi!')
     if (command && commandOptions) {
       console.log(`Available options for the "${command}" command are [${commandOptions.join('/')}]`)
     } else {
@@ -236,7 +236,7 @@ class SessionFactory {
    */
   static #validateCallerComponentType (componentType) {
     if (!CLI.AVAILABLE_CALLER_TYPES.includes(componentType)) {
-      throw new ConfigError(`Invalid Archie Component Type: The value for archie.type from package.json must be changed to one of these: ${CLI.AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
+      throw new ConfigError(`Invalid Component Type: The value for archie.type from package.json must be changed to one of these: ${CLI.AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
     }
   }
 }

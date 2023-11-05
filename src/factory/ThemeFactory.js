@@ -2,7 +2,7 @@
 import { join } from 'path'
 import Session from '../models/static/Session.js'
 
-// Archie Imports
+// Internal Imports
 import Theme from '../models/Theme.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Components from '../config/Components.js'

@@ -1,7 +1,7 @@
 // Node.js imports
 import { join } from 'node:path'
 
-// Archie imports
+// Internal Imports
 import Collection from '../models/Collection.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'

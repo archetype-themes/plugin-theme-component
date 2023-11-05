@@ -32,7 +32,7 @@ class Session {
   static #watchMode = false
 
   /**
-   * Get Archie Config
+   * Get CLI Config
    * @returns {CLIConfig}
    */
   static get config () {
@@ -40,7 +40,7 @@ class Session {
   }
 
   /**
-   * Set Archie Config
+   * Set CLI Config
    * @param {CLIConfig} value
    */
   static set config (value) {

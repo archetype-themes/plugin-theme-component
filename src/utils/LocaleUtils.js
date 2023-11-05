@@ -5,7 +5,7 @@ import { basename, extname, join } from 'node:path'
 // External imports
 import merge from 'deepmerge'
 
-// Archie Imports
+// Internal Imports
 import ComponentFilesUtils from './ComponentFilesUtils.js'
 import FileUtils from './FileUtils.js'
 

@@ -1,7 +1,7 @@
 // Node imports
 import path from 'node:path'
 
-// Archie imports
+// Internal Imports
 import BuildCommand from './BuildCommand.js'
 import Session from '../models/static/Session.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'

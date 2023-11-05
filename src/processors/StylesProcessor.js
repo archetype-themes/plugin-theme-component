@@ -3,7 +3,7 @@ import { unlink } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-// Archie Internal imports
+// Internal Imports
 import PostCssProcessor from './styles/PostCssProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'

@@ -13,7 +13,7 @@ import { plural } from '../utils/SyntaxUtils.js'
 import Timer from '../utils/Timer.js'
 import Watcher from '../utils/Watcher.js'
 
-// Archie imports
+// Internal Imports
 import CollectionBuilder from './runners/CollectionBuilder.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
 import SnippetBuilder from './runners/SnippetBuilder.js'
