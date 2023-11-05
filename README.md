@@ -1,6 +1,6 @@
-# Archie
+# Archetype Themes' CLI
 
-Archie is Archetype's CLI (Command Line Interface). Archie is designed to facilitate Shopify Theme development by making
+Archetype Themes' CLI (Command Line Interface) is designed to facilitate Shopify Theme development by making
 it fast and easy to populate and maintain Themes with tons of Sections.
 
 Gone are the days of manually copying sections from one theme to another, Archie allows you to create a shareable
@@ -9,14 +9,14 @@ Themes.
 
 **Main Benefits**
 
-- Bundle as many Sections and Snippets as you want within your Collection.
+- Bundle as many Reusable Components, as Snippets, as you want, within your Collection.
 - Share common JavaScript and Styles with your Sections
 - Say *"goodbye"* to duplicated code by sharing your Collection with as many Themes as you want
-- Configure your Theme to use all or a selection of Sections within a Collection
+- Configure your Theme to use all or a selection of Components within a Collection
 - Fix your bug once; in the collection repository.
   - Update the Collection dependency in your Themes repository.
-- Javascript processing through esbuild will assemble everything in a single file.
-- Use postCSS post-processing for your CSS to assemble everything in a single file.
+- Javascript Import Maps automated generation will seamlessly improve loading time and responsiveness.
+- Use postCSS post-processing for your Stylesheets to assemble everything in a single file.
 
 ## Prerequisites
 
@@ -24,17 +24,18 @@ Node.js needs to be installed, please follow the setup guide if needed.
 
 - [Setup Guide](docs/Setup.md)
 
-You need to authenticate to GitHub Packages Repository before you can install Archie and Collections.
+You need to authenticate to GitHub Packages Repository before you can install Archetype Themes' CLI and Components
+Collections.
 
 - [GitHub Package Repository](https://github.com/archetype-themes/.github-private/blob/main/Github-Package-Repository.md)
 
-## Archie Components
+## CLI Components
 
-Archie helps with multiple components: Collections, Sections & Snippets, and Themes.
+Archetype Themes' CLI interacts with multiple component types: ComponentsComponents (Snippets), Component Collections
+and Themes.
 
-With Archie, you can easily create and maintain a Collection of Sections to share amongst your Themes. Collections are
-structured as a Node.js Monorepo of child repositories consisting of Sections and Snippets and shared elements in their
-respective workspaces.
+You can easily create and maintain a Collection of Components to share amongst your Themes. Collections are
+structured as a Node.js Monorepo of child repositories of Components and shared elements in their respective workspaces.
 
 ### Please read the following guides to help you on your journey
 
@@ -43,28 +44,28 @@ respective workspaces.
 - [Create a Collection](docs/Creating-a-Collection.md)
 - [Using a Collection](docs/Using-a-Collection.md)
 
-#### Section & Snippet Components Guide
+#### Snippet Components Guide
 
-- [Section & Snippet Components](docs/Sections-and-Snippets.md)
+- [Snippet Components](docs/Snippet-Components.md)
 
 #### Theme Guides
 
-- Using a Collection with your [Theme](docs/Themes.md)
+- [Theme Integration](docs/Themes.md)
 
 #### Technical Guides
 
 - Understanding the [Build Process](docs/Build-process.md)
 
-## Install Archie
+## Installing Archetype Themes' CLI
 
-This is a shortcut command to install Archie, but contextual use of this is provided in the guide links above.
+This is a shortcut command to install our CLI, but contextual use of this is provided in the guide links above.
 
 ```shell
 # Defaults to the latest version
-npm install @archetype-themes/archie --save-dev
+npm install @archetype-themes/archie
 
 # Install a specific version
-npm install @archetype-themes/archie#1.0.1 --save-dev
+npm install @archetype-themes/archie#1.0.1
 
 ```
 
@@ -118,13 +119,9 @@ npx archie build --quiet
 
 ## Current Limitations
 
-* [Issue 20](https://github.com/archetype-themes/archie/issues/20): Installing a Collection to a Theme, requires that
-  the Theme be in a hardcoded "src" sub-folder.
 * [Issue 21](https://github.com/archetype-themes/archie/issues/21): Collections must be part of the  *@archetype-themes*
   namespace. Upon Theme Install, the namespace *@archetype-themes*
   is Hardcoded when searching for collections in *node_modules* folder.
-* [Issue 33](https://github.com/archetype-themes/archie/issues/33): Section Schema must be in an external JSON file. Any
-  section schema json in a liquid file is ignored.
 * [Issue 34](https://github.com/archetype-themes/archie/issues/34): Installing multiple collections in a theme is not
   handled at the moment.
 

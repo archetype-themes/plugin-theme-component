@@ -1,13 +1,13 @@
 # Archie Collections - User's Guide
 
 An Archie Collection is a Node.js Monorepo that regroups multiple Shopify
-Theme [Sections and Snippets](Sections-and-Snippets.md)  in the form of child repositories in their respective
+Theme [Sections and Snippets](Snippet-Components.md)  in the form of child repositories in their respective
 namespaces.
 
 ## Child Section and Snippet modules
 
-The main goal for having a collection is to populate it with [Sections and Snippets](Sections-and-Snippets.md). Child
-[Sections and Snippets](Sections-and-Snippets.md) are stored in their respective workspace sub-folders. You can manually
+The main goal for having a collection is to populate it with [Sections and Snippets](Snippet-Components.md). Child
+[Sections and Snippets](Snippet-Components.md) are stored in their respective workspace sub-folders. You can manually
 create a section, or you can use **archie** to generate a skeleton for you, saving you from creating some boilerplate
 code.
 
@@ -27,7 +27,7 @@ npx archie create snippet [some-useful-snippet-name]
 
 Template files will be populated under the `snippets/some-useful-snippet-name` folder.
 
-Please refer to the [Sections and Snippets](Sections-and-Snippets.md) guide for details on these components.
+Please refer to the [Sections and Snippets](Snippet-Components.md) guide for details on these components.
 
 ### The Template Files
 
