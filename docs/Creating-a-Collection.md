@@ -67,6 +67,6 @@ Once installed and configured, you can always access Archie manually in the foll
 npx archie
 ```
 
-## Using your Collection
+## Growing Your Collection
 
-Next up, let's find out how to [Using a Collection](Using-a-Collection.md)
+Next up, let's find out how to [Grow Your Collection](Growing-Your-Collection.md)

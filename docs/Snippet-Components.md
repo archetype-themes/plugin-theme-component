@@ -5,8 +5,8 @@ different ways.
 
 ## Components Structure
 
-You'll find it easy to [add a new section](Using-a-Collection.md#adding-a-new-section)
-or [snippet](Using-a-Collection.md#adding-a-new-snippet) to your collection with Archie. The related commands will
+You'll find it easy to [add a new section](Growing-Your-Collection.md#adding-a-new-section)
+or [snippet](Growing-Your-Collection.md#adding-a-new-snippet) to your collection with Archie. The related commands will
 create your component's folder structure and add some example files to it.
 
 Let's take a look at a component's structure. Below you'll find three examples of component folders.

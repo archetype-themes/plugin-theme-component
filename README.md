@@ -42,7 +42,7 @@ structured as a Node.js Monorepo of child repositories of Components and shared 
 #### Collection Guides
 
 - [Create a Collection](docs/Creating-a-Collection.md)
-- [Using a Collection](docs/Using-a-Collection.md)
+- [Growing Your Collection](docs/Growing-Your-Collection.md)
 
 #### Snippet Components Guide
 
