@@ -1,41 +1,28 @@
 # Growing Your Collection
 
 A Components Collection is a Node.js Monorepo that regroups multiple Shopify
-Theme [Sections and Snippets](Snippet-Components.md)  in the form of child repositories in their respective
-namespaces.
+Theme [Snippet Components](Snippet-Components.md) as child repositories in their respective namespaces.
 
-## Child Section and Snippet modules
+## Child Component Snippets
 
-The main goal for having a collection is to populate it with [Sections and Snippets](Snippet-Components.md). Child
-[Sections and Snippets](Snippet-Components.md) are stored in their respective workspace sub-folders. You can manually
-create a section, or you can use **archie** to generate a skeleton for you, saving you from creating some boilerplate
-code.
+The main goal of owning a collection is to populate it with [Snippet Components](Snippet-Components.md). You should
+store them in their workspace folder. You can manually create a one, or you can use the CLI to generate a skeleton one
+for you, with some boilerplate code.
 
-### Adding a new Section
+### Adding a new Component
 
 ```shell
-npx archie create section [some-smart-section-name]
+npx archie create component [some-smart-component-name]
 ```
 
-Template files will be populated under the `sections/some-smart-section-name` folder.
+Template files will be populated under the `components/some-smart-component-name` folder.
 
-### Adding a new Snippet
-
-```shell
-npx archie create snippet [some-useful-snippet-name]
-```
-
-Template files will be populated under the `snippets/some-useful-snippet-name` folder.
-
-Please refer to the [Sections and Snippets](Snippet-Components.md) guide for details on these components.
+Please refer to the [Snippet Components](Snippet-Components.md) guide for more details on their structure.
 
 ### The Template Files
 
-The source template files are located under the [``resources/component-files``](../resources/component-files) folder and
-the [``resources/section-files``](../resources/section-files) folder. The files will be copied as is into the new
-section/snippet folder.
-
-The files in the [``resources/section-files``](../resources/section-files) folder are exclusive to sections.
+The source template files are located under the [``resources/component-files``](../resources/component-files) folder.
+The files will be copied as is into the newly created component folder.
 
 The files contain variables in the form of JavaScript Template Strings. These variables will be replaced with their
 actual value upon creation. The available variables are:
@@ -57,62 +44,31 @@ section/snippet.
 ```shell
 npx archie build collection
 
-# Use the watch flag to refresh build on file change
+# Use the watch flag to refresh the build when the source files change
 npx archie build collection --watch
 ```
 
-This will package your collection's sections and snippets together inside the **build** sub-folder.
+This will bundle your collection's components as snippets inside the **build** sub-folder.
 
 **PostCSS Build Pro Tips:**
-When using PostCSS, use of a PostCSS config file at the root of your Collection is recommended. Archie will load it
+When using PostCSS, use of a PostCSS config file at the root of your Collection is recommended. The CLI will load it
 through the use of [postcss-load-config](https://www.npmjs.com/package/postcss-load-config) and take it into
 consideration when building a section, a collection or even when installing to a theme.
 
-Reference to some [postcss.config.js usage examples](https://github.com/postcss/postcss#usage)
-Reference to [available postcss process options](https://postcss.org/api/#processoptions)
-Reference to the active list
-of [available PostCSS plugins](https://github.com/postcss/postcss/blob/main/docs/plugins.md) or
-the [searchable catalog](https://www.postcss.parts/)
+- Reference to some [postcss.config.js usage examples](https://github.com/postcss/postcss#usage)
+- Reference to [available postcss process options](https://postcss.org/api/#processoptions)
+- Reference to the active list
+  of [available PostCSS plugins](https://github.com/postcss/postcss/blob/main/docs/plugins.md) or
+  the [searchable catalog](https://www.postcss.parts/)
 
-**JavScript Build Pro Tips:**
-Archie uses [esbuild](https://esbuild.github.io/) to bundle your javascript. Use of an ESBuild config file at the root
-of your Collection is optional. Archie will load it and take it into consideration when building a section, a collection
-or even when installing to a theme. This configuration import feature is specific to Archie and is not documented on
-esbuild's website.
-
-Here is an example of such a configuration files:
-
-````javascript
-import browsers from '@shopify/browserslist-config' // A list of browsers that we support
-import { resolveToEsbuildTarget } from 'esbuild-plugin-browserslist'
-import browserslist from 'browserslist'
-
-export default {
-  bundle: true,
-  charset: 'utf8',
-  format: 'cjs', // Defaults to iife on browser platform, but this wraps the code inside an immediately-invoked function expression
-  platform: 'browser', // Allows native browser variables
-  target: resolveToEsbuildTarget(browserslist(browsers)),
-  // drop: ['console'], // Enable this to automatically remove console.log entries
-  minify: true,  // Enable this to minify JS
-  sourcemap: false // Enables JS sourcemap
-}
-````
-
-The target browsers are set using Shopify's supported browserslist. This requires a few Node.js Modules.
-If used as is, do not forget to use install them by using the following npm install command:
-
-```shell
-npm i @shopify/browserslist-config esbuild-plugin-browserslist browserslist
-```
-
-You can refer to [esbuild's API build command documentation](https://esbuild.github.io/api/#build) for a more detailed
-overview of the available options.
+**JavaScript Pro Tips:**
+The CLI uses a custom [Import Map JavaScript Processor](Import-Map-JS-Processor.md) to optimize JavaScript files
+loading. Please see the documentation for more information.
 
 **Watch Flag**
-Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor source folders and refresh your
-build on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
+Using the watch flag, `--watch` or`-w`, will keep the CLI running, monitoring source folders and refreshing your build
+on any source file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ## Installing your Collection
 
-Installing your collection must be done from the [Theme](Themes.md) component. Please refer to that documentation.
+Please refer to the [Themes](Themes.md) documentation to learn more about installation.

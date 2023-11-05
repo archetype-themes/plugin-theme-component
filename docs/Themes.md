@@ -1,20 +1,19 @@
-# Archie Themes
+# Themes
 
-Archie Theme is any standard Shopify Theme is a component type used within Archie to define a standard Shopify Theme.
-Archie enhances Shopify Themes by
-enabling installation of one or more Archie Collections.
+A Theme is a component type used by the CLI to identify a standard Shopify Theme. The CLI enhances Shopify Themes by
+enabling installation of one or more Components Collection.
 
-## Configuring your theme to use Archie
+## Configuring your theme to use the CLI
 
-Using Archie allows you to easily install an "Archie Collection" within your Theme.
+Using the CLI allows you to easily install a Collection within your Theme.
 
 ### Adding a Collection
 
-You need to install Archie along with your Collection, Archie is the tool that will allow you to install the
-Collection's code within your theme files.
+You need to install the CLI along with your Collection. The CLI will allow you to install the Collection's code within
+your theme files.
 
 ```shell
-# Add Archie
+# Add The CLI
 cd ~/projects/[theme-folder]
 npm install @archetype-themes/archie --save-dev
 
@@ -39,7 +38,7 @@ Next, you will need to edit your package.json to add the archie configuration el
 * *Optional:* Follow with `path` to point to your theme source files if they are not at the root folder of the
   repository.
 * *Optional:* Include a list of sections from your collection for a partial install
-* *Optional:* Create shortcuts to archie commands in the scripts section
+* *Optional:* Create shortcuts to the CLI commands in the scripts section
 
 ```json
 {
@@ -74,7 +73,7 @@ npm run ai
 
 **Watch Flag**
 
-Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor the collection's source folders
+Using the watch flag, `--watch` or`-w`, will keep the CLI active and monitor the collection's source folders
 and refresh your install on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ```shell

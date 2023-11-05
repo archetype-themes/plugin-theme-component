@@ -1,8 +1,8 @@
-# Contributing to Archie
+# Contributing to Archetype Themes' CLI
 
 All contributions are welcome. To Contribute, simply create a branch, commit your code, and create a pull request.
 
-## Install Archie
+## Install The CLI
 
 First, checkout the code from [Archie repository](https://github.com/archetype-themes/archie) and make it available
 globally as a linkable local package.
@@ -18,8 +18,8 @@ cd archie
 npm link
 ```
 
-Then install Archie within a collection and/or a theme as a local folder dependency. Before doing so, you might have to
-remove your standard remote archie install.
+Then install the CLI within a collection and/or a theme as a local folder dependency. Before doing so, you might have to
+remove your standard remote CLI install.
 
 ```shell
 # Link your repository to your shared archie local copy
@@ -57,7 +57,7 @@ npm unlink
 
 ```
 
-## Contributing to the development of Archie
+## Contributing To The CLI's Development
 
 You should consult the [Archie Project](https://github.com/orgs/archetype-themes/projects/43) in GitHub. You will see
 the cycle plannings. Tickets should list upcoming features and backlog.
@@ -99,11 +99,10 @@ Please follow the guidelines listed below.
 
 CLI stands for Command Line Interface
 
-bin/archie.js is the entrypoint Archie's CLI processing
+bin/archie.js is the CLI's entrypoint
 
 The CLI Sub-folder should only contain files pertaining to Shell execution and management. It should analyze command
-input
-and call appropriate Factories, Builders and Installers when necessary.
+input and call appropriate Factories, Builders and Installers when necessary.
 
 ### Phase 2: Factory Folder
 
@@ -141,7 +140,7 @@ Installers are meant to install Collection Builds in a Shopify Theme.
 
 ### Errors
 
-Contains custom Internal Errors used within Archie
+Contains custom Internal Errors used within the CLI
 
 ### Generators
 

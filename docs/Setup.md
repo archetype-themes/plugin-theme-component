@@ -1,12 +1,12 @@
-# Set up your workstation to be ready for Archie
+# Set up your workstation to be ready for Archetype Themes' CLI
 
 ## MacOS
 
 ### Installing NodeJS
 
-Installing Node.js is necessary to use Archie. You can use Node Version Manager if you might need multiple different
-versions of node on your system. You can use Homebrew to always have the latest stable version on your system. You can
-also get binaries from the [node.js](https://nodejs.org/en/) website.
+Installing Node.js is necessary in order to use the CLI. You can use Node Version Manager if you might need multiple
+different versions of node on your system. You can use Homebrew to always have the latest stable version on your system.
+You can also get binaries from the [node.js](https://nodejs.org/en/) website.
 
 #### Using Node Version Manager
 
@@ -41,3 +41,7 @@ Install [node js](https://nodejs.org/)
 ```shell
 brew install node
 ```
+
+## Windows
+
+Please note that Windows support is untested at the moment.

@@ -1,4 +1,4 @@
-# Archie Changelog
+# Archetype Themes' CLI
 
 All notable changes to this project will be documented in this file.
 

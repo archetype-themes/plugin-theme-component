@@ -3,9 +3,9 @@
 Archetype Themes' CLI (Command Line Interface) is designed to facilitate Shopify Theme development by making
 it fast and easy to populate and maintain Themes with tons of Sections.
 
-Gone are the days of manually copying sections from one theme to another, Archie allows you to create a shareable
-Collection of Sections that we bundle as an NPM package. Simply add the dependency to install them within your Shopify
-Themes.
+Gone are the days of manually copying sections from one theme to another, Archetype Themes' CLI allows you to create a
+shareable Collection of Sections that we bundle as an NPM package. Simply add the dependency to install them within your
+Shopify Themes.
 
 **Main Benefits**
 
@@ -56,7 +56,7 @@ structured as a Node.js Monorepo of child repositories of Components and shared 
 
 - Understanding the [Build Process](docs/Build-process.md)
 
-## Installing Archetype Themes' CLI
+## Installing The CLI
 
 This is a shortcut command to install our CLI, but contextual use of this is provided in the guide links above.
 
@@ -70,9 +70,9 @@ npm install @archetype-themes/archie#1.0.1
 ```
 
 Available versions are listed on the
-official [archie NPM package page](https://github.com/archetype-themes/archie/pkgs/npm/archie)
+official [Archetype Themes' CLI NPM package page](https://github.com/archetype-themes/archie/pkgs/npm/archie)
 
-## Archie Commands
+## CLI Commands
 
 ```shell
 ##### Collection Commands #####
@@ -95,12 +95,12 @@ npx archie install --watch
 
 ### Watch Flag
 
-Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor source folders and refresh your
-build/install on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
+Using the watch flag, `--watch` or`-w`, will make the CLI keep an eye on source folders and refresh your build/install
+on any source file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ### Log Level
 
-Archie has a three levels log system, using the standard `info`, `debug`, `error` categories. `info` is the default
+The CLI has a three levels log system, using the standard `info`, `debug`, `error` categories. `info` is the default
 level. To use a different log level, use the following flags when running the builder command:
 
 * `--verbose` will activate `debug` log level and a great number of details on internal processes will be

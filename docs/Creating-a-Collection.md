@@ -18,7 +18,7 @@ mkdir $collection && cd $collection
 npm init -y --scope=@archetype-themes
 ```
 
-## Installing Archie
+## Installing The CLI
 
 Now, let's install the CLI
 
@@ -50,9 +50,9 @@ Next, you will need to edit your package.json in order to add/replace the follow
 - Add the **archie** group with
   - Set the component `type` to **"collection"**  to ensure the CLI identifies your package as a collection monorepo.
 - Add or change the **scripts**  groups
-  - The **"build"** script starts a Collection build with Archie CLI. This is a shortcut to the full `npx archie build`
+  - The **"build"** script starts a Collection build with the CLI. This is a shortcut to the full `npx archie build`
     command.
-  - The **"dev"** script starts a Collection build with Archie CLI and watches for file changes within the Collection's
+  - The **"dev"** script starts a Collection build with the CLI and watches for file changes within the Collection's
     source folders. It is a shortcut to the full `npx archie build --watch` command.
   - Adding the **workspaces** group indicates that this is a monorepo with multiples child repositories split in three
     groups.
@@ -61,7 +61,7 @@ Next, you will need to edit your package.json in order to add/replace the follow
     - The **"shared"** workspace is intended for shared style libraries, shared internal javascript libraries or other
       assets that are reused by multiple components.
 
-Once installed and configured, you can always access Archie manually in the following way:
+Once installed and configured, you can always access the CLI manually in the following way:
 
 ```shell
 npx archie
