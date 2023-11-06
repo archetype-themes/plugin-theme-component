@@ -11,7 +11,7 @@ class FileUtils {
   static #FILE_ENCODING_OPTION = { encoding: 'utf8' }
 
   /**
-   * Convert Component (Section/Snippet) Absolute Path to a Relative one
+   * Convert a Component or a Snippet's Absolute Path to a Relative one
    * @param {string} absolutePath
    * @returns {string}
    */

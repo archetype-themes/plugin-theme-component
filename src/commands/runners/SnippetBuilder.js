@@ -1,28 +1,23 @@
 import ComponentBuild from '../../models/ComponentBuild.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
 
 class SnippetBuilder {
   /**
    * Builds Snippet Components As Needed
    * @param {Snippet} snippet
+   * @param {string} collectionRootFolder
    * @return {Promise<Snippet>}
    */
-  static async build (snippet) {
+  static async build (snippet, collectionRootFolder) {
     // Create build model
     snippet.build = new ComponentBuild()
 
     // Build Locales
-    snippet.build.locales = LocaleUtils.buildLocales(snippet.name, snippet.locales, snippet.schema?.locales, true)
-
-    // Build Schema
-    if (snippet.schema) {
-      snippet.build.schema = SectionSchemaUtils.build(snippet.schema)
-    }
+    snippet.build.locales = LocaleUtils.buildLocales(snippet.name, snippet.locales, true)
 
     // Build Liquid Code
-    snippet.build.liquidCode = await LiquidUtils.buildLiquid(snippet.name, snippet.liquidCode)
+    snippet.build.liquidCode = await LiquidUtils.buildLiquid(snippet.name, snippet.liquidCode, collectionRootFolder)
 
     return snippet
   }

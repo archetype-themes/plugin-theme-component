@@ -1,7 +1,8 @@
 // Node imports
 import path from 'node:path'
+import Components from '../config/Components.js'
 
-// Archie imports
+// Internal Imports
 import BuildCommand from './BuildCommand.js'
 import Session from '../models/static/Session.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
@@ -11,6 +12,14 @@ import NodeUtils from '../utils/NodeUtils.js'
 import ThemeFactory from '../factory/ThemeFactory.js'
 import Timer from '../utils/Timer.js'
 import Watcher from '../utils/Watcher.js'
+
+/** @type {string} **/
+export const INSTALL_COMMAND_NAME = 'install'
+
+/** @type {string[]} **/
+export const INSTALL_COMMAND_AVAILABLE_CALLER_TYPES = [Components.THEME_TYPE_NAME]
+/** @type {string[]} **/
+export const INSTALL_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME]
 
 class InstallCommand {
   /**
@@ -22,15 +31,15 @@ class InstallCommand {
 
     let collectionsList
     // If we have only one element as a string, convert it to object form.
-    if (NodeUtils.isString(Session.targetComponentName)) {
+    if (NodeUtils.isString(Session.targetName)) {
       collectionsList = {}
-      collectionsList[Session.targetComponentName] = []
+      collectionsList[Session.targetName] = []
     } else {
-      collectionsList = Session.targetComponentName
+      collectionsList = Session.targetName
     }
 
-    for (const [collectionName, sectionsList] of Object.entries(collectionsList)) {
-      const collection = await InstallCommand.installOne(collectionName, sectionsList)
+    for (const [collectionName, componentNames] of Object.entries(collectionsList)) {
+      const collection = await InstallCommand.installOne(collectionName, componentNames)
 
       if (Session.watchMode) {
         promises.push(this.watch(collection))
@@ -43,10 +52,10 @@ class InstallCommand {
   /**
    * Install a Collection
    * @param {string} collectionName
-   * @param {string[]} sectionNames
+   * @param {string[]} componentNames
    * @return {Promise<module:models/Collection>}
    */
-  static async installOne (collectionName, sectionNames) {
+  static async installOne (collectionName, componentNames) {
     logger.info(`Building & Installing the ${collectionName} Collection.`)
     const startTime = Timer.getTimer()
 
@@ -54,7 +63,7 @@ class InstallCommand {
     const theme = ThemeFactory.fromThemeInstallCommand()
 
     // Build using the Build Command
-    const collection = await BuildCommand.buildCollection(collectionName, sectionNames)
+    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
 
     // Install and time it!
     logger.info(`Installing the ${collectionName} Collection for the ${theme.name} Theme.`)
@@ -68,17 +77,17 @@ class InstallCommand {
   /**
    * On Collection Watch Event
    * @param {string} collectionName
-   * @param {string[]} sectionNames
+   * @param {string[]} componentNames
    * @param {FSWatcher} watcher
    * @param event
    * @param eventPath
    * @return {Promise<module: models/Collection>}
    */
-  static async onCollectionWatchEvent (collectionName, sectionNames, watcher, event, eventPath) {
+  static async onCollectionWatchEvent (collectionName, componentNames, watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${filename} detected`)
 
-    const collection = await InstallCommand.installOne(collectionName, sectionNames)
+    const collection = await InstallCommand.installOne(collectionName, componentNames)
 
     // The Watcher is restarted on any liquid file change.
     // This is useful if any render tags were added or removed, it will reset snippet watched folders.
@@ -98,7 +107,7 @@ class InstallCommand {
 
     const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
 
-    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.sectionNames, watcher)
+    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, watcher)
     Watcher.watch(watcher, onCollectionWatchEvent)
   }
 }

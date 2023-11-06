@@ -14,7 +14,7 @@ const { build, BuildResult } = esbuild
 
 class EsbuildProcessor {
   /**
-   * Build JavaScript files for a section or snippet
+   * Build JavaScript files for a component
    * @param {string} mainJavaScriptFile
    * @param {string} outputFile
    * @param {string} configFilePath
@@ -42,7 +42,7 @@ class EsbuildProcessor {
       logger.debug('esbuild external config file found and processed')
       return build(options)
     }
-    logger.debug('No ESBuild external config file was found. Using the embedded Archie default esbuild config.')
+    logger.debug('No ESBuild external config file was found. The CLI will use the default internal esbuild config.')
     return build(defaultOptions)
   }
 }

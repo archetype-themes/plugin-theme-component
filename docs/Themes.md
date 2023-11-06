@@ -1,20 +1,19 @@
-# Archie Themes
+# Themes
 
-Archie Theme is any standard Shopify Theme is a component type used within Archie to define a standard Shopify Theme.
-Archie enhances Shopify Themes by
-enabling installation of one or more Archie Collections.
+A Theme is a component type used by the CLI to identify a standard Shopify Theme. The CLI enhances Shopify Themes by
+enabling installation of one or more Components Collection.
 
-## Configuring your theme to use Archie
+## Configuring your theme to use the CLI
 
-Using Archie allows you to easily install an "Archie Collection" within your Theme.
+Using the CLI allows you to easily install a Collection within your Theme.
 
 ### Adding a Collection
 
-You need to install Archie along with your Collection, Archie is the tool that will allow you to install the
-Collection's code within your theme files.
+You need to install the CLI along with your Collection. The CLI will allow you to install the Collection's code within
+your theme files.
 
 ```shell
-# Add Archie
+# Add The CLI
 cd ~/projects/[theme-folder]
 npm install @archetype-themes/archie --save-dev
 
@@ -38,8 +37,8 @@ Next, you will need to edit your package.json to add the archie configuration el
 * Make sure you indicate your `type` as a **"theme"**
 * *Optional:* Follow with `path` to point to your theme source files if they are not at the root folder of the
   repository.
-* *Optional:* Include a list of sections from your collection for a partial install
-* *Optional:* Create shortcuts to archie commands in the scripts section
+* *Optional:* Include a list of components from your collection for a partial install
+* *Optional:* Create shortcuts to the CLI commands in the scripts section
 
 ```json
 {
@@ -47,9 +46,9 @@ Next, you will need to edit your package.json to add the archie configuration el
     "type": "theme",
     "path": "./src",
     "my-awesome-collection": [
-      "section-one",
-      "section-two",
-      "section-four"
+      "component-one",
+      "component-two",
+      "component-four"
     ]
   },
   "scripts": {
@@ -74,7 +73,7 @@ npm run ai
 
 **Watch Flag**
 
-Using the watch flag, `--watch` or`-w`, will keep Archie running. Archie will monitor the collection's source folders
+Using the watch flag, `--watch` or`-w`, will keep the CLI active and monitor the collection's source folders
 and refresh your install on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ```shell
@@ -91,21 +90,21 @@ The newly added files should look something like that:
 
 ```shell
 # Collection Styles
-src/assets/[my-awesome-collection].cs
+assets/[collection-name].cs
 # Collection JavaScript
-src/assets/[my-awesome-collection].js
+assets/[collection-name].js
 
-# Collection Sections
-src/sections/[section-one].liquid
-src/sections/[section-two].liquid
+# Collection Components
+snippets/[component-one].liquid
+snippets/[component-two].liquid
 
-# Collection Snippets (only if invoked as a for loop)
-src/snippets/[snippet-one].liquid
+# Collection Snippets
+snippets/[snippet-one].liquid
 ```
 
 The following files will be edited or created if need be:
 
 ```shell
 # Adding JavaScript and Styles references if needed
-src/layout/theme.liquid
+layout/theme.liquid
 ```

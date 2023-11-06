@@ -1,7 +1,7 @@
 // Node Core imports
 import { basename, join } from 'node:path'
 
-// Archie imports
+// Internal Imports
 import FileUtils from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
 
@@ -16,9 +16,6 @@ class CollectionInstaller {
     const fileOperations = []
     // Copy Asset Folder
     fileOperations.push(FileUtils.copyFolder(collection.build.assetsFolder, theme.assetsFolder))
-
-    // Copy Sections Folder
-    fileOperations.push(FileUtils.copyFolder(collection.build.sectionsFolder, theme.sectionsFolder))
 
     // Copy Snippets Folder
     fileOperations.push(FileUtils.copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))

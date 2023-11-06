@@ -16,7 +16,7 @@ vi.mock('process', async () => {
 })
 
 describe('getArgs', () => {
-  test('Archie install command with filtered verbose argument.', () => {
+  test('CLI install command with filtered verbose argument.', () => {
     expect(NodeUtils.getArgs()).toStrictEqual(['install'])
   })
 })
@@ -123,7 +123,7 @@ describe('getMonorepoRootFolder', () => {
   })
 })
 
-describe('getArchieRootFolderName', () => {
+describe('getCLIRootFolderName', () => {
   test('Get Root Folder from the current file\'s path.', () => {
     expect(NodeUtils.getMonorepoRootFolder()).toBe(process.cwd())
   })

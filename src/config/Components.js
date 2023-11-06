@@ -7,19 +7,13 @@ class Components {
   /**************************/
 
   /** @type {string}  **/
-  static COLLECTION_COMPONENT_TYPE_NAME = 'collection'
+  static COLLECTION_TYPE_NAME = 'collection'
 
   /** @type {string}  **/
   static COMPONENT_TYPE_NAME = 'component'
 
   /** @type {string}  **/
-  static SECTION_COMPONENT_TYPE_NAME = 'section'
-
-  /** @type {string}  **/
-  static SNIPPET_COMPONENT_TYPE_NAME = 'snippet'
-
-  /** @type {string}  **/
-  static THEME_COMPONENT_TYPE_NAME = 'theme'
+  static THEME_TYPE_NAME = 'theme'
 
   /******************/
   /** FOLDER NAMES **/
@@ -45,10 +39,7 @@ class Components {
   /******************/
 
   /** @type {string} **/
-  static SECTION_SCHEMA_FILENAME = 'schema.json'
-
-  /** @type {string} **/
-  static THEME_IMPORT_MAP_FILENAME = 'import-map.liquid'
+  static IMPORT_MAP_SNIPPET_FILENAME = 'import-map.liquid'
 }
 
 export default Components

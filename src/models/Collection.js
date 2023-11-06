@@ -19,23 +19,17 @@ class Collection {
   #packageJsonFiles
 
   /** @type {string[]} **/
-  #sectionNames
-
-  /** @type {Section[]} **/
-  #sections
+  #componentNames
 
   /** @type {Snippet[]} **/
   #snippets
-
-  /** @type {boolean} **/
-  #prefixStorefrontLocales
 
   /** @type {Map<string, string> | undefined} **/
   #importMapEntries
 
   constructor () {
-    this.sectionNames = []
-    this.sections = []
+    this.componentNames = []
+    this.components = []
   }
 
   /**
@@ -135,35 +129,19 @@ class Collection {
   }
 
   /**
-   * Get section names
+   * Get component names
    * @return {string[]}
    */
-  get sectionNames () {
-    return this.#sectionNames
+  get componentNames () {
+    return this.#componentNames
   }
 
   /**
-   * Set section names
+   * Set component names
    * @param {string[]} value
    */
-  set sectionNames (value) {
-    this.#sectionNames = value
-  }
-
-  /**
-   * Get sections
-   * @return {Section[]}
-   */
-  get sections () {
-    return this.#sections
-  }
-
-  /**
-   * Set sections
-   * @param value
-   */
-  set sections (value) {
-    this.#sections = value
+  set componentNames (value) {
+    this.#componentNames = value
   }
 
   /**
@@ -180,22 +158,6 @@ class Collection {
    */
   set snippets (value) {
     this.#snippets = value
-  }
-
-  /**
-   * Get Prefix Storefront Locales
-   * @returns {boolean}
-   */
-  get prefixStorefrontLocales () {
-    return this.#prefixStorefrontLocales
-  }
-
-  /**
-   * Set Prefix Storefront Locales
-   * @param {boolean} value
-   */
-  set prefixStorefrontLocales (value) {
-    this.#prefixStorefrontLocales = value
   }
 
   get importMapEntries () {

@@ -1,8 +1,8 @@
 // Node.js imports
 import { argv, env, exit } from 'node:process'
-import { dirname } from 'node:path'
+import { dirname, join } from 'node:path'
 
-// Archie imports
+// Internal Imports
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 import InternalError from '../errors/InternalError.js'
@@ -27,14 +27,23 @@ class NodeUtils {
 
   /**
    * Get Package JSON Content as an Object
+   * @param {string} [cwd]
    * @return {Promise<Object>}
    */
-  static async getPackageManifest () {
-    if (!env.npm_package_json) {
+  static async getPackageManifest (cwd) {
+    if (!cwd && !env.npm_package_json) {
       throw new InternalError('Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.')
     }
 
-    return await FileUtils.getJsonFileContents(env.npm_package_json)
+    let packageJsonFile
+
+    if (cwd) {
+      packageJsonFile = join(cwd, 'package.json')
+    } else {
+      packageJsonFile = env.npm_package_json
+    }
+
+    return await FileUtils.getJsonFileContents(packageJsonFile)
   }
 
   /**
@@ -69,7 +78,7 @@ class NodeUtils {
       return dirname(env.npm_package_json)
     }
 
-    throw new InternalError('Unable to get Package Root Folder through Environment Variables. Please make sure you are running Archie from within a Node Package folder.')
+    throw new InternalError('Unable to get Package Root Folder through Environment Variables. Please make sure you are running this CLI from within a Node Package folder.')
   }
 
   /**
@@ -88,15 +97,26 @@ class NodeUtils {
       return env.PROJECT_CWD.toString()
     }
 
-    throw new InternalError('Monorepo Root Folder couldn\'t be found in the environment variables. Please make sure you are running Archie from within a Node Package folder.')
+    throw new InternalError('Monorepo Root Folder couldn\'t be found in the environment variables. Please make sure you are running the CLI from within a Node Package folder.')
   }
 
   /**
    * Shortcut to a method to get root folder username
    * @returns {string}
    */
-  static getArchieRootFolderName () {
+  static getCLIRootFolderName () {
     return new URL('../../', import.meta.url).pathname
+  }
+
+  /**
+   * Get Workspaces
+   * @returns {Promise<string[]>}
+   */
+  static async getWorkspaces (packageManifest) {
+    if (!packageManifest) {
+      packageManifest = await this.getPackageManifest()
+    }
+    return packageManifest.workspaces
   }
 
   /**

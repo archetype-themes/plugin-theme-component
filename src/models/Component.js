@@ -14,9 +14,6 @@ class Component {
   /** @type {string} **/
   #liquidCode
 
-  /** @type {SectionSchema} **/
-  #schema
-
   /** @type {Object } **/
   #locales = {}
 
@@ -130,22 +127,6 @@ class Component {
    */
   set locales (value) {
     this.#locales = value
-  }
-
-  /**
-   * Get Schema Object Representation
-   * @returns {SectionSchema}
-   */
-  get schema () {
-    return this.#schema
-  }
-
-  /**
-   * Get Schema Object Representation
-   * @param {SectionSchema} value
-   */
-  set schema (value) {
-    this.#schema = value
   }
 
   /**

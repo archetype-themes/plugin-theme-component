@@ -1,40 +1,25 @@
 import ComponentBuild from '../../models/ComponentBuild.js'
 import LiquidUtils from '../../utils/LiquidUtils.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
-import SectionSchemaUtils from '../../utils/SectionSchemaUtils.js'
 
 class ComponentBuilder {
   /**
    *
    * @param {Component} component
+   * @param {string} collectionRootFolder
    * @returns {Promise<Component>}
    */
-  static async build (component) {
+  static async build (component, collectionRootFolder) {
     // Create build model
     component.build = new ComponentBuild()
 
     // Build Locales
-    component.build.locales = LocaleUtils.buildLocales(component.name, component.locales, component.schema?.locales, true)
-
-    // Build Schema
-    if (component.schema) {
-      component.build.schema = SectionSchemaUtils.build(component.schema)
-    }
+    component.build.locales = LocaleUtils.buildLocales(component.name, component.locales, true)
 
     // Build Liquid Code
-    component.build.liquidCode = await LiquidUtils.buildLiquid(component.name, component.liquidCode)
+    component.build.liquidCode = await LiquidUtils.buildLiquid(component.name, component.liquidCode, collectionRootFolder)
 
     return component
-  }
-
-  /**
-   *
-   * @param {Snippet[]}snippets
-   * @returns {Promise<Snippet[]>}
-   */
-  static async recursivelyBuildChildren (snippets) {
-    const snippetsToBuild = snippets.filter(snippet => !snippet.build)
-    return Promise.all(snippetsToBuild.map(snippet => ComponentBuilder.build(snippet)))
   }
 }
 

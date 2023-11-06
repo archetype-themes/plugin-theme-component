@@ -12,12 +12,13 @@ class SvgProcessor {
    * Build SVG
    * @param {string} svgName
    * @param {string} svgSource
+   * @param {string} cwd
    * @return {Promise<string>}
    */
-  static async buildSvg (svgName, svgSource) {
+  static async buildSvg (svgName, svgSource, cwd) {
     // SVGO processing
     if (!this.#svgoConfigCheck) {
-      this.#svgoConfig = await loadConfig()
+      this.#svgoConfig = await loadConfig(null, cwd)
       if (!this.#svgoConfig) {
         logger.warn('SVGO configuration not found. Proceeding with default settings.')
       }

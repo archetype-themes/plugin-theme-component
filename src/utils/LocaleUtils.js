@@ -5,8 +5,7 @@ import { basename, extname, join } from 'node:path'
 // External imports
 import merge from 'deepmerge'
 
-// Archie Imports
-import Session from '../models/static/Session.js'
+// Internal Imports
 import ComponentFilesUtils from './ComponentFilesUtils.js'
 import FileUtils from './FileUtils.js'
 
@@ -15,36 +14,11 @@ class LocaleUtils {
    * Build Locales
    * @param {string} componentName
    * @param {Object} [locales={}]
-   * @param {Object} [localesFromSectionSchema={}]
    * @param {boolean} [isSnippet]
-   * @return {{}|null}
+   * @return {Object}
    */
-  static buildLocales (componentName, locales = {}, localesFromSectionSchema, isSnippet = false) {
-    let buildLocales
-    let buildLocalesFromSectionSchema
-
-    if (locales) {
-      buildLocales = Session.archieConfig.structuredLocales ? LocaleUtils.prefixLocalesWithComponentName(componentName, locales, isSnippet) : locales
-    }
-
-    // Storefront Locales from Section Schema should always be prefixed, to respect the Shopify Standard.
-    if (localesFromSectionSchema) {
-      buildLocalesFromSectionSchema = LocaleUtils.prefixLocalesWithComponentName(componentName, localesFromSectionSchema, isSnippet)
-    }
-
-    if (buildLocalesFromSectionSchema && buildLocales) {
-      return merge(buildLocalesFromSectionSchema, buildLocales)
-    }
-
-    if (buildLocales) {
-      return buildLocales
-    }
-
-    if (buildLocalesFromSectionSchema) {
-      return buildLocalesFromSectionSchema
-    }
-
-    return null
+  static buildLocales (componentName, locales = {}, isSnippet = false) {
+    return locales
   }
 
   /**
@@ -101,29 +75,6 @@ class LocaleUtils {
     }
 
     return locales
-  }
-
-  /**
-   * Prefix Locales Object with Component Name
-   * @param {string} componentName
-   * @param {Object} [locales]
-   * @param {boolean} [isSnippet=false] Defaults to false. It will use sections prefix, or snippets when true
-   * @returns {{}|null}
-   */
-  static prefixLocalesWithComponentName (componentName, locales, isSnippet = false) {
-    if (locales) {
-      const componentPrefix = isSnippet ? 'snippets' : 'sections'
-      const prefixedLocales = {}
-      for (const locale of Object.keys(locales)) {
-        prefixedLocales[locale] = {
-          [componentPrefix]: {
-            [componentName]: locales[locale]
-          }
-        }
-      }
-      return prefixedLocales
-    }
-    return null
   }
 
   /**

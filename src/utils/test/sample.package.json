@@ -18,9 +18,9 @@
     "test": "exit 0"
   },
   "workspaces": [
-    "./sections/*",
-    "./shared/*",
-    "./snippets/*"
+    "components/*",
+    "scripts",
+    "styles"
   ],
   "archie": {
     "type": "collection"

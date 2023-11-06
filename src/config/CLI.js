@@ -1,25 +1,26 @@
+import { BUILD_COMMAND_NAME } from '../commands/BuildCommand.js'
+import { CREATE_COMMAND_NAME } from '../commands/CreateCommand.js'
+import { INSTALL_COMMAND_NAME } from '../commands/InstallCommand.js'
 import Components from './Components.js'
-import CLICommands from './CLICommands.js'
 
-class CLI {
-  static Commands = CLICommands
-  static AVAILABLE_COMMANDS = [
-    CLICommands.BUILD_COMMAND_NAME, CLICommands.CREATE_COMMAND_NAME, CLICommands.INSTALL_COMMAND_NAME
-  ]
+export const AVAILABLE_COMMANDS = [
+  BUILD_COMMAND_NAME, CREATE_COMMAND_NAME, INSTALL_COMMAND_NAME
+]
 
-  static AVAILABLE_COMMAND_OPTIONS = [
-    Components.COLLECTION_COMPONENT_TYPE_NAME,
-    Components.SECTION_COMPONENT_TYPE_NAME,
-    Components.SNIPPET_COMPONENT_TYPE_NAME,
-    Components.THEME_COMPONENT_TYPE_NAME
-  ]
+export const AVAILABLE_TARGET_TYPES = [
+  Components.COLLECTION_TYPE_NAME,
+  Components.COMPONENT_TYPE_NAME,
+  Components.THEME_TYPE_NAME
+]
 
-  static AVAILABLE_COMPONENT_TYPES = [
-    Components.COLLECTION_COMPONENT_TYPE_NAME,
-    Components.SECTION_COMPONENT_TYPE_NAME,
-    Components.SNIPPET_COMPONENT_TYPE_NAME,
-    Components.THEME_COMPONENT_TYPE_NAME
-  ]
-}
+export const AVAILABLE_CALLER_TYPES = [
+  Components.COLLECTION_TYPE_NAME,
+  Components.COMPONENT_TYPE_NAME,
+  Components.THEME_TYPE_NAME
+]
 
-export default CLI
+/** @type {string[]}  **/
+export const WATCH_FLAG_ACCEPTED_VALUES = ['-w', '--watch']
+
+/** @type {string[]}  **/
+export const WATCH_FLAG_COMMANDS = [BUILD_COMMAND_NAME, INSTALL_COMMAND_NAME]

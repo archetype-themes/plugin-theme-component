@@ -2,7 +2,7 @@
 import { join } from 'path'
 import Session from '../models/static/Session.js'
 
-// Archie Imports
+// Internal Imports
 import Theme from '../models/Theme.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Components from '../config/Components.js'
@@ -17,8 +17,8 @@ class ThemeFactory {
 
     theme.name = NodeUtils.getPackageName()
     // Set folder names
-    if (Session.archieConfig.path) {
-      theme.rootFolder = join(NodeUtils.getPackageRootFolder(), Session.archieConfig.path)
+    if (Session.config.path) {
+      theme.rootFolder = join(NodeUtils.getPackageRootFolder(), Session.config.path)
     } else {
       theme.rootFolder = NodeUtils.getPackageRootFolder()
     }

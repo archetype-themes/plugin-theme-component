@@ -9,7 +9,6 @@ import FileUtils from './FileUtils.js'
 import InputFileError from '../errors/InputFileError.js'
 import JavascriptUtils from './JavascriptUtils.js'
 import logger from './Logger.js'
-import SectionSchema from '../models/SectionSchema.js'
 import StylesUtils from './StylesUtils.js'
 
 class ComponentFilesUtils {
@@ -53,7 +52,7 @@ class ComponentFilesUtils {
   }
 
   /**
-   * Filter Section/Snippet Files by Type
+   * Filter Component Files by Type
    * @param {string[]} files
    * @param {ComponentFiles} componentFiles
    * @param {string} componentName
@@ -76,19 +75,6 @@ class ComponentFilesUtils {
       }
 
       if (this.SCRIPT_EXTENSIONS.includes(extension)) {
-        if (filename === Components.SECTION_SCHEMA_FILENAME.replace('.json', extension)) {
-          componentFiles.schemaFile = file
-          continue
-        }
-        if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
-          componentFiles.localeFiles.push(file)
-          continue
-        }
-        if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
-          componentFiles.schemaLocaleFiles.push(file)
-          continue
-        }
-
         componentFiles.javascriptFiles.push(file)
         continue
       }
@@ -113,18 +99,7 @@ class ComponentFilesUtils {
             componentFiles.packageJson = file
             break
           }
-          if (filename === Components.SECTION_SCHEMA_FILENAME) {
-            componentFiles.schemaFile = file
-            break
-          }
-          if (this.SINGLE_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_LOCALES_FILENAME_REGEXP.exec(filename)) {
-            componentFiles.localeFiles.push(file)
-            break
-          }
-          if (this.SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP.exec(filename) || this.GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP.exec(filename)) {
-            componentFiles.schemaLocaleFiles.push(file)
-            break
-          }
+
           logger.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
           break
 
@@ -133,20 +108,6 @@ class ComponentFilesUtils {
           break
       }
     }
-  }
-
-  /**
-   * Get Section Schema from schema file.
-   * @param {string} schemaFile
-   * @return {Promise<SectionSchema>}
-   */
-  static async getSectionSchema (schemaFile) {
-    const sectionSchema = new SectionSchema()
-    if (this.SCRIPT_EXTENSIONS.includes(extname(schemaFile))) {
-      return Object.assign(sectionSchema, (await import(schemaFile)).default)
-    }
-    const sectionSchemaJson = await FileUtils.getJsonFileContents(schemaFile)
-    return Object.assign(sectionSchema, sectionSchemaJson)
   }
 
   /**
@@ -159,7 +120,7 @@ class ComponentFilesUtils {
   static async validateFolderAccess (folder, componentName) {
     if (!await FileUtils.isReadable(folder)) {
       logger.debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
-      throw new FileAccessError(`Unable to access the "${componentName}" section on disk. Tips: Is it spelled properly? Is the collection installed?`)
+      throw new FileAccessError(`Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`)
     }
   }
 }

@@ -15,7 +15,7 @@ class StylesUtils {
     const processedStylesheets = []
 
     for (const stylesheet of stylesheets) {
-      // When building a Collection, multiple Sections might include the same snippet,
+      // When building a Collection, multiple Components might include the same snippet,
       // Therefore we check for duplicates
       if (!processedStylesheets.includes(stylesheet)) {
         masterStylesheetContents += `@import url('${stylesheet}');\n`
