@@ -1,5 +1,6 @@
 // Node imports
 import path from 'node:path'
+import Components from '../config/Components.js'
 
 // Internal Imports
 import BuildCommand from './BuildCommand.js'
@@ -11,6 +12,14 @@ import NodeUtils from '../utils/NodeUtils.js'
 import ThemeFactory from '../factory/ThemeFactory.js'
 import Timer from '../utils/Timer.js'
 import Watcher from '../utils/Watcher.js'
+
+/** @type {string} **/
+export const INSTALL_COMMAND_NAME = 'install'
+
+/** @type {string[]} **/
+export const INSTALL_COMMAND_AVAILABLE_CALLER_TYPES = [Components.THEME_TYPE_NAME]
+/** @type {string[]} **/
+export const INSTALL_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME]
 
 class InstallCommand {
   /**

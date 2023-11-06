@@ -1,10 +1,11 @@
+import { BUILD_COMMAND_NAME } from '../commands/BuildCommand.js'
+import { CREATE_COMMAND_NAME } from '../commands/CreateCommand.js'
+import { INSTALL_COMMAND_NAME } from '../commands/InstallCommand.js'
 import Components from './Components.js'
-import CLICommands from './CLICommands.js'
 
 class CLI {
-  static Commands = CLICommands
   static AVAILABLE_COMMANDS = [
-    CLICommands.BUILD_COMMAND_NAME, CLICommands.CREATE_COMMAND_NAME, CLICommands.INSTALL_COMMAND_NAME
+    BUILD_COMMAND_NAME, CREATE_COMMAND_NAME, INSTALL_COMMAND_NAME
   ]
 
   static AVAILABLE_TARGET_TYPES = [

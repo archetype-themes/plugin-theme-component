@@ -4,12 +4,15 @@ import CommandLineInputError from '../errors/CommandLineInputError.js'
 
 // Internal Imports
 import CLI from '../config/CLI.js'
-import CLICommands from '../config/CLICommands.js'
 import CLIFlags from '../config/CLIFlags.js'
 import Session from '../models/static/Session.js'
-import Components from '../config/Components.js'
 import ConfigError from '../errors/ConfigError.js'
-import InternalError from '../errors/InternalError.js'
+import {
+  getAvailableCallerTypes,
+  getAvailableTargetTypes,
+  getDefaultTargetName,
+  getDefaultTargetType
+} from '../utils/CLICommandUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
@@ -54,13 +57,13 @@ class SessionFactory {
 
     // Use the default Command Option if one wasn't provided
     if (!Session.targetType) {
-      Session.targetType = this.#getDefaultTargetType(Session.command, Session.callerType)
+      Session.targetType = getDefaultTargetType(Session.command, Session.callerType)
     }
 
     // Use the default Target Component if one wasn't provided
     if (!Session.targetName) {
       Session.targetName =
-        this.#getDefaultTargetName(
+        getDefaultTargetName(
           Session.callerType,
           Session.command,
           Session.targetType,
@@ -89,64 +92,6 @@ class SessionFactory {
       Session.watchMode
     )
     return Session
-  }
-
-  /**
-   * Get Command Available Options
-   * @param {string} command
-   * @return {string[]}
-   */
-  static #getEnabledComponentTypes (command) {
-    switch (command) {
-      case CLICommands.BUILD_COMMAND_NAME:
-        return CLICommands.BUILD_COMMAND_ENABLED_COMPONENT_TYPES
-      case CLICommands.CREATE_COMMAND_NAME:
-        return CLICommands.CREATE_COMMAND_ENABLED_COMPONENT_TYPES
-      case CLICommands.INSTALL_COMMAND_NAME:
-        return CLICommands.INSTALL_COMMAND_ENABLED_COMPONENT_TYPES
-      default:
-        throw new InternalError(`Invalid command "${command}"`)
-    }
-  }
-
-  static #getDefaultTargetType (command, callerComponentType) {
-    switch (command) {
-      case CLICommands.BUILD_COMMAND_NAME:
-        return callerComponentType
-      case CLICommands.CREATE_COMMAND_NAME:
-        return Components.COMPONENT_TYPE_NAME
-      case CLICommands.INSTALL_COMMAND_NAME:
-        return Components.COLLECTION_TYPE_NAME
-      default:
-        throw new InternalError(`Invalid command ${command}`)
-    }
-  }
-
-  /**
-   * Get Default CLI Command Target Name
-   * @param {string} componentType
-   * @param {string} command
-   * @param {string} commandOption
-   * @param {string} packageName
-   * @param {Object.<string,string[]>} collections
-   * @return {null|string|Object}
-   */
-  static #getDefaultTargetName (componentType, command, commandOption, packageName, collections) {
-    switch (command) {
-      case CLICommands.BUILD_COMMAND_NAME:
-        if (componentType === commandOption) {
-          return packageName
-        }
-        return null
-      case CLICommands.CREATE_COMMAND_NAME:
-        return null
-      case CLICommands.INSTALL_COMMAND_NAME:
-        if (Object.keys(collections).length) {
-          return collections
-        } else {
-          throw new CommandLineInputError('No Default Collection found in configuration for install, please specify a collection name.')
-        }
-    }
   }
 
   /**
@@ -187,7 +132,7 @@ class SessionFactory {
     }
 
     // Validate that the Component is entitled to call this Command
-    const enabledComponentTypes = this.#getEnabledComponentTypes(command)
+    const enabledComponentTypes = getAvailableCallerTypes(command)
     if (!enabledComponentTypes.includes(callerComponentType)) {
       throw new CommandLineInputError(`Invalid Component Type: "${callerComponentType}". The "${command}" command must be run from one of the following component type(s): [${enabledComponentTypes.join('/')}].`)
     }
@@ -204,7 +149,7 @@ class SessionFactory {
   static #validateCommandArguments (callerType, command, targetType, targetName, watchFlag) {
     logger.debug(`Caller Component Type: ${callerType}`)
 
-    const commandComponentTypes = this.#getEnabledComponentTypes(command)
+    const commandComponentTypes = getAvailableTargetTypes(command)
     if (!commandComponentTypes.includes(targetType)) {
       throw new CommandLineInputError(`Invalid Command Option "${targetType}". This command only accepts the following option(s): [${commandComponentTypes.join('/')}].`)
     }

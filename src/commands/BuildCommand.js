@@ -18,6 +18,15 @@ import CollectionBuilder from './runners/CollectionBuilder.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
 import SnippetBuilder from './runners/SnippetBuilder.js'
 
+/** @type {string} **/
+export const BUILD_COMMAND_NAME = 'build'
+
+/** @type {string[]} **/
+export const BUILD_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
+
+/** @type {string[]} **/
+export const BUILD_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
+
 class BuildCommand {
   /**
    * Execute Build Command

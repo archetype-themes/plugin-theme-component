@@ -11,6 +11,15 @@ import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
+/** @type {string} **/
+export const CREATE_COMMAND_NAME = 'create'
+
+/** @type {string[]} **/
+export const CREATE_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME]
+
+/** @type {string[]} **/
+export const CREATE_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COMPONENT_TYPE_NAME]
+
 class CreateCommand {
   /**
    * Execute The CLI's Create Command
