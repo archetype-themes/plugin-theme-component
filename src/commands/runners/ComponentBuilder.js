@@ -6,9 +6,10 @@ class ComponentBuilder {
   /**
    *
    * @param {Component} component
+   * @param {string} collectionRootFolder
    * @returns {Promise<Component>}
    */
-  static async build (component) {
+  static async build (component, collectionRootFolder) {
     // Create build model
     component.build = new ComponentBuild()
 
@@ -16,7 +17,7 @@ class ComponentBuilder {
     component.build.locales = LocaleUtils.buildLocales(component.name, component.locales, true)
 
     // Build Liquid Code
-    component.build.liquidCode = await LiquidUtils.buildLiquid(component.name, component.liquidCode)
+    component.build.liquidCode = await LiquidUtils.buildLiquid(component.name, component.liquidCode, collectionRootFolder)
 
     return component
   }

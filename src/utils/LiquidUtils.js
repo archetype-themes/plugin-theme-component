@@ -51,13 +51,14 @@ class LiquidUtils {
    * Build Liquid Code
    * @param {string} name
    * @param {string} liquidCode
+   * @param{string} collectionRootFolder
    * @return {Promise<string>}
    */
-  static async buildLiquid (name, liquidCode) {
+  static async buildLiquid (name, liquidCode, collectionRootFolder) {
     let buildLiquidCode = liquidCode
     // Process as SVG if applicable
     if (name.startsWith('icon-') || name.endsWith('-svg') || name.endsWith('.svg')) {
-      buildLiquidCode = SvgProcessor.buildSvg(name, liquidCode)
+      buildLiquidCode = SvgProcessor.buildSvg(name, liquidCode, collectionRootFolder)
     }
 
     return buildLiquidCode

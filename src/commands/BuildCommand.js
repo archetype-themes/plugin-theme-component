@@ -99,8 +99,8 @@ class BuildCommand {
 
     // Build Components
     [collection.components, collection.snippets] = (await Promise.all([
-      Promise.all(collection.components.map(component => ComponentBuilder.build(component))),
-      Promise.all(collection.snippets.map(snippet => SnippetBuilder.build(snippet)))
+      Promise.all(collection.components.map(component => ComponentBuilder.build(component, collection.rootFolder))),
+      Promise.all(collection.snippets.map(snippet => SnippetBuilder.build(snippet, collection.rootFolder)))
     ]))
 
     const allSnippets = [...collection.components, ...collection.snippets]
