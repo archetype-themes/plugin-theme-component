@@ -1,11 +1,15 @@
 // Node JS imports
 import { exit } from 'node:process'
-import CommandLineInputError from '../errors/CommandLineInputError.js'
 
 // Internal Imports
-import CLI from '../config/CLI.js'
-import CLIFlags from '../config/CLIFlags.js'
-import Session from '../models/static/Session.js'
+import {
+  AVAILABLE_CALLER_TYPES,
+  AVAILABLE_COMMANDS,
+  AVAILABLE_TARGET_TYPES,
+  WATCH_FLAG_ACCEPTED_VALUES,
+  WATCH_FLAG_COMMANDS
+} from '../config/CLI.js'
+import CommandLineInputError from '../errors/CommandLineInputError.js'
 import ConfigError from '../errors/ConfigError.js'
 import {
   getAvailableCallerTypes,
@@ -15,6 +19,7 @@ import {
 } from '../utils/CLICommandUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
+import Session from '../models/static/Session.js'
 
 class SessionFactory {
   /**
@@ -39,7 +44,7 @@ class SessionFactory {
     Session.command = args[0].toLowerCase()
 
     this.#validateCallerComponentType(Session.callerType)
-    this.#validateCommand(Session.callerType, Session.command, CLI.AVAILABLE_COMMANDS)
+    this.#validateCommand(Session.callerType, Session.command, AVAILABLE_COMMANDS)
 
     if (args[1] && args[2]) {
       Session.targetType = args[1].toLowerCase()
@@ -48,7 +53,7 @@ class SessionFactory {
       // If we have only 1 further argument, check for a valid command option, or else, assume it is a Target Component Name
       const arg1 = args[1].toLowerCase()
       // first check for an existing command option,
-      if (CLI.AVAILABLE_TARGET_TYPES.includes(arg1)) {
+      if (AVAILABLE_TARGET_TYPES.includes(arg1)) {
         Session.targetType = arg1
       } else {
         Session.targetName = args[1]
@@ -73,7 +78,7 @@ class SessionFactory {
     }
 
     // Search for the Watch Mode flag
-    Session.watchMode = CLIFlags.WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
+    Session.watchMode = WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
 
     logger.debug({
       'CLI Computed Arguments': {
@@ -158,7 +163,7 @@ class SessionFactory {
       throw new CommandLineInputError(`Please specify a ${targetType} name. ie: npx archie ${command} ${targetType} some-smart-${targetType}-name`)
     }
 
-    if (watchFlag && !CLIFlags.WATCH_FLAG_COMMANDS.includes(command)) {
+    if (watchFlag && !WATCH_FLAG_COMMANDS.includes(command)) {
       logger.warn(`Watch flag received but ignored => it has no effect on the "${command}" command`)
     }
   }
@@ -169,7 +174,7 @@ class SessionFactory {
    */
   static #validatePackageManifest (packageManifest) {
     if (!packageManifest.archie?.type) {
-      throw new ConfigError(`Couldn't find archie.type value in package.json. Please create the variable and set it to either one of these: ${CLI.AVAILABLE_CALLER_TYPES.join('/')}`)
+      throw new ConfigError(`Couldn't find archie.type value in package.json. Please create the variable and set it to either one of these: ${AVAILABLE_CALLER_TYPES.join('/')}`)
     }
   }
 
@@ -180,8 +185,8 @@ class SessionFactory {
    * @return {void}
    */
   static #validateCallerComponentType (componentType) {
-    if (!CLI.AVAILABLE_CALLER_TYPES.includes(componentType)) {
-      throw new ConfigError(`Invalid Component Type: The value for archie.type from package.json must be changed to one of these: ${CLI.AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
+    if (!AVAILABLE_CALLER_TYPES.includes(componentType)) {
+      throw new ConfigError(`Invalid Component Type: The value for archie.type from package.json must be changed to one of these: ${AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
     }
   }
 }
