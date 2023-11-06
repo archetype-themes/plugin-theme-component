@@ -5,11 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.3] - 2023-11-05
+
+### Fixed
+
+- Upon Theme Install, svgo config is not found
+- Package Manifests from shared workspaces are scanned for components
+
+### Changed
+
+- Doc: Sections renamed to components
+- Doc: Archie renamed to CLI (WIP)
+
+### Removed
+
+- Support for Section Component Type
+
 ## [1.7.2] - 2023-11-01
 
 ### Fixed
 
-- Fixed the computation of gitignore patterns during watch mode ([#228](https://github.com/archetype-themes/archie/pull/228))
+- Fixed the computation of gitignore patterns during watch
+  mode ([#228](https://github.com/archetype-themes/archie/pull/228))
 
 ## [1.7.1] - 2023-10-31
 
@@ -232,9 +249,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Templates for new components
-  - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
-  - package.json now inherits "author", "license" and package scope from parent monorepo
-  - package.json now includes repository information
+    - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
+    - package.json now inherits "author", "license" and package scope from parent monorepo
+    - package.json now includes repository information
 - SVG Snippets are now processed through SVGO
 - vitest is now installed as a test framework
 - Tests for NodeUtils added
