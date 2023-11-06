@@ -40,6 +40,6 @@
   "workspaces": [
     "components/*",
     "scripts",
-    "styles"
+    "styles",
   ],
 }

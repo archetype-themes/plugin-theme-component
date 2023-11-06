@@ -70,14 +70,21 @@ class CollectionUtils {
   /**
    * Find Components From package.json files
    * @param packageJsonFiles
+   * @param {string[]} ignoreFolders
    * @returns {Promise<Component[]>}
    */
-  static async findComponents (packageJsonFiles) {
+  static async findComponents (packageJsonFiles, ignoreFolders) {
     const components = []
 
     for (const packageJsonFile of packageJsonFiles) {
       const componentPackageJson = await FileUtils.getJsonFileContents(packageJsonFile)
       let componentPath = dirname(packageJsonFile)
+
+      // Ignore the Collection's package.json file
+      if (ignoreFolders.includes(componentPath)) {
+        continue
+      }
+
       if (componentPackageJson.archie?.path) {
         componentPath = join(componentPath, componentPackageJson.archie.path)
       }
@@ -101,6 +108,19 @@ class CollectionUtils {
     }
 
     return components
+  }
+
+  /**
+   * Get Collection's Workspace Folders
+   * @param {string} collectionRootFolder
+   * @returns {Promise<string[]|null>}
+   */
+  static async getWorkspaceFolders (collectionRootFolder) {
+    const packageManifest = await NodeUtils.getPackageManifest(collectionRootFolder)
+    // console.log(packageManifest)
+    const workspaces = await NodeUtils.getWorkspaces(packageManifest)
+
+    return workspaces ? workspaces.map(workspace => join(collectionRootFolder, workspace)) : null
   }
 }
 

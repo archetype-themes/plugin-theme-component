@@ -34,7 +34,8 @@ class CollectionFactory {
     collection.packageJsonFiles = await FileUtils.searchFile(collection.rootFolder, 'package.json', true)
 
     // Create Components From package.json Files Data
-    collection.components = await CollectionUtils.findComponents(collection.packageJsonFiles)
+    const workspaceFolders = await CollectionUtils.getWorkspaceFolders(collection.rootFolder)
+    collection.components = await CollectionUtils.findComponents(collection.packageJsonFiles, [...workspaceFolders, collection.rootFolder])
 
     // Get Component Names and Create Them
     if (componentNames && componentNames.length) {

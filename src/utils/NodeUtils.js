@@ -1,6 +1,6 @@
 // Node.js imports
 import { argv, env, exit } from 'node:process'
-import { dirname } from 'node:path'
+import { dirname, join } from 'node:path'
 
 // Internal Imports
 import FileUtils from './FileUtils.js'
@@ -27,14 +27,23 @@ class NodeUtils {
 
   /**
    * Get Package JSON Content as an Object
+   * @param {string} [cwd]
    * @return {Promise<Object>}
    */
-  static async getPackageManifest () {
-    if (!env.npm_package_json) {
+  static async getPackageManifest (cwd) {
+    if (!cwd && !env.npm_package_json) {
       throw new InternalError('Environment variable "npm_package_json" is not available. Please make sure to use this command with a recent version of npm.')
     }
 
-    return await FileUtils.getJsonFileContents(env.npm_package_json)
+    let packageJsonFile
+
+    if (cwd) {
+      packageJsonFile = join(cwd, 'package.json')
+    } else {
+      packageJsonFile = env.npm_package_json
+    }
+
+    return await FileUtils.getJsonFileContents(packageJsonFile)
   }
 
   /**
@@ -97,6 +106,17 @@ class NodeUtils {
    */
   static getCLIRootFolderName () {
     return new URL('../../', import.meta.url).pathname
+  }
+
+  /**
+   * Get Workspaces
+   * @returns {Promise<string[]>}
+   */
+  static async getWorkspaces (packageManifest) {
+    if (!packageManifest) {
+      packageManifest = await this.getPackageManifest()
+    }
+    return packageManifest.workspaces
   }
 
   /**
