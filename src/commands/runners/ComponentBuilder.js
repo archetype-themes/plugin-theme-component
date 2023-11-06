@@ -20,16 +20,6 @@ class ComponentBuilder {
 
     return component
   }
-
-  /**
-   *
-   * @param {Snippet[]}snippets
-   * @returns {Promise<Snippet[]>}
-   */
-  static async recursivelyBuildChildren (snippets) {
-    const snippetsToBuild = snippets.filter(snippet => !snippet.build)
-    return Promise.all(snippetsToBuild.map(snippet => ComponentBuilder.build(snippet)))
-  }
 }
 
 export default ComponentBuilder
