@@ -6,9 +6,10 @@ class SnippetBuilder {
   /**
    * Builds Snippet Components As Needed
    * @param {Snippet} snippet
+   * @param {string} collectionRootFolder
    * @return {Promise<Snippet>}
    */
-  static async build (snippet) {
+  static async build (snippet, collectionRootFolder) {
     // Create build model
     snippet.build = new ComponentBuild()
 
@@ -16,7 +17,7 @@ class SnippetBuilder {
     snippet.build.locales = LocaleUtils.buildLocales(snippet.name, snippet.locales, true)
 
     // Build Liquid Code
-    snippet.build.liquidCode = await LiquidUtils.buildLiquid(snippet.name, snippet.liquidCode)
+    snippet.build.liquidCode = await LiquidUtils.buildLiquid(snippet.name, snippet.liquidCode, collectionRootFolder)
 
     return snippet
   }
