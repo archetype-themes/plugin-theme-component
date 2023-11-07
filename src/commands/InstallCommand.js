@@ -64,7 +64,7 @@ class InstallCommand {
 
     // Build using the Build Command
     const collection = await BuildCommand.buildCollection(collectionName, componentNames)
-
+    await BuildCommand.deployCollection(collection)
     // Install and time it!
     logger.info(`Installing the ${collectionName} Collection for the ${theme.name} Theme.`)
     const installStartTime = Timer.getTimer()
