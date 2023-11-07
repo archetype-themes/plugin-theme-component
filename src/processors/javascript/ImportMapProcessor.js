@@ -12,11 +12,12 @@ class ImportMapProcessor {
    * Build import map file and return build entries
    * @param {Set<string>} jsFiles
    * @param {string} outputFile
+   * @param {string} collectionRootFolder
    */
-  static async build (jsFiles, outputFile) {
+  static async build (jsFiles, outputFile, collectionRootFolder) {
     /** @type {{imports: Object<string, string>}} */
-    const importMap = await FileUtils.getJsonFileContents(this.ImportMapFile)
-    const importMapEntries = this.resolveImportMapEntries(importMap.imports)
+    const importMap = await FileUtils.getJsonFileContents(path.join(collectionRootFolder, this.ImportMapFile))
+    const importMapEntries = this.resolveImportMapEntries(importMap.imports, collectionRootFolder)
     const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries)
     const importMapTags = this.generateImportMapTags(buildEntries)
     await FileUtils.writeFile(outputFile, importMapTags)
@@ -26,19 +27,20 @@ class ImportMapProcessor {
   /**
    * Resolve import map entries
    * @param {Object<string, string>} imports
+   * @param {string} collectionRootFolder
    */
-  static resolveImportMapEntries (imports) {
+  static resolveImportMapEntries (imports, collectionRootFolder) {
     /** @type {Map<string, string>} */
     const map = new Map()
     const entries = Object.entries(imports)
     const modulePatterns = this.resolveModulePatterns(entries)
-    const files = glob.sync(modulePatterns)
+    const files = glob.sync(modulePatterns, { cwd: collectionRootFolder, absolute: true })
     for (const [specifierPattern, modulePattern] of entries) {
       if (WebUtils.isUrl(modulePattern)) {
         map.set(specifierPattern, modulePattern)
         continue
       }
-      const filteredFiles = files.filter(file => picomatch.isMatch(file, modulePattern))
+      const filteredFiles = files.filter(file => picomatch.isMatch(file, path.resolve(collectionRootFolder, modulePattern)))
       for (const file of filteredFiles) {
         map.set(this.getModuleSpecifier(file, specifierPattern), file)
       }
