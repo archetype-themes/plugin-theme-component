@@ -18,6 +18,8 @@ const IGNORE_PATTERNS = [
   'package-lock.json',
   '.git',
   '.github',
+  '.explorer',
+  'bin',
   '**/.*',
   '**/*.md'
 ]
