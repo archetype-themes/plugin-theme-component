@@ -62,7 +62,7 @@ class SessionFactory {
 
     // Use the default Command Option if one wasn't provided
     if (!Session.targetType) {
-      Session.targetType = getDefaultTargetType(Session.command, Session.callerType)
+      Session.targetType = getDefaultTargetType(Session.command, Session.targetName)
     }
 
     // Use the default Target Component if one wasn't provided
