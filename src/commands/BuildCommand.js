@@ -1,6 +1,7 @@
 // Node imports
 import path, { dirname, parse } from 'node:path'
 import Components from '../config/Components.js'
+import InternalError from '../errors/InternalError.js'
 import CollectionFactory from '../factory/CollectionFactory.js'
 import ComponentFactory from '../factory/ComponentFactory.js'
 import Snippet from '../models/Snippet.js'
@@ -55,6 +56,7 @@ class BuildCommand {
    * Build a Collection
    * @param {string} collectionName
    * @param {string[]} componentNames
+   * @throws InternalError - No components found
    * @return {Promise<module:models/Collection>}
    */
   static async buildCollection (collectionName, componentNames) {
@@ -76,6 +78,9 @@ class BuildCommand {
     // Create Embedded Snippets from Components
     collection.snippets = this.createEmbeddedSnippets(collection.components)
 
+    if (collection.components.length + collection.snippets.length === 0) {
+      throw new InternalError(`No matching components found for [${componentNames.join(',')}]`)
+    }
     logChildItem(`Found ${collection.components.length} component${plural(collection.components)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
     // Filter Out Snippets When Applicable
