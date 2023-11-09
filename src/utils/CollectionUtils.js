@@ -124,6 +124,27 @@ class CollectionUtils {
 
     return workspaces ? workspaces.map(workspace => join(collectionRootFolder, workspace)) : null
   }
+
+  /**
+   *
+   * @param {(Component|Snippet)[]} components
+   * @param {string[]} componentNames
+   * @returns {Set}
+   */
+  static getComponentsNameTree (components, componentNames) {
+    let componentsNameTree = new Set(componentNames)
+
+    componentNames.forEach(componentName => {
+      // Find its matching component object
+      const component = components.find(component => component.name === componentName)
+      // Recursive call applied to snippet names
+      const componentNameTree = this.getComponentsNameTree(components, component.snippetNames)
+      // Merge data with the global Set
+      componentsNameTree = new Set([...componentsNameTree, ...componentNameTree])
+    })
+
+    return componentsNameTree
+  }
 }
 
 export default CollectionUtils

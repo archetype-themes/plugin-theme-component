@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.7] - 2023-11-09
+
+### Fixed
+
+- Build: When a Component Name was provided, the Default Target Type Was Collection instead of Component
+
+### Added
+
+- Build: Now Throws an Error when No Components are found instead of finishing an empty build.
+
 ## [1.7.6] - 2023-11-07
 
 ### Fixed
@@ -267,9 +277,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Templates for new components
-    - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
-    - package.json now inherits "author", "license" and package scope from parent monorepo
-    - package.json now includes repository information
+  - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
+  - package.json now inherits "author", "license" and package scope from parent monorepo
+  - package.json now includes repository information
 - SVG Snippets are now processed through SVGO
 - vitest is now installed as a test framework
 - Tests for NodeUtils added

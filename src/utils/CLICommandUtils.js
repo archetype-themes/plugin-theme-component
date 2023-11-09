@@ -58,13 +58,13 @@ export function getAvailableTargetTypes (command) {
 /**
  * Get A Command's Default Target Type
  * @param {string} command
- * @param {string} callerComponentType
+ * @param {string} [targetName]
  * @returns {string}
  */
-export function getDefaultTargetType (command, callerComponentType) {
+export function getDefaultTargetType (command, targetName) {
   switch (command) {
     case BUILD_COMMAND_NAME:
-      return callerComponentType
+      return targetName ? Components.COMPONENT_TYPE_NAME : Components.COLLECTION_TYPE_NAME
     case CREATE_COMMAND_NAME:
       return Components.COMPONENT_TYPE_NAME
     case INSTALL_COMMAND_NAME:
