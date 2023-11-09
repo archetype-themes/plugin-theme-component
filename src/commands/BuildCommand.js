@@ -1,23 +1,22 @@
 // Node imports
 import path, { dirname, parse } from 'node:path'
-import Components from '../config/Components.js'
-import InternalError from '../errors/InternalError.js'
-import CollectionFactory from '../factory/CollectionFactory.js'
-import ComponentFactory from '../factory/ComponentFactory.js'
-import Snippet from '../models/Snippet.js'
-import Session from '../models/static/Session.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
-import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
-import SnippetUtils from '../utils/SnippetUtils.js'
-import { plural } from '../utils/SyntaxUtils.js'
-import Timer from '../utils/Timer.js'
-import Watcher from '../utils/Watcher.js'
 
 // Internal Imports
+import { plural } from '../utils/SyntaxUtils.js'
+import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../utils/Logger.js'
 import CollectionBuilder from './runners/CollectionBuilder.js'
+import CollectionFactory from '../factory/CollectionFactory.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
+import ComponentFactory from '../factory/ComponentFactory.js'
+import Components from '../config/Components.js'
+import InternalError from '../errors/InternalError.js'
+import NodeUtils from '../utils/NodeUtils.js'
+import Session from '../models/static/Session.js'
+import Snippet from '../models/Snippet.js'
 import SnippetBuilder from './runners/SnippetBuilder.js'
+import Timer from '../utils/Timer.js'
+import Watcher from '../utils/Watcher.js'
 
 /** @type {string} **/
 export const BUILD_COMMAND_NAME = 'build'
@@ -83,8 +82,9 @@ class BuildCommand {
     if (componentNames?.length) {
       // for each component, get tree item names
       const componentNamesToBuild = CollectionUtils.getComponentsNameTree(allComponents, componentNames)
-      console.log('CNTB', componentNamesToBuild)
+
       logChildItem(`Packaging the following component${plural(componentNames)}: ${componentNames.join(', ')}`)
+
       collection.components = collection.components.filter(component => componentNamesToBuild.has(component.name))
       collection.snippets = collection.snippets.filter(snippet => componentNamesToBuild.has(snippet.name))
     }
