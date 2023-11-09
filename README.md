@@ -6,7 +6,7 @@ The Shopify CLI Theme Component Plugin is an extension of the [Shopify CLI](http
 
 - Theme component development environment to create, test, and preview components in isolation
 - Centralizes the presentation layer of your themes into reusuable components
-- Manages shared Liquid, JS, CSS, and Locales dependencies between components with a Liquid dependency tree
+- Manages shared Liquid, JS, CSS, and Locales dependencies
 - Outputs individual or collections of components into vanilla theme files, e.g. `snippets`, `assets`, and `locales` that can be copied into your theme project
 - Automatic generation of Import Maps to allow for simple, buildless JS projects
 - PostCSS for your css to remove duplicatation across components and to assemble everything in a single file.
