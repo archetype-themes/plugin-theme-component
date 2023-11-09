@@ -78,9 +78,12 @@ class BuildCommand {
     // Create Embedded Snippets from Components
     collection.snippets = this.createEmbeddedSnippets(collection.components)
 
+    // Throw an Error when No Components are found
     if (collection.components.length + collection.snippets.length === 0) {
       throw new InternalError(`No matching components found for [${componentNames.join(',')}]`)
     }
+
+    // Display Total Available Count of Components & Snippets
     logChildItem(`Found ${collection.components.length} component${plural(collection.components)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
     // Filter Out Snippets When Applicable
