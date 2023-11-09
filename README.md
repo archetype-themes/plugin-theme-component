@@ -1,96 +1,40 @@
-# Archetype Themes' CLI
+# Shopify CLI Theme Components Plugin
 
-Archetype Themes' CLI (Command Line Interface) is designed to facilitate Shopify Theme development by making
-it fast and easy to populate and maintain Themes with tons of Sections.
-
-Gone are the days of manually copying sections from one theme to another, Archetype Themes' CLI allows you to create a
-shareable Collection of Sections that we bundle as an NPM package. Simply add the dependency to install them within your
-Shopify Themes.
+The Shopify CLI Theme Component Plugin is an extension of the [Shopify CLI](https://github.com/Shopify/cli) that introduces Theme Components to the Shopify Theme development workflow. You can find out more about Theme Components and their benefits in the [archetype-themes/components](https://github.com/archetype-themes/components) repo.
 
 **Main Benefits**
 
-- Bundle as many Reusable Components, as Snippets, as you want, within your Collection.
-- Share common JavaScript and Styles with your Sections
-- Say *"goodbye"* to duplicated code by sharing your Collection with as many Themes as you want
-- Configure your Theme to use all or a selection of Components within a Collection
-- Fix your bug once; in the collection repository.
-  - Update the Collection dependency in your Themes repository.
-- Javascript Import Maps automated generation will seamlessly improve loading time and responsiveness.
-- Use postCSS post-processing for your Stylesheets to assemble everything in a single file.
+- Theme component development environment to create, test, and preview components in isolation
+- Centralizes the presentation layer of your themes into reusuable components
+- Manages shared Liquid, JS, CSS, and Locales dependencies between components with a Liquid dependency tree
+- Outputs individual or collections of components into vanilla theme files, e.g. `snippets`, `assets`, and `locales` that can be copied into your theme project
+- Automatic generation of Import Maps to allow for simple, buildless JS projects
+- PostCSS for your css to remove duplicatation across components and to assemble everything in a single file.
 
-## Prerequisites
+## Installation
 
-Node.js needs to be installed, please follow the setup guide if needed.
-
-- [Setup Guide](docs/Setup.md)
-
-You need to authenticate to GitHub Packages Repository before you can install Archetype Themes' CLI and Components
-Collections.
-
-- [GitHub Package Repository](https://github.com/archetype-themes/.github-private/blob/main/Github-Package-Repository.md)
-
-## CLI Components
-
-Archetype Themes' CLI interacts with multiple component types: ComponentsComponents (Snippets), Component Collections
-and Themes.
-
-You can easily create and maintain a Collection of Components to share amongst your Themes. Collections are
-structured as a Node.js Monorepo of child repositories of Components and shared elements in their respective workspaces.
-
-### Please read the following guides to help you on your journey
-
-#### Collection Guides
-
-- [Create a Collection](docs/Creating-a-Collection.md)
-- [Growing Your Collection](docs/Growing-Your-Collection.md)
-
-#### Snippet Components Guide
-
-- [Snippet Components](docs/Snippet-Components.md)
-
-#### Theme Guides
-
-- [Theme Integration](docs/Themes.md)
-
-#### Technical Guides
-
-- Understanding the [Build Process](docs/Build-process.md)
-
-## Installing The CLI
-
-This is a shortcut command to install our CLI, but contextual use of this is provided in the guide links above.
+Once you have [Shopify CLI installed](https://shopify.dev/docs/themes/tools/cli/install), install the plugin using:
 
 ```shell
-# Defaults to the latest version
-npm install @archetype-themes/archie
-
-# Install a specific version
-npm install @archetype-themes/archie#1.0.1
-
+shopify plugins:install theme-components-plugin
 ```
-
-Available versions are listed on the
-official [Archetype Themes' CLI NPM package page](https://github.com/archetype-themes/archie/pkgs/npm/archie)
 
 ## CLI Commands
 
 ```shell
 ##### Collection Commands #####
-npx archie build
-npx archie build --watch
-npx archie build section [section-name]
-npx archie build section [section-name] --watch
+shopify theme component dev
 
-npx archie create section [section-name]
-npx archie create snippet [snippet-name]
+shopify theme component build
+shopify theme component build --watch
+shopify theme component build [component-name]
+shopify theme component build [component-name] --watch
 
-##### Section Commands #####
-npx archie build
-npx archie build --watch
+shopify theme component create [component-name]
 
 ##### Theme Commands #####
-npx archie install
-npx archie install --watch
+shopify theme component install
+shopify theme component install --watch
 ```
 
 ### Watch Flag
@@ -116,6 +60,25 @@ npx archie build --verbose
 # Show only Error messages
 npx archie build --quiet
 ```
+
+### Guides
+
+#### Collection Guides
+
+- [Create a Collection](docs/Creating-a-Collection.md)
+- [Growing Your Collection](docs/Growing-Your-Collection.md)
+
+#### Snippet Components Guide
+
+- [Snippet Components](docs/Snippet-Components.md)
+
+#### Theme Guides
+
+- [Theme Integration](docs/Themes.md)
+
+#### Technical Guides
+
+- Understanding the [Build Process](docs/Build-process.md)
 
 ## Current Limitations
 
