@@ -35,6 +35,9 @@ shopify theme component create [component-name]
 ##### Theme Commands #####
 shopify theme component install
 shopify theme component install --watch
+shopify theme component install --latest
+shopify theme component install [component-name]
+shopify theme component install [component-name@1.3.4]
 ```
 
 ### Watch Flag
