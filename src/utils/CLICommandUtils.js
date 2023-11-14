@@ -83,7 +83,7 @@ export function getDefaultTargetType (command, targetName) {
  * @param {Object.<string,string[]>} collections
  * @return {null|string|Object}
  */
-export function getDefaultTargetName (componentType, command, commandOption, packageName, collections) {
+export function getDefaultTargets (componentType, command, commandOption, packageName, collections) {
   switch (command) {
     case BUILD_COMMAND_NAME:
       if (componentType === commandOption) {

@@ -23,7 +23,7 @@ class Session {
   static #command
 
   /** @type {string|Object}  **/
-  static #targetName
+  static #targets
 
   /** @type {string}  **/
   static #targetType
@@ -99,16 +99,16 @@ class Session {
    * Get Target Component Name
    * @return {string|Object}
    */
-  static get targetName () {
-    return this.#targetName
+  static get targets () {
+    return this.#targets
   }
 
   /**
    * Set Target Component Name
    * @param {string|Object} value
    */
-  static set targetName (value) {
-    this.#targetName = value
+  static set targets (value) {
+    this.#targets = value
   }
 
   /**
