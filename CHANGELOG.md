@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dev Command
 
+## [1.7.8] - 2023-11-13
+
+### Fixed
+
+- Install: Collection name appears as an object
+
 ## [1.7.7] - 2023-11-09
 
 ### Fixed
