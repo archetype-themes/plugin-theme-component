@@ -9,6 +9,11 @@ import {
   CREATE_COMMAND_NAME
 } from '../commands/CreateCommand.js'
 import {
+  DEV_COMMAND_AVAILABLE_CALLER_TYPES,
+  DEV_COMMAND_AVAILABLE_TARGET_TYPES,
+  DEV_COMMAND_NAME
+} from '../commands/DevCommand.js'
+import {
   INSTALL_COMMAND_AVAILABLE_CALLER_TYPES,
   INSTALL_COMMAND_AVAILABLE_TARGET_TYPES,
   INSTALL_COMMAND_NAME
@@ -30,6 +35,8 @@ export function getAvailableCallerTypes (command) {
       return BUILD_COMMAND_AVAILABLE_CALLER_TYPES
     case CREATE_COMMAND_NAME:
       return CREATE_COMMAND_AVAILABLE_CALLER_TYPES
+    case DEV_COMMAND_NAME:
+      return DEV_COMMAND_AVAILABLE_CALLER_TYPES
     case INSTALL_COMMAND_NAME:
       return INSTALL_COMMAND_AVAILABLE_CALLER_TYPES
     default:
@@ -48,6 +55,8 @@ export function getAvailableTargetTypes (command) {
       return BUILD_COMMAND_AVAILABLE_TARGET_TYPES
     case CREATE_COMMAND_NAME:
       return CREATE_COMMAND_AVAILABLE_TARGET_TYPES
+    case DEV_COMMAND_NAME:
+      return DEV_COMMAND_AVAILABLE_TARGET_TYPES
     case INSTALL_COMMAND_NAME:
       return INSTALL_COMMAND_AVAILABLE_TARGET_TYPES
     default:
@@ -66,6 +75,8 @@ export function getDefaultTargetType (command, targetName) {
     case BUILD_COMMAND_NAME:
       return targetName ? Components.COMPONENT_TYPE_NAME : Components.COLLECTION_TYPE_NAME
     case CREATE_COMMAND_NAME:
+      return Components.COMPONENT_TYPE_NAME
+    case DEV_COMMAND_NAME:
       return Components.COMPONENT_TYPE_NAME
     case INSTALL_COMMAND_NAME:
       return Components.COLLECTION_TYPE_NAME
