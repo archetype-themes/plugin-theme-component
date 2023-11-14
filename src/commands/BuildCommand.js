@@ -53,8 +53,8 @@ class BuildCommand {
 
   /**
    * Build a Collection
-   * @param {string} collectionName
-   * @param {string[]} componentNames
+   * @param {string} collectionName Collection Name
+   * @param {string[]} componentNames Collection Component Names
    * @throws InternalError - No components found
    * @return {Promise<module:models/Collection>}
    */
