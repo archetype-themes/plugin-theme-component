@@ -14,7 +14,7 @@ import ConfigError from '../errors/ConfigError.js'
 import {
   getAvailableCallerTypes,
   getAvailableTargetTypes,
-  getDefaultTargetName,
+  getDefaultTargets,
   getDefaultTargetType
 } from '../utils/CLICommandUtils.js'
 import logger from '../utils/Logger.js'
@@ -48,7 +48,7 @@ class SessionFactory {
 
     if (args[1] && args[2]) {
       Session.targetType = args[1].toLowerCase()
-      Session.targetName = args[2]
+      Session.targets = args[2]
     } else if (args[1]) {
       // If we have only 1 further argument, check for a valid command option, or else, assume it is a Target Component Name
       const arg1 = args[1].toLowerCase()
@@ -56,19 +56,19 @@ class SessionFactory {
       if (AVAILABLE_TARGET_TYPES.includes(arg1)) {
         Session.targetType = arg1
       } else {
-        Session.targetName = args[1]
+        Session.targets = args[1]
       }
     }
 
     // Use the default Command Option if one wasn't provided
     if (!Session.targetType) {
-      Session.targetType = getDefaultTargetType(Session.command, Session.targetName)
+      Session.targetType = getDefaultTargetType(Session.command, Session.targets)
     }
 
     // Use the default Target Component if one wasn't provided
-    if (!Session.targetName) {
-      Session.targetName =
-        getDefaultTargetName(
+    if (!Session.targets) {
+      Session.targets =
+        getDefaultTargets(
           Session.callerType,
           Session.command,
           Session.targetType,
@@ -84,7 +84,7 @@ class SessionFactory {
       'CLI Computed Arguments': {
         command: Session.command,
         'Command Target Type': Session.targetType,
-        'Command Target Component(s)': Session.targetName,
+        'Command Target Component(s)': Session.targets,
         'Command Watch Mode': Session.watchMode
       }
     })
@@ -93,7 +93,7 @@ class SessionFactory {
       Session.callerType,
       Session.command,
       Session.targetType,
-      Session.targetName,
+      Session.targets,
       Session.watchMode
     )
     return Session

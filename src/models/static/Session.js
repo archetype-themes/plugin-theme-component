@@ -99,7 +99,7 @@ class Session {
    * Get Target Component Name
    * @return {string|Object}
    */
-  static get targetName () {
+  static get targets () {
     return this.#targets
   }
 
@@ -107,7 +107,7 @@ class Session {
    * Set Target Component Name
    * @param {string|Object} value
    */
-  static set targetName (value) {
+  static set targets (value) {
     this.#targets = value
   }
 

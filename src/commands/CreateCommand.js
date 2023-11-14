@@ -28,10 +28,11 @@ class CreateCommand {
    */
   static async execute (packageManifest) {
     const workspaceFolder = Components.SNIPPETS_FOLDER_NAME
-    const componentFolder = join(workspaceFolder, Session.targetName)
+    const componentName = Session.targets
+    const componentFolder = join(workspaceFolder, componentName)
     const componentRootFolder = join(NodeUtils.getPackageRootFolder(), componentFolder)
 
-    logger.info(`Creating "${Session.targetName}" ${Session.targetType}`)
+    logger.info(`Creating "${componentName}" ${Session.targetType}`)
 
     // Exit if the folder already exists
     let folderExists = false
@@ -46,7 +47,7 @@ class CreateCommand {
 
     // Don't overwrite an existing component, throw an error
     if (folderExists) {
-      throw new FileAccessError(`The "${Session.targetName}" ${Session.targetType} folder already exists. Please remove it or choose a different name.`)
+      throw new FileAccessError(`The "${componentName}" ${Session.targetType} folder already exists. Please remove it or choose a different name.`)
     }
 
     const cliRootFolder = NodeUtils.getCLIRootFolderName()
@@ -61,12 +62,12 @@ class CreateCommand {
         author: packageManifest.author ? packageManifest.author : 'Archetype Themes Limited Partnership',
         collectionName: packageName,
         collectionScope: packageScope,
-        componentName: Session.targetName,
+        componentName,
         componentType: Session.targetType,
-        componentFolder: `${workspaceFolder}/${Session.targetName}`,
+        componentFolder: `${workspaceFolder}/${componentName}`,
         gitUrl: `https://github.com/${packageScopeName}/${packageName}.git`,
         license: packageManifest.license ? packageManifest.license : 'UNLICENSED',
-        packageName: `${packageScope}/${Session.targetName}-${Session.targetType}`
+        packageName: `${packageScope}/${componentName}-${Session.targetType}`
       }
     }
 

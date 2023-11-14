@@ -38,7 +38,7 @@ class BuildCommand {
     if (Session.targetType === Components.COLLECTION_TYPE_NAME) {
       componentNames = Session.config?.components
     } else if (Session.targetType === Components.COMPONENT_TYPE_NAME) {
-      componentNames = [Session.targetName]
+      componentNames = [Session.targets]
     }
 
     if (Session.watchMode) {
@@ -60,8 +60,8 @@ class BuildCommand {
    */
   static async buildCollection (collectionName, componentNames) {
     // If this is a Theme, the Current Target Name will always be the Collection Name.
-    // Let's use that instead of Session.targetName which might contain a Collection List object.
-    const currentTargetName = Session.callerType === Components.THEME_TYPE_NAME ? collectionName : Session.targetName
+    // Let's use that instead of Session.targets which might contain a Collection List object.
+    const currentTargetName = Session.callerType === Components.THEME_TYPE_NAME ? collectionName : Session.targets
 
     logTitleItem(`Initializing Components for "${currentTargetName}"`)
     const initStartTime = Timer.getTimer()
