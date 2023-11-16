@@ -40,6 +40,9 @@ class SessionFactory {
 
     Session.config = packageManifest.archie
     Session.callerType = packageManifest.archie.type.toLowerCase()
+    if (packageManifest.archie['dev-theme']) {
+      Session.devTheme = packageManifest.archie['dev-theme']
+    }
 
     Session.command = args[0].toLowerCase()
 
