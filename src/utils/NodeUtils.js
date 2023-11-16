@@ -47,14 +47,21 @@ class NodeUtils {
   }
 
   /**
-   * Get Node.js package name without the namespace
+   * Get Node.js package name without the scope
+   * @param {Object} [packageManifest] Optional Package Manifest JSON object
    * @return {string}
    */
-  static getPackageName () {
-    if (!env.npm_package_name) {
-      throw new InternalError('Unavailable NPM Package Name environment variable')
+  static getPackageName (packageManifest) {
+    let packageNameAndScope
+    if (packageManifest?.name) {
+      packageNameAndScope = packageManifest.name
+    } else if (env.npm_package_name) {
+      packageNameAndScope = env.npm_package_name
+    } else {
+      throw new InternalError('Unavailable NPM Package Name environment variable and/or Package Manifest')
     }
-    return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[1] : env.npm_package_name
+
+    return packageNameAndScope.includes('/') ? packageNameAndScope.split('/')[1] : packageNameAndScope
   }
 
   /**
@@ -114,7 +121,7 @@ class NodeUtils {
    */
   static async getWorkspaces (packageManifest) {
     if (!packageManifest) {
-      packageManifest = await this.getPackageManifest()
+      packageManifest = await NodeUtils.getPackageManifest()
     }
     return packageManifest.workspaces
   }
@@ -154,3 +161,15 @@ class NodeUtils {
 }
 
 export default NodeUtils
+
+// Export static methods individually
+export const getArgs = NodeUtils.getArgs
+export const getPackageManifest = NodeUtils.getPackageManifest
+export const getPackageName = NodeUtils.getPackageName
+export const getPackageScope = NodeUtils.getPackageScope
+export const getPackageRootFolder = NodeUtils.getPackageRootFolder
+export const getMonorepoRootFolder = NodeUtils.getMonorepoRootFolder
+export const getCLIRootFolderName = NodeUtils.getCLIRootFolderName
+export const getWorkspaces = NodeUtils.getWorkspaces
+export const isString = NodeUtils.isString
+export const exitWithError = NodeUtils.exitWithError
