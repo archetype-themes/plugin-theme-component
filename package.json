@@ -27,7 +27,7 @@
     "lodash-es": "^4.17.21",
     "parse-gitignore": "^2.0.0",
     "picomatch": "^3.0.1",
-    "pino": "^8.16.1",
+    "pino": "^8.16.2",
     "pino-pretty": "^10.2.3",
     "postcss": "^8.4.31",
     "postcss-load-config": "^4.0.1",
