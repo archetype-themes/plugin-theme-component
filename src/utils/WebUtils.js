@@ -44,6 +44,13 @@ class WebUtils {
   static isUrl (possibleUrl) {
     return URL_REGEX.test(possibleUrl)
   }
+
+  static isRepoUrl (possibleRepoUrl) {
+    return /github\.com/.test(possibleRepoUrl)
+  }
 }
 
 export default WebUtils
+
+export const isRepoUrl = WebUtils.isRepoUrl
+export const isUrl = WebUtils.isUrl
