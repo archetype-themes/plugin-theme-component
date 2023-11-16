@@ -78,7 +78,7 @@ class DevCommand {
     if (!await FileUtils.exists(devFolder)) {
       if (isRepoUrl(devThemeOption)) {
         logChildItem('No Dev Theme Found; Starting Download')
-        childProcess.execSync(`git clone ${devThemeOption} ${THEME_DIR}`)
+        childProcess.execSync(`git clone ${devThemeOption} ${THEME_DIR} --quiet`)
         logChildItem('Download Complete')
       } else {
         logChildItem('No Dev Theme Found, starting copy from local folder')
