@@ -11,7 +11,13 @@ import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
-import NodeUtils from './NodeUtils.js'
+import {
+  getMonorepoRootFolder,
+  getPackageManifest,
+  getPackageName,
+  getPackageRootFolder,
+  getWorkspaces
+} from './NodeUtils.js'
 
 const IGNORE_PATTERNS = [
   'package.json',
@@ -27,7 +33,8 @@ const IGNORE_PATTERNS = [
 class CollectionUtils {
   /**
    * Get Watch Folders for a Collection
-   * @param collection
+   * @param {module:models/Collection} collection
+   * @returns {string[]}
    */
   static getIgnorePatterns (collection) {
     const ignorePatterns = IGNORE_PATTERNS
@@ -45,22 +52,22 @@ class CollectionUtils {
    */
   static async findRootFolder (collectionName) {
     if (Session.isComponent()) {
-      return NodeUtils.getMonorepoRootFolder()
+      return getMonorepoRootFolder()
     }
     if (Session.isCollection()) {
-      return NodeUtils.getPackageRootFolder()
+      return getPackageRootFolder()
     }
     if (Session.isTheme()) {
       if (!collectionName) {
         throw new InternalError('Collection name is required when getting collection root folder from a theme.')
       }
 
-      const childRepoPath = join(NodeUtils.getPackageRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
+      const childRepoPath = join(getPackageRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
       if (await FileUtils.isReadable(childRepoPath)) {
         return childRepoPath
       }
 
-      const parentRepoPath = join(NodeUtils.getMonorepoRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
+      const parentRepoPath = join(getMonorepoRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
       if (await FileUtils.isReadable(parentRepoPath)) {
         return parentRepoPath
       }
@@ -96,7 +103,7 @@ class CollectionUtils {
           throw new ConfigError(`Component Folder Ignored: Missing Package Name In package.json File At "${packageJsonFile}"`)
         }
 
-        const componentName = componentPackageJson.name.includes('/') ? componentPackageJson.name.split('/')[1] : componentPackageJson.name
+        const componentName = getPackageName(componentPackageJson)
         const componentType = componentPackageJson.archie.type.toLowerCase()
 
         if (componentType === Components.COMPONENT_TYPE_NAME) {
@@ -118,9 +125,8 @@ class CollectionUtils {
    * @returns {Promise<string[]|null>}
    */
   static async getWorkspaceFolders (collectionRootFolder) {
-    const packageManifest = await NodeUtils.getPackageManifest(collectionRootFolder)
-    // console.log(packageManifest)
-    const workspaces = await NodeUtils.getWorkspaces(packageManifest)
+    const packageManifest = await getPackageManifest(collectionRootFolder)
+    const workspaces = await getWorkspaces(packageManifest)
 
     return workspaces ? workspaces.map(workspace => join(collectionRootFolder, workspace)) : null
   }

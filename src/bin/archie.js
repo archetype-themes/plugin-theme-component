@@ -2,6 +2,7 @@
 
 import BuildCommand, { BUILD_COMMAND_NAME } from '../commands/BuildCommand.js'
 import CreateCommand, { CREATE_COMMAND_NAME } from '../commands/CreateCommand.js'
+import DevCommand, { DEV_COMMAND_NAME } from '../commands/DevCommand.js'
 import InstallCommand, { INSTALL_COMMAND_NAME } from '../commands/InstallCommand.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Session from '../models/static/Session.js'
@@ -23,6 +24,9 @@ try {
       break
     case CREATE_COMMAND_NAME:
       await CreateCommand.execute(packageManifest)
+      break
+    case DEV_COMMAND_NAME:
+      await DevCommand.execute()
       break
     case INSTALL_COMMAND_NAME:
       await InstallCommand.execute()

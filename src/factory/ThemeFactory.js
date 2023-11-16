@@ -4,7 +4,7 @@ import Session from '../models/static/Session.js'
 
 // Internal Imports
 import Theme from '../models/Theme.js'
-import NodeUtils from '../utils/NodeUtils.js'
+import { getPackageManifest, getPackageName, getPackageRootFolder } from '../utils/NodeUtils.js'
 import Components from '../config/Components.js'
 
 class ThemeFactory {
@@ -15,14 +15,38 @@ class ThemeFactory {
   static fromThemeInstallCommand () {
     const theme = new Theme()
 
-    theme.name = NodeUtils.getPackageName()
+    theme.name = getPackageName()
     // Set folder names
     if (Session.config.path) {
-      theme.rootFolder = join(NodeUtils.getPackageRootFolder(), Session.config.path)
+      theme.rootFolder = join(getPackageRootFolder(), Session.config.path)
     } else {
-      theme.rootFolder = NodeUtils.getPackageRootFolder()
+      theme.rootFolder = getPackageRootFolder()
     }
 
+    return ThemeFactory.#setChildFolders(theme)
+  }
+
+  /**
+   * Create Theme For A Dev Command Call
+   * @param {string} themeRootFolder
+   * @returns {Theme}
+   */
+  static async fromDevCommand (themeRootFolder) {
+    const packageManifest = await getPackageManifest(themeRootFolder)
+    const theme = new Theme()
+
+    theme.rootFolder = themeRootFolder
+    theme.name = getPackageName(packageManifest)
+
+    return ThemeFactory.#setChildFolders(theme)
+  }
+
+  /**
+   *  Set Theme's Child Folders
+   * @param {Theme} theme
+   * @returns {Theme}
+   */
+  static #setChildFolders (theme) {
     theme.assetsFolder = join(theme.rootFolder, Components.ASSETS_FOLDER_NAME)
     theme.configFolder = join(theme.rootFolder, Components.CONFIG_FOLDER_NAME)
     theme.localesFolder = join(theme.rootFolder, Components.LOCALES_FOLDER_NAME)
@@ -34,3 +58,6 @@ class ThemeFactory {
 }
 
 export default ThemeFactory
+
+export const fromDevCommand = ThemeFactory.fromDevCommand
+export const fromThemeInstallCommand = ThemeFactory.fromThemeInstallCommand

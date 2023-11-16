@@ -1,10 +1,11 @@
 import { BUILD_COMMAND_NAME } from '../commands/BuildCommand.js'
 import { CREATE_COMMAND_NAME } from '../commands/CreateCommand.js'
+import { DEV_COMMAND_NAME } from '../commands/DevCommand.js'
 import { INSTALL_COMMAND_NAME } from '../commands/InstallCommand.js'
 import Components from './Components.js'
 
 export const AVAILABLE_COMMANDS = [
-  BUILD_COMMAND_NAME, CREATE_COMMAND_NAME, INSTALL_COMMAND_NAME
+  BUILD_COMMAND_NAME, CREATE_COMMAND_NAME, DEV_COMMAND_NAME, INSTALL_COMMAND_NAME
 ]
 
 export const AVAILABLE_TARGET_TYPES = [
