@@ -22,6 +22,9 @@ class Session {
   /** @type {string}  **/
   static #command
 
+  /** @type {string}  **/
+  static #devTheme
+
   /** @type {string|Object}  **/
   static #targets
 
@@ -77,6 +80,22 @@ class Session {
    */
   static set command (value) {
     this.#command = value
+  }
+
+  /**
+   * Get Dev Theme URL
+   * @returns {string}
+   */
+  static get devTheme () {
+    return this.#devTheme
+  }
+
+  /**
+   * Set Dev Theme URL
+   * @param {string} value
+   */
+  static set devTheme (value) {
+    this.#devTheme = value
   }
 
   /**
