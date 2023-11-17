@@ -25,22 +25,22 @@ class DevCommand {
     const collectionName = NodeUtils.getPackageName()
     const componentName = Session.targets
 
-    const collection = await this.exploreComponent(collectionName, componentName, devThemeOption)
+    const collection = await this.exploreComponent(devThemeOption, collectionName, componentName)
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    return this.watchComponents(collection.rootFolder, ignorePatterns, collection.name, componentName, devThemeOption)
+    return this.watchComponents(collection.rootFolder, ignorePatterns, devThemeOption, collection.name, componentName)
   }
 
   /**
    * Explore Components
-   * @param {string} collectionName
-   * @param {string} componentName
    * @param {string} devThemeOption
+   * @param {string} collectionName
+   * @param {string} [componentName]
    * @param {FSWatcher} [watcher] Watcher Instance
    * @param {string} [event] Watcher Event
    * @param {string} [eventPath] Watcher Event Path
    * @returns {Promise<module:models/Collection>}
    */
-  static async exploreComponent (collectionName, componentName, devThemeOption, watcher, event, eventPath) {
+  static async exploreComponent (devThemeOption, collectionName, componentName, watcher, event, eventPath) {
     if (event && eventPath) {
       const filename = basename(eventPath)
       logSpacer()
@@ -50,7 +50,9 @@ class DevCommand {
       logSpacer()
     }
 
-    const collection = await BuildCommand.buildCollection(collectionName, [componentName])
+    // Build & Deploy Collection
+    const componentNames = componentName && Session.targetType === Components.COMPONENT_TYPE_NAME ? [componentName] : []
+    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
     await BuildCommand.deployCollection(collection)
 
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
