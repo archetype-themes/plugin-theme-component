@@ -104,7 +104,7 @@ class BuildCommand {
     logChildItem(`Initialization complete (${Timer.getEndTimerInSeconds(initStartTime)} seconds)`)
     logSpacer()
 
-    logChildItem(`Assembling ${collection.components.length} component${plural(collection.components)} and ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
+    logTitleItem(`Assembling ${collection.components.length} component${plural(collection.components)} and ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
     logSpacer()
 
