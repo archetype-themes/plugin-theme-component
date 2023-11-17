@@ -6,8 +6,9 @@ import { fromDevCommand } from '../factory/ThemeFactory.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import FileUtils from '../utils/FileUtils.js'
-import logger, { logChildItem, logTitleItem } from '../utils/Logger.js'
+import logger, { logChildItem, logSpacer, logTitleItem } from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
+import { ucfirst } from '../utils/SyntaxUtils.js'
 import Watcher from '../utils/Watcher.js'
 import { isRepoUrl } from '../utils/WebUtils.js'
 import BuildCommand from './BuildCommand.js'
@@ -50,9 +51,13 @@ class DevCommand {
    * @returns {Promise<module:models/Collection>}
    */
   static async exploreComponent (collectionName, componentName, devThemeOption, watcher, event, eventPath) {
-    if (watcher && event && eventPath) {
+    if (event && eventPath) {
       const filename = basename(eventPath)
-      logger.debug(`Watcher Event: "${event}" on ${filename} at ${eventPath} detected`)
+      logSpacer()
+      logger.info('--------------------------------------------------------')
+      logger.info(`${ucfirst(event)} on ${filename} detected (${eventPath})`)
+      logger.info('--------------------------------------------------------')
+      logSpacer()
     }
 
     const collection = await BuildCommand.buildCollection(collectionName, [componentName])
@@ -117,12 +122,12 @@ class DevCommand {
     const watcher = Watcher.getWatcher(collectionRootFolder, ignorePatterns)
 
     const onCollectionWatchEvent = this.exploreComponent.bind(this, collectionName, componentName, devThemeOption, watcher)
-    console.log('')
+    logSpacer()
     logger.info('--------------------------------------------------------')
     logger.info(`${Session.targets}: Watching component tree for changes`)
     logger.info('(Ctrl+C to abort)')
     logger.info('--------------------------------------------------------')
-    console.log('')
+    logSpacer()
     return Watcher.watch(watcher, onCollectionWatchEvent)
   }
 }
