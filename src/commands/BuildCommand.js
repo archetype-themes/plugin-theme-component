@@ -27,6 +27,9 @@ export const BUILD_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_
 /** @type {string[]} **/
 export const BUILD_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
 
+/** @type {string} **/
+export const BUILD_FOLDER_NAME = 'build'
+
 class BuildCommand {
   /**
    * Execute Build Command

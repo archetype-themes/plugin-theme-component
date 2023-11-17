@@ -22,7 +22,8 @@ export const DEV_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NA
 /** @type {string[]} **/
 export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
 
-const THEME_DIR = '.explorer'
+export const DEV_FOLDER_NAME = '.explorer'
+
 const DEFAULT_THEME_REPO = 'https://github.com/archetype-themes/expanse.git'
 
 class DevCommand {
@@ -63,7 +64,7 @@ class DevCommand {
     const collection = await BuildCommand.buildCollection(collectionName, [componentName])
     await BuildCommand.deployCollection(collection)
 
-    const devFolder = join(collection.rootFolder, THEME_DIR)
+    const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
 
     // Setup A Theme and Create Its Model Instance
     await this.themeSetup(devThemeOption, devFolder)
@@ -83,7 +84,7 @@ class DevCommand {
     if (!await FileUtils.exists(devFolder)) {
       if (isRepoUrl(devThemeOption)) {
         logChildItem('No Dev Theme Found; Starting Download')
-        childProcess.execSync(`git clone ${devThemeOption} ${THEME_DIR} --quiet`)
+        childProcess.execSync(`git clone ${devThemeOption} ${DEV_FOLDER_NAME} --quiet`)
         logChildItem('Download Complete')
       } else {
         logChildItem('No Dev Theme Found, starting copy from local folder')
