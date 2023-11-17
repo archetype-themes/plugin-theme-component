@@ -19,7 +19,7 @@ export const DEV_COMMAND_NAME = 'dev'
 export const DEV_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME]
 
 /** @type {string[]} **/
-export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COMPONENT_TYPE_NAME]
+export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
 
 const THEME_DIR = '.explorer'
 const DEFAULT_THEME_REPO = 'https://github.com/archetype-themes/expanse.git'
