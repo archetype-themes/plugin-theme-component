@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-import BuildCommand, { BUILD_COMMAND_NAME } from '../commands/BuildCommand.js'
-import CreateCommand, { CREATE_COMMAND_NAME } from '../commands/CreateCommand.js'
-import DevCommand, { DEV_COMMAND_NAME } from '../commands/DevCommand.js'
-import InstallCommand, { INSTALL_COMMAND_NAME } from '../commands/InstallCommand.js'
+import BuildCommand from '../commands/BuildCommand.js'
+import CreateCommand from '../commands/CreateCommand.js'
+import DevCommand from '../commands/DevCommand.js'
+import InstallCommand from '../commands/InstallCommand.js'
+import { BUILD_COMMAND_NAME, CREATE_COMMAND_NAME, DEV_COMMAND_NAME, INSTALL_COMMAND_NAME } from '../config/CLI.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Session from '../models/static/Session.js'
 import SessionFactory from '../factory/SessionFactory.js'
