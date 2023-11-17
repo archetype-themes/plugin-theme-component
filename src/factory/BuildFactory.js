@@ -1,4 +1,5 @@
 import { join } from 'node:path'
+import { BUILD_FOLDER_NAME } from '../config/CLI.js'
 import CollectionBuild from '../models/CollectionBuild.js'
 import Components from '../config/Components.js'
 
@@ -11,7 +12,7 @@ class BuildFactory {
   static fromCollection (collection) {
     const build = new CollectionBuild()
     // Root Folder
-    build.rootFolder = join(collection.rootFolder, 'build')
+    build.rootFolder = join(collection.rootFolder, BUILD_FOLDER_NAME)
     // Sub-Folders
     build.assetsFolder = join(build.rootFolder, Components.ASSETS_FOLDER_NAME)
     build.configFolder = join(build.rootFolder, Components.CONFIG_FOLDER_NAME)

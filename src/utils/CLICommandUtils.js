@@ -1,23 +1,17 @@
 import {
   BUILD_COMMAND_AVAILABLE_CALLER_TYPES,
   BUILD_COMMAND_AVAILABLE_TARGET_TYPES,
-  BUILD_COMMAND_NAME
-} from '../commands/BuildCommand.js'
-import {
+  BUILD_COMMAND_NAME,
   CREATE_COMMAND_AVAILABLE_CALLER_TYPES,
   CREATE_COMMAND_AVAILABLE_TARGET_TYPES,
-  CREATE_COMMAND_NAME
-} from '../commands/CreateCommand.js'
-import {
+  CREATE_COMMAND_DEFAULT_TARGET_TYPE,
+  CREATE_COMMAND_NAME,
   DEV_COMMAND_AVAILABLE_CALLER_TYPES,
   DEV_COMMAND_AVAILABLE_TARGET_TYPES,
-  DEV_COMMAND_NAME
-} from '../commands/DevCommand.js'
-import {
-  INSTALL_COMMAND_AVAILABLE_CALLER_TYPES,
+  DEV_COMMAND_NAME, INSTALL_COMMAND_AVAILABLE_CALLER_TYPES,
   INSTALL_COMMAND_AVAILABLE_TARGET_TYPES,
-  INSTALL_COMMAND_NAME
-} from '../commands/InstallCommand.js'
+  INSTALL_COMMAND_DEFAULT_TARGET_TYPE, INSTALL_COMMAND_NAME
+} from '../config/CLI.js'
 
 import Components from '../config/Components.js'
 import CommandLineInputError from '../errors/CommandLineInputError.js'
@@ -75,11 +69,11 @@ export function getDefaultTargetType (command, targetName) {
     case BUILD_COMMAND_NAME:
       return targetName ? Components.COMPONENT_TYPE_NAME : Components.COLLECTION_TYPE_NAME
     case CREATE_COMMAND_NAME:
-      return Components.COMPONENT_TYPE_NAME
+      return CREATE_COMMAND_DEFAULT_TARGET_TYPE
     case DEV_COMMAND_NAME:
-      return Components.COMPONENT_TYPE_NAME
+      return targetName ? Components.COMPONENT_TYPE_NAME : Components.COLLECTION_TYPE_NAME
     case INSTALL_COMMAND_NAME:
-      return Components.COLLECTION_TYPE_NAME
+      return INSTALL_COMMAND_DEFAULT_TARGET_TYPE
     default:
       throw new InternalError(`Invalid command ${command}`)
   }
@@ -97,6 +91,11 @@ export function getDefaultTargetType (command, targetName) {
 export function getDefaultTargets (componentType, command, commandOption, packageName, collections) {
   switch (command) {
     case BUILD_COMMAND_NAME:
+      if (componentType === commandOption) {
+        return packageName
+      }
+      return null
+    case DEV_COMMAND_NAME:
       if (componentType === commandOption) {
         return packageName
       }

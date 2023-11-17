@@ -1,28 +1,19 @@
 import * as childProcess from 'child_process'
 import { basename, join } from 'node:path'
+import { DEV_DEFAULT_THEME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
 import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import FileUtils from '../utils/FileUtils.js'
-import logger, { logChildItem, logTitleItem } from '../utils/Logger.js'
+import logger, { logChildItem, logSpacer, logTitleItem } from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
+import { ucfirst } from '../utils/SyntaxUtils.js'
 import Watcher from '../utils/Watcher.js'
 import { isRepoUrl } from '../utils/WebUtils.js'
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
-
-export const DEV_COMMAND_NAME = 'dev'
-
-/** @type {string[]} **/
-export const DEV_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME]
-
-/** @type {string[]} **/
-export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COMPONENT_TYPE_NAME]
-
-const THEME_DIR = '.explorer'
-const DEFAULT_THEME_REPO = 'https://github.com/archetype-themes/expanse.git'
 
 class DevCommand {
   /**
@@ -30,35 +21,41 @@ class DevCommand {
    * @returns {Promise<FSWatcher>}
    */
   static async execute () {
-    const devThemeOption = Session.devTheme ? Session.devTheme : DEFAULT_THEME_REPO
+    const devThemeOption = Session.devTheme ? Session.devTheme : DEV_DEFAULT_THEME
     const collectionName = NodeUtils.getPackageName()
     const componentName = Session.targets
 
-    const collection = await this.exploreComponent(collectionName, componentName, devThemeOption)
+    const collection = await this.exploreComponent(devThemeOption, collectionName, componentName)
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    return this.watchComponents(collection.rootFolder, ignorePatterns, collection.name, componentName, devThemeOption)
+    return this.watchComponents(collection.rootFolder, ignorePatterns, devThemeOption, collection.name, componentName)
   }
 
   /**
    * Explore Components
-   * @param {string} collectionName
-   * @param {string} componentName
    * @param {string} devThemeOption
+   * @param {string} collectionName
+   * @param {string} [componentName]
    * @param {FSWatcher} [watcher] Watcher Instance
    * @param {string} [event] Watcher Event
    * @param {string} [eventPath] Watcher Event Path
    * @returns {Promise<module:models/Collection>}
    */
-  static async exploreComponent (collectionName, componentName, devThemeOption, watcher, event, eventPath) {
-    if (watcher && event && eventPath) {
+  static async exploreComponent (devThemeOption, collectionName, componentName, watcher, event, eventPath) {
+    if (event && eventPath) {
       const filename = basename(eventPath)
-      logger.debug(`Watcher Event: "${event}" on ${filename} at ${eventPath} detected`)
+      logSpacer()
+      logger.info('--------------------------------------------------------')
+      logger.info(`${ucfirst(event)} on ${filename} detected (${eventPath})`)
+      logger.info('--------------------------------------------------------')
+      logSpacer()
     }
 
-    const collection = await BuildCommand.buildCollection(collectionName, [componentName])
+    // Build & Deploy Collection
+    const componentNames = componentName && Session.targetType === Components.COMPONENT_TYPE_NAME ? [componentName] : []
+    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
     await BuildCommand.deployCollection(collection)
 
-    const devFolder = join(collection.rootFolder, THEME_DIR)
+    const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
 
     // Setup A Theme and Create Its Model Instance
     await this.themeSetup(devThemeOption, devFolder)
@@ -78,7 +75,7 @@ class DevCommand {
     if (!await FileUtils.exists(devFolder)) {
       if (isRepoUrl(devThemeOption)) {
         logChildItem('No Dev Theme Found; Starting Download')
-        childProcess.execSync(`git clone ${devThemeOption} ${THEME_DIR} --quiet`)
+        childProcess.execSync(`git clone ${devThemeOption} ${DEV_FOLDER_NAME} --quiet`)
         logChildItem('Download Complete')
       } else {
         logChildItem('No Dev Theme Found, starting copy from local folder')
@@ -117,12 +114,12 @@ class DevCommand {
     const watcher = Watcher.getWatcher(collectionRootFolder, ignorePatterns)
 
     const onCollectionWatchEvent = this.exploreComponent.bind(this, collectionName, componentName, devThemeOption, watcher)
-    console.log('')
+    logSpacer()
     logger.info('--------------------------------------------------------')
     logger.info(`${Session.targets}: Watching component tree for changes`)
     logger.info('(Ctrl+C to abort)')
     logger.info('--------------------------------------------------------')
-    console.log('')
+    logSpacer()
     return Watcher.watch(watcher, onCollectionWatchEvent)
   }
 }
