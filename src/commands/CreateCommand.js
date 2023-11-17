@@ -2,23 +2,14 @@
 import { exec } from 'node:child_process'
 import { access, constants, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
+import Components from '../config/Components.js'
+import FileAccessError from '../errors/FileAccessError.js'
 
 // Internal Imports
 import Session from '../models/static/Session.js'
-import Components from '../config/Components.js'
-import FileAccessError from '../errors/FileAccessError.js'
 import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-
-/** @type {string} **/
-export const CREATE_COMMAND_NAME = 'create'
-
-/** @type {string[]} **/
-export const CREATE_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME]
-
-/** @type {string[]} **/
-export const CREATE_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COMPONENT_TYPE_NAME]
 
 class CreateCommand {
   /**

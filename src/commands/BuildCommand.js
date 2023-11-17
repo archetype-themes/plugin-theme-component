@@ -1,31 +1,22 @@
 // Node imports
 import path, { dirname, parse } from 'node:path'
+import Components from '../config/Components.js'
+import InternalError from '../errors/InternalError.js'
+import CollectionFactory from '../factory/CollectionFactory.js'
+import ComponentFactory from '../factory/ComponentFactory.js'
+import Snippet from '../models/Snippet.js'
+import Session from '../models/static/Session.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
+import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../utils/Logger.js'
+import NodeUtils from '../utils/NodeUtils.js'
 
 // Internal Imports
 import { plural } from '../utils/SyntaxUtils.js'
-import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../utils/Logger.js'
-import CollectionBuilder from './runners/CollectionBuilder.js'
-import CollectionFactory from '../factory/CollectionFactory.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
-import ComponentBuilder from './runners/ComponentBuilder.js'
-import ComponentFactory from '../factory/ComponentFactory.js'
-import Components from '../config/Components.js'
-import InternalError from '../errors/InternalError.js'
-import NodeUtils from '../utils/NodeUtils.js'
-import Session from '../models/static/Session.js'
-import Snippet from '../models/Snippet.js'
-import SnippetBuilder from './runners/SnippetBuilder.js'
 import Timer from '../utils/Timer.js'
 import Watcher from '../utils/Watcher.js'
-
-/** @type {string} **/
-export const BUILD_COMMAND_NAME = 'build'
-
-/** @type {string[]} **/
-export const BUILD_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
-
-/** @type {string[]} **/
-export const BUILD_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
+import CollectionBuilder from './runners/CollectionBuilder.js'
+import ComponentBuilder from './runners/ComponentBuilder.js'
+import SnippetBuilder from './runners/SnippetBuilder.js'
 
 class BuildCommand {
   /**
@@ -101,7 +92,7 @@ class BuildCommand {
     logChildItem(`Initialization complete (${Timer.getEndTimerInSeconds(initStartTime)} seconds)`)
     logSpacer()
 
-    logChildItem(`Assembling ${collection.components.length} component${plural(collection.components)} and ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
+    logTitleItem(`Assembling ${collection.components.length} component${plural(collection.components)} and ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
     logSpacer()
 
