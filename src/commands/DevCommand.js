@@ -1,5 +1,6 @@
 import * as childProcess from 'child_process'
 import { basename, join } from 'node:path'
+import { DEV_DEFAULT_THEME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
 import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
@@ -14,25 +15,13 @@ import { isRepoUrl } from '../utils/WebUtils.js'
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
 
-export const DEV_COMMAND_NAME = 'dev'
-
-/** @type {string[]} **/
-export const DEV_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME]
-
-/** @type {string[]} **/
-export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
-
-export const DEV_FOLDER_NAME = '.explorer'
-
-const DEFAULT_THEME_REPO = 'https://github.com/archetype-themes/expanse.git'
-
 class DevCommand {
   /**
    * Execute The Dev CLI Command
    * @returns {Promise<FSWatcher>}
    */
   static async execute () {
-    const devThemeOption = Session.devTheme ? Session.devTheme : DEFAULT_THEME_REPO
+    const devThemeOption = Session.devTheme ? Session.devTheme : DEV_DEFAULT_THEME
     const collectionName = NodeUtils.getPackageName()
     const componentName = Session.targets
 

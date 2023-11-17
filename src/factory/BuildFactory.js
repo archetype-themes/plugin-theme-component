@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { BUILD_FOLDER_NAME } from '../commands/BuildCommand.js'
+import { BUILD_FOLDER_NAME } from '../config/CLI.js'
 import CollectionBuild from '../models/CollectionBuild.js'
 import Components from '../config/Components.js'
 

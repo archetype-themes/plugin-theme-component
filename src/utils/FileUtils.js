@@ -1,8 +1,7 @@
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { cwd } from 'node:process'
 import { basename, join } from 'path'
-import { BUILD_FOLDER_NAME } from '../commands/BuildCommand.js'
-import { DEV_FOLDER_NAME } from '../commands/DevCommand.js'
+import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
 import logger from './Logger.js'
 
