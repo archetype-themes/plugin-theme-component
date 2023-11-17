@@ -20,6 +20,9 @@ export const CREATE_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE
 /** @type {string[]} **/
 export const CREATE_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COMPONENT_TYPE_NAME]
 
+/** @type {string} **/
+export const CREATE_COMMAND_DEFAULT_TARGET_TYPE = Components.COMPONENT_TYPE_NAME
+
 class CreateCommand {
   /**
    * Execute The CLI's Create Command

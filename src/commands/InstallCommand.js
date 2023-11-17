@@ -21,6 +21,9 @@ export const INSTALL_COMMAND_AVAILABLE_CALLER_TYPES = [Components.THEME_TYPE_NAM
 /** @type {string[]} **/
 export const INSTALL_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME]
 
+/** @type {string} **/
+export const INSTALL_COMMAND_DEFAULT_TARGET_TYPE = Components.COLLECTION_TYPE_NAME
+
 class InstallCommand {
   /**
    * Execute Install command
