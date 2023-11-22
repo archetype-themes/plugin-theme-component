@@ -1,3 +1,4 @@
+import liquidParser from '@shopify/liquid-html-parser'
 import SvgProcessor from '../processors/SvgProcessor.js'
 
 class LiquidUtils {
@@ -7,15 +8,14 @@ class LiquidUtils {
    * @returns {string[]}
    */
   static getSnippetNames (liquidCode) {
-    const blockRegex = /\{%-?.*?-?%}/sg
-    const renderRegex = /\srender\s+'([^']+)'/sg
-
     const snippetNames = []
-    for (const block of liquidCode.matchAll(blockRegex)) {
-      for (const renderMatch of block[0].matchAll(renderRegex)) {
-        snippetNames.push(renderMatch[1])
+
+    const liquidAst = liquidParser.toLiquidHtmlAST(liquidCode, { mode: 'tolerant' })
+    liquidParser.walk(liquidAst, (node) => {
+      if (node.type === 'LiquidTag' && node.name === 'render' && node.markup.snippet.value) {
+        snippetNames.push(node.markup.snippet.value)
       }
-    }
+    })
 
     // Remove duplicates
     return [...new Set(snippetNames)]
