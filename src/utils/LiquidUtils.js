@@ -72,7 +72,6 @@ class LiquidUtils {
    * @param {string} liquidFile
    */
   static handleLiquidParsingError (error, liquidFile) {
-    console.log(error)
     throw new InputFileError(`Liquid Error in ${FileUtils.convertToComponentRelativePath(liquidFile)}
         ╚══▶ ${error.message}
         ╚══▶ Begins at line ${error.loc.start.line}, column ${error.loc.start.column}
