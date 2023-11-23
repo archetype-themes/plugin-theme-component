@@ -1,5 +1,7 @@
 import liquidParser from '@shopify/liquid-html-parser'
+import InputFileError from '../errors/InputFileError.js'
 import SvgProcessor from '../processors/SvgProcessor.js'
+import FileUtils from './FileUtils.js'
 
 class LiquidUtils {
   /**
@@ -12,7 +14,7 @@ class LiquidUtils {
 
     const liquidAst = liquidParser.toLiquidHtmlAST(liquidCode, { mode: 'tolerant' })
     liquidParser.walk(liquidAst, (node) => {
-      if (node.type === 'LiquidTag' && node.name === 'render' && node.markup.snippet.value) {
+      if (node.type === 'LiquidTag' && node.name === 'render' && node.markup.snippet?.value) {
         snippetNames.push(node.markup.snippet.value)
       }
     })
@@ -62,6 +64,19 @@ class LiquidUtils {
     }
 
     return buildLiquidCode
+  }
+
+  /**
+   *
+   * @param {liquidParser.LiquidHTMLASTParsingError} error
+   * @param {string} liquidFile
+   */
+  static handleLiquidParsingError (error, liquidFile) {
+    console.log(error)
+    throw new InputFileError(`Liquid Error in ${FileUtils.convertToComponentRelativePath(liquidFile)}
+        ╚══▶ ${error.message}
+        ╚══▶ Begins at line ${error.loc.start.line}, column ${error.loc.start.column}
+        ╚══▶ Ends at line ${error.loc.end.line}, column ${error.loc.end.column}`)
   }
 }
 

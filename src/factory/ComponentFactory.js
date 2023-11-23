@@ -18,8 +18,11 @@ class ComponentFactory {
     component.liquidCode = await FileUtils.getFileContents(component.files.liquidFile)
 
     // Find snippet names in render tags
-    component.snippetNames = LiquidUtils.getSnippetNames(component.liquidCode)
-
+    try {
+      component.snippetNames = LiquidUtils.getSnippetNames(component.liquidCode)
+    } catch (error) {
+      LiquidUtils.handleLiquidParsingError(error, component.files.liquidFile)
+    }
     // Warn When A Possible Recursive Render Call Is Made
     if (component.snippetNames.includes(component.name)) {
       logger.warn(`The "${component.name}" component is trying to render itself, which could lead to a recursive infinite loop.`)
