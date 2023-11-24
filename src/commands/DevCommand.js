@@ -89,7 +89,7 @@ class DevCommand {
         // Restores modified files to their original version
         childProcess.execSync('git restore . --quiet', { cwd: devFolder })
         // Cleans untracked files
-        childProcess.execSync('git clean -f -d --quiet', { cwd: devFolder })
+        // childProcess.execSync('git clean -f -d --quiet', { cwd: devFolder })
         // Pull updates if any
         childProcess.execSync('git pull --quiet', { cwd: devFolder })
 

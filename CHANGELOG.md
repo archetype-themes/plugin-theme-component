@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.5] - 2023-11-24
+
+### Fixed
+
+- Git Clean Command burdens shopify theme dev with 100 deletes and re-uploads
+
 ## [1.8.4] - 2023-11-22
 
 ### Changed

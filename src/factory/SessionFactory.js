@@ -108,11 +108,11 @@ class SessionFactory {
    * @param {string[]} [commandOptions]
    */
   static #sayHi (command, commandOptions) {
-    console.log('The Archetype THeme CLI says hi!')
+    console.log('The Archetype Theme CLI says hi!')
     if (command && commandOptions) {
       console.log(`Available options for the "${command}" command are [${commandOptions.join('/')}]`)
     } else {
-      console.log('Available commands are build, create and install')
+      console.log('Available commands are build, dev, create and install')
     }
   }
 
