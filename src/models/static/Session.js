@@ -25,6 +25,9 @@ class Session {
   /** @type {string}  **/
   static #devTheme
 
+  /** @type {string}  **/
+  static #jsProcessor
+
   /** @type {string|Object}  **/
   static #targets
 
@@ -96,6 +99,22 @@ class Session {
    */
   static set devTheme (value) {
     this.#devTheme = value
+  }
+
+  /**
+   * Get JS Processor
+   * @return {string}
+   */
+  static get jsProcessor () {
+    return this.#jsProcessor
+  }
+
+  /**
+   * Set JS Processor
+   * @param {string} value
+   */
+  static set jsProcessor (value) {
+    this.#jsProcessor = value
   }
 
   /**

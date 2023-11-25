@@ -17,6 +17,7 @@ import Watcher from '../utils/Watcher.js'
 import CollectionBuilder from './runners/CollectionBuilder.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
 import SnippetBuilder from './runners/SnippetBuilder.js'
+import { JS_PROCESSOR } from '../config/CLI.js'
 
 class BuildCommand {
   /**
@@ -32,13 +33,14 @@ class BuildCommand {
       componentNames = [Session.targets]
     }
 
+    const jsProcessor = Session.jsProcessor ?? JS_PROCESSOR
     if (Session.watchMode) {
-      const collection = await this.buildCollection(collectionName, componentNames)
+      const collection = await this.buildCollection(collectionName, componentNames, jsProcessor)
       await this.deployCollection(collection)
       return this.watchCollection(collection)
     }
 
-    const collection = await this.buildCollection(collectionName, componentNames)
+    const collection = await this.buildCollection(collectionName, componentNames, jsProcessor)
     return this.deployCollection(collection)
   }
 
@@ -46,10 +48,11 @@ class BuildCommand {
    * Build a Collection
    * @param {string} collectionName Collection Name
    * @param {string[]} componentNames Collection Component Names
+   * @param {string} jsProcessor
    * @throws InternalError - No components found
    * @return {Promise<module:models/Collection>}
    */
-  static async buildCollection (collectionName, componentNames) {
+  static async buildCollection (collectionName, componentNames, jsProcessor) {
     // If this is a Theme, the Current Target Name will always be the Collection Name.
     // Let's use that instead of Session.targets which might contain a Collection List object.
     const currentTargetName = Session.callerType === Components.THEME_TYPE_NAME ? collectionName : Session.targets
@@ -61,12 +64,12 @@ class BuildCommand {
     let collection = await CollectionFactory.fromName(collectionName, componentNames)
 
     // Initialize Individual Components
-    collection.components = await Promise.all(collection.components.map(component => ComponentFactory.initializeComponent(component)))
+    collection.components = await Promise.all(collection.components.map(component => ComponentFactory.initializeComponent(component, jsProcessor)))
 
     // Create Embedded Snippets Skeleton from Components
     collection.snippets = this.createEmbeddedSnippets(collection.components)
     // Initialize Embedded Snippets
-    collection.snippets = await Promise.all(collection.snippets.map(component => ComponentFactory.initializeComponent(component)))
+    collection.snippets = await Promise.all(collection.snippets.map(component => ComponentFactory.initializeComponent(component, jsProcessor)))
 
     const allComponents = [...collection.components, ...collection.snippets]
 
@@ -130,7 +133,7 @@ class BuildCommand {
     // Build Collection
     logTitleItem('Building Collection')
     const collectionStartTime = Timer.getTimer()
-    collection = await CollectionBuilder.build(collection)
+    collection = await CollectionBuilder.build(collection, jsProcessor)
     logChildItem(`Collection Build complete (${Timer.getEndTimerInSeconds(collectionStartTime)} seconds)`)
     logSpacer()
 

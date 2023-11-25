@@ -6,11 +6,12 @@ class JavascriptUtils {
   /**
    * Finds the main or index JavaScript file within the provided file list
    * @param {string[]} files
+   * @param {string} jsProcessor
    * @param {string} componentName
    * @returns {string | undefined}
    */
-  static findMainJavaScriptFile (files, componentName) {
-    const regex = this.mainJavaScriptFileRegex(componentName)
+  static findMainJavaScriptFile (files, jsProcessor, componentName) {
+    const regex = this.mainJavaScriptFileRegex(componentName, jsProcessor)
     const mainJavaScriptFile = files.find(file => regex.test(file))
 
     if (!mainJavaScriptFile) {
@@ -24,8 +25,12 @@ class JavascriptUtils {
 
   /**
    * @param {string} componentName
+   * @param {string} jsProcessor
    */
-  static mainJavaScriptFileRegex (componentName) {
+  static mainJavaScriptFileRegex (componentName, jsProcessor) {
+    if (jsProcessor === 'esbuild') {
+      return /[/\\]((?:index|main)+\.(?:js|mjs))$/i
+    }
     return new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
   }
 

@@ -24,10 +24,11 @@ class ComponentFilesUtils {
    * Index Component Files
    * @param {string} componentName
    * @param {string} folder
+   * @param {string} jsProcessor
    * @param {ComponentFiles} filesModel
    * @return {Promise<ComponentFiles>}
    */
-  static async indexFiles (componentName, folder, filesModel) {
+  static async indexFiles (componentName, folder, jsProcessor, filesModel) {
     // Validation: make sure the folder is readable.
     await this.validateFolderAccess(folder, componentName)
 
@@ -41,7 +42,7 @@ class ComponentFilesUtils {
     }
 
     if (files) {
-      filesModel.javascriptIndex = JavascriptUtils.findMainJavaScriptFile(files, componentName)
+      filesModel.javascriptIndex = JavascriptUtils.findMainJavaScriptFile(files, jsProcessor, componentName)
     }
 
     if (filesModel.stylesheets.length) {

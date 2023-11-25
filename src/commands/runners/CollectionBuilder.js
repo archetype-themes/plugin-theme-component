@@ -19,9 +19,10 @@ class CollectionBuilder {
   /**
    * Build Collection
    * @param {module:models/Collection} collection
+   * @param {string} jsProcessor
    * @return {Promise<module:models/Collection>}
    */
-  static async build (collection) {
+  static async build (collection, jsProcessor) {
     const allComponents = [...collection.components, ...collection.snippets]
 
     // Create Collection Build model and reset folders
@@ -43,7 +44,10 @@ class CollectionBuilder {
 
     if (jsFiles.length) {
       const buildScriptsTimer = Timer.getTimer()
-      collection.importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder)
+      const buildResult = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.javascriptFile, collection.rootFolder, jsProcessor)
+      if (buildResult instanceof Map) {
+        collection.importMapEntries = buildResult
+      }
       logChildItem(`Scripts Ready (${Timer.getEndTimerInSeconds(buildScriptsTimer)} seconds)`)
     } else {
       logger.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')

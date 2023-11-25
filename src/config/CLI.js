@@ -35,6 +35,8 @@ export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NA
 
 export const DEV_DEFAULT_THEME = 'https://github.com/archetype-themes/expanse.git'
 
+export const JS_PROCESSOR = 'importmap'
+
 /** @type {string} **/
 export const DEV_FOLDER_NAME = '.explorer'
 

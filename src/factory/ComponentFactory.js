@@ -8,11 +8,12 @@ class ComponentFactory {
   /**
    * Initialize Component
    * @param {Component|Snippet} component
+   * @param {string} jsProcessor
    * @returns {Promise<Component|Snippet>}
    */
-  static async initializeComponent (component) {
+  static async initializeComponent (component, jsProcessor) {
     // Index Snippet Files
-    component.files = await ComponentFilesUtils.indexFiles(component.name, component.rootFolder, new ComponentFiles())
+    component.files = await ComponentFilesUtils.indexFiles(component.name, component.rootFolder, jsProcessor, new ComponentFiles())
 
     // Load Liquid Code
     component.liquidCode = await FileUtils.getFileContents(component.files.liquidFile)

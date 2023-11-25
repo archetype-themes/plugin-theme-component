@@ -43,6 +43,9 @@ class SessionFactory {
     if (packageManifest.archie['dev-theme']) {
       Session.devTheme = packageManifest.archie['dev-theme']
     }
+    if (packageManifest.archie['js-processor']) {
+      Session.jsProcessor = packageManifest.archie['js-processor']
+    }
 
     Session.command = args[0].toLowerCase()
 
