@@ -1,6 +1,6 @@
 import * as childProcess from 'child_process'
 import { basename, join } from 'node:path'
-import { DEV_DEFAULT_THEME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { DEV_DEFAULT_THEME, JS_PROCESSOR, DEV_FOLDER_NAME } from '../config/CLI.js'
 
 import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
@@ -22,10 +22,11 @@ class DevCommand {
    */
   static async execute () {
     const devThemeOption = Session.devTheme ? Session.devTheme : DEV_DEFAULT_THEME
+    const jsProcessor = Session.jsProcessor ?? JS_PROCESSOR
     const collectionName = NodeUtils.getPackageName()
     const componentName = Session.targets
 
-    const collection = await this.exploreComponent(devThemeOption, collectionName, componentName)
+    const collection = await this.exploreComponent(devThemeOption, jsProcessor, collectionName, componentName)
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
     return this.watchComponents(collection.rootFolder, ignorePatterns, devThemeOption, collection.name, componentName)
   }
@@ -33,6 +34,7 @@ class DevCommand {
   /**
    * Explore Components
    * @param {string} devThemeOption
+   * @param {string} jsProcessor
    * @param {string} collectionName
    * @param {string} [componentName]
    * @param {FSWatcher} [watcher] Watcher Instance
@@ -40,7 +42,7 @@ class DevCommand {
    * @param {string} [eventPath] Watcher Event Path
    * @returns {Promise<module:models/Collection>}
    */
-  static async exploreComponent (devThemeOption, collectionName, componentName, watcher, event, eventPath) {
+  static async exploreComponent (devThemeOption, jsProcessor, collectionName, componentName, watcher, event, eventPath) {
     if (event && eventPath) {
       const filename = basename(eventPath)
       logSpacer()
@@ -52,7 +54,7 @@ class DevCommand {
 
     // Build & Deploy Collection
     const componentNames = componentName && Session.targetType === Components.COMPONENT_TYPE_NAME ? [componentName] : []
-    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
+    const collection = await BuildCommand.buildCollection(collectionName, componentNames, jsProcessor)
     await BuildCommand.deployCollection(collection)
 
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
