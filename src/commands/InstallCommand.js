@@ -1,6 +1,6 @@
 // Node imports
 import path from 'node:path'
-import {JS_PROCESSOR} from '../config/CLI.js'
+import { JS_PROCESSOR } from '../config/CLI.js'
 import ThemeFactory from '../factory/ThemeFactory.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
