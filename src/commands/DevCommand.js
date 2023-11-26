@@ -1,6 +1,6 @@
 import * as childProcess from 'child_process'
 import { basename, join } from 'node:path'
-import { DEV_DEFAULT_THEME, JS_PROCESSOR, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { DEV_DEFAULT_THEME, DEV_FOLDER_NAME, JS_PROCESSOR } from '../config/CLI.js'
 
 import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
