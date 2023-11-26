@@ -44,7 +44,7 @@ class CollectionBuilder {
 
     if (jsFiles.length) {
       const buildScriptsTimer = Timer.getTimer()
-      const buildResult = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.javascriptFile, collection.rootFolder, jsProcessor)
+      const buildResult = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.javascriptFile, collection.build.importMapFile, collection.rootFolder, jsProcessor)
       if (buildResult instanceof Map) {
         collection.importMapEntries = buildResult
       }
