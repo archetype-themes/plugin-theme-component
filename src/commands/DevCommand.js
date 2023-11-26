@@ -28,7 +28,7 @@ class DevCommand {
 
     const collection = await this.exploreComponent(devThemeOption, jsProcessor, collectionName, componentName)
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    return this.watchComponents(collection.rootFolder, ignorePatterns, devThemeOption, collection.name, componentName)
+    return this.watchComponents(collection.rootFolder, jsProcessor, ignorePatterns, devThemeOption, collection.name, componentName)
   }
 
   /**
@@ -106,16 +106,17 @@ class DevCommand {
   /**
    * Watch Collection for changes
    * @param {string} collectionRootFolder
+   * @param {string} jsProcessor
    * @param {string[]} ignorePatterns
    * @param {string} collectionName
    * @param {string} componentName
    * @param {string} devThemeOption
    * @returns {Promise<FSWatcher>}
    */
-  static async watchComponents (collectionRootFolder, ignorePatterns, collectionName, componentName, devThemeOption) {
+  static async watchComponents (collectionRootFolder, jsProcessor, ignorePatterns, collectionName, componentName, devThemeOption) {
     const watcher = Watcher.getWatcher(collectionRootFolder, ignorePatterns)
 
-    const onCollectionWatchEvent = this.exploreComponent.bind(this, collectionName, componentName, devThemeOption, watcher)
+    const onCollectionWatchEvent = this.exploreComponent.bind(this, collectionName, jsProcessor, componentName, devThemeOption, watcher)
     logSpacer()
     logger.info('--------------------------------------------------------')
     logger.info(`${Session.targets}: Watching component tree for changes`)
