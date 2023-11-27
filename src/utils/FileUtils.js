@@ -61,6 +61,12 @@ class FileUtils {
     logger.debug(`Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `)
     const folderContent = await readdir(sourceFolder, { withFileTypes: true })
 
+    // Create Target Folder if it does not exist
+    if (!await FileUtils.exists(targetFolder)) {
+      logger.debug(`copyFolder: Target Folder "${targetFolder}" not found. Attempting to create it.`)
+      await mkdir(targetFolder, { recursive: true })
+    }
+
     for (const dirent of folderContent) {
       if (dirent.isFile()) {
         const sourceFile = join(sourceFolder, dirent.name)
@@ -72,7 +78,7 @@ class FileUtils {
         }
       } else if (dirent.isDirectory() && options.recursive) {
         const newTargetFolder = join(targetFolder, dirent.name)
-        await mkdir(newTargetFolder, { recursive: options.recursive })
+        await mkdir(newTargetFolder, { recursive: true })
         fileOperations.push(this.copyFolder(join(sourceFolder, dirent.name), newTargetFolder, options))
       }
     }
