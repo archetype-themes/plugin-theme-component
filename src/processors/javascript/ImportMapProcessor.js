@@ -121,7 +121,7 @@ class ImportMapProcessor {
    */
   static generateImportMapTags (buildEntries) {
     const entriesWithAssetUrl = this.getEntriesWithAssetUrl(buildEntries)
-    return [this.generateImportMapTag(entriesWithAssetUrl), ...this.generateModulePreloadTags(entriesWithAssetUrl)].join('\n')
+    return [this.generateImportMapTag(entriesWithAssetUrl)].join('\n')
   }
 
   /**
