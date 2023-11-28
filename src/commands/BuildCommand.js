@@ -167,6 +167,8 @@ class BuildCommand {
           const snippet = availableComponents.find(component => component.name === snippetName)
           if (snippet !== undefined) {
             topComponent.snippets.push(snippet)
+          } else {
+            logger.error(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
           }
         }
       }
