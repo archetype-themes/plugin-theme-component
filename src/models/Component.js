@@ -23,6 +23,9 @@ class Component {
   /** @type {Snippet[]} **/
   #snippets = []
 
+  /** @type {string[]} **/
+  #translationKeys
+
   /**
    * Constructor
    * @param {string} [name] - Component Name
@@ -160,6 +163,23 @@ class Component {
   set snippets (value) {
     this.#snippets = value
   }
+
+
+  /**
+     * Get Translation Keys
+     * @returns {string[]}
+     */
+    get translationKeys () {
+      return this.#translationKeys
+    }
+
+    /**
+     * Set Translation Keys
+     * @param {string[]} value
+     */
+    set translationKeys (value) {
+      this.#translationKeys = value
+    }
 }
 
 export default Component
