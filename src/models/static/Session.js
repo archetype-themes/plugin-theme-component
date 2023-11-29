@@ -25,6 +25,9 @@ class Session {
   /** @type {string}  **/
   static #devTheme
 
+  /** @type {string}  **/
+  static #localesRepo
+
   /** @type {string|Object}  **/
   static #targets
 
@@ -96,6 +99,22 @@ class Session {
    */
   static set devTheme (value) {
     this.#devTheme = value
+  }
+
+  /**
+   * Get localesRepo URL
+   * @returns {string}
+   */
+  static get localesRepo () {
+    return this.#localesRepo
+  }
+
+  /**
+   * Set localesRepo URL
+   * @param {string} value
+   */
+  static set localesRepo (value) {
+    this.#localesRepo = value
   }
 
   /**
