@@ -20,6 +20,7 @@ class ComponentFactory {
     // Find snippet names in render tags
     try {
       component.snippetNames = LiquidUtils.getSnippetNames(component.liquidCode)
+      component.translationKeys = LiquidUtils.getTranslationKeys(component.liquidCode)
     } catch (error) {
       LiquidUtils.handleLiquidParsingError(error, component.files.liquidFile)
     }
