@@ -66,7 +66,7 @@ class BuildCommand {
     // Create Embedded Snippets Skeleton from Components
     collection.snippets = this.createEmbeddedSnippets(collection.components)
     // Initialize Embedded Snippets
-    collection.snippets = await Promise.all(collection.snippets.map(component => ComponentFactory.initializeComponent(component)))
+    collection.snippets = await Promise.all(collection.snippets.map(snippet => ComponentFactory.initializeComponent(snippet)))
 
     const allComponents = [...collection.components, ...collection.snippets]
 
