@@ -91,10 +91,6 @@ export function getDefaultTargetType (command, targetName) {
 export function getDefaultTargets (componentType, command, commandOption, packageName, collections) {
   switch (command) {
     case BUILD_COMMAND_NAME:
-      if (componentType === commandOption) {
-        return packageName
-      }
-      return null
     case DEV_COMMAND_NAME:
       if (componentType === commandOption) {
         return packageName
