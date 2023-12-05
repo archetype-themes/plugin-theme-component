@@ -1,4 +1,4 @@
-import * as childProcess from 'child_process'
+import { execSync } from 'node:child_process'
 import { basename, join } from 'node:path'
 import { DEV_DEFAULT_THEME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
@@ -72,10 +72,24 @@ class DevCommand {
 
   static async themeSetup (devThemeOption, devFolder) {
     logTitleItem('Searching For An Existing Dev Theme Setup')
-    if (!await FileUtils.exists(devFolder)) {
+
+    if (await FileUtils.exists(join(devFolder, '.git'))) {
+      // 1 -> The devFolder exists, and it is a git repo
+      logChildItem('Dev Theme Found: Starting Repo Cleanup & Update')
+
+      // Restores modified files to their original version
+      execSync('git restore . --quiet', { cwd: devFolder })
+      // Cleans untracked files
+      // execSync('git clean -f -d --quiet', { cwd: devFolder })
+      // Pull updates if any
+      execSync('git pull --quiet', { cwd: devFolder })
+
+      logChildItem('Dev Theme Cleanup & Update Complete')
+    } else if (!await FileUtils.exists(devFolder)) {
+      // 2 -> The devFolder doesn't exist
       if (isRepoUrl(devThemeOption)) {
         logChildItem('No Dev Theme Found; Starting Download')
-        childProcess.execSync(`git clone ${devThemeOption} ${DEV_FOLDER_NAME} --quiet`)
+        execSync(`git clone ${devThemeOption} ${devFolder} --quiet`)
         logChildItem('Download Complete')
       } else {
         logChildItem('No Dev Theme Found, starting copy from local folder')
@@ -83,21 +97,9 @@ class DevCommand {
         logChildItem('Copy Finished')
       }
     } else {
-      if (await FileUtils.exists(join(devFolder, '.git'))) {
-        logChildItem('Dev Theme Found: Starting Cleanup & Update')
-
-        // Restores modified files to their original version
-        childProcess.execSync('git restore . --quiet', { cwd: devFolder })
-        // Cleans untracked files
-        // childProcess.execSync('git clean -f -d --quiet', { cwd: devFolder })
-        // Pull updates if any
-        childProcess.execSync('git pull --quiet', { cwd: devFolder })
-
-        logChildItem('Dev Theme Cleanup & Update Complete')
-      } else {
-        logChildItem('Dev Theme Found: It does not seem to be a git repository. Unable to clean or update.')
-        logger.warn('Delete the ".explorer" folder and restart the Dev process to fetch a new copy from source.')
-      }
+      // 3 -> The devFolder exists, but it is NOT a git repo
+      logChildItem('Dev Theme Found: It does not seem to be a git repository. Unable to clean or update.')
+      logger.warn('Delete the ".explorer" folder and restart the Dev process to fetch a new copy from source.')
     }
   }
 
