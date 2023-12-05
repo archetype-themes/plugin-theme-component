@@ -1,19 +1,21 @@
 // Node imports
+import { execSync } from 'node:child_process'
 import { mkdir, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 
 // External Packages
-import merge from 'deepmerge'
 
 // Internal Imports
+import { DEFAULT_LOCALES_REPO } from '../../config/CLI.js'
 import BuildFactory from '../../factory/BuildFactory.js'
+import Session from '../../models/static/Session.js'
 import FileUtils from '../../utils/FileUtils.js'
-import WebUtils from '../../utils/WebUtils.js'
+import WebUtils, { isRepoUrl } from '../../utils/WebUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import Timer from '../../utils/Timer.js'
-import logger, { logChildItem } from '../../utils/Logger.js'
+import logger, { logChildItem, logTitleItem } from '../../utils/Logger.js'
 
 class CollectionBuilder {
   /**
@@ -51,7 +53,7 @@ class CollectionBuilder {
 
     // Build Locales
     const buildLocalesTimer = Timer.getTimer()
-    collection.build.locales = this.buildLocales(collection.components)
+    collection.build.locales = await this.buildLocales(collection.components, collection.snippets, join(collection.rootFolder, '.locales'))
     logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
 
     return collection
@@ -110,17 +112,67 @@ class CollectionBuilder {
 
   /**
    * Build Collection Storefront Locales
-   * @param {(Component|Snippet)[]} components
+   * @param {Component[]} components
+   * @param {Snippet[]} snippets
+   * @param {string} localesFolder
    * @return {Object}
    */
-  static buildLocales (components) {
-    let buildLocales = {}
+  static async buildLocales (components, snippets, localesFolder) {
+    const buildLocales = {}
 
-    for (const component of components) {
-      buildLocales = merge(buildLocales, component.build.locales)
-    }
+    const translationKeys = this.getTranslationKeys(components, snippets)
+
+    const localesRepoOption = Session.localesRepo ? Session.localesRepo : DEFAULT_LOCALES_REPO
+
+    await this.localesSetup(localesRepoOption, localesFolder)
+
+    const availableLocales = this.readLocales(localesFolder)
 
     return buildLocales
+  }
+
+  static async localesSetup (localesRepoOption, localesFolder) {
+    logTitleItem('Searching For An Existing Locales Setup')
+    if (await FileUtils.exists(join(localesFolder, '.git'))) {
+      // 1 -> The locales folder exists, and it is a git repo
+      logChildItem('Locales Setup Found: Starting Cleanup & Update')
+
+      // Restores modified files to their original version
+      execSync('git restore . --quiet', { cwd: localesFolder })
+      // Cleans untracked files
+      // childProcess.execSync('git clean -f -d --quiet', { cwd: devFolder })
+      // Pull updates if any
+      execSync('git pull --quiet', { cwd: localesFolder })
+
+      logChildItem('Locales Setup Cleanup & Update Complete')
+    } else if (!await FileUtils.exists(localesFolder)) {
+      // 2 -> The locales folder doesn't exist
+      if (isRepoUrl(localesRepoOption)) {
+        logChildItem('No Locales Setup Found; Starting Download')
+        execSync(`git clone ${localesRepoOption} ${localesFolder} --quiet`)
+        logChildItem('Download Complete')
+      } else {
+        logChildItem('No Locales Setup Found, starting copy from local folder')
+        await FileUtils.copyFolder(localesRepoOption, localesFolder, { recursive: true })
+        logChildItem('Copy Finished')
+      }
+    } else {
+      // 3 -> The locales folder exists, but it is NOT a git repo
+      logChildItem('Locales Setup Found: It does not seem to be a git repository. Unable to clean or update.')
+      logger.warn('Delete the ".locales" folder and restart the Dev process to fetch a new copy from source.')
+    }
+  }
+
+  /**
+   * Merge All Translation Keys From All Components And Snippets
+   * @param {Component[]} components
+   * @param {Snippet[]} snippets
+   * @return {string[]}
+   */static getTranslationKeys (components, snippets) {
+    const translationKeys = components.reduce((translationKeys, component) => translationKeys.concat(component.translationKeys || []), [])
+    translationKeys.concat(snippets.reduce((translationKeys, component) => translationKeys.concat(component.translationKeys || []), []))
+
+    return [...new Set(translationKeys)]
   }
 
   /**
