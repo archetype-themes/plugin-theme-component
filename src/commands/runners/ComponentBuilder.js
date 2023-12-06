@@ -1,6 +1,5 @@
 import ComponentBuild from '../../models/ComponentBuild.js'
-import LiquidUtils from '../../utils/LiquidUtils.js'
-import LocaleUtils from '../../utils/LocaleUtils.js'
+import SvgProcessor from '../../processors/SvgProcessor.js'
 
 class ComponentBuilder {
   /**
@@ -13,11 +12,12 @@ class ComponentBuilder {
     // Create build model
     component.build = new ComponentBuild()
 
-    // Build Locales
-    component.build.locales = LocaleUtils.buildLocales(component.name, component.locales, true)
-
     // Build Liquid Code
-    component.build.liquidCode = await LiquidUtils.buildLiquid(component.name, component.liquidCode, collectionRootFolder)
+    if (component.isSvg()) {
+      component.build.liquidCode = await SvgProcessor.buildSvg(component.name, component.liquidCode, collectionRootFolder)
+    } else {
+      component.build.liquidCode = component.liquidCode
+    }
 
     return component
   }
