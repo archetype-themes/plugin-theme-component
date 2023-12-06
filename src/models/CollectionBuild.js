@@ -10,6 +10,9 @@ class CollectionBuild extends ComponentBuild {
   /** @type {string} **/
   #javascriptFile
 
+  /** @type {Object} **/
+  #locales
+
   /** @type {string} **/
   #localesFolder
 
@@ -77,6 +80,22 @@ class CollectionBuild extends ComponentBuild {
    */
   set javascriptFile (value) {
     this.#javascriptFile = value
+  }
+
+  /**
+   * Get Locales
+   * @return {Object}
+   */
+  get locales () {
+    return this.#locales
+  }
+
+  /**
+   * Set Locales
+   * @param {Object} value
+   */
+  set locales (value) {
+    this.#locales = value
   }
 
   /**
