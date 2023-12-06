@@ -1,9 +1,13 @@
-import { basename, extname } from 'node:path'
+import { execSync } from 'node:child_process'
+import { basename, extname, join } from 'node:path'
 import liquidParser from '@shopify/liquid-html-parser'
 import merge from 'deepmerge'
+import { DEFAULT_LOCALES_REPO } from '../config/CLI.js'
+import Session from '../models/static/Session.js'
 import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
 import FileUtils from '../utils/FileUtils.js'
-import logger from '../utils/Logger.js'
+import logger, { logChildItem, logTitleItem } from '../utils/Logger.js'
+import { isRepoUrl } from '../utils/WebUtils.js'
 
 export default class LocalesProcessor {
   /**
@@ -13,6 +17,11 @@ export default class LocalesProcessor {
    */
   static async build (liquidCode, localesRepo) {
     const liquidCodeElements = Array.isArray(liquidCode) ? liquidCode : [liquidCode]
+    const localesRepoOption = Session.localesRepo ? Session.localesRepo : DEFAULT_LOCALES_REPO
+
+    await this.localesSetup(localesRepoOption, localesFolder)
+
+    const availableLocales = await this.parseLocaleFilesContent(localesFolder)
 
     const translationKeys = await Promise.all(
       liquidCodeElements.flatMap(
@@ -51,6 +60,38 @@ export default class LocalesProcessor {
 
     // Remove duplicates
     return [...new Set(translationKeys)]
+  }
+
+  static async localesSetup (localesRepoOption, localesFolder) {
+    logTitleItem('Searching For An Existing Locales Setup')
+    if (await FileUtils.exists(join(localesFolder, '.git'))) {
+      // 1 -> The locales folder exists, and it is a git repo
+      logChildItem('Locales Setup Found: Starting Cleanup & Update')
+
+      // Restores modified files to their original version
+      execSync('git restore . --quiet', { cwd: localesFolder })
+      // Cleans untracked files
+      // childProcess.execSync('git clean -f -d --quiet', { cwd: devFolder })
+      // Pull updates if any
+      execSync('git pull --quiet', { cwd: localesFolder })
+
+      logChildItem('Locales Setup Cleanup & Update Complete')
+    } else if (!await FileUtils.exists(localesFolder)) {
+      // 2 -> The locales folder doesn't exist
+      if (isRepoUrl(localesRepoOption)) {
+        logChildItem('No Locales Setup Found; Starting Download')
+        execSync(`git clone ${localesRepoOption} ${localesFolder} --quiet`)
+        logChildItem('Download Complete')
+      } else {
+        logChildItem('No Locales Setup Found, starting copy from local folder')
+        await FileUtils.copyFolder(localesRepoOption, localesFolder, { recursive: true })
+        logChildItem('Copy Finished')
+      }
+    } else {
+      // 3 -> The locales folder exists, but it is NOT a git repo
+      logChildItem('Locales Setup Found: It does not seem to be a git repository. Unable to clean or update.')
+      logger.warn('Delete the ".locales" folder and restart the Dev process to fetch a new copy from source.')
+    }
   }
 
   /**
