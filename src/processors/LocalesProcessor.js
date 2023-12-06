@@ -1,4 +1,8 @@
+import { basename, extname } from 'node:path'
 import liquidParser from '@shopify/liquid-html-parser'
+import merge from 'deepmerge'
+import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
+import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 
 export default class LocalesProcessor {
@@ -47,5 +51,61 @@ export default class LocalesProcessor {
 
     // Remove duplicates
     return [...new Set(translationKeys)]
+  }
+
+  /**
+   * Parse Locale Files into an object
+   * @param {string[]} localeFiles
+   * @return {Promise<{}>}
+   */
+  static async parseLocaleFilesContent (localeFiles) {
+    let locales = {}
+
+    const singleLocaleFileRegex = new RegExp(`^(?<locale>([a-z]{2})(-[a-z]{2}))?(\\.default)?(\\.schema)?\\.${ComponentFilesUtils.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
+    const multiLocalesFileRegex = new RegExp(`^locales?(\\.schema)?\\.${ComponentFilesUtils.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
+
+    for (const localeFileWithPath of localeFiles) {
+      const localeFileName = basename(localeFileWithPath).toLowerCase()
+
+      const singleLocaleMatch = singleLocaleFileRegex.exec(localeFileName)
+
+      // We have a single locale in a distinctly named file
+      if (singleLocaleMatch) {
+        // Get locale from filename
+        const locale = singleLocaleMatch.groups.locale
+
+        let localeData
+        if (extname(localeFileWithPath) === '.json') {
+          localeData = await FileUtils.getJsonFileContents(localeFileWithPath)
+        } else {
+          localeData = (await import(localeFileWithPath)).default
+        }
+
+        // Merge with matching locale
+        if (locales[locale]) {
+          locales[locale] = merge(locales[locale], localeData)
+        } else {
+          locales[locale] = localeData
+        }
+        return locales
+      }
+
+      // We have a locales files regrouping multiple locales
+      if (multiLocalesFileRegex.exec(localeFileName)) {
+        // We have a single file with multiple locales
+        // Load locales.json file
+        let localesData
+        if (extname(localeFileWithPath) === '.json') {
+          localesData = await FileUtils.getJsonFileContents(localeFileWithPath)
+        } else {
+          localesData = (await import(localeFileWithPath)).default
+        }
+
+        // merge locales
+        locales = merge(locales, localesData)
+      }
+    }
+
+    return locales
   }
 }
