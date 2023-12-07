@@ -1,37 +1,56 @@
 import { execSync } from 'node:child_process'
-import { basename, extname, join } from 'node:path'
+import { basename, join } from 'node:path'
 import liquidParser from '@shopify/liquid-html-parser'
-import merge from 'deepmerge'
-import { DEFAULT_LOCALES_REPO } from '../config/CLI.js'
-import Session from '../models/static/Session.js'
-import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
+import { get, set } from 'lodash-es'
 import FileUtils from '../utils/FileUtils.js'
 import logger, { logChildItem, logTitleItem } from '../utils/Logger.js'
 import { isRepoUrl } from '../utils/WebUtils.js'
 
 export default class LocalesProcessor {
   /**
-   *
-   * @param {string|string[]} liquidCode
-   * @param {string} localesRepo
+   * Build Locales
+   * @param {string|string[]} liquidCodeElements
+   * @param {string} source
+   * @param {string} sourceInstallFolder
+   * @returns {Promise<{}>}
    */
-  static async build (liquidCode, localesRepo) {
-    const liquidCodeElements = Array.isArray(liquidCode) ? liquidCode : [liquidCode]
-    const localesRepoOption = Session.localesRepo ? Session.localesRepo : DEFAULT_LOCALES_REPO
+  static async build (liquidCodeElements, source, sourceInstallFolder) {
+    liquidCodeElements = Array.isArray(liquidCodeElements) ? liquidCodeElements : [liquidCodeElements]
+    sourceInstallFolder = join(sourceInstallFolder, '.locales')
 
-    await this.localesSetup(localesRepoOption, localesFolder)
+    const localeFiles = await this.setupLocalesDatabase(source, sourceInstallFolder)
+    const availableLocales = await this.parseLocaleFilesContent(localeFiles)
+    const translationKeys = (
+      await Promise.all(
+        liquidCodeElements.map(async (code) => this.#getTranslationKeys(code))
+      )).flat()
 
-    const availableLocales = await this.parseLocaleFilesContent(localesFolder)
+    return this.filterTranslations(availableLocales, translationKeys)
+  }
 
-    const translationKeys = await Promise.all(
-      liquidCodeElements.flatMap(
-        async (code) => LocalesProcessor.#getTranslationKeys(code)
-      )
-    )
+  /**
+   *
+   * @param {Object} availableLocales
+   * @param {string[]} translationKeys
+   * @returns {Object}
+   */
+  static filterTranslations (availableLocales, translationKeys) {
+    const filteredLocales = {}
 
-    // const translations = await localesRepo.getTranslations(translationKeys)
+    for (const locale in availableLocales) {
+      translationKeys.forEach(key => {
+        const fullKey = `${locale}.${key}`
+        const value = get(availableLocales, fullKey)
 
-    // return translations
+        if (value) {
+          set(filteredLocales, fullKey, value)
+        } else {
+          logger.warn(`Translation missing "${key}" for the "${locale}" locale.`)
+        }
+      })
+    }
+
+    return filteredLocales
   }
 
   /**
@@ -40,41 +59,35 @@ export default class LocalesProcessor {
    * @returns {string[]} An array of unique translation keys found in the given liquid code.
    */
   static #getTranslationKeys (liquidCode) {
-    const translationKeys = []
+    const translationKeys = new Set()
 
     const liquidAst = liquidParser.toLiquidHtmlAST(liquidCode, { mode: 'tolerant' })
 
-    // Find Variables With A 't' Filter
-    liquidParser.walk(liquidAst, (node) => {
-      if (node.type === 'LiquidVariable' && node.filters.length) {
-        const translateFilter = node.filters.find(liquidFilter => liquidFilter.name === 't')
-        if (translateFilter) {
-          if (node.expression.value) {
-            translationKeys.push(node.expression.value)
-          } else {
-            logger.error(`Incompatible translation syntax for variable ${node.expression.name}. Try to add the 't' filter at variable definition time instead of at execution time.`)
-          }
+    // Find Variables With A "t" Filter
+    liquidParser.walk(liquidAst, node => {
+      if (node.type === 'LiquidVariable' && node.filters.some(filter => filter.name === 't')) {
+        if (node.expression.value) {
+          translationKeys.add(node.expression.value)
+        } else {
+          logger.error(`Incompatible translation syntax for variable ${node.expression.name}. Try to add the 't' filter at variable definition time instead of at execution time.`)
         }
       }
     })
 
-    // Remove duplicates
-    return [...new Set(translationKeys)]
+    return [...translationKeys]
   }
 
-  static async localesSetup (localesRepoOption, localesFolder) {
+  static async setupLocalesDatabase (localesRepoOption, localesFolder) {
     logTitleItem('Searching For An Existing Locales Setup')
+
     if (await FileUtils.exists(join(localesFolder, '.git'))) {
       // 1 -> The locales folder exists, and it is a git repo
-      logChildItem('Locales Setup Found: Starting Cleanup & Update')
+      logChildItem('Locales Setup Found: It is a git repository')
+      logChildItem('Initiating locales repository cleanup & update')
 
       // Restores modified files to their original version
       execSync('git restore . --quiet', { cwd: localesFolder })
-      // Cleans untracked files
-      // childProcess.execSync('git clean -f -d --quiet', { cwd: devFolder })
-      // Pull updates if any
       execSync('git pull --quiet', { cwd: localesFolder })
-
       logChildItem('Locales Setup Cleanup & Update Complete')
     } else if (!await FileUtils.exists(localesFolder)) {
       // 2 -> The locales folder doesn't exist
@@ -88,10 +101,10 @@ export default class LocalesProcessor {
         logChildItem('Copy Finished')
       }
     } else {
-      // 3 -> The locales folder exists, but it is NOT a git repo
-      logChildItem('Locales Setup Found: It does not seem to be a git repository. Unable to clean or update.')
-      logger.warn('Delete the ".locales" folder and restart the Dev process to fetch a new copy from source.')
+      logChildItem('Locales Setup Found: Not a git repository.')
     }
+
+    return FileUtils.getFolderFilesRecursively(localesFolder)
   }
 
   /**
@@ -100,53 +113,18 @@ export default class LocalesProcessor {
    * @return {Promise<{}>}
    */
   static async parseLocaleFilesContent (localeFiles) {
-    let locales = {}
+    const locales = {}
 
-    const singleLocaleFileRegex = new RegExp(`^(?<locale>([a-z]{2})(-[a-z]{2}))?(\\.default)?(\\.schema)?\\.${ComponentFilesUtils.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
-    const multiLocalesFileRegex = new RegExp(`^locales?(\\.schema)?\\.${ComponentFilesUtils.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
+    const localeFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2})?)(\.default)?(\.schema)?\.json$/
 
-    for (const localeFileWithPath of localeFiles) {
-      const localeFileName = basename(localeFileWithPath).toLowerCase()
+    for (const file of localeFiles) {
+      const fileName = basename(file).toLowerCase()
 
-      const singleLocaleMatch = singleLocaleFileRegex.exec(localeFileName)
-
-      // We have a single locale in a distinctly named file
-      if (singleLocaleMatch) {
-        // Get locale from filename
-        const locale = singleLocaleMatch.groups.locale
-
-        let localeData
-        if (extname(localeFileWithPath) === '.json') {
-          localeData = await FileUtils.getJsonFileContents(localeFileWithPath)
-        } else {
-          localeData = (await import(localeFileWithPath)).default
-        }
-
-        // Merge with matching locale
-        if (locales[locale]) {
-          locales[locale] = merge(locales[locale], localeData)
-        } else {
-          locales[locale] = localeData
-        }
-        return locales
-      }
-
-      // We have a locales files regrouping multiple locales
-      if (multiLocalesFileRegex.exec(localeFileName)) {
-        // We have a single file with multiple locales
-        // Load locales.json file
-        let localesData
-        if (extname(localeFileWithPath) === '.json') {
-          localesData = await FileUtils.getJsonFileContents(localeFileWithPath)
-        } else {
-          localesData = (await import(localeFileWithPath)).default
-        }
-
-        // merge locales
-        locales = merge(locales, localesData)
+      if (localeFileRegex.test(fileName)) {
+        const locale = fileName.match(localeFileRegex).groups.locale
+        locales[locale] = await FileUtils.getJsonFileContents(file)
       }
     }
-
     return locales
   }
 }

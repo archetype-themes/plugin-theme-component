@@ -1,11 +1,13 @@
 // Node imports
 import { mkdir, rm } from 'node:fs/promises'
 import { join } from 'node:path'
+import { DEFAULT_LOCALES_REPO } from '../../config/CLI.js'
 
 // External Packages
 
 // Internal Imports
 import BuildFactory from '../../factory/BuildFactory.js'
+import Session from '../../models/static/Session.js'
 import LocalesProcessor from '../../processors/LocalesProcessor.js'
 import FileUtils from '../../utils/FileUtils.js'
 import WebUtils from '../../utils/WebUtils.js'
@@ -53,6 +55,16 @@ class CollectionBuilder {
     const buildLocalesTimer = Timer.getTimer()
     collection.build.locales = await LocalesProcessor.build(collection.components, collection.snippets, join(collection.rootFolder, '.locales'))
     logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
+    {
+      const buildLocalesTimer = Timer.getTimer()
+      let liquidCodeElements = []
+      liquidCodeElements = collection.components.reduce((liquidCodeElements, component) => [...liquidCodeElements, component.liquidCode], liquidCodeElements)
+      liquidCodeElements = collection.snippets.reduce((liquidCodeElements, component) => [...liquidCodeElements, component.liquidCode], liquidCodeElements)
+
+      const localesRepoOption = Session.localesRepo ? Session.localesRepo : DEFAULT_LOCALES_REPO
+      collection.build.locales = await LocalesProcessor.build(liquidCodeElements, localesRepoOption, collection.rootFolder)
+      logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
+    }
 
     return collection
   }
