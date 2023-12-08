@@ -1,4 +1,3 @@
-import { execSync } from 'node:child_process'
 import { basename, join } from 'node:path'
 import { DEV_DEFAULT_THEME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
@@ -11,7 +10,6 @@ import logger, { logChildItem, logSpacer, logTitleItem } from '../utils/Logger.j
 import NodeUtils from '../utils/NodeUtils.js'
 import { ucfirst } from '../utils/SyntaxUtils.js'
 import Watcher from '../utils/Watcher.js'
-import { isRepoUrl } from '../utils/WebUtils.js'
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
 
@@ -59,7 +57,7 @@ class DevCommand {
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
 
     // Setup A Theme and Create Its Model Instance
-    await this.themeSetup(devThemeOption, devFolder)
+    await FileUtils.installExternalComponent(devThemeOption, devFolder, 'Explorer Theme')
     const theme = await fromDevCommand(devFolder)
 
     logTitleItem(`Installing ${Session.targets} Build To ${theme.name} Dev Theme`)
@@ -69,39 +67,6 @@ class DevCommand {
     logChildItem('Install Complete')
 
     return collection
-  }
-
-  static async themeSetup (devThemeOption, devFolder) {
-    logTitleItem('Searching For An Existing Dev Theme Setup')
-
-    if (await FileUtils.exists(join(devFolder, '.git'))) {
-      // 1 -> The devFolder exists, and it is a git repo
-      logChildItem('Dev Theme Found: Starting Repo Cleanup & Update')
-
-      // Restores modified files to their original version
-      execSync('git restore . --quiet', { cwd: devFolder })
-      // Cleans untracked files
-      // execSync('git clean -f -d --quiet', { cwd: devFolder })
-      // Pull updates if any
-      execSync('git pull --quiet', { cwd: devFolder })
-
-      logChildItem('Dev Theme Cleanup & Update Complete')
-    } else if (!await FileUtils.exists(devFolder)) {
-      // 2 -> The devFolder doesn't exist
-      if (isRepoUrl(devThemeOption)) {
-        logChildItem('No Dev Theme Found; Starting Download')
-        execSync(`git clone ${devThemeOption} ${devFolder} --quiet`)
-        logChildItem('Download Complete')
-      } else {
-        logChildItem('No Dev Theme Found, starting copy from local folder')
-        await FileUtils.copyFolder(devThemeOption, devFolder, { recursive: true })
-        logChildItem('Copy Finished')
-      }
-    } else {
-      // 3 -> The devFolder exists, but it is NOT a git repo
-      logChildItem('Dev Theme Found: It does not seem to be a git repository. Unable to clean or update.')
-      logger.warn('Delete the ".explorer" folder and restart the Dev process to fetch a new copy from source.')
-    }
   }
 
   /**

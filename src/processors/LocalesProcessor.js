@@ -2,10 +2,7 @@ import { basename, join } from 'node:path'
 import liquidParser from '@shopify/liquid-html-parser'
 import { get, set } from 'lodash-es'
 import FileUtils from '../utils/FileUtils.js'
-import { getTimer, getTimeElapsed } from '../utils/Timer.js'
-import { clone, pull, restore } from '../utils/GitUtils.js'
-import logger, { logChildItem } from '../utils/Logger.js'
-import { isRepoUrl } from '../utils/WebUtils.js'
+import logger from '../utils/Logger.js'
 
 export default class LocalesProcessor {
   /**
@@ -75,26 +72,7 @@ export default class LocalesProcessor {
   }
 
   static async setupLocalesDatabase (localesRepoOption, localesFolder) {
-    logChildItem('Searching For An Existing Locales DB')
-    const timer = getTimer()
-
-    if (await FileUtils.exists(join(localesFolder, '.git'))) {
-      logChildItem('Locales DB Found; git restore and git pull will run')
-      restore(localesFolder)
-      pull(localesFolder)
-    } else if (!await FileUtils.exists(localesFolder)) {
-      if (isRepoUrl(localesRepoOption)) {
-        logChildItem('Locales DB Missing; Initiating Repo Download')
-        clone(localesRepoOption, localesFolder)
-      } else {
-        logChildItem('Locales DB Missing; Initiating Copy From Source Folder')
-        await FileUtils.copyFolder(localesRepoOption, localesFolder, { recursive: true })
-      }
-    } else {
-      logChildItem('Locales DB Found')
-    }
-    logChildItem(`Locales Ready (${getTimeElapsed(timer)} seconds)`)
-
+    await FileUtils.installExternalComponent(localesRepoOption, localesFolder, 'Locales DB')
     return FileUtils.getFolderFilesRecursively(localesFolder)
   }
 
