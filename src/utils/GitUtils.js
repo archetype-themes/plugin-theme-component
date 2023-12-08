@@ -2,6 +2,15 @@ import { execSync } from 'node:child_process'
 
 export default class GitUtils {
   /**
+   * Cleans the working directory by removing untracked files and directories.
+   *
+   * @param {string} path - The path of the working directory to clean.
+   */
+  static clean (path) {
+    execSync('git clean -f -d --quiet', { cwd: path })
+  }
+
+  /**
    * Clones a git repository into the specified path.
    *
    * @param {string} repository - The URL of the git repository to clone.
@@ -34,6 +43,7 @@ export default class GitUtils {
   }
 }
 
+export const clean = GitUtils.clean
 export const clone = GitUtils.clone
 export const pull = GitUtils.pull
 export const restore = GitUtils.restore
