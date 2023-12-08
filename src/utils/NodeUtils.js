@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 
 // Internal Imports
 import FileUtils from './FileUtils.js'
-import logger from './Logger.js'
+import logger, { DEBUG_LOG_LEVEL } from './Logger.js'
 import InternalError from '../errors/InternalError.js'
 
 class NodeUtils {
@@ -140,7 +140,7 @@ class NodeUtils {
    * @param {Error|string} error
    */
   static exitWithError (error) {
-    if (typeof error === 'string' || error instanceof String || logger.isLevelEnabled('debug')) {
+    if (typeof error === 'string' || error instanceof String || logger.isLevelEnabled(DEBUG_LOG_LEVEL)) {
       logger.error(error)
     } else {
       let errorMessage = ''

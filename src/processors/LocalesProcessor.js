@@ -2,7 +2,7 @@ import { basename, join } from 'node:path'
 import liquidParser from '@shopify/liquid-html-parser'
 import { get, set } from 'lodash-es'
 import FileUtils from '../utils/FileUtils.js'
-import logger from '../utils/Logger.js'
+import { ERROR_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
 
 export default class LocalesProcessor {
   /**
@@ -40,7 +40,7 @@ export default class LocalesProcessor {
         if (value) {
           set(filteredLocales, fullKey, value)
         } else {
-          logger.warn(`Translation missing "${key}" for the "${locale}" locale.`)
+          logChildItem(`Translation missing "${key}" for the "${locale}" locale.`, WARN_LOG_LEVEL)
         }
       })
     })
@@ -63,7 +63,8 @@ export default class LocalesProcessor {
         if (node.expression.value) {
           translationKeys.add(node.expression.value)
         } else {
-          logger.error(`Incompatible translation syntax for variable ${node.expression.name}. Try to add the 't' filter at variable definition time instead of at execution time.`)
+          logChildItem(`(1/2) Incompatible translation syntax for variable ${node.expression.name}.`, ERROR_LOG_LEVEL)
+          logChildItem(`(2/2) You must use the 't' filter at when defining ${node.expression.name} instead of when using it.`, ERROR_LOG_LEVEL)
         }
       }
     })

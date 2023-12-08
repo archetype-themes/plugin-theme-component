@@ -15,7 +15,7 @@ import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import { getTimeElapsed, getTimer } from '../../utils/Timer.js'
-import logger, { logChildItem, logTitleItem } from '../../utils/Logger.js'
+import { logChildItem, WARN_LOG_LEVEL } from '../../utils/Logger.js'
 
 class CollectionBuilder {
   /**
@@ -48,20 +48,17 @@ class CollectionBuilder {
       collection.importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder)
       logChildItem(`Scripts Ready (${getTimeElapsed(buildScriptsTimer)} seconds)`)
     } else {
-      logger.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
+      logChildItem('No Javascript Files Found. Javascript Build Process Was Skipped.', WARN_LOG_LEVEL)
     }
 
     // Build Locales
     {
-      logTitleItem('Building Locales')
-      logChildItem('Preparing Data')
       const buildLocalesTimer = getTimer()
       const localesRepoOption = Session.localesRepo ? Session.localesRepo : DEFAULT_LOCALES_REPO
       let liquidCodeElements = []
       liquidCodeElements = collection.components.reduce((liquidCodeElements, component) => [...liquidCodeElements, component.liquidCode], liquidCodeElements)
       liquidCodeElements = collection.snippets.reduce((liquidCodeElements, component) => [...liquidCodeElements, component.liquidCode], liquidCodeElements)
 
-      logChildItem('Processing')
       collection.build.locales = await LocalesProcessor.build(liquidCodeElements, localesRepoOption, collection.rootFolder)
 
       logChildItem(`Locales Ready (${getTimeElapsed(buildLocalesTimer)} seconds)`)
