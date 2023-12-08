@@ -36,6 +36,7 @@ class InstallCommand {
         promises.push(this.watch(collection))
       }
     }
+    Session.firstRun = false
 
     return Promise.all(promises)
   }

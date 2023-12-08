@@ -25,6 +25,13 @@ class Session {
   /** @type {string}  **/
   static #devTheme
 
+  /**
+   * Indicates whether it is the first run.
+   *
+   * @type {boolean}
+   */
+  static #firstRun = true
+
   /** @type {string}  **/
   static #localesRepo
 
@@ -99,6 +106,24 @@ class Session {
    */
   static set devTheme (value) {
     this.#devTheme = value
+  }
+
+  /**
+   * Retrieves the value of the 'firstRun' property.
+   *
+   * @return {boolean} Indicates whether it is the first build
+   */
+  static get firstRun () {
+    return this.#firstRun
+  }
+
+  /**
+   * Sets the value of the firstRun property.
+   *
+   * @param {boolean} value - The new value for the firstRun property.
+   */
+  static set firstRun (value) {
+    this.#firstRun = value
   }
 
   /**

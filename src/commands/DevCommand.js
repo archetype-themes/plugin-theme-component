@@ -26,6 +26,7 @@ class DevCommand {
     const componentName = Session.targets
 
     const collection = await this.exploreComponent(devThemeOption, collectionName, componentName)
+    Session.firstRun = false
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
     return this.watchComponents(collection.rootFolder, ignorePatterns, devThemeOption, collection.name, componentName)
   }

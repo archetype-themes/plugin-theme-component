@@ -35,6 +35,7 @@ class BuildCommand {
     if (Session.watchMode) {
       const collection = await this.buildCollection(collectionName, componentNames)
       await this.deployCollection(collection)
+      Session.firstRun = false
       return this.watchCollection(collection)
     }
 
