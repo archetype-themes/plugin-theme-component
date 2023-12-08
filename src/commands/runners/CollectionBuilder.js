@@ -14,8 +14,8 @@ import WebUtils from '../../utils/WebUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
-import Timer from '../../utils/Timer.js'
-import logger, { logChildItem } from '../../utils/Logger.js'
+import { getTimeElapsed, getTimer } from '../../utils/Timer.js'
+import logger, { logChildItem, logTitleItem } from '../../utils/Logger.js'
 
 class CollectionBuilder {
   /**
@@ -27,43 +27,44 @@ class CollectionBuilder {
     const allComponents = [...collection.components, ...collection.snippets]
 
     // Create Collection Build model and reset folders
-    const buildCollectionTimer = Timer.getTimer()
+    const buildCollectionTimer = getTimer()
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection)
-    logChildItem(`Collection Build Initialized (${Timer.getEndTimerInSeconds(buildCollectionTimer)} seconds)`)
+    logChildItem(`Collection Build Initialized (${getTimeElapsed(buildCollectionTimer)} seconds)`)
 
     // Gather and build Stylesheets
     const mainStylesheets = this.getMainStylesheets(allComponents)
 
     if (mainStylesheets.length) {
-      const buildStylesTimer = Timer.getTimer()
+      const buildStylesTimer = getTimer()
       collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.rootFolder)
-      logChildItem(`Styles Ready (${Timer.getEndTimerInSeconds(buildStylesTimer)} seconds)`)
+      logChildItem(`Styles Ready (${getTimeElapsed(buildStylesTimer)} seconds)`)
     }
     // Build Collection JS Files
     const jsFiles = this.getJsFiles(allComponents)
 
     if (jsFiles.length) {
-      const buildScriptsTimer = Timer.getTimer()
+      const buildScriptsTimer = getTimer()
       collection.importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder)
-      logChildItem(`Scripts Ready (${Timer.getEndTimerInSeconds(buildScriptsTimer)} seconds)`)
+      logChildItem(`Scripts Ready (${getTimeElapsed(buildScriptsTimer)} seconds)`)
     } else {
       logger.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
     }
 
     // Build Locales
-    const buildLocalesTimer = Timer.getTimer()
-    collection.build.locales = await LocalesProcessor.build(collection.components, collection.snippets, join(collection.rootFolder, '.locales'))
-    logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
     {
-      const buildLocalesTimer = Timer.getTimer()
+      logTitleItem('Building Locales')
+      logChildItem('Preparing Data')
+      const buildLocalesTimer = getTimer()
+      const localesRepoOption = Session.localesRepo ? Session.localesRepo : DEFAULT_LOCALES_REPO
       let liquidCodeElements = []
       liquidCodeElements = collection.components.reduce((liquidCodeElements, component) => [...liquidCodeElements, component.liquidCode], liquidCodeElements)
       liquidCodeElements = collection.snippets.reduce((liquidCodeElements, component) => [...liquidCodeElements, component.liquidCode], liquidCodeElements)
 
-      const localesRepoOption = Session.localesRepo ? Session.localesRepo : DEFAULT_LOCALES_REPO
+      logChildItem('Processing')
       collection.build.locales = await LocalesProcessor.build(liquidCodeElements, localesRepoOption, collection.rootFolder)
-      logChildItem(`Locales Ready (${Timer.getEndTimerInSeconds(buildLocalesTimer)} seconds)`)
+
+      logChildItem(`Locales Ready (${getTimeElapsed(buildLocalesTimer)} seconds)`)
     }
 
     return collection

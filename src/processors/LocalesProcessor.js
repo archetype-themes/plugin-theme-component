@@ -1,9 +1,10 @@
-import { execSync } from 'node:child_process'
 import { basename, join } from 'node:path'
 import liquidParser from '@shopify/liquid-html-parser'
 import { get, set } from 'lodash-es'
 import FileUtils from '../utils/FileUtils.js'
-import logger, { logChildItem, logTitleItem } from '../utils/Logger.js'
+import { getTimer, getTimeElapsed } from '../utils/Timer.js'
+import { clone, pull, restore } from '../utils/GitUtils.js'
+import logger, { logChildItem } from '../utils/Logger.js'
 import { isRepoUrl } from '../utils/WebUtils.js'
 
 export default class LocalesProcessor {
@@ -15,15 +16,12 @@ export default class LocalesProcessor {
    * @returns {Promise<{}>}
    */
   static async build (liquidCodeElements, source, sourceInstallFolder) {
-    liquidCodeElements = Array.isArray(liquidCodeElements) ? liquidCodeElements : [liquidCodeElements]
+    const elements = Array.isArray(liquidCodeElements) ? liquidCodeElements : [liquidCodeElements]
     sourceInstallFolder = join(sourceInstallFolder, '.locales')
 
     const localeFiles = await this.setupLocalesDatabase(source, sourceInstallFolder)
     const availableLocales = await this.parseLocaleFilesContent(localeFiles)
-    const translationKeys = (
-      await Promise.all(
-        liquidCodeElements.map(async (code) => this.#getTranslationKeys(code))
-      )).flat()
+    const translationKeys = elements.flatMap(code => this.#getTranslationKeys(code))
 
     return this.filterTranslations(availableLocales, translationKeys)
   }
@@ -37,7 +35,7 @@ export default class LocalesProcessor {
   static filterTranslations (availableLocales, translationKeys) {
     const filteredLocales = {}
 
-    for (const locale in availableLocales) {
+    Object.keys(availableLocales).forEach(locale => {
       translationKeys.forEach(key => {
         const fullKey = `${locale}.${key}`
         const value = get(availableLocales, fullKey)
@@ -48,7 +46,7 @@ export default class LocalesProcessor {
           logger.warn(`Translation missing "${key}" for the "${locale}" locale.`)
         }
       })
-    }
+    })
 
     return filteredLocales
   }
@@ -60,7 +58,6 @@ export default class LocalesProcessor {
    */
   static #getTranslationKeys (liquidCode) {
     const translationKeys = new Set()
-
     const liquidAst = liquidParser.toLiquidHtmlAST(liquidCode, { mode: 'tolerant' })
 
     // Find Variables With A "t" Filter
@@ -78,31 +75,25 @@ export default class LocalesProcessor {
   }
 
   static async setupLocalesDatabase (localesRepoOption, localesFolder) {
-    logTitleItem('Searching For An Existing Locales Setup')
+    logChildItem('Searching For An Existing Locales DB')
+    const timer = getTimer()
 
     if (await FileUtils.exists(join(localesFolder, '.git'))) {
-      // 1 -> The locales folder exists, and it is a git repo
-      logChildItem('Locales Setup Found: It is a git repository')
-      logChildItem('Initiating locales repository cleanup & update')
-
-      // Restores modified files to their original version
-      execSync('git restore . --quiet', { cwd: localesFolder })
-      execSync('git pull --quiet', { cwd: localesFolder })
-      logChildItem('Locales Setup Cleanup & Update Complete')
+      logChildItem('Locales DB Found; git restore and git pull will run')
+      restore(localesFolder)
+      pull(localesFolder)
     } else if (!await FileUtils.exists(localesFolder)) {
-      // 2 -> The locales folder doesn't exist
       if (isRepoUrl(localesRepoOption)) {
-        logChildItem('No Locales Setup Found; Starting Download')
-        execSync(`git clone ${localesRepoOption} ${localesFolder} --quiet`)
-        logChildItem('Download Complete')
+        logChildItem('Locales DB Missing; Initiating Repo Download')
+        clone(localesRepoOption, localesFolder)
       } else {
-        logChildItem('No Locales Setup Found, starting copy from local folder')
+        logChildItem('Locales DB Missing; Initiating Copy From Source Folder')
         await FileUtils.copyFolder(localesRepoOption, localesFolder, { recursive: true })
-        logChildItem('Copy Finished')
       }
     } else {
-      logChildItem('Locales Setup Found: Not a git repository.')
+      logChildItem('Locales DB Found')
     }
+    logChildItem(`Locales Ready (${getTimeElapsed(timer)} seconds)`)
 
     return FileUtils.getFolderFilesRecursively(localesFolder)
   }

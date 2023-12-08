@@ -5,7 +5,7 @@ import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import Timer from '../utils/Timer.js'
+import { getTimeElapsed, getTimer } from '../utils/Timer.js'
 import Watcher from '../utils/Watcher.js'
 
 // Internal Imports
@@ -48,7 +48,7 @@ class InstallCommand {
    */
   static async installOne (collectionName, componentNames) {
     logger.info(`Building & Installing the ${collectionName} Collection.`)
-    const startTime = Timer.getTimer()
+    const startTime = getTimer()
 
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
@@ -58,10 +58,10 @@ class InstallCommand {
     await BuildCommand.deployCollection(collection)
     // Install and time it!
     logger.info(`Installing the ${collectionName} Collection for the ${theme.name} Theme.`)
-    const installStartTime = Timer.getTimer()
+    const installStartTime = getTimer()
     await CollectionInstaller.install(theme, collection)
-    logger.info(`${collection.name}: Install Complete in ${Timer.getEndTimerInSeconds(installStartTime)} seconds`)
-    logger.info(`${collection.name}: Build & Install Completed in ${Timer.getEndTimerInSeconds(startTime)} seconds\n`)
+    logger.info(`${collection.name}: Install Complete in ${getTimeElapsed(installStartTime)} seconds`)
+    logger.info(`${collection.name}: Build & Install Completed in ${getTimeElapsed(startTime)} seconds\n`)
     return Promise.resolve(collection)
   }
 
