@@ -1,9 +1,6 @@
 // Node imports
 import { mkdir, rm } from 'node:fs/promises'
 import { join } from 'node:path'
-import { DEFAULT_LOCALES_REPO } from '../../config/CLI.js'
-
-// External Packages
 
 // Internal Imports
 import BuildFactory from '../../factory/BuildFactory.js'
@@ -16,6 +13,7 @@ import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import { getTimeElapsed, getTimer } from '../../utils/Timer.js'
 import { logChildItem, WARN_LOG_LEVEL } from '../../utils/Logger.js'
+import { DEFAULT_LOCALES_REPO } from '../../config/CLI.js'
 
 class CollectionBuilder {
   /**
@@ -26,45 +24,66 @@ class CollectionBuilder {
   static async build (collection) {
     const allComponents = [...collection.components, ...collection.snippets]
 
-    // Create Collection Build model and reset folders
     const buildCollectionTimer = getTimer()
     collection.build = BuildFactory.fromCollection(collection)
-    await this.#resetBuildFolders(collection)
-    logChildItem(`Collection Build Initialized (${getTimeElapsed(buildCollectionTimer)} seconds)`)
+    await this.#resetBuildFolders(collection.build)
+    logChildItem(`Collection Build Initialized (${getTimeElapsed(buildCollectionTimer)} seconds)`);
 
-    // Gather and build Stylesheets
-    const mainStylesheets = this.getMainStylesheets(allComponents)
+    [collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
+      this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
+      this.#buildLocales(allComponents, collection.rootFolder),
+      this.#buildStyles(allComponents, collection.build.stylesheet, collection.rootFolder)
+    ])
 
-    if (mainStylesheets.length) {
-      const buildStylesTimer = getTimer()
-      collection.build.styles = await StylesProcessor.buildStylesBundle(mainStylesheets, collection.build.stylesheet, collection.rootFolder)
-      logChildItem(`Styles Ready (${getTimeElapsed(buildStylesTimer)} seconds)`)
-    }
-    // Build Collection JS Files
-    const jsFiles = this.getJsFiles(allComponents)
+    return collection
+  }
+
+  /**
+   * Builds JavaScript files for the given collection and components.
+   *
+   * @param {(Component|Snippet)[]} components - An array of all components.
+   * @param {string} importMapFile - The collection's import map file.
+   * @param {string} cwd - The working directory.
+   * @return {Map<string, string>} - A promise that resolves when the JavaScript files have been built.
+   */
+  static async #buildJavaScript (components, importMapFile, cwd) {
+    const jsFiles = this.#getJsFiles(components)
 
     if (jsFiles.length) {
-      const buildScriptsTimer = getTimer()
-      collection.importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, collection.build.importMapFile, collection.rootFolder)
-      logChildItem(`Scripts Ready (${getTimeElapsed(buildScriptsTimer)} seconds)`)
+      return JavaScriptProcessor.buildJavaScript(jsFiles, importMapFile, cwd)
     } else {
       logChildItem('No Javascript Files Found. Javascript Build Process Was Skipped.', WARN_LOG_LEVEL)
     }
+  }
 
-    // Build Locales
-    {
-      const buildLocalesTimer = getTimer()
-      const localesRepoOption = Session.localesRepo ? Session.localesRepo : DEFAULT_LOCALES_REPO
-      let liquidCodeElements = []
-      liquidCodeElements = collection.components.reduce((liquidCodeElements, component) => [...liquidCodeElements, component.liquidCode], liquidCodeElements)
-      liquidCodeElements = collection.snippets.reduce((liquidCodeElements, component) => [...liquidCodeElements, component.liquidCode], liquidCodeElements)
+  /**
+   * Builds locales for the given collection and all components.
+   *
+   * @param {(Component|Snippet)[]} components - All components to extract liquid code from.
+   * @param {string} cwd - The working directory.
+   * @return {Promise<{}>} - A promise that resolves when the locales are built.
+   */
+  static async #buildLocales (components, cwd) {
+    const localesRepoOption = Session.localesRepo || DEFAULT_LOCALES_REPO
 
-      collection.build.locales = await LocalesProcessor.build(liquidCodeElements, localesRepoOption, collection.rootFolder)
+    const liquidCodeElements = components.map(component => component.liquidCode)
+    return LocalesProcessor.build(liquidCodeElements, localesRepoOption, cwd)
+  }
 
-      logChildItem(`Locales Ready (${getTimeElapsed(buildLocalesTimer)} seconds)`)
+  /**
+   * Builds the styles for the given collection and all components.
+   *
+   * @param {(Component|Snippet)[]} components - An array containing all the components.
+   * @param {string} outputFile - The collection's css bundle file.
+   * @param {string} cwd - The working directory.
+   * @return {Promise<string>} - A promise that resolves when the styles are built.
+   */
+  static async #buildStyles (components, outputFile, cwd) {
+    const mainStylesheets = this.#getMainStylesheets(components)
+
+    if (mainStylesheets.length) {
+      return StylesProcessor.buildStylesBundle(mainStylesheets, outputFile, cwd)
     }
-
-    return collection
   }
 
   /**
@@ -74,16 +93,12 @@ class CollectionBuilder {
    */
   static async deployToBuildFolder (collection) {
     const allComponents = [...collection.components, ...collection.snippets]
-    const allSnippets = [...collection.components, ...collection.snippets]
 
     const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
-
-    // Write Component Liquid Files
-    const snippetFilesWritePromises = allSnippets.map(component =>
+    const snippetFilesWritePromises = allComponents.map(component =>
       FileUtils.writeFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
 
-    // Gather & Copy Assets Files
-    const allAssetFiles = this.getAssetFiles(allComponents)
+    const allAssetFiles = this.#getAssetFiles(allComponents)
     const copyAssetsPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
 
     const promises = [
@@ -94,7 +109,7 @@ class CollectionBuilder {
     ]
 
     if (collection.importMapEntries?.size) {
-      promises.push(this.deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder))
+      promises.push(this.#deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder))
     }
 
     return Promise.all(promises)
@@ -105,7 +120,7 @@ class CollectionBuilder {
    * @param {Map<string, string>} buildEntries
    * @param {string} assetsFolder
    */
-  static async deployImportMapFiles (buildEntries, assetsFolder) {
+  static async #deployImportMapFiles (buildEntries, assetsFolder) {
     const localFiles = []
     const remoteFiles = []
     for (const [, modulePath] of buildEntries) {
@@ -119,14 +134,15 @@ class CollectionBuilder {
   }
 
   /**
+   * Retrieves asset files from an array of Component or Snippet objects.
    *
-   * @param {(Component|Snippet)[]} components
-   * @return {string[]}
+   * @param {(Component|Snippet)[]} components - An array of components or snippets.
+   * @return {string[]} - An array of asset files.
    */
-  static getAssetFiles (components) {
-    const filteredComponents = components.filter(component => component.files.assetFiles?.length)
-
-    return (filteredComponents.map(component => component.files.assetFiles)).flat()
+  static #getAssetFiles (components) {
+    return components
+      .filter(component => component.files.assetFiles?.length)
+      .flatMap(component => component.files.assetFiles)
   }
 
   /**
@@ -134,9 +150,10 @@ class CollectionBuilder {
    * @param {(Component|Snippet)[]} components
    * @return {string[]}
    */
-  static getJsFiles (components) {
-    const componentsWithScriptFiles = components.filter(component => component.files.javascriptIndex)
-    return componentsWithScriptFiles.map(component => component.files.javascriptIndex)
+  static #getJsFiles (components) {
+    return components
+      .filter(component => component.files.javascriptIndex)
+      .map(component => component.files.javascriptIndex)
   }
 
   /**
@@ -144,26 +161,27 @@ class CollectionBuilder {
    * @param {(Component|Snippet)[]} components
    * @return {string[]}
    */
-  static getMainStylesheets (components) {
-    const componentsWithStylesheets = components.filter(component => component.files.mainStylesheet)
-    return componentsWithStylesheets.map(component => component.files.mainStylesheet)
+  static #getMainStylesheets (components) {
+    return components
+      .filter(component => component.files.mainStylesheet)
+      .map(component => component.files.mainStylesheet)
   }
 
   /**
    * Reset Collection Build Folders
-   * @param {module:models/Collection} collection
+   * @param {CollectionBuild} build
    * @return {Promise<Awaited<unknown>[]>}
    */
-  static async #resetBuildFolders (collection) {
-    await rm(collection.build.rootFolder, { force: true, recursive: true })
-    await mkdir(collection.build.rootFolder, { recursive: true })
+  static async #resetBuildFolders (build) {
+    await rm(build.rootFolder, { force: true, recursive: true })
+    await mkdir(build.rootFolder, { recursive: true })
 
     const buildFolders = [
-      collection.build.assetsFolder,
-      collection.build.configFolder,
-      collection.build.localesFolder,
-      collection.build.sectionsFolder,
-      collection.build.snippetsFolder
+      build.assetsFolder,
+      build.configFolder,
+      build.localesFolder,
+      build.sectionsFolder,
+      build.snippetsFolder
     ]
     const mkdirPromises = buildFolders.map(buildFolder => mkdir(buildFolder, { recursive: true }))
 
