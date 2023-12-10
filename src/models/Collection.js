@@ -167,6 +167,14 @@ class Collection {
   set importMapEntries (value) {
     this.#importMapEntries = value
   }
+
+  /**
+   * Get all components and snippets in a single array
+   * @return {(Component|Snippet)[]}
+   */
+  get allComponents () {
+    return [...this.components, ...this.snippets]
+  }
 }
 
 export default Collection

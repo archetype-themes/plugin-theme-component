@@ -22,7 +22,7 @@ class CollectionBuilder {
    * @return {Promise<module:models/Collection>}
    */
   static async build (collection) {
-    const allComponents = [...collection.components, ...collection.snippets]
+    const allComponents = collection.allComponents
 
     const buildCollectionTimer = getTimer()
     collection.build = BuildFactory.fromCollection(collection)
@@ -92,7 +92,7 @@ class CollectionBuilder {
    * @returns {Promise<Awaited<unknown>[]>}
    */
   static async deployToBuildFolder (collection) {
-    const allComponents = [...collection.components, ...collection.snippets]
+    const allComponents = collection.allComponents
 
     const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
     const snippetFilesWritePromises = allComponents.map(component =>

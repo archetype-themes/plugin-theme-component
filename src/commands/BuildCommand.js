@@ -69,7 +69,7 @@ class BuildCommand {
     // Initialize Embedded Snippets
     collection.snippets = await Promise.all(collection.snippets.map(snippet => ComponentFactory.initializeComponent(snippet)))
 
-    const allComponents = [...collection.components, ...collection.snippets]
+    const allComponents = collection.allComponents
 
     // Display Total Available Count of Components & Snippets
     logChildItem(`Found ${collection.components.length} component${plural(collection.components)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
