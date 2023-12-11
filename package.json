@@ -5,7 +5,7 @@
   "main": "src/bin/archie.js",
   "name": "@archetype-themes/archie",
   "type": "module",
-  "version": "1.8.8",
+  "version": "1.9.0",
   "bin": "src/bin/archie.js",
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/archie.js",
@@ -36,10 +36,10 @@
     "svgo": "^3.0.5"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^1.0.1",
+    "@vitest/coverage-v8": "^1.0.2",
     "dpdm": "^3.14.0",
     "standard": "latest",
-    "vitest": "^1.0.1"
+    "vitest": "^1.0.2"
   },
   "engines": {
     "node": ">=18.14.2"

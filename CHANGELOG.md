@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2023-12-11
+
+### Added
+
+- New locales process compares external DB to translate tags in liquid to dynamically generate the final files. #180
+- Session.firstRun implemented to avoid repetitive time-consuming tasks in watch mode
+- Component Model now has a utility method isSvg() to detect if it is an SVG icon
+- Collection Model now has a utility get method allComponents that returns components and snippets as one single array
+
 ## [1.8.8] - 2023-11-27
 
 ### Fixed
