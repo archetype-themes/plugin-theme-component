@@ -5,7 +5,7 @@ import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
-import FileUtils from '../utils/FileUtils.js'
+import { install } from '../utils/ExternalComponentUtils.js'
 import logger, { logChildItem, logSpacer, logTitleItem } from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import { ucfirst } from '../utils/SyntaxUtils.js'
@@ -57,7 +57,7 @@ class DevCommand {
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
 
     // Setup A Theme and Create Its Model Instance
-    await FileUtils.installExternalComponent(devThemeOption, devFolder, 'Explorer Theme')
+    await install(devThemeOption, devFolder, 'Explorer Theme')
     const theme = await fromDevCommand(devFolder)
 
     logTitleItem(`Installing ${Session.targets} Build To ${theme.name} Dev Theme`)

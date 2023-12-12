@@ -1,6 +1,7 @@
 import { basename, join } from 'node:path'
 import liquidParser from '@shopify/liquid-html-parser'
 import { get, set } from 'lodash-es'
+import { install } from '../utils/ExternalComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
 import { ERROR_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
 
@@ -73,7 +74,7 @@ export default class LocalesProcessor {
   }
 
   static async setupLocalesDatabase (localesRepoOption, localesFolder) {
-    await FileUtils.installExternalComponent(localesRepoOption, localesFolder, 'Locales DB')
+    await install(localesRepoOption, localesFolder, 'Locales DB')
     return FileUtils.getFolderFilesRecursively(localesFolder)
   }
 

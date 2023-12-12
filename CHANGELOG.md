@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Renaming FileUtils.writeFile to FileUtils.saveFile to avoid name conflict with Node.JS
 - Components tree will try to list section items only. It will list everything only if no section entry is found.
+- FileUtils.js installExternalComponent was moved to its own Utils file to avoid circular dependencies.
+
+### Removed
+
 - Esbuild Processor and dependencies
 ## [1.8.8] - 2023-11-27
 

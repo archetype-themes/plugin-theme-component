@@ -275,30 +275,6 @@ class FileUtils {
 
     return writeFile(file, fileContents, this.#FILE_ENCODING_OPTION)
   }
-
-  static async installExternalComponent (sourceLocation, targetFolder, name) {
-    logChildItem(`Searching for "${name}" locally`)
-    const timer = getTimer()
-
-    if (await FileUtils.exists(join(targetFolder, '.git'))) {
-      logChildItem(`${name} repository found locally`)
-      restore(targetFolder)
-      if (Session.firstRun) {
-        pull(targetFolder)
-      }
-    } else if (await FileUtils.exists(targetFolder)) {
-      logChildItem(`${name} found locally`)
-    } else if (isRepoUrl(sourceLocation)) {
-      logChildItem(`Cloning missing local ${name} repository`)
-      clone(sourceLocation, targetFolder)
-    } else {
-      logChildItem(`Installing missing local ${name} copy`)
-      await FileUtils.copyFolder(sourceLocation, targetFolder, { recursive: true })
-    }
-    logChildItem(`${name} is now ready (${getTimeElapsed(timer)} seconds)`)
-
-    return FileUtils.getFolderFilesRecursively(targetFolder)
-  }
 }
 
 export default FileUtils
