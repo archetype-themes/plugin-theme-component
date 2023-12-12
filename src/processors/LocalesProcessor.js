@@ -1,9 +1,11 @@
 import { basename, join } from 'node:path'
-import liquidParser from '@shopify/liquid-html-parser'
 import { get, set } from 'lodash-es'
 import { install } from '../utils/ExternalComponentUtils.js'
 import FileUtils from '../utils/FileUtils.js'
+import LiquidUtils from '../utils/LiquidUtils.js'
 import { ERROR_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
+
+const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 
 export default class LocalesProcessor {
   /**
@@ -55,20 +57,20 @@ export default class LocalesProcessor {
    * @returns {string[]} An array of unique translation keys found in the given liquid code.
    */
   static #getTranslationKeys (liquidCode) {
+    const cleanLiquidCode = LiquidUtils.stripComments(liquidCode)
     const translationKeys = new Set()
-    const liquidAst = liquidParser.toLiquidHtmlAST(liquidCode, { mode: 'tolerant' })
 
-    // Find Variables With A "t" Filter
-    liquidParser.walk(liquidAst, node => {
-      if (node.type === 'LiquidVariable' && node.filters.some(filter => filter.name === 't')) {
-        if (node.expression.value) {
-          translationKeys.add(node.expression.value)
-        } else {
-          logChildItem(`(1/2) Incompatible translation syntax for variable ${node.expression.name}.`, ERROR_LOG_LEVEL)
-          logChildItem(`(2/2) You must use the 't' filter at when defining ${node.expression.name} instead of when using it.`, ERROR_LOG_LEVEL)
-        }
+    let match
+    while ((match = TRANSLATION_KEYS_REGEX.exec(cleanLiquidCode)) !== null) {
+      const translationKey = match[1]
+
+      if (translationKey.startsWith('\'') && translationKey.endsWith('\'')) {
+        translationKeys.add(translationKey.slice(1, -1))
+      } else {
+        logChildItem(`(1/2) Incompatible translation syntax for variable ${translationKey}.`, ERROR_LOG_LEVEL)
+        logChildItem(`(2/2) You must use the 't' filter at when defining ${translationKey} instead of when using it.`, ERROR_LOG_LEVEL)
       }
-    })
+    }
 
     return [...translationKeys]
   }

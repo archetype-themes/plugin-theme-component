@@ -15,13 +15,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Collection Model now has a utility get method allComponents that returns components and snippets as one single array
 
 ### Changed
-- Renaming FileUtils.writeFile to FileUtils.saveFile to avoid name conflict with Node.JS
+
+- Render Tags detection is back to using regular expressions; liquid-html-parser offers bad performance on 100+
+  components
+- Updated dependencies
+- Renaming FileUtils.writeFile to FileUtils.saveFile to avoid name conflict with Node.js
 - Components tree will try to list section items only. It will list everything only if no section entry is found.
 - FileUtils.js installExternalComponent was moved to its own Utils file to avoid circular dependencies.
 
 ### Removed
 
 - Esbuild Processor and dependencies
+- Unused Sass dependencies
+- Newly unused liquid-html-parser dependency
+
 ## [1.8.8] - 2023-11-27
 
 ### Fixed

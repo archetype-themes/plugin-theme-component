@@ -2,14 +2,9 @@ import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from
 import { cwd } from 'node:process'
 import { basename, join } from 'path'
 import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
-import Session from '../models/static/Session.js'
-import { clone, pull, restore } from './GitUtils.js'
+import logger from './Logger.js'
 
-import logger, { logChildItem } from './Logger.js'
-import { getTimeElapsed, getTimer } from './Timer.js'
-import { isRepoUrl } from './WebUtils.js'
-
-class FileUtils {
+export default class FileUtils {
   /** @property {string[]} **/
   static #EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
   /** @property {Object} **/
@@ -76,42 +71,17 @@ class FileUtils {
         const sourceFile = join(sourceFolder, dirent.name)
         const targetFile = join(targetFolder, dirent.name)
         if (options.jsTemplateVariables) {
-          fileOperations.push(this.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
+          fileOperations.push(FileUtils.processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
         } else {
           fileOperations.push(copyFile(sourceFile, targetFile))
         }
       } else if (dirent.isDirectory() && options.recursive) {
         const newTargetFolder = join(targetFolder, dirent.name)
         await mkdir(newTargetFolder, { recursive: true })
-        fileOperations.push(this.copyFolder(join(sourceFolder, dirent.name), newTargetFolder, options))
+        fileOperations.push(FileUtils.copyFolder(join(sourceFolder, dirent.name), newTargetFolder, options))
       }
     }
     return Promise.all(fileOperations)
-  }
-
-  /**
-   *
-   * @param {string} sourceFile
-   * @param {string} targetFile
-   * @param {JsTemplateVariables} jsTemplateVariables
-   * @returns {Promise<void>}
-   */
-  static async processJsTemplateStringFile (sourceFile, targetFile, jsTemplateVariables) {
-    logger.debug(`Processing JS Template String file ${sourceFile}`)
-    // Read the file's content
-    const data = await readFile(sourceFile, 'utf8')
-
-    // Initiate JS template variables for interpolation
-    Object.entries(jsTemplateVariables).forEach(([key, value]) => {
-      global[key] = value
-    })
-
-    // Interpret the file content as a JS template string
-    // eslint-disable-next-line no-eval
-    const template = eval('`' + data + '`')
-
-    // Write the interpreted content back to disk
-    return writeFile(targetFile, template)
   }
 
   /**
@@ -126,6 +96,85 @@ class FileUtils {
     } catch {
       return false
     }
+  }
+
+  /**
+   * Get File Contents
+   * @param {string} file
+   * @returns {Promise<string>}
+   */
+  static async getFileContents (file) {
+    logger.trace(`Reading from disk: ${file}`)
+    return readFile(file, FileUtils.#FILE_ENCODING_OPTION)
+  }
+
+  /**
+   * Get directory file listing recursively
+   * @param folder
+   * @returns {Promise<string[]>}
+   * @link https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
+   */
+  static async getFolderFilesRecursively (folder) {
+    const entries = await readdir(folder, { withFileTypes: true })
+    const files = []
+    for (const entry of entries) {
+      const absolutePath = join(folder, entry.name)
+      if (entry.isDirectory()) {
+        if (!FileUtils.#EXCLUDED_FOLDERS.includes(entry.name)) {
+          files.push(...(await FileUtils.getFolderFilesRecursively(absolutePath)))
+        }
+      } else { files.push(absolutePath) }
+    }
+
+    return files
+  }
+
+  /**
+   * Get Folders List
+   * @param {string} folder
+   * @param {boolean} recursive
+   * @returns {Promise<string[]>}
+   */
+  static async getFolders (folder, recursive = false) {
+    const entries = await readdir(folder, { withFileTypes: true })
+    const folders = []
+
+    const promises = entries.map(async (entry) => {
+      if (entry.isDirectory() && !FileUtils.#EXCLUDED_FOLDERS.includes(entry.name)) {
+        const absolutePath = join(folder, entry.name)
+        folders.push(absolutePath)
+        if (recursive) {
+          folders.push(...(await FileUtils.getFolders(absolutePath, recursive)))
+        }
+      }
+    })
+
+    await Promise.all(promises)
+    return folders
+  }
+
+  /**
+   * @template T
+   * Get JSON File Contents
+   * @param {string} file
+   * @returns {Promise<T>}
+   */
+  static async getJsonFileContents (file) {
+    return JSON.parse(await FileUtils.getFileContents(file))
+  }
+
+  /**
+   * Merge Files contents and return it
+   * @param {string[]} files
+   * @returns {Promise<string>}
+   */
+  static async getMergedFilesContent (files) {
+    let content = ''
+
+    for (const file of files) {
+      content += `${await FileUtils.getFileContents(file)}\n`
+    }
+    return content
   }
 
   /**
@@ -157,82 +206,28 @@ class FileUtils {
   }
 
   /**
-   * Get directory file listing recursively
-   * @param folder
-   * @returns {Promise<string[]>}
-   * @link https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
+   *
+   * @param {string} sourceFile
+   * @param {string} targetFile
+   * @param {JsTemplateVariables} jsTemplateVariables
+   * @returns {Promise<void>}
    */
-  static async getFolderFilesRecursively (folder) {
-    const entries = await readdir(folder, { withFileTypes: true })
-    const files = []
-    for (const entry of entries) {
-      const absolutePath = join(folder, entry.name)
-      if (entry.isDirectory()) {
-        if (!this.#EXCLUDED_FOLDERS.includes(entry.name)) {
-          files.push(...(await this.getFolderFilesRecursively(absolutePath)))
-        }
-      } else { files.push(absolutePath) }
-    }
+  static async processJsTemplateStringFile (sourceFile, targetFile, jsTemplateVariables) {
+    logger.debug(`Processing JS Template String file ${sourceFile}`)
+    // Read the file's content
+    const data = await readFile(sourceFile, 'utf8')
 
-    return files
-  }
-
-  /**
-   * Get Folders List
-   * @param {string} folder
-   * @param {boolean} recursive
-   * @returns {Promise<string[]>}
-   */
-  static async getFolders (folder, recursive = false) {
-    const entries = await readdir(folder, { withFileTypes: true })
-    const folders = []
-
-    const promises = entries.map(async (entry) => {
-      if (entry.isDirectory() && !this.#EXCLUDED_FOLDERS.includes(entry.name)) {
-        const absolutePath = join(folder, entry.name)
-        folders.push(absolutePath)
-        if (recursive) {
-          folders.push(...(await this.getFolders(absolutePath, recursive)))
-        }
-      }
+    // Initiate JS template variables for interpolation
+    Object.entries(jsTemplateVariables).forEach(([key, value]) => {
+      global[key] = value
     })
 
-    await Promise.all(promises)
-    return folders
-  }
+    // Interpret the file content as a JS template string
+    // eslint-disable-next-line no-eval
+    const template = eval('`' + data + '`')
 
-  /**
-   * Merge Files contents and return it
-   * @param {string[]} files
-   * @returns {Promise<string>}
-   */
-  static async getMergedFilesContent (files) {
-    let content = ''
-
-    for (const file of files) {
-      content += `${await this.getFileContents(file)}\n`
-    }
-    return content
-  }
-
-  /**
-   * @template T
-   * Get JSON File Contents
-   * @param {string} file
-   * @returns {Promise<T>}
-   */
-  static async getJsonFileContents (file) {
-    return JSON.parse(await this.getFileContents(file))
-  }
-
-  /**
-   * Get File Contents
-   * @param {string} file
-   * @returns {Promise<string>}
-   */
-  static async getFileContents (file) {
-    logger.trace(`Reading from disk: ${file}`)
-    return readFile(file, this.#FILE_ENCODING_OPTION)
+    // Write the interpreted content back to disk
+    return writeFile(targetFile, template)
   }
 
   /**
@@ -250,8 +245,8 @@ class FileUtils {
 
       for (const entry of entries) {
         if (entry.isDirectory()) {
-          if (recursive && !this.#EXCLUDED_FOLDERS.includes(entry.name)) {
-            files = files.concat(await this.searchFile(join(path, entry.name), filename, recursive))
+          if (recursive && !FileUtils.#EXCLUDED_FOLDERS.includes(entry.name)) {
+            files = files.concat(await FileUtils.searchFile(join(path, entry.name), filename, recursive))
           }
         } else if (entry.name === filename) {
           files.push(join(path, entry.name))
@@ -273,8 +268,22 @@ class FileUtils {
   static async saveFile (file, fileContents) {
     logger.trace(`Writing to disk: ${file}`)
 
-    return writeFile(file, fileContents, this.#FILE_ENCODING_OPTION)
+    return writeFile(file, fileContents, FileUtils.#FILE_ENCODING_OPTION)
   }
 }
 
-export default FileUtils
+export const convertToComponentRelativePath = FileUtils.convertToComponentRelativePath
+export const copy = FileUtils.copy
+export const copyFilesToFolder = FileUtils.copyFilesToFolder
+export const copyFolder = FileUtils.copyFolder
+export const exists = FileUtils.exists
+export const getFileContents = FileUtils.getFileContents
+export const getFolderFilesRecursively = FileUtils.getFolderFilesRecursively
+export const getFolders = FileUtils.getFolders
+export const getJsonFileContents = FileUtils.getJsonFileContents
+export const getMergedFilesContent = FileUtils.getMergedFilesContent
+export const isReadable = FileUtils.isReadable
+export const isWritable = FileUtils.isWritable
+export const processJsTemplateStringFile = FileUtils.processJsTemplateStringFile
+export const saveFile = FileUtils.saveFile
+export const searchFile = FileUtils.searchFile

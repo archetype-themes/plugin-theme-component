@@ -17,8 +17,6 @@
   },
   "repository": "https://github.com/archetype-themes/archie.git",
   "dependencies": {
-    "@csstools/postcss-sass": "^5.0.1",
-    "@shopify/liquid-html-parser": "^2.0.0s",
     "chokidar": "^3.5.3",
     "deepmerge": "^4.3.1",
     "es-module-lexer": "^1.4.1",
@@ -31,14 +29,13 @@
     "pino-pretty": "^10.2.3",
     "postcss": "^8.4.32",
     "postcss-load-config": "^5.0.2",
-    "sass": "^1.69.5",
-    "svgo": "^3.0.5"
+    "svgo": "^3.1.0"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^1.0.2",
+    "@vitest/coverage-v8": "^1.0.4",
     "dpdm": "^3.14.0",
     "standard": "latest",
-    "vitest": "^1.0.2"
+    "vitest": "^1.0.4"
   },
   "engines": {
     "node": ">=18.14.2"
