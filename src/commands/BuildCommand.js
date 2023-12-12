@@ -53,6 +53,7 @@ class BuildCommand {
   static async buildCollection (collectionName, componentNames) {
     // If this is a Theme, the Current Target Name will always be the Collection Name.
     // Let's use that instead of Session.targets which might contain a Collection List object.
+    /** @type {string} **/
     const currentTargetName = Session.callerType === Components.THEME_TYPE_NAME ? collectionName : Session.targets
 
     logTitleItem(`Initializing Components for "${currentTargetName}"`)
@@ -119,8 +120,13 @@ class BuildCommand {
     logChildMessage()
     logChildMessage(`${collectionName}/`)
 
-    for (const [i, component] of collection.components.entries()) {
-      const last = i === collection.components.length - 1
+    let filteredComponents = collection.components.filter(component => component.name.startsWith('section'))
+    if (!filteredComponents.length > 0) {
+      filteredComponents = collection.components
+    }
+
+    for (const [i, component] of filteredComponents.entries()) {
+      const last = i === filteredComponents.length - 1
       this.folderTreeLog(component, last)
     }
     logChildMessage()
