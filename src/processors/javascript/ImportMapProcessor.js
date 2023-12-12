@@ -20,7 +20,7 @@ class ImportMapProcessor {
     const importMapEntries = this.resolveImportMapEntries(importMap.imports, collectionRootFolder)
     const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries)
     const importMapTags = this.generateImportMapTags(buildEntries)
-    await FileUtils.writeFile(outputFile, importMapTags)
+    await FileUtils.saveFile(outputFile, importMapTags)
     return this.filterBuildEntries(buildEntries, jsFiles)
   }
 
@@ -98,8 +98,8 @@ class ImportMapProcessor {
     const fileContents = await FileUtils.getFileContents(file)
     const [imports] = parse(fileContents)
     const promises = []
-    for (let i = 0; i < imports.length; i++) {
-      const moduleSpecifier = imports[i].n
+    for (const element of imports) {
+      const moduleSpecifier = element.n
       if (!moduleSpecifier) continue
       const modulePath = importMapEntries.get(moduleSpecifier)
       if (!modulePath) continue

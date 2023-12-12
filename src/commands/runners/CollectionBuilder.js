@@ -96,13 +96,13 @@ class CollectionBuilder {
 
     const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
     const snippetFilesWritePromises = allComponents.map(component =>
-      FileUtils.writeFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
+      FileUtils.saveFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
 
     const allAssetFiles = this.#getAssetFiles(allComponents)
     const copyAssetsPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
 
     const promises = [
-      FileUtils.writeFile(collection.build.stylesheet, collection.build.styles),
+      FileUtils.saveFile(collection.build.stylesheet, collection.build.styles),
       localesWritePromise,
       ...snippetFilesWritePromises,
       copyAssetsPromise

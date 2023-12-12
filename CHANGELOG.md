@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Component Model now has a utility method isSvg() to detect if it is an SVG icon
 - Collection Model now has a utility get method allComponents that returns components and snippets as one single array
 
+### Changed
+- Renaming FileUtils.writeFile to FileUtils.saveFile to avoid name conflict with Node.JS
 ## [1.8.8] - 2023-11-27
 
 ### Fixed

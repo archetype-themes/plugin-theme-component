@@ -29,7 +29,7 @@ class WebUtils {
           data += chunk
         })
         response.on('end', () => {
-          resolve(FileUtils.writeFile(join(targetFolder, basename(remoteFile)), data))
+          resolve(FileUtils.saveFile(join(targetFolder, basename(remoteFile)), data))
         })
       }).on('error', (error) => {
         reject(error)

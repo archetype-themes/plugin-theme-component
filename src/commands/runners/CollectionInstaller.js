@@ -102,7 +102,7 @@ class CollectionInstaller {
     logger.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
     themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
 
-    await FileUtils.writeFile(themeLiquidFile, themeLiquid)
+    await FileUtils.saveFile(themeLiquidFile, themeLiquid)
   }
 
   static injectionFailureWarning (message, injections) {

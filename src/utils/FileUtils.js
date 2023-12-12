@@ -270,7 +270,7 @@ class FileUtils {
    * @param {string} fileContents
    * @returns {Promise<void>}
    */
-  static async writeFile (file, fileContents) {
+  static async saveFile (file, fileContents) {
     logger.trace(`Writing to disk: ${file}`)
 
     return writeFile(file, fileContents, this.#FILE_ENCODING_OPTION)
