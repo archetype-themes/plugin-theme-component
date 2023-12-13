@@ -12,9 +12,6 @@ class ComponentFiles {
   /** @type {string} **/
   #liquidFile
 
-  /** @type {string[]} **/
-  #localeFiles = []
-
   /** @type {string} **/
   #mainStylesheet
 
@@ -89,22 +86,6 @@ class ComponentFiles {
    */
   set liquidFile (value) {
     this.#liquidFile = value
-  }
-
-  /**
-   * Get Locale Files' locations
-   * @returns {string[]}
-   */
-  get localeFiles () {
-    return this.#localeFiles
-  }
-
-  /**
-   * Set Locale Files' locations
-   * @param {string[]} value
-   */
-  set localeFiles (value) {
-    this.#localeFiles = value
   }
 
   /**
