@@ -5,6 +5,8 @@ import { getFolderFilesRecursively, getJsonFileContents } from '../utils/FileUti
 import LiquidUtils from '../utils/LiquidUtils.js'
 import { ERROR_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
 
+const LOCALES_FOLDER = '.locales'
+
 const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 
 export default class LocalesProcessor {
@@ -12,14 +14,14 @@ export default class LocalesProcessor {
    * Build Locales
    * @param {string|string[]} liquidCodeElements
    * @param {string} source
-   * @param {string} sourceInstallFolder
+   * @param {string} installFolderRoot - Location where to create the '.locales' sub-folder
    * @returns {Promise<{}>}
    */
-  static async build (liquidCodeElements, source, sourceInstallFolder) {
+  static async build (liquidCodeElements, source, installFolderRoot) {
     const elements = Array.isArray(liquidCodeElements) ? liquidCodeElements : [liquidCodeElements]
-    sourceInstallFolder = join(sourceInstallFolder, '.locales')
+    const installFolder = join(installFolderRoot, LOCALES_FOLDER)
 
-    const localeFiles = await this.setupLocalesDatabase(source, sourceInstallFolder)
+    const localeFiles = await this.setupLocalesDatabase(source, installFolder)
     const availableLocales = await this.parseLocaleFilesContent(localeFiles)
     const translationKeys = elements.flatMap(code => this.#getTranslationKeys(code))
 
