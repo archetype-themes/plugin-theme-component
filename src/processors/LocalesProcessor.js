@@ -1,7 +1,7 @@
 import { basename, join } from 'node:path'
 import { get, set } from 'lodash-es'
 import { install } from '../utils/ExternalComponentUtils.js'
-import FileUtils from '../utils/FileUtils.js'
+import { getFolderFilesRecursively, getJsonFileContents } from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import { ERROR_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
 
@@ -77,7 +77,7 @@ export default class LocalesProcessor {
 
   static async setupLocalesDatabase (localesRepoOption, localesFolder) {
     await install(localesRepoOption, localesFolder, 'Locales DB')
-    return FileUtils.getFolderFilesRecursively(localesFolder)
+    return getFolderFilesRecursively(localesFolder)
   }
 
   /**
@@ -95,7 +95,7 @@ export default class LocalesProcessor {
 
       if (localeFileRegex.test(fileName)) {
         const locale = fileName.match(localeFileRegex).groups.locale
-        locales[locale] = await FileUtils.getJsonFileContents(file)
+        locales[locale] = await getJsonFileContents(file)
       }
     }
     return locales
