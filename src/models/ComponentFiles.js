@@ -25,9 +25,6 @@ class ComponentFiles {
   #schemaFile
 
   /** @type {string[]} **/
-  #schemaLocaleFiles = []
-
-  /** @type {string[]} **/
   #snippetFiles = []
 
   /** @type {string[]} **/
@@ -159,22 +156,6 @@ class ComponentFiles {
    */
   set schemaFile (value) {
     this.#schemaFile = value
-  }
-
-  /**
-   * Get Schema Locale Files' location
-   * @return {string[]}
-   */
-  get schemaLocaleFiles () {
-    return this.#schemaLocaleFiles
-  }
-
-  /**
-   * Set Schema Locale Files' locations
-   * @param {string[]} value
-   */
-  set schemaLocaleFiles (value) {
-    this.#schemaLocaleFiles = value
   }
 
   /**
