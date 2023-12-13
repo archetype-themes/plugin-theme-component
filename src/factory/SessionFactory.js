@@ -40,9 +40,6 @@ class SessionFactory {
 
     Session.config = packageManifest.archie
     Session.callerType = packageManifest.archie.type.toLowerCase()
-    if (packageManifest.archie['dev-theme']) {
-      Session.devTheme = packageManifest.archie['dev-theme']
-    }
     Session.devTheme = packageManifest.archie['dev-theme'] ? packageManifest.archie['dev-theme'] : DEFAULT_DEV_THEME
     Session.localesRepo = packageManifest.archie['locales-repo'] ? packageManifest.archie['locales-repo'] : DEFAULT_LOCALES_REPO
 
