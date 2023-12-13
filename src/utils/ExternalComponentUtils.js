@@ -1,6 +1,7 @@
 import { join } from 'path'
+import FileAccessError from '../errors/FileAccessError.js'
 import Session from '../models/static/Session.js'
-import { copyFolder, exists, getFolderFilesRecursively } from './FileUtils.js'
+import { copyFolder, exists, getFolderFilesRecursively, isReadable } from './FileUtils.js'
 import { clone, pull, restore } from './GitUtils.js'
 import { logChildItem } from './Logger.js'
 import { getTimeElapsed, getTimer } from './Timer.js'
@@ -30,6 +31,28 @@ export default class ExternalComponentUtils {
 
     return getFolderFilesRecursively(targetFolder)
   }
+
+  /**
+   * Return a validated external path, using cwd for relative paths only.
+   * @param {string} path
+   * @param {string} cwd
+   * @return {string}
+   * @throws FileAccessError
+   */
+  static async validateLocation (path, cwd) {
+    if (isRepoUrl(path)) {
+      return path
+    }
+
+    const fullPath = path.startsWith('/') ? path : join(cwd, path)
+    if (await isReadable(fullPath)) {
+      return fullPath
+    }
+
+    throw new FileAccessError(`Unable to read from ${fullPath}`)
+  }
 }
 
 export const install = ExternalComponentUtils.install
+
+export const validateExternalLocation = ExternalComponentUtils.validateLocation
