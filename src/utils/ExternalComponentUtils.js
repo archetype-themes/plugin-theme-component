@@ -36,7 +36,7 @@ export default class ExternalComponentUtils {
    * Return a validated external path, using cwd for relative paths only.
    * @param {string} path
    * @param {string} cwd
-   * @return {string}
+   * @return {Promise<string>}
    * @throws FileAccessError
    */
   static async validateLocation (path, cwd) {
