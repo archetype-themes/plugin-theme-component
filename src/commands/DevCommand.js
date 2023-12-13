@@ -5,9 +5,9 @@ import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
-import { install } from '../utils/ExternalComponentUtils.js'
+import { install, validateExternalLocation } from '../utils/ExternalComponentUtils.js'
 import logger, { logChildItem, logSpacer, logTitleItem } from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
+import NodeUtils, { exitWithError } from '../utils/NodeUtils.js'
 import { ucfirst } from '../utils/SyntaxUtils.js'
 import Watcher from '../utils/Watcher.js'
 import BuildCommand from './BuildCommand.js'
@@ -56,7 +56,13 @@ class DevCommand {
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
 
     // Setup A Theme and Create Its Model Instance
-    await install(devThemeOption, devFolder, 'Explorer Theme')
+    try {
+      const validThemeFolder = await validateExternalLocation(devThemeOption, collection.rootFolder)
+      await install(validThemeFolder, devFolder, 'Explorer Theme')
+    } catch (error) {
+      exitWithError('Source Dev Theme Folder or Repository is invalid: ' + error.message)
+    }
+
     const theme = await fromDevCommand(devFolder)
 
     logTitleItem(`Installing ${Session.targets} Build To ${theme.name} Dev Theme`)

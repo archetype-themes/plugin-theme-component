@@ -6,7 +6,9 @@ import { join } from 'node:path'
 import BuildFactory from '../../factory/BuildFactory.js'
 import Session from '../../models/static/Session.js'
 import LocalesProcessor from '../../processors/LocalesProcessor.js'
+import { validateExternalLocation } from '../../utils/ExternalComponentUtils.js'
 import FileUtils from '../../utils/FileUtils.js'
+import { exitWithError } from '../../utils/NodeUtils.js'
 import WebUtils from '../../utils/WebUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
@@ -64,7 +66,12 @@ class CollectionBuilder {
    */
   static async #buildLocales (components, cwd) {
     const liquidCodeElements = components.map(component => component.liquidCode)
-    return LocalesProcessor.build(liquidCodeElements, Session.localesRepo, cwd)
+    try {
+      const validLocalesRepo = await validateExternalLocation(Session.localesRepo, cwd)
+      return LocalesProcessor.build(liquidCodeElements, validLocalesRepo, cwd)
+    } catch (error) {
+      exitWithError('Source Locales DB Folder or Repository is invalid: ' + error.message)
+    }
   }
 
   /**
