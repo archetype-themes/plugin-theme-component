@@ -21,9 +21,6 @@ class ComponentFiles {
   /** @type {string} **/
   #packageJson
 
-  /** @type {string} **/
-  #schemaFile
-
   /** @type {string[]} **/
   #snippetFiles = []
 
@@ -140,22 +137,6 @@ class ComponentFiles {
    */
   set packageJson (value) {
     this.#packageJson = value
-  }
-
-  /**
-   *  Get Schema File location
-   * @returns {string}
-   */
-  get schemaFile () {
-    return this.#schemaFile
-  }
-
-  /**
-   * Set Schema File location
-   * @param {string} value
-   */
-  set schemaFile (value) {
-    this.#schemaFile = value
   }
 
   /**

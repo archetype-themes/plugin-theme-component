@@ -29,7 +29,7 @@ class CollectionInstaller {
     // Copy Snippets Folder
     fileOperations.push(copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
 
-    // Merge & Copy Storefront Locales
+    // Merge & Install Storefront Locales
     if (collection.build.locales) {
       fileOperations.push(this.writeLocales(collection.build.locales, theme.localesFolder))
     }

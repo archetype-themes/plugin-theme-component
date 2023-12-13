@@ -88,7 +88,7 @@ export default class LocalesProcessor {
   static async parseLocaleFilesContent (localeFiles) {
     const locales = {}
 
-    const localeFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2})?)(\.default)?(\.schema)?\.json$/
+    const localeFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2})?)(\.default)?\.json$/
 
     for (const file of localeFiles) {
       const fileName = basename(file).toLowerCase()

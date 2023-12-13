@@ -14,11 +14,6 @@ import StylesUtils from './StylesUtils.js'
 class ComponentFilesUtils {
   static STYLE_EXTENSIONS = ['.css', '.less', '.sass', '.scss']
   static SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
-  static DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP = '(cjs|js|json|mjs)'
-  static SINGLE_LOCALE_FILENAME_REGEXP = new RegExp(`^([a-z]{2})(-[a-z]{2})?(\\.default)?\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
-  static SINGLE_SCHEMA_LOCALE_FILENAME_REGEXP = new RegExp(`^([a-z]{2})(-[a-z]{2})?(\\.default)?\\.schema\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
-  static GROUPED_LOCALES_FILENAME_REGEXP = new RegExp(`^locales?\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
-  static GROUPED_SCHEMA_LOCALES_FILENAME_REGEXP = new RegExp(`^locales?\\.schema\\.${this.DATA_FILE_EXTENSIONS_REGEX_CAPTURE_GROUP}$`)
 
   /**
    * Index Component Files
