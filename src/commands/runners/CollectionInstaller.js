@@ -1,8 +1,17 @@
 // Node Core imports
+import merge from 'deepmerge'
 import { basename, join } from 'node:path'
 
 // Internal Imports
-import FileUtils from '../../utils/FileUtils.js'
+import {
+  copyFolder,
+  exists,
+  getFileContents,
+  getJsonFileContents,
+  isReadable,
+  isWritable,
+  saveFile
+} from '../../utils/FileUtils.js'
 import logger from '../../utils/Logger.js'
 
 class CollectionInstaller {
@@ -15,10 +24,15 @@ class CollectionInstaller {
   static async install (theme, collection) {
     const fileOperations = []
     // Copy Asset Folder
-    fileOperations.push(FileUtils.copyFolder(collection.build.assetsFolder, theme.assetsFolder))
+    fileOperations.push(copyFolder(collection.build.assetsFolder, theme.assetsFolder))
 
     // Copy Snippets Folder
-    fileOperations.push(FileUtils.copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
+    fileOperations.push(copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
+
+    // Merge & Copy Storefront Locales
+    if (collection.build.locales) {
+      fileOperations.push(this.writeLocales(collection.build.locales, theme.localesFolder))
+    }
 
     // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
     fileOperations.push(this.injectAssetReferences(collection, theme))
@@ -49,12 +63,12 @@ class CollectionInstaller {
 
     const injections = []
     const themeLiquidFile = join(theme.rootFolder, 'layout', 'theme.liquid')
-    const themeLiquid = (await FileUtils.isReadable(themeLiquidFile))
-      ? await FileUtils.getFileContents(themeLiquidFile)
+    const themeLiquid = (await isReadable(themeLiquidFile))
+      ? await getFileContents(themeLiquidFile)
       : ''
 
     for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
-      if (!asset || !await FileUtils.exists(asset)) continue
+      if (!asset || !await exists(asset)) continue
 
       logger.debug(loggerMessage, basename(asset))
 
@@ -69,7 +83,7 @@ class CollectionInstaller {
       injections.push(tagTemplate(assetBasename))
     }
 
-    if (await FileUtils.isWritable(themeLiquidFile) && injections.length > 0) {
+    if (await isWritable(themeLiquidFile) && injections.length > 0) {
       await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
     } else if (injections.length > 0) {
       this.injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
@@ -102,7 +116,7 @@ class CollectionInstaller {
     logger.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
     themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
 
-    await FileUtils.saveFile(themeLiquidFile, themeLiquid)
+    await saveFile(themeLiquidFile, themeLiquid)
   }
 
   static injectionFailureWarning (message, injections) {
@@ -116,6 +130,45 @@ You should manually insert these lines inside your "theme.liquid" file:
  >>> ${injections.join('\n >>> ')}
 
 **************************************************************************************************`)
+  }
+
+  /**
+   * Write Locales, merging them atop of the theme's Locales
+   * @param {Object} locales
+   * @param {string} themeLocalesPath
+   * @return {Promise<Awaited<unknown>[]>}
+   */
+  static async writeLocales (locales, themeLocalesPath) {
+    logger.debug('Merging Collection Locales with the Theme\'s Locales')
+    const fileOperations = []
+
+    // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
+    for (const locale of Object.keys(locales)) {
+      const localeFilename = `${locale}.json`
+
+      const defaultLocaleFilename = `${locale}.default.json`
+
+      const targetFile = join(themeLocalesPath, localeFilename)
+      const defaultTargetFile = join(themeLocalesPath, defaultLocaleFilename)
+
+      const targetFileExists = await exists(targetFile)
+      const defaultTargetFileExists = await exists(defaultTargetFile)
+      const collectionLocale = locales[locale]
+      if (targetFileExists || defaultTargetFileExists) {
+        const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
+        const themeLocale = await getJsonFileContents(realTargetFile)
+        const mergedLocale = merge(collectionLocale, themeLocale)
+
+        fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
+      } else {
+        // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File in order to determine 'default' status for the locale.
+        const defaultLocaleFilename = `${locale}.default.json`
+        const realTargetFile = await exists(join(themeLocalesPath, defaultLocaleFilename)) ? defaultTargetFile : targetFile
+
+        fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
+      }
+    }
+    return Promise.all(fileOperations)
   }
 }
 
