@@ -1,6 +1,5 @@
 import { argv, env } from 'node:process'
 import pino from 'pino'
-import PinoPretty from 'pino-pretty'
 import InternalError from '../errors/InternalError.js'
 
 export const DEBUG_LOG_LEVEL = 'debug'
@@ -49,16 +48,17 @@ if (argv.includes('--quiet') || (env.npm_config_loglevel && ['error', 'warn', 's
   loglevel = TRACE_LOG_LEVEL
 }
 
-/** @type{PrettyOptions} */
-const prettyOptions = {
-  colorize: true,
-  ignore: 'time,pid,hostname',
-  singleLine: false
-}
-
-const prettyPluginStream = PinoPretty(prettyOptions)
-
-let logger = pino({ level: loglevel }, prettyPluginStream)
+let logger = pino({
+  level: loglevel,
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      ignore: 'time,pid,hostname',
+      singleLine: false
+    }
+  }
+})
 
 if ([DEBUG_LOG_LEVEL, TRACE_LOG_LEVEL].includes(loglevel)) {
   logger = traceCaller(logger)
