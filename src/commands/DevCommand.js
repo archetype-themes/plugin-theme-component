@@ -1,5 +1,5 @@
 import { basename, join } from 'node:path'
-import { DEV_DEFAULT_THEME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { DEV_FOLDER_NAME } from '../config/CLI.js'
 
 import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
@@ -19,14 +19,13 @@ class DevCommand {
    * @returns {Promise<FSWatcher>}
    */
   static async execute () {
-    const devThemeOption = Session.devTheme ? Session.devTheme : DEV_DEFAULT_THEME
     const collectionName = NodeUtils.getPackageName()
     const componentName = Session.targets
 
-    const collection = await this.exploreComponent(devThemeOption, collectionName, componentName)
+    const collection = await this.exploreComponent(Session.devTheme, collectionName, componentName)
     Session.firstRun = false
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    return this.watchComponents(collection.rootFolder, ignorePatterns, devThemeOption, collection.name, componentName)
+    return this.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, componentName)
   }
 
   /**

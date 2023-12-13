@@ -12,6 +12,12 @@ import Components from '../../config/Components.js'
  * @property {string|string[]} componentFolders - Path to components
  **/
 
+/** @type {string} **/
+export const DEFAULT_DEV_THEME = 'https://github.com/archetype-themes/expanse.git'
+
+/** @type {string} **/
+export const DEFAULT_LOCALES_REPO = 'https://github.com/archetype-themes/locales.git'
+
 class Session {
   /** @type {CLIConfig}  **/
   static #config

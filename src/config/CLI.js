@@ -25,8 +25,6 @@ export const CREATE_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COMPONENT_TYPE_
 export const CREATE_COMMAND_DEFAULT_TARGET_TYPE = Components.COMPONENT_TYPE_NAME
 
 /** @type {string} **/
-export const DEFAULT_LOCALES_REPO = 'https://github.com/archetype-themes/locales.git'
-/** @type {string} **/
 export const DEV_COMMAND_NAME = 'dev'
 
 /** @type {string[]} **/
@@ -34,8 +32,6 @@ export const DEV_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NA
 
 /** @type {string[]} **/
 export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
-
-export const DEV_DEFAULT_THEME = 'https://github.com/archetype-themes/expanse.git'
 
 /** @type {string} **/
 export const DEV_FOLDER_NAME = '.explorer'

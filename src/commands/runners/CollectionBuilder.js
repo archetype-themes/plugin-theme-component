@@ -13,7 +13,6 @@ import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
 import { getTimeElapsed, getTimer } from '../../utils/Timer.js'
 import { logChildItem, WARN_LOG_LEVEL } from '../../utils/Logger.js'
-import { DEFAULT_LOCALES_REPO } from '../../config/CLI.js'
 
 class CollectionBuilder {
   /**
@@ -64,10 +63,8 @@ class CollectionBuilder {
    * @return {Promise<{}>} - A promise that resolves when the locales are built.
    */
   static async #buildLocales (components, cwd) {
-    const localesRepoOption = Session.localesRepo || DEFAULT_LOCALES_REPO
-
     const liquidCodeElements = components.map(component => component.liquidCode)
-    return LocalesProcessor.build(liquidCodeElements, localesRepoOption, cwd)
+    return LocalesProcessor.build(liquidCodeElements, Session.localesRepo, cwd)
   }
 
   /**

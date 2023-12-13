@@ -19,7 +19,7 @@ import {
 } from '../utils/CLICommandUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import Session from '../models/static/Session.js'
+import Session, { DEFAULT_DEV_THEME, DEFAULT_LOCALES_REPO } from '../models/static/Session.js'
 
 class SessionFactory {
   /**
@@ -43,6 +43,8 @@ class SessionFactory {
     if (packageManifest.archie['dev-theme']) {
       Session.devTheme = packageManifest.archie['dev-theme']
     }
+    Session.devTheme = packageManifest.archie['dev-theme'] ? packageManifest.archie['dev-theme'] : DEFAULT_DEV_THEME
+    Session.localesRepo = packageManifest.archie['locales-repo'] ? packageManifest.archie['locales-repo'] : DEFAULT_LOCALES_REPO
 
     Session.command = args[0].toLowerCase()
 
