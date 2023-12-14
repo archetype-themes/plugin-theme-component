@@ -5,7 +5,7 @@ import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
-import Timer from '../utils/Timer.js'
+import Timer from '../models/Timer.js'
 import Watcher from '../utils/Watcher.js'
 
 // Internal Imports

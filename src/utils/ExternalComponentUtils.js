@@ -4,7 +4,7 @@ import Session from '../models/static/Session.js'
 import { copyFolder, exists, getFolderFilesRecursively, isReadable } from './FileUtils.js'
 import { clone, pull, restore } from './GitUtils.js'
 import { logChildItem } from './Logger.js'
-import Timer from './Timer.js'
+import Timer from '../models/Timer.js'
 import { isRepoUrl } from './WebUtils.js'
 
 export default class ExternalComponentUtils {

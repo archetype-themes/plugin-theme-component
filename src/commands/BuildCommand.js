@@ -12,7 +12,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 
 // Internal Imports
 import { plural } from '../utils/SyntaxUtils.js'
-import Timer from '../utils/Timer.js'
+import Timer from '../models/Timer.js'
 import Watcher from '../utils/Watcher.js'
 import CollectionBuilder from './runners/CollectionBuilder.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'

@@ -13,7 +13,7 @@ import WebUtils from '../../utils/WebUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
-import Timer from '../../utils/Timer.js'
+import Timer from '../../models/Timer.js'
 import { logChildItem, WARN_LOG_LEVEL } from '../../utils/Logger.js'
 
 class CollectionBuilder {
