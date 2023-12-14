@@ -1,17 +1,15 @@
-import * as childProcess from 'child_process'
 import { basename, join } from 'node:path'
-import { DEV_DEFAULT_THEME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { DEV_FOLDER_NAME } from '../config/CLI.js'
 
 import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
-import FileUtils from '../utils/FileUtils.js'
+import { install, validateExternalLocation } from '../utils/ExternalComponentUtils.js'
 import logger, { logChildItem, logSpacer, logTitleItem } from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
+import NodeUtils, { exitWithError } from '../utils/NodeUtils.js'
 import { ucfirst } from '../utils/SyntaxUtils.js'
 import Watcher from '../utils/Watcher.js'
-import { isRepoUrl } from '../utils/WebUtils.js'
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
 
@@ -21,13 +19,13 @@ class DevCommand {
    * @returns {Promise<FSWatcher>}
    */
   static async execute () {
-    const devThemeOption = Session.devTheme ? Session.devTheme : DEV_DEFAULT_THEME
     const collectionName = NodeUtils.getPackageName()
     const componentName = Session.targets
 
-    const collection = await this.exploreComponent(devThemeOption, collectionName, componentName)
+    const collection = await this.exploreComponent(Session.devTheme, collectionName, componentName)
+    Session.firstRun = false
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    return this.watchComponents(collection.rootFolder, ignorePatterns, devThemeOption, collection.name, componentName)
+    return this.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, componentName)
   }
 
   /**
@@ -58,7 +56,13 @@ class DevCommand {
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
 
     // Setup A Theme and Create Its Model Instance
-    await this.themeSetup(devThemeOption, devFolder)
+    try {
+      const validThemeFolder = await validateExternalLocation(devThemeOption, collection.rootFolder)
+      await install(validThemeFolder, devFolder, 'Explorer Theme')
+    } catch (error) {
+      exitWithError('Source Dev Theme Folder or Repository is invalid: ' + error.message)
+    }
+
     const theme = await fromDevCommand(devFolder)
 
     logTitleItem(`Installing ${Session.targets} Build To ${theme.name} Dev Theme`)
@@ -68,37 +72,6 @@ class DevCommand {
     logChildItem('Install Complete')
 
     return collection
-  }
-
-  static async themeSetup (devThemeOption, devFolder) {
-    logTitleItem('Searching For An Existing Dev Theme Setup')
-    if (!await FileUtils.exists(devFolder)) {
-      if (isRepoUrl(devThemeOption)) {
-        logChildItem('No Dev Theme Found; Starting Download')
-        childProcess.execSync(`git clone ${devThemeOption} ${DEV_FOLDER_NAME} --quiet`)
-        logChildItem('Download Complete')
-      } else {
-        logChildItem('No Dev Theme Found, starting copy from local folder')
-        await FileUtils.copyFolder(devThemeOption, devFolder, { recursive: true })
-        logChildItem('Copy Finished')
-      }
-    } else {
-      if (await FileUtils.exists(join(devFolder, '.git'))) {
-        logChildItem('Dev Theme Found: Starting Cleanup & Update')
-
-        // Restores modified files to their original version
-        childProcess.execSync('git restore . --quiet', { cwd: devFolder })
-        // Cleans untracked files
-        // childProcess.execSync('git clean -f -d --quiet', { cwd: devFolder })
-        // Pull updates if any
-        childProcess.execSync('git pull --quiet', { cwd: devFolder })
-
-        logChildItem('Dev Theme Cleanup & Update Complete')
-      } else {
-        logChildItem('Dev Theme Found: It does not seem to be a git repository. Unable to clean or update.')
-        logger.warn('Delete the ".explorer" folder and restart the Dev process to fetch a new copy from source.')
-      }
-    }
   }
 
   /**

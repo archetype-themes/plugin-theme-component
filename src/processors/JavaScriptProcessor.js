@@ -9,6 +9,7 @@ class JavaScriptProcessor {
    * @param {string[]} jsFiles
    * @param {string} outputFile
    * @param {string} collectionRootFolder
+   * @return {Map<string, string>}
    * @throws {FileMissingError}
    */
   static async buildJavaScript (jsFiles, outputFile, collectionRootFolder) {

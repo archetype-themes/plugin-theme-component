@@ -33,8 +33,6 @@ export const DEV_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NA
 /** @type {string[]} **/
 export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
 
-export const DEV_DEFAULT_THEME = 'https://github.com/archetype-themes/expanse.git'
-
 /** @type {string} **/
 export const DEV_FOLDER_NAME = '.explorer'
 

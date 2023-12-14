@@ -12,7 +12,7 @@ import NodeUtils from '../utils/NodeUtils.js'
 
 // Internal Imports
 import { plural } from '../utils/SyntaxUtils.js'
-import Timer from '../utils/Timer.js'
+import { getTimeElapsed, getTimer } from '../utils/Timer.js'
 import Watcher from '../utils/Watcher.js'
 import CollectionBuilder from './runners/CollectionBuilder.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
@@ -35,6 +35,7 @@ class BuildCommand {
     if (Session.watchMode) {
       const collection = await this.buildCollection(collectionName, componentNames)
       await this.deployCollection(collection)
+      Session.firstRun = false
       return this.watchCollection(collection)
     }
 
@@ -52,10 +53,11 @@ class BuildCommand {
   static async buildCollection (collectionName, componentNames) {
     // If this is a Theme, the Current Target Name will always be the Collection Name.
     // Let's use that instead of Session.targets which might contain a Collection List object.
+    /** @type {string} **/
     const currentTargetName = Session.callerType === Components.THEME_TYPE_NAME ? collectionName : Session.targets
 
     logTitleItem(`Initializing Components for "${currentTargetName}"`)
-    const initStartTime = Timer.getTimer()
+    const initStartTime = getTimer()
 
     // Init Collection
     let collection = await CollectionFactory.fromName(collectionName, componentNames)
@@ -66,9 +68,9 @@ class BuildCommand {
     // Create Embedded Snippets Skeleton from Components
     collection.snippets = this.createEmbeddedSnippets(collection.components)
     // Initialize Embedded Snippets
-    collection.snippets = await Promise.all(collection.snippets.map(component => ComponentFactory.initializeComponent(component)))
+    collection.snippets = await Promise.all(collection.snippets.map(snippet => ComponentFactory.initializeComponent(snippet)))
 
-    const allComponents = [...collection.components, ...collection.snippets]
+    const allComponents = collection.allComponents
 
     // Display Total Available Count of Components & Snippets
     logChildItem(`Found ${collection.components.length} component${plural(collection.components)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
@@ -89,7 +91,7 @@ class BuildCommand {
       throw new InternalError(`No matching components found for [${componentNames.join(',')}]`)
     }
 
-    logChildItem(`Initialization complete (${Timer.getEndTimerInSeconds(initStartTime)} seconds)`)
+    logChildItem(`Initialization complete (${getTimeElapsed(initStartTime)} seconds)`)
     logSpacer()
 
     logTitleItem(`Assembling ${collection.components.length} component${plural(collection.components)} and ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
@@ -97,7 +99,7 @@ class BuildCommand {
     logSpacer()
 
     logTitleItem(`Building Individual Components for ${currentTargetName}`)
-    const buildStartTime = Timer.getTimer();
+    const buildStartTime = getTimer();
 
     // Build Components
     [collection.components, collection.snippets] = (await Promise.all([
@@ -105,11 +107,11 @@ class BuildCommand {
       Promise.all(collection.snippets.map(snippet => SnippetBuilder.build(snippet, collection.rootFolder)))
     ]))
 
-    logChildItem(`Build complete (${Timer.getEndTimerInSeconds(buildStartTime)} seconds)`)
+    logChildItem(`Build complete (${getTimeElapsed(buildStartTime)} seconds)`)
     logSpacer()
 
     logTitleItem(`Structuring Components Tree for ${currentTargetName}`)
-    const treeStartTime = Timer.getTimer()
+    const treeStartTime = getTimer()
 
     // Build Component Hierarchy Structure
     await this.setComponentHierarchy(collection.components, allComponents)
@@ -118,24 +120,29 @@ class BuildCommand {
     logChildMessage()
     logChildMessage(`${collectionName}/`)
 
-    for (const [i, component] of collection.components.entries()) {
-      const last = i === collection.components.length - 1
+    let filteredComponents = collection.components.filter(component => component.name.startsWith('section'))
+    if (!filteredComponents.length > 0) {
+      filteredComponents = collection.components
+    }
+
+    for (const [i, component] of filteredComponents.entries()) {
+      const last = i === filteredComponents.length - 1
       this.folderTreeLog(component, last)
     }
     logChildMessage()
 
-    logChildItem(`Tree complete (${Timer.getEndTimerInSeconds(treeStartTime)} seconds)`)
+    logChildItem(`Tree complete (${getTimeElapsed(treeStartTime)} seconds)`)
     logSpacer()
 
     // Build Collection
     logTitleItem('Building Collection')
-    const collectionStartTime = Timer.getTimer()
+    const collectionStartTime = getTimer()
     collection = await CollectionBuilder.build(collection)
-    logChildItem(`Collection Build complete (${Timer.getEndTimerInSeconds(collectionStartTime)} seconds)`)
+    logChildItem(`Collection Build complete (${getTimeElapsed(collectionStartTime)} seconds)`)
     logSpacer()
 
     // Total Timer Output
-    logTitleItem(`Build Command Total Time: ${Timer.getEndTimerInSeconds(initStartTime)} seconds`)
+    logTitleItem(`Build Command Total Time: ${getTimeElapsed(initStartTime)} seconds`)
     logSpacer()
     return Promise.resolve(collection)
   }
@@ -209,9 +216,9 @@ class BuildCommand {
   static async deployCollection (collection) {
     // Deploy Collection To Disk
     logTitleItem('Writing Collection Build To Disk')
-    const collectionDeployStartTime = Timer.getTimer()
+    const collectionDeployStartTime = getTimer()
     await CollectionBuilder.deployToBuildFolder(collection)
-    logChildItem(`Build Deployment Complete (${Timer.getEndTimerInSeconds(collectionDeployStartTime)} seconds)`)
+    logChildItem(`Build Deployment Complete (${getTimeElapsed(collectionDeployStartTime)} seconds)`)
     logSpacer()
   }
 

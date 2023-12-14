@@ -6,12 +6,12 @@ class Timer {
     return hrtime.bigint()
   }
 
-  static getEndTimer (startTimer) {
+  static getTimeElapsed (startTimer) {
     return hrtime.bigint() - startTimer
   }
 
-  static getEndTimerInSeconds (startTimer, precision = 3) {
-    const bigIntEndTimer = this.getEndTimer(startTimer) / BigInt(Math.pow(10, 9 - precision))
+  static getTimeElapsedInSeconds (startTimer, precision = 3) {
+    const bigIntEndTimer = Timer.getTimeElapsed(startTimer) / BigInt(Math.pow(10, 9 - precision))
     if (bigIntEndTimer > Number.MAX_SAFE_INTEGER && bigIntEndTimer < Number.MIN_SAFE_INTEGER) {
       throw new InternalError('Timer conversion issue. BigInt Value is out of bounds')
     }
@@ -20,3 +20,6 @@ class Timer {
 }
 
 export default Timer
+
+export const getTimer = Timer.getTimer
+export const getTimeElapsed = Timer.getTimeElapsedInSeconds

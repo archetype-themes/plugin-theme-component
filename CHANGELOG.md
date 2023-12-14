@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2023-12-14
+
+### Added
+
+- New locales process compares external DB to translate tags in liquid to dynamically generate the final files. #180
+- Session.firstRun implemented to avoid repetitive time-consuming tasks in watch mode
+- Component Model now has a utility method isSvg() to detect if it is an SVG icon
+- Collection Model now has a utility get method allComponents that returns components and snippets as one single array
+
+### Changed
+
+- Render Tags detection is back to using regular expressions; liquid-html-parser offers bad performance on 100+
+  components
+- Updated dependencies
+- Renaming FileUtils.writeFile to FileUtils.saveFile to avoid name conflict with Node.js
+- Components tree will try to list section items only. It will list everything only if no section entry is found.
+- FileUtils.js installExternalComponent was moved to its own Utils file to avoid circular dependencies.
+- PinoPretty as a stream was lagging, using it in sync.
+
+### Removed
+
+- Esbuild Processor and dependencies
+- Unused Sass dependencies
+- Newly unused liquid-html-parser dependency
+
 ## [1.8.8] - 2023-11-27
 
 ### Fixed

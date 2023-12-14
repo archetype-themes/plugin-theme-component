@@ -12,6 +12,12 @@ import Components from '../../config/Components.js'
  * @property {string|string[]} componentFolders - Path to components
  **/
 
+/** @type {string} **/
+export const DEFAULT_DEV_THEME = 'https://github.com/archetype-themes/expanse.git'
+
+/** @type {string} **/
+export const DEFAULT_LOCALES_REPO = 'https://github.com/archetype-themes/locales.git'
+
 class Session {
   /** @type {CLIConfig}  **/
   static #config
@@ -24,6 +30,16 @@ class Session {
 
   /** @type {string}  **/
   static #devTheme
+
+  /**
+   * Indicates whether it is the first run.
+   *
+   * @type {boolean}
+   */
+  static #firstRun = true
+
+  /** @type {string}  **/
+  static #localesRepo
 
   /** @type {string|Object}  **/
   static #targets
@@ -96,6 +112,40 @@ class Session {
    */
   static set devTheme (value) {
     this.#devTheme = value
+  }
+
+  /**
+   * Retrieves the value of the 'firstRun' property.
+   *
+   * @return {boolean} Indicates whether it is the first build
+   */
+  static get firstRun () {
+    return this.#firstRun
+  }
+
+  /**
+   * Sets the value of the firstRun property.
+   *
+   * @param {boolean} value - The new value for the firstRun property.
+   */
+  static set firstRun (value) {
+    this.#firstRun = value
+  }
+
+  /**
+   * Get localesRepo URL
+   * @returns {string}
+   */
+  static get localesRepo () {
+    return this.#localesRepo
+  }
+
+  /**
+   * Set localesRepo URL
+   * @param {string} value
+   */
+  static set localesRepo (value) {
+    this.#localesRepo = value
   }
 
   /**

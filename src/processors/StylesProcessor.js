@@ -20,7 +20,7 @@ class StylesProcessor {
     const masterStylesheet = path.join(os.tmpdir(), 'masterStylesheet.css')
     const masterStylesheetContents = StylesUtils.createMasterStylesheet(stylesheets)
 
-    await FileUtils.writeFile(masterStylesheet, masterStylesheetContents)
+    await FileUtils.saveFile(masterStylesheet, masterStylesheetContents)
     const css = await PostCssProcessor.processStyles(masterStylesheetContents, masterStylesheet, outputFile, collectionRootFolder)
     await unlink(masterStylesheet)
     return css

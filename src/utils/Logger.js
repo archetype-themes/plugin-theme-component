@@ -1,7 +1,13 @@
 import { argv, env } from 'node:process'
 import pino from 'pino'
-import PinoPretty from 'pino-pretty'
+import InternalError from '../errors/InternalError.js'
 
+export const DEBUG_LOG_LEVEL = 'debug'
+export const ERROR_LOG_LEVEL = 'error'
+export const INFO_LOG_LEVEL = 'info'
+export const TRACE_LOG_LEVEL = 'trace'
+export const WARN_LOG_LEVEL = 'warn'
+export const AVAILABLE_LOG_LEVELS = [INFO_LOG_LEVEL, WARN_LOG_LEVEL, ERROR_LOG_LEVEL, DEBUG_LOG_LEVEL, TRACE_LOG_LEVEL]
 const STACKTRACE_OFFSET = 2
 const LINE_OFFSET = 7
 const { symbols: { asJsonSym } } = pino
@@ -28,32 +34,33 @@ function traceCaller (pinoInstance) {
   return new Proxy(pinoInstance, { get })
 }
 
-let loglevel = 'info'
+let loglevel = INFO_LOG_LEVEL
 
 /**                            Setting loglevel value                                  **/
 /*                                                                                      */
 /* YARN: argv works nicely with yarn berry                                              */
 /* NPM: argv is intercepted by npm, therefore we also check for env.npm_config_loglevel */
 if (argv.includes('--quiet') || (env.npm_config_loglevel && ['error', 'warn', 'silent'].includes(env.npm_config_loglevel))) {
-  loglevel = 'error'
+  loglevel = ERROR_LOG_LEVEL
 } else if (argv.includes('--verbose') || argv.includes('--debug') || (env.npm_config_loglevel && env.npm_config_loglevel === 'verbose')) {
-  loglevel = 'debug'
+  loglevel = DEBUG_LOG_LEVEL
 } else if (argv.includes('--trace') || (env.npm_config_loglevel && env.npm_config_loglevel === 'silly')) {
-  loglevel = 'trace'
+  loglevel = TRACE_LOG_LEVEL
 }
 
-/** @type{PrettyOptions} */
-const prettyOptions = {
-  colorize: true,
-  ignore: 'time,pid,hostname',
-  singleLine: false
-}
+let logger = pino({
+  level: loglevel,
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      ignore: 'time,pid,hostname',
+      singleLine: false
+    }
+  }
+})
 
-const prettyPluginStream = PinoPretty(prettyOptions)
-
-let logger = pino({ level: loglevel }, prettyPluginStream)
-
-if (['debug', 'trace'].includes(loglevel)) {
+if ([DEBUG_LOG_LEVEL, TRACE_LOG_LEVEL].includes(loglevel)) {
   logger = traceCaller(logger)
 }
 
@@ -73,10 +80,15 @@ export function logTitleItem (message) {
 
 /**
  * Log Child Item
- * @param {string} message
+ * @param {string} message - Message to display
+ * @param {string} logLevel - Log level (info/warn/error/debug)
  */
-export function logChildItem (message) {
-  logger.info(`${childPrefix}${message}`)
+export function logChildItem (message, logLevel = INFO_LOG_LEVEL) {
+  if (AVAILABLE_LOG_LEVELS.includes(logLevel)) {
+    logger[logLevel](`${childPrefix}${message}`)
+  } else {
+    throw new InternalError(`Invalid Log Level ${logLevel} for logChildItem function call`)
+  }
 }
 
 /**

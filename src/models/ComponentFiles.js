@@ -12,20 +12,11 @@ class ComponentFiles {
   /** @type {string} **/
   #liquidFile
 
-  /** @type {string[]} **/
-  #localeFiles = []
-
   /** @type {string} **/
   #mainStylesheet
 
   /** @type {string} **/
   #packageJson
-
-  /** @type {string} **/
-  #schemaFile
-
-  /** @type {string[]} **/
-  #schemaLocaleFiles = []
 
   /** @type {string[]} **/
   #snippetFiles = []
@@ -98,22 +89,6 @@ class ComponentFiles {
   }
 
   /**
-   * Get Locale Files' locations
-   * @returns {string[]}
-   */
-  get localeFiles () {
-    return this.#localeFiles
-  }
-
-  /**
-   * Set Locale Files' locations
-   * @param {string[]} value
-   */
-  set localeFiles (value) {
-    this.#localeFiles = value
-  }
-
-  /**
    * Get Main Stylesheet file location
    * @returns {string}
    */
@@ -143,38 +118,6 @@ class ComponentFiles {
    */
   set packageJson (value) {
     this.#packageJson = value
-  }
-
-  /**
-   *  Get Schema File location
-   * @returns {string}
-   */
-  get schemaFile () {
-    return this.#schemaFile
-  }
-
-  /**
-   * Set Schema File location
-   * @param {string} value
-   */
-  set schemaFile (value) {
-    this.#schemaFile = value
-  }
-
-  /**
-   * Get Schema Locale Files' location
-   * @return {string[]}
-   */
-  get schemaLocaleFiles () {
-    return this.#schemaLocaleFiles
-  }
-
-  /**
-   * Set Schema Locale Files' locations
-   * @param {string[]} value
-   */
-  set schemaLocaleFiles (value) {
-    this.#schemaLocaleFiles = value
   }
 
   /**

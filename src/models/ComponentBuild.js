@@ -2,9 +2,6 @@ class ComponentBuild {
   /** @type {string} **/
   #liquidCode
 
-  /** @type {Object} **/
-  #locales
-
   /**
    * Get liquid code
    * @return {string}
@@ -19,22 +16,6 @@ class ComponentBuild {
    */
   set liquidCode (value) {
     this.#liquidCode = value
-  }
-
-  /**
-   * Get Locales
-   * @return {Object}
-   */
-  get locales () {
-    return this.#locales
-  }
-
-  /**
-   * Set Locales
-   * @param {Object} value
-   */
-  set locales (value) {
-    this.#locales = value
   }
 }
 

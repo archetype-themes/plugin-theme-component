@@ -160,6 +160,10 @@ class Component {
   set snippets (value) {
     this.#snippets = value
   }
+
+  isSvg () {
+    return !!((this.name.startsWith('icon-') || this.name.endsWith('-svg') || this.name.endsWith('.svg')))
+  }
 }
 
 export default Component
