@@ -13,7 +13,7 @@ import WebUtils from '../../utils/WebUtils.js'
 import JavaScriptProcessor from '../../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../../utils/LocaleUtils.js'
 import StylesProcessor from '../../processors/StylesProcessor.js'
-import { getTimeElapsed, getTimer } from '../../utils/Timer.js'
+import Timer from '../../utils/Timer.js'
 import { logChildItem, WARN_LOG_LEVEL } from '../../utils/Logger.js'
 
 class CollectionBuilder {
@@ -25,10 +25,10 @@ class CollectionBuilder {
   static async build (collection) {
     const allComponents = collection.allComponents
 
-    const buildCollectionTimer = getTimer()
+    const buildCollectionTimer = new Timer()
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection.build)
-    logChildItem(`Collection Build Initialized (${getTimeElapsed(buildCollectionTimer)} seconds)`);
+    logChildItem(`Collection Build Initialized (${buildCollectionTimer.now()} seconds)`);
 
     [collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
       this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
@@ -45,13 +45,17 @@ class CollectionBuilder {
    * @param {(Component|Snippet)[]} components - An array of all components.
    * @param {string} importMapFile - The collection's import map file.
    * @param {string} cwd - The working directory.
-   * @return {Map<string, string>} - A promise that resolves when the JavaScript files have been built.
+   * @return {Promise<Map<string, string>>} - A promise that resolves when the JavaScript files have been built.
    */
   static async #buildJavaScript (components, importMapFile, cwd) {
     const jsFiles = this.#getJsFiles(components)
 
     if (jsFiles.length) {
-      return JavaScriptProcessor.buildJavaScript(jsFiles, importMapFile, cwd)
+      logChildItem('Starting Import Map Processor')
+      const timer = new Timer()
+      const importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, importMapFile, cwd)
+      logChildItem(`Completed Import Map Processor in ${timer.now()}seconds`)
+      return importMapEntries
     } else {
       logChildItem('No Javascript Files Found. Javascript Build Process Was Skipped.', WARN_LOG_LEVEL)
     }

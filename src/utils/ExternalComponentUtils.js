@@ -4,13 +4,13 @@ import Session from '../models/static/Session.js'
 import { copyFolder, exists, getFolderFilesRecursively, isReadable } from './FileUtils.js'
 import { clone, pull, restore } from './GitUtils.js'
 import { logChildItem } from './Logger.js'
-import { getTimeElapsed, getTimer } from './Timer.js'
+import Timer from './Timer.js'
 import { isRepoUrl } from './WebUtils.js'
 
 export default class ExternalComponentUtils {
   static async install (sourceLocation, targetFolder, name) {
     logChildItem(`Searching for "${name}" locally`)
-    const timer = getTimer()
+    const timer = new Timer()
 
     if (await exists(join(targetFolder, '.git'))) {
       logChildItem(`${name} repository found locally`)
@@ -27,7 +27,7 @@ export default class ExternalComponentUtils {
       logChildItem(`Installing missing local ${name} copy`)
       await copyFolder(sourceLocation, targetFolder, { recursive: true })
     }
-    logChildItem(`${name} is now ready (${getTimeElapsed(timer)} seconds)`)
+    logChildItem(`${name} is now ready (${timer.now()} seconds)`)
 
     return getFolderFilesRecursively(targetFolder)
   }
