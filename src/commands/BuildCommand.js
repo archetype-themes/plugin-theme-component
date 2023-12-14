@@ -216,9 +216,9 @@ class BuildCommand {
   static async deployCollection (collection) {
     // Deploy Collection To Disk
     logTitleItem('Writing Collection Build To Disk')
-    const collectionDeployStartTime = new Timer()
+    const timer = new Timer()
     await CollectionBuilder.deployToBuildFolder(collection)
-    logChildItem(`Build Deployment Complete (${collectionDeployStartTime.now()} seconds)`)
+    logChildItem(`Build Deployment Complete (${timer.now()} seconds)`)
     logSpacer()
   }
 

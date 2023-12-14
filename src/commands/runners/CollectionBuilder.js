@@ -25,10 +25,10 @@ class CollectionBuilder {
   static async build (collection) {
     const allComponents = collection.allComponents
 
-    const buildCollectionTimer = new Timer()
+    const timer = new Timer()
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection.build)
-    logChildItem(`Collection Build Initialized (${buildCollectionTimer.now()} seconds)`);
+    logChildItem(`Collection Build Initialized (${timer.now()} seconds)`);
 
     [collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
       this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
@@ -51,10 +51,10 @@ class CollectionBuilder {
     const jsFiles = this.#getJsFiles(components)
 
     if (jsFiles.length) {
-      logChildItem('Starting Import Map Processor')
+      logChildItem('Running the Import Map Processor')
       const timer = new Timer()
       const importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, importMapFile, cwd)
-      logChildItem(`Completed Import Map Processor in ${timer.now()}seconds`)
+      logChildItem(`Import Map Processor completed in ${timer.now()} seconds`)
       return importMapEntries
     } else {
       logChildItem('No Javascript Files Found. Javascript Build Process Was Skipped.', WARN_LOG_LEVEL)
@@ -71,8 +71,12 @@ class CollectionBuilder {
   static async #buildLocales (components, cwd) {
     const liquidCodeElements = components.map(component => component.liquidCode)
     try {
+      logChildItem('Running the Locales Processor')
+      const timer = new Timer()
       const validLocalesRepo = await validateExternalLocation(Session.localesRepo, cwd)
-      return LocalesProcessor.build(liquidCodeElements, validLocalesRepo, cwd)
+      const locales = await LocalesProcessor.build(liquidCodeElements, validLocalesRepo, cwd)
+      logChildItem(`Locales Processor completed in ${timer.now()} seconds`)
+      return locales
     } catch (error) {
       exitWithError('Source Locales DB Folder or Repository is invalid: ' + error.message)
     }
@@ -90,7 +94,12 @@ class CollectionBuilder {
     const mainStylesheets = this.#getMainStylesheets(components)
 
     if (mainStylesheets.length) {
-      return StylesProcessor.buildStylesBundle(mainStylesheets, outputFile, cwd)
+      logChildItem('Running the Styles Processor')
+      const timer = new Timer()
+
+      const styles = await StylesProcessor.buildStylesBundle(mainStylesheets, outputFile, cwd)
+      logChildItem(`Styles Processor completed in ${timer.now()} seconds`)
+      return styles
     }
   }
 
