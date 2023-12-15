@@ -110,7 +110,7 @@ class BuildCommand {
     logChildItem(`Build complete (${buildStartTime.now()} seconds)`)
     logSpacer()
 
-    logTitleItem(`Structuring Components Tree for ${currentTargetName}`)
+    logTitleItem('Components Tree')
     const treeStartTime = new Timer()
 
     // Build Component Hierarchy Structure
@@ -197,10 +197,12 @@ class BuildCommand {
 
     logChildMessage(`${prefix}${ascii} ${component.name}`)
 
-    if (component.snippets?.length) {
+    // Removing icons from the list
+    const filteredSnippets = component.snippets.filter(component => !component.isSvg())
+    if (filteredSnippets.length) {
       grid.push(!last)
-      for (const [i, snippet] of component.snippets.entries()) {
-        const lastChild = i === component.snippets.length - 1
+      for (const [i, snippet] of filteredSnippets.entries()) {
+        const lastChild = i === filteredSnippets.length - 1
         this.folderTreeLog(snippet, lastChild, grid)
 
         lastChild && grid.pop()
@@ -216,9 +218,9 @@ class BuildCommand {
   static async deployCollection (collection) {
     // Deploy Collection To Disk
     logTitleItem('Writing Collection Build To Disk')
-    const collectionDeployStartTime = new Timer()
+    const timer = new Timer()
     await CollectionBuilder.deployToBuildFolder(collection)
-    logChildItem(`Build Deployment Complete (${collectionDeployStartTime.now()} seconds)`)
+    logChildItem(`Build Deployment Complete (${timer.now()} seconds)`)
     logSpacer()
   }
 

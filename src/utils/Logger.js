@@ -55,7 +55,8 @@ let logger = pino({
     options: {
       colorize: true,
       ignore: 'time,pid,hostname',
-      singleLine: false
+      singleLine: false,
+      sync: true
     }
   }
 })
