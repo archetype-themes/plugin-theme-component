@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.9.2] - 2023-12-14
 
+### Changed
+
+- Missing Translation Warnings are now in alphabetical order and deduplicated
+- Components Tree filters out images
+
 ### Fixed
 
 - Execution Time Logs for Styles and JS Processors restored

@@ -36,6 +36,8 @@ export default class LocalesProcessor {
    */
   static filterTranslations (availableLocales, translationKeys) {
     const filteredLocales = {}
+    /** @type {Map<string,Set>} **/
+    const missingLocales = new Map()
 
     Object.keys(availableLocales).forEach(locale => {
       translationKeys.forEach(key => {
@@ -45,8 +47,19 @@ export default class LocalesProcessor {
         if (value) {
           set(filteredLocales, fullKey, value)
         } else {
-          logChildItem(`Translation missing "${key}" for the "${locale}" locale.`, WARN_LOG_LEVEL)
+          if (!missingLocales.has(key)) { missingLocales.set(key, new Set()) }
+          if (!missingLocales.get(key).has(locale)) {
+            missingLocales.get(key).add(locale)
+          }
         }
+      })
+    })
+
+    const sortedMissingLocales = [...missingLocales.entries()].toSorted((a, b) => a[0].localeCompare(b[0]))
+
+    sortedMissingLocales.forEach(([translationKey, locales]) => {
+      locales.forEach(locale => {
+        logChildItem(`Translation missing "${translationKey}" for the "${locale}" locale.`, WARN_LOG_LEVEL)
       })
     })
 
