@@ -111,7 +111,7 @@ class SessionFactory {
     if (command && commandOptions) {
       console.log(`Available options for the "${command}" command are [${commandOptions.join('/')}]`)
     } else {
-      console.log('Available commands are build, dev, create and install')
+      console.log('Available commands are build, dev, generate and install')
     }
   }
 

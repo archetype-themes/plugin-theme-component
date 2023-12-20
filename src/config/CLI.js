@@ -13,16 +13,16 @@ export const BUILD_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_
 export const BUILD_FOLDER_NAME = 'build'
 
 /** @type {string} **/
-export const CREATE_COMMAND_NAME = 'create'
+export const GENERATE_COMMAND_NAME = 'generate'
 
 /** @type {string[]} **/
-export const CREATE_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME]
+export const GENERATE_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NAME]
 
 /** @type {string[]} **/
-export const CREATE_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COMPONENT_TYPE_NAME]
+export const GENERATE_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COMPONENT_TYPE_NAME]
 
 /** @type {string} **/
-export const CREATE_COMMAND_DEFAULT_TARGET_TYPE = Components.COMPONENT_TYPE_NAME
+export const GENERATE_COMMAND_DEFAULT_TARGET_TYPE = Components.COMPONENT_TYPE_NAME
 
 /** @type {string} **/
 export const DEV_COMMAND_NAME = 'dev'
@@ -50,7 +50,7 @@ export const INSTALL_COMMAND_DEFAULT_TARGET_TYPE = Components.COLLECTION_TYPE_NA
 
 /** @type {string[]} **/
 export const AVAILABLE_COMMANDS = [
-  BUILD_COMMAND_NAME, CREATE_COMMAND_NAME, DEV_COMMAND_NAME, INSTALL_COMMAND_NAME
+  BUILD_COMMAND_NAME, GENERATE_COMMAND_NAME, DEV_COMMAND_NAME, INSTALL_COMMAND_NAME
 ]
 
 /** @type {string[]} **/

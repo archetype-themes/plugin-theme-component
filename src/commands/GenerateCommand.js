@@ -11,9 +11,9 @@ import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
-class CreateCommand {
+class GenerateCommand {
   /**
-   * Execute The CLI's Create Command
+   * Execute The CLI's Generate Command
    * @param {Object} packageManifest - package.json contents
    * @returns {Promise<ChildProcess>}
    */
@@ -23,7 +23,7 @@ class CreateCommand {
     const componentFolder = join(workspaceFolder, componentName)
     const componentRootFolder = join(NodeUtils.getPackageRootFolder(), componentFolder)
 
-    logger.info(`Creating "${componentName}" ${Session.targetType}`)
+    logger.info(`Generating "${componentName}" ${Session.targetType}`)
 
     // Exit if the folder already exists
     let folderExists = false
@@ -71,4 +71,4 @@ class CreateCommand {
   }
 }
 
-export default CreateCommand
+export default GenerateCommand

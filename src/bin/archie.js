@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import BuildCommand from '../commands/BuildCommand.js'
-import CreateCommand from '../commands/CreateCommand.js'
+import GenerateCommand from '../commands/GenerateCommand.js'
 import DevCommand from '../commands/DevCommand.js'
 import InstallCommand from '../commands/InstallCommand.js'
-import { BUILD_COMMAND_NAME, CREATE_COMMAND_NAME, DEV_COMMAND_NAME, INSTALL_COMMAND_NAME } from '../config/CLI.js'
+import { BUILD_COMMAND_NAME, GENERATE_COMMAND_NAME, DEV_COMMAND_NAME, INSTALL_COMMAND_NAME } from '../config/CLI.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Session from '../models/static/Session.js'
 import SessionFactory from '../factory/SessionFactory.js'
@@ -23,8 +23,8 @@ try {
     case BUILD_COMMAND_NAME:
       await BuildCommand.execute()
       break
-    case CREATE_COMMAND_NAME:
-      await CreateCommand.execute(packageManifest)
+    case GENERATE_COMMAND_NAME:
+      await GenerateCommand.execute(packageManifest)
       break
     case DEV_COMMAND_NAME:
       await DevCommand.execute()
