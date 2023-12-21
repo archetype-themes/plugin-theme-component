@@ -12,5 +12,5 @@
     "skipDefaultLibCheck": true,
     "checkJs": true
   },
-  "include": ["src/**/*"]
+  "include": ["src", "bin", "plugin"]
 }
