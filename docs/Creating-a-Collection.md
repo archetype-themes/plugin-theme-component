@@ -24,7 +24,7 @@ Now, let's install the CLI
 
 ```shell
 # Install it with NPM to use it with your Collection.
-npm install archetype-themes/archie
+npm install @archetype-themes/archie
 ```
 
 ## Node Package Configuration
@@ -65,6 +65,24 @@ Once installed and configured, you can always access the CLI manually in the fol
 
 ```shell
 npx archie
+```
+
+## Creating an ignore file
+
+To avoid saving temporary build files in the repository. You need to create a `.gitignore` file at the root of your
+project.
+
+```gitignore
+# Archetype Themes Component Plugin
+/build
+/.explorer
+/.locales
+
+# Node.js packages
+/node_modules
+
+#MacOS
+.DS_Store
 ```
 
 ## Growing Your Collection
