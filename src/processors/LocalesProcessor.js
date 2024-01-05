@@ -6,6 +6,7 @@ import LiquidUtils from '../utils/LiquidUtils.js'
 import { ERROR_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
 
 const LOCALES_FOLDER = '.locales'
+const LOCALES_SUBFOLDER = 'locales'
 
 const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 
@@ -19,7 +20,7 @@ export default class LocalesProcessor {
    */
   static async build (liquidCodeElements, source, installFolderRoot) {
     const elements = Array.isArray(liquidCodeElements) ? liquidCodeElements : [liquidCodeElements]
-    const installFolder = join(installFolderRoot, LOCALES_FOLDER)
+    const installFolder = join(installFolderRoot, LOCALES_FOLDER, LOCALES_SUBFOLDER)
 
     const localeFiles = await this.setupLocalesDatabase(source, installFolder)
     const availableLocales = await this.parseLocaleFilesContent(localeFiles)
