@@ -56,7 +56,7 @@ export default class LocalesProcessor {
       })
     })
 
-    const sortedMissingLocales = [...missingLocales.entries()].toSorted((a, b) => a[0].localeCompare(b[0]))
+    const sortedMissingLocales = [...missingLocales.entries()].sort((a, b) => a[0].localeCompare(b[0]))
 
     sortedMissingLocales.forEach(([translationKey, locales]) => {
       locales.forEach(locale => {
