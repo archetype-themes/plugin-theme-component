@@ -20,7 +20,7 @@ export default class LocalesProcessor {
    */
   static async build (liquidCodeElements, source, installFolderRoot) {
     const elements = Array.isArray(liquidCodeElements) ? liquidCodeElements : [liquidCodeElements]
-    const installFolder = join(installFolderRoot, LOCALES_FOLDER, LOCALES_SUBFOLDER)
+    const installFolder = join(installFolderRoot, LOCALES_FOLDER)
 
     const localeFiles = await this.setupLocalesDatabase(source, installFolder)
     const availableLocales = await this.parseLocaleFilesContent(localeFiles)
