@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.3] - 2024-01-08
+
 ### Added
 
 - Shopify CLI plugin integration ([#272](https://github.com/archetype-themes/archie/pull/272))
+
+### Fixed
+
+- Process locale files only ([#289](https://github.com/archetype-themes/archie/pull/289))
 
 ## [1.9.3] - 2023-12-20
 

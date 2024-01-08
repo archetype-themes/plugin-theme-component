@@ -20,9 +20,9 @@ export default class LocalesProcessor {
    */
   static async build (liquidCodeElements, source, installFolderRoot) {
     const elements = Array.isArray(liquidCodeElements) ? liquidCodeElements : [liquidCodeElements]
-    const installFolder = join(installFolderRoot, LOCALES_FOLDER, LOCALES_SUBFOLDER)
+    const installFolder = join(installFolderRoot, LOCALES_FOLDER)
 
-    const localeFiles = await this.setupLocalesDatabase(source, installFolder)
+    const localeFiles = await this.setupLocalesDatabase(source, installFolder, LOCALES_SUBFOLDER)
     const availableLocales = await this.parseLocaleFilesContent(localeFiles)
     const translationKeys = elements.flatMap(code => this.#getTranslationKeys(code))
 
@@ -91,9 +91,9 @@ export default class LocalesProcessor {
     return [...translationKeys]
   }
 
-  static async setupLocalesDatabase (localesRepoOption, localesFolder) {
+  static async setupLocalesDatabase (localesRepoOption, localesFolder, localesSubFolder) {
     await install(localesRepoOption, localesFolder, 'Locales DB')
-    return getFolderFilesRecursively(localesFolder)
+    return getFolderFilesRecursively(join(localesFolder, localesSubFolder))
   }
 
   /**
