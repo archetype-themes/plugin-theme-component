@@ -176,7 +176,7 @@ class SessionFactory {
    */
   static #validatePackageManifest (packageManifest) {
     if (!packageManifest.archie?.type) {
-      throw new ConfigError(`Couldn't find archie.type value in package.json. Please create the variable and set it to either one of these: ${AVAILABLE_CALLER_TYPES.join('/')}`)
+      throw new ConfigError(`Couldn't find archie.type value in shopify.theme.toml. Please create the variable and set it to either one of these: ${AVAILABLE_CALLER_TYPES.join('/')}`)
     }
   }
 
