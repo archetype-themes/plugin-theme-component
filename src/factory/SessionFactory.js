@@ -25,10 +25,10 @@ class SessionFactory {
   /**
    * Session Factory method From Command Line Input
    * @param {string[]} commandLineArguments
-   * @param {{archie:CLIConfig}} packageManifest
+   * @param {{archie: import('../models/static/Session.js').CLIConfig}} config
    * @return {Session}
    */
-  static fromArgsAndManifest (commandLineArguments, packageManifest) {
+  static fromArgsAndManifest (commandLineArguments, config) {
     const [args, flags] = this.#splitArgs(commandLineArguments)
 
     if (args.length === 0) {
@@ -36,12 +36,12 @@ class SessionFactory {
       exit(0)
     }
 
-    this.#validatePackageManifest(packageManifest)
+    this.#validatePackageManifest(config)
 
-    Session.config = packageManifest.archie
-    Session.callerType = packageManifest.archie.type.toLowerCase()
-    Session.devTheme = packageManifest.archie['dev-theme'] ? packageManifest.archie['dev-theme'] : DEFAULT_DEV_THEME
-    Session.localesRepo = packageManifest.archie['locales-repo'] ? packageManifest.archie['locales-repo'] : DEFAULT_LOCALES_REPO
+    Session.config = config.archie
+    Session.callerType = config.archie.type.toLowerCase()
+    Session.devTheme = config.archie['dev-theme'] ? config.archie['dev-theme'] : DEFAULT_DEV_THEME
+    Session.localesRepo = config.archie['locales-repo'] ? config.archie['locales-repo'] : DEFAULT_LOCALES_REPO
 
     Session.command = args[0].toLowerCase()
 
@@ -75,7 +75,7 @@ class SessionFactory {
           Session.command,
           Session.targetType,
           NodeUtils.getPackageName(),
-          packageManifest?.archie.collections
+          config?.archie.collections
         )
     }
 
