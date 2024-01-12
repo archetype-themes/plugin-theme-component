@@ -188,7 +188,7 @@ class SessionFactory {
    */
   static #validateCallerComponentType (componentType) {
     if (!AVAILABLE_CALLER_TYPES.includes(componentType)) {
-      throw new ConfigError(`Invalid Component Type: The value for archie.type from package.json must be changed to one of these: ${AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
+      throw new ConfigError(`Invalid Component Type: The value for archie.type from shopify.theme.toml must be changed to one of these: ${AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
     }
   }
 }
