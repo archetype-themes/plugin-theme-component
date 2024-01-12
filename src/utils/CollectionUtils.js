@@ -20,6 +20,7 @@ const IGNORE_PATTERNS = [
   '.git',
   '.github',
   '.explorer',
+  'shopify.theme.toml',
   'bin',
   '**/.*',
   '**/*.md'
