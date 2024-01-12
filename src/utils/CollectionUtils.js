@@ -1,22 +1,17 @@
 // Node.js imports
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
 import gitignore from 'parse-gitignore'
 
 // Internal Imports
 import Components from '../config/Components.js'
-import ConfigError from '../errors/ConfigError.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
-import logger from './Logger.js'
 import {
   getMonorepoRootFolder,
-  getPackageManifest,
-  getPackageName,
-  getPackageRootFolder,
-  getWorkspaces
+  getPackageRootFolder
 } from './NodeUtils.js'
 
 const IGNORE_PATTERNS = [
@@ -25,6 +20,7 @@ const IGNORE_PATTERNS = [
   '.git',
   '.github',
   '.explorer',
+  'shopify.theme.toml',
   'bin',
   '**/.*',
   '**/*.md'
@@ -78,57 +74,30 @@ class CollectionUtils {
 
   /**
    * Find Components From package.json files
-   * @param packageJsonFiles
-   * @param {string[]} ignoreFolders
-   * @returns {Promise<Component[]>}
+   * @param {string[]} componentFolders
+   * @returns {Component[]}
    */
-  static async findComponents (packageJsonFiles, ignoreFolders) {
+  static findComponents (componentFolders) {
     const components = []
 
-    for (const packageJsonFile of packageJsonFiles) {
-      const componentPackageJson = await FileUtils.getJsonFileContents(packageJsonFile)
-      let componentPath = dirname(packageJsonFile)
-
-      // Ignore the Collection's package.json file
-      if (ignoreFolders.includes(componentPath)) {
-        continue
-      }
-
-      if (componentPackageJson.archie?.path) {
-        componentPath = join(componentPath, componentPackageJson.archie.path)
-      }
-
-      if (componentPackageJson.archie?.type) {
-        if (!componentPackageJson.name) {
-          throw new ConfigError(`Component Folder Ignored: Missing Package Name In package.json File At "${packageJsonFile}"`)
-        }
-
-        const componentName = getPackageName(componentPackageJson)
-        const componentType = componentPackageJson.archie.type.toLowerCase()
-
-        if (componentType === Components.COMPONENT_TYPE_NAME) {
-          components.push(new Component(componentName, componentPath))
-        } else {
-          logger.warn(`Component Folder Ignored: Unrecognized Component Type In package.json File At ${componentPath}.`)
-        }
-      } else {
-        logger.warn(`Component Folder Ignored: No Component Type Specified In package.json File At ${componentPath}.`)
-      }
+    for (let i = 0; i < componentFolders.length; i++) {
+      const componentPath = componentFolders[i]
+      const componentName = componentPath.split('/').pop()
+      components.push(new Component(componentName, componentPath))
     }
 
     return components
   }
 
   /**
-   * Get Collection's Workspace Folders
+   * Get Collection's Component Folders
    * @param {string} collectionRootFolder
-   * @returns {Promise<string[]|null>}
+   * @returns {Promise<string[]>}
    */
-  static async getWorkspaceFolders (collectionRootFolder) {
-    const packageManifest = await getPackageManifest(collectionRootFolder)
-    const workspaces = await getWorkspaces(packageManifest)
+  static async getComponentFolders (collectionRootFolder) {
+    const componentsDir = 'components'
 
-    return workspaces ? workspaces.map(workspace => join(collectionRootFolder, workspace)) : null
+    return FileUtils.getFolders(join(collectionRootFolder, componentsDir))
   }
 
   /**

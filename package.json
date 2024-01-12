@@ -9,7 +9,7 @@
   },
   "name": "@archetype-themes/archie",
   "type": "module",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "bin": {
     "archie": "src/bin/archie.js"
   },
@@ -33,6 +33,7 @@
   },
   "repository": "https://github.com/archetype-themes/archie.git",
   "dependencies": {
+    "@iarna/toml": "2.2.5",
     "@oclif/core": "2.11.7",
     "chokidar": "^3.5.3",
     "deepmerge": "^4.3.1",

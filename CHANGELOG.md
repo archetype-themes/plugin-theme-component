@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.9.5] - 2024-01-10
 
-## [1.9.3] - 2024-01-08
+### Changed
+
+- Handle shopify.theme.toml configuration file https://github.com/archetype-themes/archie/pull/291
+
+## [1.9.4] - 2024-01-08
 
 ### Added
 

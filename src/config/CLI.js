@@ -37,6 +37,9 @@ export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NA
 export const DEV_FOLDER_NAME = '.explorer'
 
 /** @type {string} **/
+export const CONFIG_FILE_NAME = 'shopify.theme.toml'
+
+/** @type {string} **/
 export const INSTALL_COMMAND_NAME = 'install'
 
 /** @type {string[]} **/

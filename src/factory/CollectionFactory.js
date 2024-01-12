@@ -30,12 +30,11 @@ class CollectionFactory {
       collection.gitIgnoreFile = gitignoreFile
     }
 
-    // Recursively Find All package.json Files
-    collection.packageJsonFiles = await FileUtils.searchFile(collection.rootFolder, 'package.json', true)
+    // Find All component Folders
+    const componentFolders = await CollectionUtils.getComponentFolders(collection.rootFolder)
 
-    // Create Components From package.json Files Data
-    const workspaceFolders = await CollectionUtils.getWorkspaceFolders(collection.rootFolder)
-    collection.components = await CollectionUtils.findComponents(collection.packageJsonFiles, [...workspaceFolders, collection.rootFolder])
+    // Create Components From components Folders
+    collection.components = CollectionUtils.findComponents(componentFolders)
 
     // Get Component Names and Create Them
     if (componentNames && componentNames.length) {
