@@ -3,12 +3,12 @@ import { join } from 'node:path'
 import gitignore from 'parse-gitignore'
 
 // Internal Imports
-import Components from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
+import { COLLECTIONS_FOLDER_NAME } from '../config/CLI.js'
 import {
   getMonorepoRootFolder,
   getPackageRootFolder
@@ -58,12 +58,12 @@ class CollectionUtils {
         throw new InternalError('Collection name is required when getting collection root folder from a theme.')
       }
 
-      const childRepoPath = join(getPackageRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
+      const childRepoPath = join(getPackageRootFolder(), COLLECTIONS_FOLDER_NAME, collectionName)
       if (await FileUtils.isReadable(childRepoPath)) {
         return childRepoPath
       }
 
-      const parentRepoPath = join(getMonorepoRootFolder(), 'node_modules', Components.DEFAULT_PACKAGE_SCOPE, collectionName)
+      const parentRepoPath = join(getMonorepoRootFolder(), COLLECTIONS_FOLDER_NAME, collectionName)
       if (await FileUtils.isReadable(parentRepoPath)) {
         return parentRepoPath
       }
