@@ -7,6 +7,8 @@ import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 import Timer from '../models/Timer.js'
 import Watcher from '../utils/Watcher.js'
+import { install } from '../utils/ExternalComponentUtils.js'
+import { COLLECTIONS_FOLDER_NAME } from '../config/CLI.js'
 
 // Internal Imports
 import BuildCommand from './BuildCommand.js'
@@ -20,6 +22,7 @@ class InstallCommand {
   static async execute () {
     const promises = []
 
+    /** @type {Object<string, {source: string, components: string[]}>} */
     let collectionsList
     // If we have only one element as a string, convert it to object form.
     if (NodeUtils.isString(Session.targets)) {
@@ -29,7 +32,9 @@ class InstallCommand {
       collectionsList = Session.targets
     }
 
-    for (const [collectionName, componentNames] of Object.entries(collectionsList)) {
+    await this.setupCollectionsList(collectionsList)
+
+    for (const [collectionName, { components: componentNames }] of Object.entries(collectionsList)) {
       const collection = await InstallCommand.installOne(collectionName, componentNames)
 
       if (Session.watchMode) {
@@ -37,6 +42,23 @@ class InstallCommand {
       }
     }
     Session.firstRun = false
+
+    return Promise.all(promises)
+  }
+
+  /**
+   * Setup collections defined in the shopify.theme.toml file
+   *
+   * @param {Object<string, {source: string}>} collectionsList
+   */
+  static async setupCollectionsList (collectionsList) {
+    const collections = Object.entries(collectionsList)
+    const promises = []
+
+    for (const [collectionName, { source }] of collections) {
+      const targetFolder = path.join(COLLECTIONS_FOLDER_NAME, collectionName)
+      promises.push(install(source, targetFolder, collectionName))
+    }
 
     return Promise.all(promises)
   }

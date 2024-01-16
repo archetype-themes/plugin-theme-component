@@ -34,6 +34,9 @@ export const DEV_COMMAND_AVAILABLE_CALLER_TYPES = [Components.COLLECTION_TYPE_NA
 export const DEV_COMMAND_AVAILABLE_TARGET_TYPES = [Components.COLLECTION_TYPE_NAME, Components.COMPONENT_TYPE_NAME]
 
 /** @type {string} **/
+export const COLLECTIONS_FOLDER_NAME = '.collections'
+
+/** @type {string} **/
 export const DEV_FOLDER_NAME = '.explorer'
 
 /** @type {string} **/
