@@ -4,6 +4,7 @@ import Components from '../../config/Components.js'
  * @typedef CLIConfig
  * @type {Object}
  * @property {string} type - Component type (theme/collection/component)
+ * @property {string} name - Component name
  * @property {string} path - Component path (ie: './src')
  * FOR THEMES ONLY
  * @property {Object.<string, string[]>} collections - In Collection mode, list of components to build.
