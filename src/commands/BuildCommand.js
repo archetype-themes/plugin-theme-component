@@ -8,7 +8,6 @@ import Snippet from '../models/Snippet.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
 
 // Internal Imports
 import { plural } from '../utils/SyntaxUtils.js'
@@ -24,7 +23,7 @@ class BuildCommand {
    * @returns {Promise<FSWatcher|void>}
    */
   static async execute () {
-    const collectionName = NodeUtils.getPackageName()
+    const collectionName = Session.config.name
     let componentNames
     if (Session.targetType === Components.COLLECTION_TYPE_NAME) {
       componentNames = Session.config?.components
@@ -252,7 +251,7 @@ class BuildCommand {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${eventPath} detected`)
 
-    const collectionName = NodeUtils.getPackageName()
+    const collectionName = Session.config.name
     const componentNames = Session.config?.components
 
     const collection = await this.buildCollection(collectionName, componentNames)
