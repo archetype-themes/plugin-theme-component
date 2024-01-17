@@ -18,7 +18,6 @@ import {
   getDefaultTargetType
 } from '../utils/CLICommandUtils.js'
 import logger from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
 import Session, { DEFAULT_DEV_THEME, DEFAULT_LOCALES_REPO } from '../models/static/Session.js'
 
 class SessionFactory {
@@ -74,7 +73,7 @@ class SessionFactory {
           Session.callerType,
           Session.command,
           Session.targetType,
-          NodeUtils.getPackageName(),
+          Session.config.name,
           config?.archie.collections
         )
     }
@@ -162,7 +161,7 @@ class SessionFactory {
     }
 
     if (!targetName) {
-      throw new CommandLineInputError(`Please specify a ${targetType} name. ie: npx archie ${command} ${targetType} some-smart-${targetType}-name`)
+      throw new CommandLineInputError(`Please specify a ${targetType} name via shopify.theme.toml.`)
     }
 
     if (watchFlag && !WATCH_FLAG_COMMANDS.includes(command)) {

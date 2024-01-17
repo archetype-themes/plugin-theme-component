@@ -1,4 +1,4 @@
-import { basename, join } from 'node:path'
+import { basename, join, relative } from 'node:path'
 import { DEV_FOLDER_NAME } from '../config/CLI.js'
 
 import Components from '../config/Components.js'
@@ -7,7 +7,7 @@ import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import { install, validateExternalLocation } from '../utils/ExternalComponentUtils.js'
 import logger, { logChildItem, logSpacer, logTitleItem } from '../utils/Logger.js'
-import NodeUtils, { exitWithError } from '../utils/NodeUtils.js'
+import { exitWithError } from '../utils/NodeUtils.js'
 import { ucfirst } from '../utils/SyntaxUtils.js'
 import Watcher from '../utils/Watcher.js'
 import BuildCommand from './BuildCommand.js'
@@ -19,7 +19,7 @@ class DevCommand {
    * @returns {Promise<FSWatcher>}
    */
   static async execute () {
-    const collectionName = NodeUtils.getPackageName()
+    const collectionName = Session.config.name
     const componentName = Session.targets
 
     const collection = await this.exploreComponent(Session.devTheme, collectionName, componentName)
@@ -65,7 +65,7 @@ class DevCommand {
 
     const theme = await fromDevCommand(devFolder)
 
-    logTitleItem(`Installing ${Session.targets} Build To ${theme.name} Dev Theme`)
+    logTitleItem(`Installing ${Session.targets} Build To ${relative(collection.rootFolder, devFolder)}`)
 
     await CollectionInstaller.install(theme, collection)
 

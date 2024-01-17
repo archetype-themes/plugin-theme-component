@@ -4,7 +4,6 @@ import Session from '../models/static/Session.js'
 
 // Internal Imports
 import Theme from '../models/Theme.js'
-import { getPackageManifest, getPackageName, getPackageRootFolder } from '../utils/NodeUtils.js'
 import Components from '../config/Components.js'
 
 class ThemeFactory {
@@ -15,12 +14,12 @@ class ThemeFactory {
   static fromThemeInstallCommand () {
     const theme = new Theme()
 
-    theme.name = getPackageName()
+    theme.name = Session.config.name
     // Set folder names
     if (Session.config.path) {
-      theme.rootFolder = join(getPackageRootFolder(), Session.config.path)
+      theme.rootFolder = Session.config.path
     } else {
-      theme.rootFolder = getPackageRootFolder()
+      theme.rootFolder = process.cwd()
     }
 
     return ThemeFactory.#setChildFolders(theme)
@@ -32,11 +31,9 @@ class ThemeFactory {
    * @returns {Theme}
    */
   static async fromDevCommand (themeRootFolder) {
-    const packageManifest = await getPackageManifest(themeRootFolder)
     const theme = new Theme()
 
     theme.rootFolder = themeRootFolder
-    theme.name = getPackageName(packageManifest)
 
     return ThemeFactory.#setChildFolders(theme)
   }

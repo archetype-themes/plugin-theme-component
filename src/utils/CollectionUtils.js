@@ -10,8 +10,6 @@ import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
 import { COLLECTIONS_FOLDER_NAME } from '../config/CLI.js'
 import {
-  getMonorepoRootFolder,
-  getPackageRootFolder
 } from './NodeUtils.js'
 
 const IGNORE_PATTERNS = [
@@ -48,22 +46,22 @@ class CollectionUtils {
    */
   static async findRootFolder (collectionName) {
     if (Session.isComponent()) {
-      return getMonorepoRootFolder()
+      return process.cwd()
     }
     if (Session.isCollection()) {
-      return getPackageRootFolder()
+      return process.cwd()
     }
     if (Session.isTheme()) {
       if (!collectionName) {
         throw new InternalError('Collection name is required when getting collection root folder from a theme.')
       }
 
-      const childRepoPath = join(getPackageRootFolder(), COLLECTIONS_FOLDER_NAME, collectionName)
+      const childRepoPath = join(COLLECTIONS_FOLDER_NAME, collectionName)
       if (await FileUtils.isReadable(childRepoPath)) {
         return childRepoPath
       }
 
-      const parentRepoPath = join(getMonorepoRootFolder(), COLLECTIONS_FOLDER_NAME, collectionName)
+      const parentRepoPath = join(COLLECTIONS_FOLDER_NAME, collectionName)
       if (await FileUtils.isReadable(parentRepoPath)) {
         return parentRepoPath
       }
