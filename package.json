@@ -7,9 +7,9 @@
       "default": "./src/bin/archie.js"
     }
   },
-  "name": "@archetype-themes/archie",
+  "name": "plugin-theme-components",
   "type": "module",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "bin": {
     "archie": "src/bin/archie.js"
   },
