@@ -1,9 +1,9 @@
-# @archetype-themes/archie
+# plugin-theme-component
 
 Shopify CLI plugin for building theme components.
 
 <!-- toc -->
-* [@archetype-themes/archie](#archetype-themesarchie)
+* [plugin-theme-component](#plugin-theme-component)
 * [Commands](#commands)
 * [Development](#development)
 <!-- tocstop -->
