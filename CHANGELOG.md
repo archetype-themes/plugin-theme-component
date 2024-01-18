@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Drop package.json functions https://github.com/archetype-themes/plugin-theme-component/pull/299
 
+### Fixed
+
+- Repo paths fix https://github.com/archetype-themes/plugin-theme-component/pull/301
+
 ## [1.9.7] - 2024-01-17
 
 ### Changed
