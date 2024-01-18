@@ -1,5 +1,5 @@
 // Node.js imports
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import gitignore from 'parse-gitignore'
 
 // Internal Imports
@@ -56,12 +56,12 @@ class CollectionUtils {
         throw new InternalError('Collection name is required when getting collection root folder from a theme.')
       }
 
-      const childRepoPath = join(COLLECTIONS_FOLDER_NAME, collectionName)
+      const childRepoPath = join(resolve(COLLECTIONS_FOLDER_NAME), collectionName)
       if (await FileUtils.isReadable(childRepoPath)) {
         return childRepoPath
       }
 
-      const parentRepoPath = join(COLLECTIONS_FOLDER_NAME, collectionName)
+      const parentRepoPath = join(resolve(COLLECTIONS_FOLDER_NAME), collectionName)
       if (await FileUtils.isReadable(parentRepoPath)) {
         return parentRepoPath
       }
