@@ -22,7 +22,7 @@ class BuildFactory {
     // Files
     build.importMapFile = join(build.snippetsFolder, Components.IMPORT_MAP_SNIPPET_FILENAME)
     build.javascriptFile = join(build.assetsFolder, `${collection.name}.js`)
-    build.stylesheet = join(build.assetsFolder, `${collection.name}.css.liquid`)
+    build.stylesheet = join(build.assetsFolder, `${collection.name}.css`)
 
     return build
   }

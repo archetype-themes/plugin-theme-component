@@ -4,7 +4,7 @@ import os from 'node:os'
 import path from 'node:path'
 
 // Internal Imports
-import PostCssProcessor from './styles/PostCssProcessor.js'
+import LightningCssProcessor from './styles/LightningCssProcessor.js'
 import FileUtils from '../utils/FileUtils.js'
 import StylesUtils from '../utils/StylesUtils.js'
 
@@ -21,9 +21,9 @@ class StylesProcessor {
     const masterStylesheetContents = StylesUtils.createMasterStylesheet(stylesheets)
 
     await FileUtils.saveFile(masterStylesheet, masterStylesheetContents)
-    const css = await PostCssProcessor.processStyles(masterStylesheetContents, masterStylesheet, outputFile, collectionRootFolder)
+    const { code } = LightningCssProcessor.processStyles(masterStylesheet)
     await unlink(masterStylesheet)
-    return css
+    return code.toString()
   }
 }
 
