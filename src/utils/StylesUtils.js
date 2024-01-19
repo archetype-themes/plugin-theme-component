@@ -7,23 +7,23 @@ import FileUtils from './FileUtils.js'
 class StylesUtils {
   /**
    * Create Master Stylesheet
-   * @param stylesheets
+   * @param {string[]} stylesheets
    * @return {string}
    */
   static createMasterStylesheet (stylesheets) {
-    let masterStylesheetContents = ''
-    const processedStylesheets = []
+    const masterStylesheetContents = []
+    const processedStylesheets = new Set()
 
     for (const stylesheet of stylesheets) {
       // When building a Collection, multiple Components might include the same snippet,
       // Therefore we check for duplicates
-      if (!processedStylesheets.includes(stylesheet)) {
-        masterStylesheetContents += `@import url('${stylesheet}');\n`
-        processedStylesheets.push(stylesheet)
+      if (!processedStylesheets.has(stylesheet)) {
+        masterStylesheetContents.push(`@import '${stylesheet}';`)
+        processedStylesheets.add(stylesheet)
       }
     }
 
-    return masterStylesheetContents
+    return masterStylesheetContents.join('\n')
   }
 
   /**
