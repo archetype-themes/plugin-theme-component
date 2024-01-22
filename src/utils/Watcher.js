@@ -16,10 +16,6 @@ class Watcher {
 
     /** @type {import('chokidar').WatchOptions} */
     const watchOptions = {
-      awaitWriteFinish: {
-        pollInterval: 20,
-        stabilityThreshold: 60
-      },
       cwd: rootFolder,
       ignoreInitial: true,
       ignored: ignorePatterns
