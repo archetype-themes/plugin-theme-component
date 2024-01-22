@@ -5,8 +5,8 @@ import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import logger from './Logger.js'
 
 export default class FileUtils {
-  /** @property {string[]} **/
-  static #EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
+  /** @property {Set<string>} **/
+  static #EXCLUDED_FOLDERS = new Set([BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git'])
   /** @property {Object} **/
   static #FILE_ENCODING_OPTION = { encoding: 'utf8' }
 
@@ -120,7 +120,7 @@ export default class FileUtils {
     for (const entry of entries) {
       const absolutePath = join(folder, entry.name)
       if (entry.isDirectory()) {
-        if (!FileUtils.#EXCLUDED_FOLDERS.includes(entry.name)) {
+        if (!FileUtils.#EXCLUDED_FOLDERS.has(entry.name)) {
           files.push(...(await FileUtils.getFolderFilesRecursively(absolutePath)))
         }
       } else { files.push(absolutePath) }
@@ -140,7 +140,7 @@ export default class FileUtils {
     const folders = []
 
     const promises = entries.map(async (entry) => {
-      if (entry.isDirectory() && !FileUtils.#EXCLUDED_FOLDERS.includes(entry.name)) {
+      if (entry.isDirectory() && !FileUtils.#EXCLUDED_FOLDERS.has(entry.name)) {
         const absolutePath = join(folder, entry.name)
         folders.push(absolutePath)
         if (recursive) {
@@ -245,7 +245,7 @@ export default class FileUtils {
 
       for (const entry of entries) {
         if (entry.isDirectory()) {
-          if (recursive && !FileUtils.#EXCLUDED_FOLDERS.includes(entry.name)) {
+          if (recursive && !FileUtils.#EXCLUDED_FOLDERS.has(entry.name)) {
             files = files.concat(await FileUtils.searchFile(join(path, entry.name), filename, recursive))
           }
         } else if (entry.name === filename) {
