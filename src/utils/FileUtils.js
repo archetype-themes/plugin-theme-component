@@ -6,7 +6,7 @@ import logger from './Logger.js'
 
 export default class FileUtils {
   /** @property {Set<string>} **/
-  static #EXCLUDED_FOLDERS = new Set([BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git'])
+  static #EXCLUDED_FOLDERS = new Set([BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git', '.github'])
   /** @property {Object} **/
   static #FILE_ENCODING_OPTION = { encoding: 'utf8' }
 
