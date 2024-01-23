@@ -21,7 +21,7 @@ class ComponentFactory {
     component.snippetNames = LiquidUtils.getSnippetNames(component.liquidCode)
 
     // Warn When A Possible Recursive Render Call Is Made
-    if (component.snippetNames.includes(component.name)) {
+    if (component.snippetNames.has(component.name)) {
       logger.warn(`The "${component.name}" component is trying to render itself, which could lead to a recursive infinite loop.`)
     }
 

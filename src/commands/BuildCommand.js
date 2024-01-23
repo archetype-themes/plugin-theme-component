@@ -168,7 +168,7 @@ class BuildCommand {
    */
   static async setComponentHierarchy (topComponents, availableComponents) {
     for (const topComponent of topComponents) {
-      if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
+      if (!topComponent.snippets?.length && topComponent.snippetNames?.size) {
         for (const snippetName of topComponent.snippetNames) {
           const snippet = availableComponents.find(component => component.name === snippetName)
           if (snippet !== undefined) {

@@ -17,7 +17,7 @@ class Component {
   /** @type {Object } **/
   #locales = {}
 
-  /** @type {string[]} **/
+  /** @type {Set<string>} **/
   #snippetNames
 
   /** @type {Snippet[]} **/
@@ -131,7 +131,7 @@ class Component {
 
   /**
    * Get Snippet Names
-   * @returns {string[]}
+   * @returns {Set<string>}
    */
   get snippetNames () {
     return this.#snippetNames
@@ -139,7 +139,7 @@ class Component {
 
   /**
    * Set Snippet Names
-   * @param {string[]}value
+   * @param {Set<string>} value
    */
   set snippetNames (value) {
     this.#snippetNames = value

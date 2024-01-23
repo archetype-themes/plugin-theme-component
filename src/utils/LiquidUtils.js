@@ -23,7 +23,7 @@ class LiquidUtils {
       }
     }
 
-    return [...snippetNames]
+    return snippetNames
   }
 
   static stripComments (liquidCode) {
