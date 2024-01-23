@@ -12,8 +12,8 @@ import logger from './Logger.js'
 import StylesUtils from './StylesUtils.js'
 
 class ComponentFilesUtils {
-  static STYLE_EXTENSIONS = ['.css', '.less', '.sass', '.scss']
-  static SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
+  static STYLE_EXTENSIONS = new Set(['.css', '.less', '.sass', '.scss'])
+  static SCRIPT_EXTENSIONS = new Set(['.js', '.mjs', '.cjs'])
 
   /**
    * Index Component Files
@@ -64,12 +64,12 @@ class ComponentFilesUtils {
         continue
       }
 
-      if (this.STYLE_EXTENSIONS.includes(extension)) {
+      if (this.STYLE_EXTENSIONS.has(extension)) {
         componentFiles.stylesheets.push(file)
         continue
       }
 
-      if (this.SCRIPT_EXTENSIONS.includes(extension)) {
+      if (this.SCRIPT_EXTENSIONS.has(extension)) {
         componentFiles.javascriptFiles.push(file)
         continue
       }
