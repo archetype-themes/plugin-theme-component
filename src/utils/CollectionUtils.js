@@ -8,16 +8,14 @@ import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
-import { COLLECTIONS_FOLDER_NAME } from '../config/CLI.js'
-import {
-} from './NodeUtils.js'
+import { COLLECTIONS_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
 const IGNORE_PATTERNS = [
   'package.json',
   'package-lock.json',
   '.git',
   '.github',
-  '.explorer',
+  DEV_FOLDER_NAME,
   'shopify.theme.toml',
   'bin',
   '**/.*',

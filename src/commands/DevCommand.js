@@ -12,6 +12,7 @@ import { ucfirst } from '../utils/SyntaxUtils.js'
 import Watcher from '../utils/Watcher.js'
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
+import { spawn } from 'node:child_process'
 
 class DevCommand {
   /**
@@ -71,6 +72,8 @@ class DevCommand {
 
     logChildItem('Install Complete')
 
+    await this.runThemeSync(collection.rootFolder)
+
     return collection
   }
 
@@ -95,6 +98,20 @@ class DevCommand {
     logSpacer()
     return Watcher.watch(watcher, onCollectionWatchEvent)
   }
+
+  static async runThemeSync (collectionRootFolder) {
+    const cwd = join(collectionRootFolder, DEV_FOLDER_NAME)
+    const shopifyThemePush = spawn('shopify', ['theme', 'push', '-a', '-l'], {
+      cwd, stdio: 'inherit'
+    })
+
+    return new Promise((resolve) => {
+      shopifyThemePush.on('close', code => {
+        resolve(code)
+      })
+    })
+  }
+
 }
 
 export default DevCommand
