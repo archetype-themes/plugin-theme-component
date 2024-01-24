@@ -101,7 +101,7 @@ class DevCommand {
 
   static async runThemeSync (collectionRootFolder) {
     const cwd = join(collectionRootFolder, DEV_FOLDER_NAME)
-    const shopifyThemePush = spawn('shopify', ['theme', 'push','-a', '-l', '--path', cwd], {
+    const shopifyThemePush = spawn('shopify', ['theme', 'push','-d', '--path', cwd], {
       stdio: 'inherit'
     })
 
