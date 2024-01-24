@@ -17,16 +17,23 @@ import { spawn } from 'node:child_process'
 class DevCommand {
   /**
    * Execute The Dev CLI Command
-   * @returns {Promise<FSWatcher>}
+   * @return {Promise<Awaited<FSWatcher|unknown>[]>}
    */
   static async execute () {
     const collectionName = Session.config.name
     const componentName = Session.targets
 
+    // Initial build
     const collection = await this.exploreComponent(Session.devTheme, collectionName, componentName)
+
+    // Start watcher and shopify theme dev processes
     Session.firstRun = false
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    return this.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, componentName)
+    const watcherPromise = this.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, componentName)
+    const themeDevPromise = this.runThemeDev(collection.rootFolder)
+
+    return Promise.all([watcherPromise, themeDevPromise])
+
   }
 
   /**
@@ -72,8 +79,6 @@ class DevCommand {
 
     logChildItem('Install Complete')
 
-    await this.runThemeSync(collection.rootFolder)
-
     return collection
   }
 
@@ -99,14 +104,14 @@ class DevCommand {
     return Watcher.watch(watcher, onCollectionWatchEvent)
   }
 
-  static async runThemeSync (collectionRootFolder) {
+  static async runThemeDev (collectionRootFolder) {
     const cwd = join(collectionRootFolder, DEV_FOLDER_NAME)
-    const shopifyThemePush = spawn('shopify', ['theme', 'push','-d', '--path', cwd], {
+    const shopifyThemeDev = spawn('shopify', ['theme', 'dev', '--path', cwd], {
       stdio: 'inherit'
     })
 
     return new Promise((resolve) => {
-      shopifyThemePush.on('close', code => {
+      shopifyThemeDev.on('close', code => {
         resolve(code)
       })
     })

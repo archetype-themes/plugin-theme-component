@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Repo paths fix https://github.com/archetype-themes/plugin-theme-component/pull/301
 
+## [1.10.0] - 2024-01-24
+
+### Added
+
+- Shopify CLI theme dev is run automatically in sync with our component dev command
+
+### Changed
+
+- Update oclif dependencies to match shopify CLI's versions
+- Updated additional dependencies to avoid a vulnerability
+
 ## [1.9.7] - 2024-01-17
 
 ### Changed
