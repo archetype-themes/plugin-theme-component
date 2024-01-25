@@ -28,7 +28,7 @@ class ThemeFactory {
   /**
    * Create Theme For A Dev Command Call
    * @param {string} themeRootFolder
-   * @returns {Theme}
+   * @returns {Promise<Theme>}
    */
   static async fromDevCommand (themeRootFolder) {
     const theme = new Theme()
