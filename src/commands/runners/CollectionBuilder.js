@@ -119,7 +119,7 @@ class CollectionBuilder {
     const copyAssetsPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
 
     const promises = [
-      FileUtils.saveFile(collection.build.stylesheet, collection.build.styles),
+      FileUtils.saveFile(collection.build.stylesheet, collection.build.styles ?? ''),
       localesWritePromise,
       ...snippetFilesWritePromises,
       copyAssetsPromise
