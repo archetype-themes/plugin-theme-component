@@ -33,7 +33,6 @@ class DevCommand {
     const themeDevPromise = this.runThemeDev(collection.rootFolder)
 
     return Promise.all([watcherPromise, themeDevPromise])
-
   }
 
   /**
@@ -116,7 +115,6 @@ class DevCommand {
       })
     })
   }
-
 }
 
 export default DevCommand
