@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Drop package.json functions https://github.com/archetype-themes/plugin-theme-component/pull/299
+- Undefined content fix on builds with no styles https://github.com/archetype-themes/plugin-theme-component/pull/309
 
 ### Fixed
 
