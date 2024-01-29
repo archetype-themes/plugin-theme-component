@@ -269,10 +269,10 @@ your Collection's postcss.config.js file [options](https://github.com/postcss/po
 Building a component is pretty simple with Archetype Themes' CLI, simply run
 
 ```shell
-npx archie build component [component-name]
+npx component build component [component-name]
 
 # Use the watch flag to refresh build on file change
-npx archie build component [component-name] --watch
+npx component build component [component-name] --watch
 ```
 
 **Watch Flag**

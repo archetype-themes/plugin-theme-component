@@ -17,7 +17,7 @@
   "devDependencies": {
     "standard": "*"
   },
-  "archie": {
+  "component": {
     "type": "${componentType}"
   },
   "standard": {

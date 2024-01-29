@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs'
 
 try {
   // Init Config & Session
-  const config = /** @type {{archie: import('../models/static/Session.js').CLIConfig}} */ (decodeToml(readFileSync(CONFIG_FILE_NAME, 'utf8')))
+  const config = /** @type {{component: import('../models/static/Session.js').CLIConfig}} */ (decodeToml(readFileSync(CONFIG_FILE_NAME, 'utf8')))
   SessionFactory.fromArgsAndManifest(NodeUtils.getArgs(), config)
 
   switch (Session.command) {

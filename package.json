@@ -1,20 +1,20 @@
 {
   "author": "Archetype Themes Limited Partnership",
-  "description": "Archie is Archetype Theme's Development CLI.",
+  "description": "Archetype Theme's Shopify CLI theme component plugin",
   "license": "UNLICENSED",
   "exports": {
     ".": {
-      "default": "./src/bin/archie.js"
+      "default": "./src/bin/component.js"
     }
   },
-  "name": "plugin-theme-components",
+  "name": "plugin-theme-component",
   "type": "module",
-  "version": "1.9.7",
+  "version": "2.0.0",
   "bin": {
-    "archie": "src/bin/archie.js"
+    "component": "src/bin/component.js"
   },
   "scripts": {
-    "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/archie.js",
+    "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/component.js",
     "lint": "standard",
     "test": "npm run cdc && vitest run --coverage && npm ci && npm publish --dry-run",
     "postpack": "shx rm -f oclif.manifest.json",
@@ -31,31 +31,31 @@
   "publishConfig": {
     "@archetype-themes:registry": "https://npm.pkg.github.com"
   },
-  "repository": "https://github.com/archetype-themes/archie.git",
+  "repository": "https://github.com/archetype-themes/plugin-theme-component.git",
   "dependencies": {
     "@iarna/toml": "2.2.5",
-    "@oclif/core": "2.11.7",
+    "@oclif/core": "3.15.1",
     "chokidar": "^3.5.3",
     "deepmerge": "^4.3.1",
     "es-module-lexer": "^1.4.1",
     "fast-glob": "^3.3.2",
-    "jsdom": "^23.0.1",
+    "jsdom": "^24.0.0",
     "lodash-es": "^4.17.21",
     "parse-gitignore": "^2.0.0",
     "picomatch": "^3.0.1",
-    "pino": "^8.17.1",
-    "pino-pretty": "^10.3.0",
-    "postcss": "^8.4.32",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1",
+    "postcss": "^8.4.33",
     "postcss-load-config": "^5.0.2",
-    "svgo": "^3.1.0"
+    "svgo": "^3.2.0"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^1.0.4",
+    "@vitest/coverage-v8": "^1.2.2",
     "dpdm": "^3.14.0",
-    "oclif": "3.16.0",
-    "shx": "^0.3.3",
+    "oclif": "4.0.2",
+    "shx": "^0.3.4",
     "standard": "latest",
-    "vitest": "^1.0.4"
+    "vitest": "^1.2.2"
   },
   "oclif": {
     "commands": "./plugin/commands",

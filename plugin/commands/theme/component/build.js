@@ -16,7 +16,7 @@ export default class Build extends Command {
     const { args, flags } = await this.parse(Build)
 
     const command = 'npm'
-    const commandArgs = ['exec', '--', 'archie', 'build']
+    const commandArgs = ['exec', '--', 'component', 'build']
     if (args.component) {
       commandArgs.push(args.component)
     }
@@ -25,13 +25,13 @@ export default class Build extends Command {
       commandArgs.push('--watch')
     }
 
-    const archie = spawn(command, commandArgs, {
+    const componentProcess = spawn(command, commandArgs, {
       stdio: 'inherit'
     })
 
-    // Wait for archie to complete
+    // Wait for component process to complete
     await new Promise((resolve) => {
-      archie.on('close', code => {
+      componentProcess.on('close', code => {
         resolve(code)
       })
     })

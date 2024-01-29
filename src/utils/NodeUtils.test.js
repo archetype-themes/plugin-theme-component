@@ -7,7 +7,7 @@ vi.mock('process', async () => {
     ...process,
     argv: [
       '/path/to/bin/node',
-      '/path/to/bin/archie',
+      '/path/to/bin/component',
       'install',
       '--verbose'
     ]

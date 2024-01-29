@@ -13,15 +13,15 @@ export default class Generate extends Command {
 
     const command = 'npm'
 
-    const commandArgs = ['exec', 'archie', 'generate', 'component', args.component]
+    const commandArgs = ['exec', 'component', 'generate', 'component', args.component]
 
-    const archie = spawn(command, commandArgs, {
+    const componentProcess = spawn(command, commandArgs, {
       stdio: 'inherit'
     })
 
-    // Wait for archie to complete
+    // Wait for component process to complete
     await new Promise((resolve) => {
-      archie.on('close', code => {
+      componentProcess.on('close', code => {
         resolve(code)
       })
     })

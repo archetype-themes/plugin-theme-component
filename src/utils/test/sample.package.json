@@ -13,8 +13,8 @@
   },
   "repository": "https://github.com/archetype-themes/next.git",
   "scripts": {
-    "build": "archie build",
-    "watch": "archie build --watch",
+    "build": "component build",
+    "watch": "component build --watch",
     "test": "exit 0"
   },
   "workspaces": [
@@ -22,11 +22,11 @@
     "scripts",
     "styles"
   ],
-  "archie": {
+  "component": {
     "type": "collection"
   },
   "dependencies": {
-    "@archetype-themes/archie": "^1.2.0",
+    "@archetype-themes/plugin-theme-component": "^1.2.0",
     "@shopify/browserslist-config": "^3.0.0",
     "autoprefixer": "^10.4.14",
     "browserslist": "^4.21.5",

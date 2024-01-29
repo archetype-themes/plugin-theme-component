@@ -8,19 +8,19 @@ export default class Install extends Command {
     const { args } = await this.parse(Install)
 
     const command = 'npm'
-    // TODO: update archie so it can install a single component
-    const commandArgs = ['exec', 'archie', 'install']
+    // TODO: update process so we can install a single component
+    const commandArgs = ['exec', 'component', 'install']
     if (args.component) {
       commandArgs.push(args.component)
     }
 
-    const archie = spawn(command, commandArgs, {
+    const componentProcess = spawn(command, commandArgs, {
       stdio: 'inherit'
     })
 
-    // Wait for archie to complete
+    // Wait for component process to complete
     await new Promise((resolve) => {
-      archie.on('close', code => {
+      componentProcess.on('close', code => {
         resolve(code)
       })
     })

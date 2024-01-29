@@ -5,44 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [2.0.0]
 
 ### Changed
 
 - Drop package.json functions https://github.com/archetype-themes/plugin-theme-component/pull/299
-- Undefined content fix on builds with no styles https://github.com/archetype-themes/plugin-theme-component/pull/309
+- archie name and executable renamed to component in order to match the plugin name.
 
 ### Fixed
 
 - Repo paths fix https://github.com/archetype-themes/plugin-theme-component/pull/301
+- Undefined content fix on builds with no styles https://github.com/archetype-themes/plugin-theme-component/pull/309
 
 ## [1.9.7] - 2024-01-17
 
 ### Changed
 
-- Update plugin's name https://github.com/archetype-themes/archie/pull/298
+- Update plugin's name https://github.com/archetype-themes/plugin-theme-component/pull/298
 
 ## [1.9.6] - 2024-01-16
 
 ### Changed
 
-- Install collections defined via shopify.theme.toml https://github.com/archetype-themes/archie/pull/297
+- Install collections defined via shopify.theme.toml https://github.com/archetype-themes/plugin-theme-component/pull/297
 
 ## [1.9.5] - 2024-01-10
 
 ### Changed
 
-- Handle shopify.theme.toml configuration file https://github.com/archetype-themes/archie/pull/291
+- Handle shopify.theme.toml configuration file https://github.com/archetype-themes/plugin-theme-component/pull/291
 
 ## [1.9.4] - 2024-01-08
 
 ### Added
 
-- Shopify CLI plugin integration ([#272](https://github.com/archetype-themes/archie/pull/272))
+- Shopify CLI plugin integration ([#272](https://github.com/archetype-themes/plugin-theme-component/pull/272))
 
 ### Fixed
 
-- Process locale files only ([#289](https://github.com/archetype-themes/archie/pull/289))
+- Process locale files only ([#289](https://github.com/archetype-themes/plugin-theme-component/pull/289))
 
 ## [1.9.3] - 2023-12-20
 
@@ -139,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Archie Should Ignore Commented Liquid Code #173
+- Ignore Commented Liquid Code #173
 
 ## [1.8.1] - 2023-11-17
 
@@ -208,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed the computation of gitignore patterns during watch
-  mode ([#228](https://github.com/archetype-themes/archie/pull/228))
+  mode ([#228](https://github.com/archetype-themes/plugin-theme-component/pull/228))
 
 ## [1.7.1] - 2023-10-31
 
@@ -220,7 +221,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Import map processor ([#214](https://github.com/archetype-themes/archie/pull/214))
+- Import map processor ([#214](https://github.com/archetype-themes/plugin-theme-component/pull/214))
 
 ## [1.6.4]
 
@@ -244,7 +245,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed watch mode ([#215](https://github.com/archetype-themes/archie/issues/215))
+- Fixed watch mode ([#215](https://github.com/archetype-themes/plugin-theme-component/issues/215))
 
 ## [1.6.0] - 2023-10-12
 
@@ -384,10 +385,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Settings Schema: settings_schema.json is now handled, merged and installed by archie. This closes #44
-- Install: ACTION REQUIRED: "archie.componentPath" setting added in package.json, this allows for theme install in any
+- Settings Schema: settings_schema.json is now handled, merged and installed. This closes #44
+- Install: ACTION REQUIRED: "component.componentPath" setting added in package.json, this allows for theme install in
+  any
   folder. When not provided, this now defaults to the package's root folder rather than the previously hardcoded 'src'
-  sub-folder. Current Themes located in the src folder will need to add archie.componentPath="src" to their package.json
+  sub-folder. Current Themes located in the src folder will need to add component.componentPath="src" to their
+  package.json
   configuration. This closes #20
 - Section Schema: Section Schema now handles enabled_on and disabled_on missing additional properties. This closes #59
 
@@ -476,7 +479,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Styles: PostCSS now uses external config instead of Archie internal hardcoded config.
+- Styles: PostCSS now uses external config instead of an internal hardcoded one.
 
 ## [1.0.7] - 2023-03-13 - External Template Files
 
@@ -498,11 +501,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - NPM: Node engine version required was bumped to the current LTS version
-- Documentation: Clarified Archie's mission and added "main benefits" list on the main README.md
+- Documentation: Clarified the mission and added "main benefits" list on the main README.md
 - Documentation: Added GitHub Package Repository setup link in Prerequisites
 - Documentation: Modified NPM command examples to use the GitHub Package Repository
-- Documentation: Modified archie commands to use npx prefix
-- Documentation: Updated limitations, linking to actual issues in the Archie GitHub project.
+- Documentation: Modified commands to use npx prefix
+- Documentation: Updated limitations, linking to actual issues in the GitHub project.
 - Documentation: Contributing section now details the code structure. All folders and phases of build are now explained.
 - Documentation: Sections and Snippet Components now contain multiple examples of different-size components with
   different file structures and strategies.
@@ -540,9 +543,9 @@ This release is now integrated with Next and the Expanse theme.
 
 ### Added
 
-- Snippets: Archie now handles tilde in opening and closing liquid tags.
-- Snippets: Archie will now handle all characters possible within quotes instead of just letters.
+- Snippets: We now handle tilde in opening and closing liquid tags.
+- Snippets: We now handle all characters possible within quotes instead of just letters.
 
 ## [1.0.1] - 2022-10-20 - Initial Release
 
-Archie's Initial Release
+Initial Release

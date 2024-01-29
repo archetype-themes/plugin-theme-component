@@ -12,18 +12,18 @@ export default class Dev extends Command {
     const { args } = await this.parse(Dev)
 
     const command = 'npm'
-    const commandArgs = ['exec', 'archie', 'dev']
+    const commandArgs = ['exec', 'component', 'dev']
     if (args.component) {
       commandArgs.push(args.component)
     }
 
-    const archie = spawn(command, commandArgs, {
+    const componentProcess = spawn(command, commandArgs, {
       stdio: 'inherit'
     })
 
-    // Wait for archie to complete
+    // Wait for component process to complete
     await new Promise((resolve) => {
-      archie.on('close', code => {
+      componentProcess.on('close', code => {
         resolve(code)
       })
     })
