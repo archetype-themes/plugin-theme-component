@@ -1,7 +1,7 @@
 {
   "author": "Archetype Themes Limited Partnership",
   "description": "Archetype Theme's Shopify CLI theme component plugin",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "exports": {
     ".": {
       "default": "./src/bin/component.js"
@@ -9,7 +9,7 @@
   },
   "name": "plugin-theme-component",
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "bin": {
     "component": "src/bin/component.js"
   },
