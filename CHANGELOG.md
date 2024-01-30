@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - oclif commands call the plugin commands directly, not through npx spawned thread
 
+### Fixed
+
+- Add omitted watch flag for install oclif command
+
 ## [2.0.3]
 
 ### Changed
