@@ -1,5 +1,9 @@
 import { Args, Command } from '@oclif/core'
-import { spawn } from 'node:child_process'
+import { decodeToml } from '../../../../src/utils/TomlUtils.js'
+import { readFileSync } from 'node:fs'
+import { CONFIG_FILE_NAME } from '../../../../src/config/CLI.js'
+import SessionFactory from '../../../../src/factory/SessionFactory.js'
+import GenerateCommand from '../../../../src/commands/GenerateCommand.js'
 
 export default class Generate extends Command {
   static args = {
@@ -11,19 +15,11 @@ export default class Generate extends Command {
   async run () {
     const { args } = await this.parse(Generate)
 
-    const command = 'npm'
-
-    const commandArgs = ['exec', 'component', 'generate', 'component', args.component]
-
-    const componentProcess = spawn(command, commandArgs, {
-      stdio: 'inherit'
-    })
+    const commandArgs = ['generate', 'component', args.component]
 
     // Wait for component process to complete
-    await new Promise((resolve) => {
-      componentProcess.on('close', code => {
-        resolve(code)
-      })
-    })
+    const config = /** @type {{component: import('../models/static/Session.js').CLIConfig}} */ (decodeToml(readFileSync(CONFIG_FILE_NAME, 'utf8')))
+    SessionFactory.fromArgsAndManifest(commandArgs, config)
+    await GenerateCommand.execute()
   }
 }

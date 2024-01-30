@@ -1,5 +1,9 @@
 import { Command } from '@oclif/core'
-import { spawn } from 'node:child_process'
+import { decodeToml } from '../../../../src/utils/TomlUtils.js'
+import { readFileSync } from 'node:fs'
+import { CONFIG_FILE_NAME } from '../../../../src/config/CLI.js'
+import SessionFactory from '../../../../src/factory/SessionFactory.js'
+import InstallCommand from '../../../../src/commands/InstallCommand.js'
 
 export default class Install extends Command {
   static description = 'Install a collection of components'
@@ -7,22 +11,15 @@ export default class Install extends Command {
   async run () {
     const { args } = await this.parse(Install)
 
-    const command = 'npm'
     // TODO: update process so we can install a single component
-    const commandArgs = ['exec', 'component', 'install']
+    const commandArgs = ['install']
     if (args.component) {
       commandArgs.push(args.component)
     }
 
-    const componentProcess = spawn(command, commandArgs, {
-      stdio: 'inherit'
-    })
-
     // Wait for component process to complete
-    await new Promise((resolve) => {
-      componentProcess.on('close', code => {
-        resolve(code)
-      })
-    })
+    const config = /** @type {{component: import('../models/static/Session.js').CLIConfig}} */ (decodeToml(readFileSync(CONFIG_FILE_NAME, 'utf8')))
+    SessionFactory.fromArgsAndManifest(commandArgs, config)
+    await InstallCommand.execute()
   }
 }
