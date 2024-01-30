@@ -1,6 +1,7 @@
+import { spawn } from 'node:child_process'
 import { basename, join, relative } from 'node:path'
-import { DEV_FOLDER_NAME } from '../config/CLI.js'
 
+import { DEV_FOLDER_NAME } from '../config/CLI.js'
 import Components from '../config/Components.js'
 import { fromDevCommand } from '../factory/ThemeFactory.js'
 import Session from '../models/static/Session.js'
@@ -10,9 +11,9 @@ import logger, { logChildItem, logSpacer, logTitleItem } from '../utils/Logger.j
 import { exitWithError } from '../utils/NodeUtils.js'
 import { ucfirst } from '../utils/SyntaxUtils.js'
 import Watcher from '../utils/Watcher.js'
+
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
-import { spawn } from 'node:child_process'
 
 class DevCommand {
   /**
@@ -107,6 +108,27 @@ class DevCommand {
     const cwd = join(collectionRootFolder, DEV_FOLDER_NAME)
     const shopifyThemeDev = spawn('shopify', ['theme', 'dev', '--path', cwd], {
       stdio: 'inherit'
+    })
+
+    // Listen for the 'exit' event on the parent process
+    process.on('exit', () => {
+      // Check if the child process is still running
+      if (shopifyThemeDev && !shopifyThemeDev.killed) {
+        // Terminate the child process
+        shopifyThemeDev.kill()
+      }
+    })
+
+    // Make sure to kill shopify cli
+    process.on('uncaughtException', () => {
+      // Check if the child process is still running
+      if (shopifyThemeDev && !shopifyThemeDev.killed) {
+        // Terminate the child process
+        shopifyThemeDev.kill()
+      }
+
+      // Exit the program
+      process.exit(1)
     })
 
     return new Promise((resolve) => {
