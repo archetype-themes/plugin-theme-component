@@ -7,7 +7,7 @@ It's a web platform standard that allows you to reference JavaScript modules usi
 It's a script that builds the importmap and module-preload tags for the components in a given collection.
 The generated result is a snippet that can be included in Shopify Themes.
 
-This is the default JavaScript processor in @archetype-themes/archie.
+This is the default JavaScript processor in @archetype-themes/plugin-theme-component.
 
 ## Usage
 

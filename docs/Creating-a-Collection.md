@@ -24,7 +24,7 @@ Now, let's install the CLI
 
 ```shell
 # Install it with NPM to use it with your Collection.
-npm install @archetype-themes/archie
+npm install @archetype-themes/plugin-theme-component
 ```
 
 ## Node Package Configuration
@@ -33,12 +33,12 @@ Next, you will need to edit your package.json in order to add/replace the follow
 
 ```json
 {
-  "archie": {
+  "component": {
     "type": "collection"
   },
   "scripts": {
-    "build": "archie build",
-    "dev": "archie build --watch"
+    "build": "component build",
+    "dev": "component build --watch"
   },
   "workspaces": [
     "./components/*",
@@ -47,13 +47,13 @@ Next, you will need to edit your package.json in order to add/replace the follow
 }
 ```
 
-- Add the **archie** group with
+- Add the **component** group with
   - Set the component `type` to **"collection"**  to ensure the CLI identifies your package as a collection monorepo.
 - Add or change the **scripts**  groups
-  - The **"build"** script starts a Collection build with the CLI. This is a shortcut to the full `npx archie build`
+  - The **"build"** script starts a Collection build with the CLI. This is a shortcut to the full `npx component build`
     command.
   - The **"dev"** script starts a Collection build with the CLI and watches for file changes within the Collection's
-    source folders. It is a shortcut to the full `npx archie build --watch` command.
+    source folders. It is a shortcut to the full `npx component build --watch` command.
   - Adding the **workspaces** group indicates that this is a monorepo with multiples child repositories split in three
     groups.
     - The **"components"** workspace is where you can create and edit as many Snippet Components as you need. Our CLI's
@@ -64,7 +64,7 @@ Next, you will need to edit your package.json in order to add/replace the follow
 Once installed and configured, you can always access the CLI manually in the following way:
 
 ```shell
-npx archie
+npx component
 ```
 
 ## Creating an ignore file

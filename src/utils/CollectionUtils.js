@@ -8,7 +8,7 @@ import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
 import FileUtils from './FileUtils.js'
-import { COLLECTIONS_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { COLLECTIONS_FOLDER_NAME, CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
 const IGNORE_PATTERNS = [
   'package.json',
@@ -16,7 +16,7 @@ const IGNORE_PATTERNS = [
   '.git',
   '.github',
   DEV_FOLDER_NAME,
-  'shopify.theme.toml',
+  CONFIG_FILE_NAME,
   'bin',
   '**/.*',
   '**/*.md'
@@ -76,10 +76,9 @@ class CollectionUtils {
   static findComponents (componentFolders) {
     const components = []
 
-    for (let i = 0; i < componentFolders.length; i++) {
-      const componentPath = componentFolders[i]
-      const componentName = componentPath.split('/').pop()
-      components.push(new Component(componentName, componentPath))
+    for (const componentFolder of componentFolders) {
+      const componentName = componentFolder.split('/').pop()
+      components.push(new Component(componentName, componentFolder))
     }
 
     return components

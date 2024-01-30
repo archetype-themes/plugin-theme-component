@@ -12,7 +12,7 @@ for you, with some boilerplate code.
 ### Adding a new Component
 
 ```shell
-npx archie create component [some-smart-component-name]
+npx component create component [some-smart-component-name]
 ```
 
 Template files will be populated under the `components/some-smart-component-name` folder.
@@ -41,10 +41,10 @@ component.
 ## Building your collection
 
 ```shell
-npx archie build collection
+npx component build collection
 
 # Use the watch flag to refresh the build when the source files change
-npx archie build collection --watch
+npx component build collection --watch
 ```
 
 This will bundle your collection's components as snippets inside the **build** sub-folder.

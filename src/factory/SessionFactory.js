@@ -24,7 +24,7 @@ class SessionFactory {
   /**
    * Session Factory method From Command Line Input
    * @param {string[]} commandLineArguments
-   * @param {{archie: import('../models/static/Session.js').CLIConfig}} config
+   * @param {{component: import('../models/static/Session.js').CLIConfig}} config
    * @return {Session}
    */
   static fromArgsAndManifest (commandLineArguments, config) {
@@ -37,10 +37,10 @@ class SessionFactory {
 
     this.#validatePackageManifest(config)
 
-    Session.config = config.archie
-    Session.callerType = config.archie.type.toLowerCase()
-    Session.devTheme = config.archie['dev-theme'] ? config.archie['dev-theme'] : DEFAULT_DEV_THEME
-    Session.localesRepo = config.archie['locales-repo'] ? config.archie['locales-repo'] : DEFAULT_LOCALES_REPO
+    Session.config = config.component
+    Session.callerType = config.component.type.toLowerCase()
+    Session.devTheme = config.component['dev-theme'] ? config.component['dev-theme'] : DEFAULT_DEV_THEME
+    Session.localesRepo = config.component['locales-repo'] ? config.component['locales-repo'] : DEFAULT_LOCALES_REPO
 
     Session.command = args[0].toLowerCase()
 
@@ -74,7 +74,7 @@ class SessionFactory {
           Session.command,
           Session.targetType,
           Session.config.name,
-          config?.archie.collections
+          config?.component.collections
         )
     }
 
@@ -174,8 +174,8 @@ class SessionFactory {
    * @param {Object} packageManifest
    */
   static #validatePackageManifest (packageManifest) {
-    if (!packageManifest.archie?.type) {
-      throw new ConfigError(`Couldn't find archie.type value in shopify.theme.toml. Please create the variable and set it to either one of these: ${AVAILABLE_CALLER_TYPES.join('/')}`)
+    if (!packageManifest.component?.type) {
+      throw new ConfigError(`Couldn't find component.type value in shopify.theme.toml. Please create the variable and set it to either one of these: ${AVAILABLE_CALLER_TYPES.join('/')}`)
     }
   }
 
@@ -187,7 +187,7 @@ class SessionFactory {
    */
   static #validateCallerComponentType (componentType) {
     if (!AVAILABLE_CALLER_TYPES.includes(componentType)) {
-      throw new ConfigError(`Invalid Component Type: The value for archie.type from shopify.theme.toml must be changed to one of these: ${AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
+      throw new ConfigError(`Invalid Component Type: The value for component.type from shopify.theme.toml must be changed to one of these: ${AVAILABLE_CALLER_TYPES.join('/')}, "${componentType}" is not an allowed value`)
     }
   }
 }

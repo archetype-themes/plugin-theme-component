@@ -15,7 +15,7 @@ your theme files.
 ```shell
 # Add The CLI
 cd ~/projects/[theme-folder]
-npm install @archetype-themes/archie --save-dev
+npm install @archetype-themes/plugin-theme-component --save-dev
 
 # Add a finalized collection from GitHub
 cd ~/projects/[theme-folder]
@@ -32,7 +32,7 @@ npm link [collection-namespace]/[collection-name]
 
 ### Node Package Configuration
 
-Next, you will need to edit your package.json to add the archie configuration element, at the location of your choice
+Next, you will need to edit your package.json to add the component configuration element, at the location of your choice
 
 * Make sure you indicate your `type` as a **"theme"**
 * *Optional:* Follow with `path` to point to your theme source files if they are not at the root folder of the
@@ -42,7 +42,7 @@ Next, you will need to edit your package.json to add the archie configuration el
 
 ```json
 {
-  "archie": {
+  "component": {
     "type": "theme",
     "path": "./src",
     "my-awesome-collection": [
@@ -52,8 +52,8 @@ Next, you will need to edit your package.json to add the archie configuration el
     ]
   },
   "scripts": {
-    "ai": "archie install",
-    "aw": "archie install --watch"
+    "ai": "component install",
+    "aw": "component install --watch"
   }
 }
 ```
@@ -63,8 +63,8 @@ Next, you will need to edit your package.json to add the archie configuration el
 The **"install"** command run a fresh build of your collection and installs it within your Theme.
 
 ```shell
-# If you want to use archie manually, you should use "npx"
-npx archie install
+# If you want to use plugin-theme-component manually, you should use "npx"
+npx component install
 
 # If you created a shortcut script, you should use "npm run"
 npm run ai
@@ -77,8 +77,8 @@ Using the watch flag, `--watch` or`-w`, will keep the CLI active and monitor the
 and refresh your install on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ```shell
-# If you want to use archie manually, you should use "npx"
-npx archie install --watch
+# If you want to use plugin-theme-component manually, you should use "npx"
+npx component install --watch
 
 # If you created a shortcut script, you should use "npm run"
 npm run aw

@@ -62,35 +62,35 @@ This is a shortcut command to install our CLI, but contextual use of this is pro
 
 ```shell
 # Defaults to the latest version
-npm install @archetype-themes/archie
+npm install @archetype-themes/plugin-theme-component
 
 # Install a specific version
-npm install @archetype-themes/archie#1.0.1
+npm install @archetype-themes/plugin-theme-component#1.0.1
 
 ```
 
 Available versions are listed on the
-official [Archetype Themes' CLI NPM package page](https://github.com/archetype-themes/archie/pkgs/npm/archie)
+official [Archetype Themes' plugin-theme-component NPM package page](https://github.com/archetype-themes/plugin-theme-component/pkgs/npm/plugin-theme-component)
 
 ## CLI Commands
 
 ```shell
 ##### Collection Commands #####
-npx archie build
-npx archie build --watch
-npx archie build section [section-name]
-npx archie build section [section-name] --watch
+npx component build
+npx component build --watch
+npx component build section [section-name]
+npx component build section [section-name] --watch
 
-npx archie create section [section-name]
-npx archie create snippet [snippet-name]
+npx component create section [section-name]
+npx component create snippet [snippet-name]
 
 ##### Section Commands #####
-npx archie build
-npx archie build --watch
+npx component build
+npx component build --watch
 
 ##### Theme Commands #####
-npx archie install
-npx archie install --watch
+npx component install
+npx component install --watch
 ```
 
 ### Watch Flag
@@ -109,20 +109,22 @@ level. To use a different log level, use the following flags when running the bu
 
 ```shell
 # Show Error, Info and Debug messages
-npx archie build --verbose
+npx component build --verbose
 ```
 
 ```shell
 # Show only Error messages
-npx archie build --quiet
+npx component build --quiet
 ```
 
 ## Current Limitations
 
-* [Issue 21](https://github.com/archetype-themes/archie/issues/21): Collections must be part of the  *@archetype-themes*
+* [Issue 21](https://github.com/archetype-themes/plugin-theme-component/issues/21): Collections must be part of the
+  *@archetype-themes*
   namespace. Upon Theme Install, the namespace *@archetype-themes*
   is Hardcoded when searching for collections in *node_modules* folder.
-* [Issue 34](https://github.com/archetype-themes/archie/issues/34): Installing multiple collections in a theme is not
+* [Issue 34](https://github.com/archetype-themes/plugin-theme-component/issues/34): Installing multiple collections in a
+  theme is not
   handled at the moment.
 
 ## Contributing

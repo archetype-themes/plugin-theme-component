@@ -1,10 +1,10 @@
 {
-  "archie": {
+  "component": {
     "type": "collection",
   },
   "author": "Archetype Themes Limited Partnership",
   "dependencies": {
-    "@archetype-themes/archie": "^1.2.0",
+    "@archetype-themes/plugin-theme-component": "^1.2.0",
     "@shopify/browserslist-config": "^3.0.0",
     "autoprefixer": "^10.4.14",
     "browserslist": "^4.21.5",
@@ -31,9 +31,9 @@
   },
   "repository": "https://github.com/archetype-themes/next.git",
   "scripts": {
-    "build": "archie build",
+    "build": "component build",
     "test": "exit 0",
-    "watch": "archie build --watch",
+    "watch": "component build --watch",
   },
   "type": "module",
   "version": "0.24.9",
