@@ -134,3 +134,6 @@ sections/*/build
 snippets/*/build
 
 /test.js
+
+#oclif shopify CLI integration
+oclif.manifest.json
