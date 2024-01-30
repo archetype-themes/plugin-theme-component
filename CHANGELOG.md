@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.4]
+## [2.1.0] - 2024-01-30
+
+### Added
+
+- Shopify CLI theme dev is run automatically in sync with our component dev command
+
+## [2.0.4] - 2024-01-30
 
 ### Changed
 
@@ -45,17 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Repo paths fix https://github.com/archetype-themes/plugin-theme-component/pull/301
 - Undefined content fix on builds with no styles https://github.com/archetype-themes/plugin-theme-component/pull/309
-
-## [1.10.0] - 2024-01-24
-
-### Added
-
-- Shopify CLI theme dev is run automatically in sync with our component dev command
-
-### Changed
-
-- Update oclif dependencies to match shopify CLI's versions
-- Updated additional dependencies to avoid a vulnerability
 
 ## [1.9.7] - 2024-01-17
 
