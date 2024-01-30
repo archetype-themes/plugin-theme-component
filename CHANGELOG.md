@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.4]
+
+### Changed
+
+- oclif commands call the plugin commands directly, not through npx spawned thread
+
+### Fixed
+
+- Add omitted watch flag for install oclif command
+- Add missing trace/debug flags
+
 ## [2.0.3]
 
 ### Changed
