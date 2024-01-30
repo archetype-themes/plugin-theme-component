@@ -17,7 +17,6 @@ export default class Install extends Command {
   async run () {
     const { args, flags } = await this.parse(Install)
 
-    // TODO: update process so we can install a single component
     const commandArgs = ['install']
     if (args.component) {
       commandArgs.push(args.component)
