@@ -6,14 +6,16 @@ import SessionFactory from '../../../../src/factory/SessionFactory.js'
 import BuildCommand from '../../../../src/commands/BuildCommand.js'
 
 export default class Build extends Command {
+  static description = 'Build a component or collection of components'
+
   static args = {
     component: Args.string({ description: 'Component to build' })
   }
 
-  static description = 'Build a component or collection of components'
-
   static flags = {
-    watch: Flags.boolean({ char: 'w', description: 'Watch for changes' })
+    watch: Flags.boolean({ char: 'w', description: 'Watch for changes' }),
+    debug: Flags.boolean({ description: 'Debug Mode is more verbose.' }),
+    trace: Flags.boolean({ description: 'Trace Mode provides tracing and debug information.' })
   }
 
   async run () {

@@ -9,7 +9,9 @@ export default class Install extends Command {
   static description = 'Install a collection of components'
 
   static flags = {
-    watch: Flags.boolean({ char: 'w', description: 'Watch for changes' })
+    watch: Flags.boolean({ char: 'w', description: 'Watch for changes' }),
+    debug: Flags.boolean({ description: 'Debug Mode is more verbose.' }),
+    trace: Flags.boolean({ description: 'Trace Mode provides tracing and debug information.' })
   }
 
   async run () {
