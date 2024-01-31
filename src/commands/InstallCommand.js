@@ -14,6 +14,7 @@ import { isUrl } from '../utils/WebUtils.js'
 
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
+import DevCommand from './DevCommand.js'
 
 class InstallCommand {
   /**
@@ -22,6 +23,9 @@ class InstallCommand {
    */
   static async execute () {
     const promises = []
+
+    // Creating Theme
+    const theme = ThemeFactory.fromThemeInstallCommand()
 
     for (const collectionEntry of Object.entries(Session.targets)) {
 
@@ -32,7 +36,7 @@ class InstallCommand {
         await install(collectionEntry[1].source, collection.rootFolder, collection.name)
       }
 
-      await InstallCommand.installOne(collection)
+      await InstallCommand.installOne(theme, collection)
 
       if (Session.watchMode) {
         if (isUrl(collectionEntry[1].source)) {
@@ -44,20 +48,22 @@ class InstallCommand {
     }
     Session.firstRun = false
 
+    if (promises.length) {
+      promises.push(DevCommand.runThemeDev(theme.rootFolder))
+    }
+
     return Promise.all(promises)
   }
 
   /**
    * Install a Collection
+   * @param {import('../../models/Theme.js').default} theme
    * @param {module:models/Collection} collection
    * @return {Promise<module:models/Collection>}
    */
-  static async installOne (collection) {
+  static async installOne (theme, collection) {
     logger.info(`Building & Installing the ${collection.name} Collection.`)
     const startTime = new Timer()
-
-    // Creating Theme
-    const theme = ThemeFactory.fromThemeInstallCommand()
 
     // Build using the Build Command
     await BuildCommand.buildCollection(collection)
@@ -85,8 +91,9 @@ class InstallCommand {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${filename} detected`)
 
+    const theme = ThemeFactory.fromThemeInstallCommand()
     const collection = await CollectionFactory.fromName(collectionName, componentNames, collectionSource)
-    await InstallCommand.installOne(collection)
+    await InstallCommand.installOne(theme, collection)
 
     // The Watcher is restarted on any liquid file change.
     // This is useful if any render tags were added or removed, it will reset snippet watched folders.
