@@ -122,6 +122,13 @@ class InstallCommand {
     const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
 
     const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, watcher)
+    logSpacer()
+    console.log(collection.rootFolder)
+    logger.info('--------------------------------------------------------')
+    logger.info(`${collection.name}: Watching component tree for changes`)
+    logger.info('(Ctrl+C to abort)')
+    logger.info('--------------------------------------------------------')
+    logSpacer()
     Watcher.watch(watcher, onCollectionWatchEvent)
   }
 }
