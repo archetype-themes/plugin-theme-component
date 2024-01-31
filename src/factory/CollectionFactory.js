@@ -6,7 +6,9 @@ import Collection from '../models/Collection.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import FileUtils from '../utils/FileUtils.js'
+import { install } from '../utils/ExternalComponentUtils.js'
 import logger from '../utils/Logger.js'
+import { isUrl } from '../utils/WebUtils.js'
 
 class CollectionFactory {
   /**
@@ -21,9 +23,6 @@ class CollectionFactory {
 
     collection.name = collectionName
     collection.rootFolder = await CollectionUtils.findRootFolder(collectionName, collectionSource)
-
-    // Set Folder Names
-    collection.rootFolder = collectionSource || await CollectionUtils.findRootFolder(collectionName)
 
     // Find .gitignore File
     const gitignoreFile = join(collection.rootFolder, '.gitignore')
@@ -47,8 +46,20 @@ class CollectionFactory {
     return collection
   }
 
+  /**
+   * Create a collection from a Toml Entry
+   * @param {Array} collectionEntry
+   * @return {Promise<module:models/Collection>}
+   */
   static async fromTomlEntry (collectionEntry) {
-    return this.fromName(collectionEntry[0], collectionEntry[1].components, collectionEntry[1].source)
+    const collection = await this.fromName(collectionEntry[0], collectionEntry[1].components, collectionEntry[1].source)
+
+    // Install it locally, if the source is a URL
+    if (isUrl(collectionEntry[1].source)) {
+      await install(collectionEntry[1].source, collection.rootFolder, collection.name)
+    }
+
+    return collection
   }
 }
 
