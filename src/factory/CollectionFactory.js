@@ -19,8 +19,8 @@ class CollectionFactory {
   static async fromName (collectionName, componentNames, collectionSource) {
     const collection = new Collection()
 
-    // Set Collection name
     collection.name = collectionName
+    collection.rootFolder = await CollectionUtils.findRootFolder(collectionName, collectionSource)
 
     // Set Folder Names
     collection.rootFolder = collectionSource || await CollectionUtils.findRootFolder(collectionName)

@@ -1,14 +1,15 @@
 // Node.js imports
-import { join, resolve } from 'node:path'
+import { join } from 'node:path'
 import gitignore from 'parse-gitignore'
 
 // Internal Imports
-import FileAccessError from '../errors/FileAccessError.js'
+import { COLLECTIONS_FOLDER_NAME, CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
+
 import FileUtils from './FileUtils.js'
-import { COLLECTIONS_FOLDER_NAME, CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { isUrl } from './WebUtils.js'
 
 const IGNORE_PATTERNS = [
   'package.json',
@@ -39,29 +40,30 @@ class CollectionUtils {
 
   /**
    * Get Collection Root Folder
-   * @param {string} [collectionName] - Only Required in a multiple Collection environment only - not fully implemented yet.
+   * @param {string} [collectionName] - Required in a multiple Collection environment only
+   * @param {string} [collectionSource] - Required in a multiple Collection environment only
    * @returns {Promise<string>|string}
    */
-  static async findRootFolder (collectionName) {
+  static async findRootFolder (collectionName, collectionSource) {
     if (Session.isCollection()) {
       return process.cwd()
     }
     if (Session.isTheme()) {
       if (!collectionName) {
-        throw new InternalError('Collection name is required when getting collection root folder from a theme.')
+        throw new InternalError('Unable to find root collection root folder without the collection name.')
       }
-
-      const childRepoPath = join(resolve(COLLECTIONS_FOLDER_NAME), collectionName)
-      if (await FileUtils.isReadable(childRepoPath)) {
-        return childRepoPath
+      if (!collectionSource) {
+        throw new InternalError('Unable to find root collection root folder without the collection source.')
       }
-
-      const parentRepoPath = join(resolve(COLLECTIONS_FOLDER_NAME), collectionName)
-      if (await FileUtils.isReadable(parentRepoPath)) {
-        return parentRepoPath
+      if (collectionSource) {
+        if (isUrl(collectionSource)) {
+          return join(COLLECTIONS_FOLDER_NAME, collectionName)
+        } else {
+          return collectionSource
+        }
+      } else {
+        throw new InternalError('Collection source is missing from shopify.theme.toml file.')
       }
-
-      throw new FileAccessError(`${collectionName} Collection not found or not accessible. Is it installed?`)
     }
   }
 
