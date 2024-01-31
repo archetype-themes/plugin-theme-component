@@ -53,7 +53,7 @@ class BuildCommand {
     // If this is a Theme, the Current Target Name will always be the Collection Name.
     // Let's use that instead of Session.targets which might contain a Collection List object.
     /** @type {string} **/
-    const currentTargetName = Session.callerType === Components.THEME_TYPE_NAME ? collectionName : Session.targets
+    const currentTargetName = Session.callerType === Components.THEME_TYPE_NAME ? collection.name : Session.targets
 
     logTitleItem(`Initializing Components for "${currentTargetName}"`)
     const initStartTime = new Timer()
@@ -72,11 +72,11 @@ class BuildCommand {
     logChildItem(`Found ${collection.components.length} component${plural(collection.components)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`)
 
     // Filter Out Components When Applicable
-    if (componentNames?.length) {
+    if (collection.componentNames?.length) {
       // for each component, get tree item names
-      const componentNamesToBuild = CollectionUtils.getComponentsNameTree(allComponents, componentNames)
+      const componentNamesToBuild = CollectionUtils.getComponentsNameTree(allComponents, collection.componentNames)
 
-      logChildItem(`Packaging the following component${plural(componentNames)}: ${componentNames.join(', ')}`)
+      logChildItem(`Packaging the following component${plural(collection.componentNames)}: ${collection.componentNames.join(', ')}`)
 
       collection.components = collection.components.filter(component => componentNamesToBuild.has(component.name))
       collection.snippets = collection.snippets.filter(snippet => componentNamesToBuild.has(snippet.name))
@@ -84,7 +84,7 @@ class BuildCommand {
 
     // Throw an Error when No Components are found
     if (collection.components.length + collection.snippets.length === 0) {
-      throw new InternalError(`No matching components found for [${componentNames.join(',')}]`)
+      throw new InternalError(`No matching components found for [${collection.componentNames.join(',')}]`)
     }
 
     logChildItem(`Initialization complete (${initStartTime.now()} seconds)`)
@@ -114,7 +114,7 @@ class BuildCommand {
     await this.setComponentHierarchy(collection.snippets, allComponents)
 
     logChildMessage()
-    logChildMessage(`${collectionName}/`)
+    logChildMessage(`${collection.name}/`)
 
     let filteredComponents = collection.components.filter(component => component.name.startsWith('section'))
     if (!filteredComponents.length > 0) {
