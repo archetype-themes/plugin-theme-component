@@ -1,17 +1,19 @@
 // Node imports
 import path from 'node:path'
-import ThemeFactory from '../factory/ThemeFactory.js'
-import Session from '../models/static/Session.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
-import logger, { logSpacer } from '../utils/Logger.js'
-import Timer from '../models/Timer.js'
-import Watcher from '../utils/Watcher.js'
 
 // Internal Imports
+import CollectionFactory from '../factory/CollectionFactory.js'
+import ThemeFactory from '../factory/ThemeFactory.js'
+import Timer from '../models/Timer.js'
+import Session from '../models/static/Session.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
+import { install } from '../utils/ExternalComponentUtils.js'
+import logger, { logSpacer } from '../utils/Logger.js'
+import Watcher from '../utils/Watcher.js'
+import { isUrl } from '../utils/WebUtils.js'
+
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
-import CollectionFactory from '../factory/CollectionFactory.js'
-import { isUrl } from '../utils/WebUtils.js'
 
 class InstallCommand {
   /**
@@ -24,6 +26,12 @@ class InstallCommand {
     for (const collectionEntry of Object.entries(Session.targets)) {
 
       const collection = await CollectionFactory.fromTomlEntry(collectionEntry)
+
+      // Install it locally, if the source is a URL
+      if (isUrl(collectionEntry[1].source)) {
+        await install(collectionEntry[1].source, collection.rootFolder, collection.name)
+      }
+
       await InstallCommand.installOne(collection)
 
       if (Session.watchMode) {
@@ -67,16 +75,17 @@ class InstallCommand {
    * On Collection Watch Event
    * @param {string} collectionName
    * @param {string[]} componentNames
+   * @param {string} collectionSource
    * @param {FSWatcher} watcher
    * @param event
    * @param eventPath
    * @return {Promise<module: models/Collection>}
    */
-  static async onCollectionWatchEvent (collectionName, componentNames, watcher, event, eventPath) {
+  static async onCollectionWatchEvent (collectionName, componentNames, collectionSource, watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${filename} detected`)
 
-    const collection = await CollectionFactory.fromName(collectionName, componentNames)
+    const collection = await CollectionFactory.fromName(collectionName, componentNames, collectionSource)
     await InstallCommand.installOne(collection)
 
     // The Watcher is restarted on any liquid file change.
@@ -97,7 +106,7 @@ class InstallCommand {
 
     const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
 
-    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, watcher)
+    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, collection.source, watcher)
     logSpacer()
     logger.info('--------------------------------------------------------')
     logger.info(`${collection.name}: Watching component tree for changes`)
