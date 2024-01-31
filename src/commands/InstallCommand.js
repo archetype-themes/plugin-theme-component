@@ -3,16 +3,15 @@ import path from 'node:path'
 import ThemeFactory from '../factory/ThemeFactory.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
-import logger from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
+import logger, { logSpacer } from '../utils/Logger.js'
 import Timer from '../models/Timer.js'
 import Watcher from '../utils/Watcher.js'
-import { install } from '../utils/ExternalComponentUtils.js'
-import { COLLECTIONS_FOLDER_NAME } from '../config/CLI.js'
 
 // Internal Imports
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
+import CollectionFactory from '../factory/CollectionFactory.js'
+import { isUrl } from '../utils/WebUtils.js'
 
 class InstallCommand {
   /**
@@ -22,41 +21,20 @@ class InstallCommand {
   static async execute () {
     const promises = []
 
-    /** @type {Object<string, {source: string, components: string[]}>} */
-    let collectionsList
-    // If we have only one element as a string, convert it to object form.
-    if (NodeUtils.isString(Session.targets)) {
-      collectionsList = {}
-      collectionsList[Session.targets] = []
-    } else {
-      collectionsList = Session.targets
-    }
+    for (const collectionEntry of Object.entries(Session.targets)) {
 
       const collection = await CollectionFactory.fromTomlEntry(collectionEntry)
       await InstallCommand.installOne(collection)
 
       if (Session.watchMode) {
-        promises.push(this.watch(collection))
+        if (isUrl(collection.rootFolder)) {
+          logger.error(`Ignoring ${collection.name}: Unable To Watch Collection from a remote URL`)
+        } else {
+          promises.push(this.watch(collection))
+        }
       }
     }
     Session.firstRun = false
-
-    return Promise.all(promises)
-  }
-
-  /**
-   * Setup collections defined in the shopify.theme.toml file
-   *
-   * @param {Object<string, {source: string}>} collectionsList
-   */
-  static async setupCollectionsList (collectionsList) {
-    const collections = Object.entries(collectionsList)
-    const promises = []
-
-    for (const [collectionName, { source }] of collections) {
-      const targetFolder = path.join(COLLECTIONS_FOLDER_NAME, collectionName)
-      promises.push(install(source, targetFolder, collectionName))
-    }
 
     return Promise.all(promises)
   }
