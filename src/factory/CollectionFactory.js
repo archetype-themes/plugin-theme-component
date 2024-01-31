@@ -12,17 +12,16 @@ class CollectionFactory {
   /**
    * From Collection Build Script
    * @param {string} collectionName - Collection Name
-   * @param {string[]} componentNames - List of Components To Bundle With The Collection
+   * @param {string[]} [componentNames] - List of Components To Bundle With The Collection
+   * @param {string} [collectionSource] - Collection Source Path or URL
    * @return {Promise<module:models/Collection>}
    */
-  static async fromName (collectionName, componentNames) {
+  static async fromName (collectionName, componentNames, collectionSource) {
     const collection = new Collection()
 
-    // Set Collection name
     collection.name = collectionName
-
-    // Set Folder Names
-    collection.rootFolder = await CollectionUtils.findRootFolder(collectionName)
+    if (collectionSource) { collection.source = collectionSource }
+    collection.rootFolder = await CollectionUtils.findRootFolder(collectionName, collectionSource)
 
     // Find .gitignore File
     const gitignoreFile = join(collection.rootFolder, '.gitignore')
@@ -37,13 +36,22 @@ class CollectionFactory {
     collection.components = CollectionUtils.findComponents(componentFolders)
 
     // Get Component Names and Create Them
-    if (componentNames && componentNames.length) {
+    if (componentNames?.length) {
       collection.componentNames = componentNames
     } else if (Session.isTheme()) {
       logger.warn(`No component list found for the "${collectionName}" collection; all components will be installed.`)
     }
 
     return collection
+  }
+
+  /**
+   * Create a collection from a Toml Entry
+   * @param {Array} collectionEntry
+   * @return {Promise<module:models/Collection>}
+   */
+  static async fromTomlEntry (collectionEntry) {
+    return await this.fromName(collectionEntry[0], collectionEntry[1].components, collectionEntry[1].source)
   }
 }
 

@@ -1,18 +1,20 @@
 // Node imports
 import path from 'node:path'
-import ThemeFactory from '../factory/ThemeFactory.js'
-import Session from '../models/static/Session.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
-import logger from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
-import Timer from '../models/Timer.js'
-import Watcher from '../utils/Watcher.js'
-import { install } from '../utils/ExternalComponentUtils.js'
-import { COLLECTIONS_FOLDER_NAME } from '../config/CLI.js'
 
 // Internal Imports
+import CollectionFactory from '../factory/CollectionFactory.js'
+import ThemeFactory from '../factory/ThemeFactory.js'
+import Timer from '../models/Timer.js'
+import Session from '../models/static/Session.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
+import { install } from '../utils/ExternalComponentUtils.js'
+import logger, { logSpacer } from '../utils/Logger.js'
+import Watcher from '../utils/Watcher.js'
+import { isRepoUrl } from '../utils/WebUtils.js'
+
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
+import DevCommand from './DevCommand.js'
 
 class InstallCommand {
   /**
@@ -22,42 +24,31 @@ class InstallCommand {
   static async execute () {
     const promises = []
 
-    /** @type {Object<string, {source: string, components: string[]}>} */
-    let collectionsList
-    // If we have only one element as a string, convert it to object form.
-    if (NodeUtils.isString(Session.targets)) {
-      collectionsList = {}
-      collectionsList[Session.targets] = []
-    } else {
-      collectionsList = Session.targets
-    }
+    // Creating Theme
+    const theme = ThemeFactory.fromThemeInstallCommand()
 
-    await this.setupCollectionsList(collectionsList)
+    for (const collectionEntry of Object.entries(Session.targets)) {
+      const collection = await CollectionFactory.fromTomlEntry(collectionEntry)
 
-    for (const [collectionName, { components: componentNames }] of Object.entries(collectionsList)) {
-      const collection = await InstallCommand.installOne(collectionName, componentNames)
+      // Install it locally, if the source is a URL
+      if (isRepoUrl(collectionEntry[1].source)) {
+        await install(collectionEntry[1].source, collection.rootFolder, collection.name)
+      }
+
+      await InstallCommand.installOne(theme, collection)
 
       if (Session.watchMode) {
-        promises.push(this.watch(collection))
+        if (isRepoUrl(collectionEntry[1].source)) {
+          logger.error(`Ignoring "${collection.name}": Unable To Watch Collection from a remote URL`)
+        } else {
+          promises.push(this.watch(collection))
+        }
       }
     }
     Session.firstRun = false
 
-    return Promise.all(promises)
-  }
-
-  /**
-   * Setup collections defined in the shopify.theme.toml file
-   *
-   * @param {Object<string, {source: string}>} collectionsList
-   */
-  static async setupCollectionsList (collectionsList) {
-    const collections = Object.entries(collectionsList)
-    const promises = []
-
-    for (const [collectionName, { source }] of collections) {
-      const targetFolder = path.join(COLLECTIONS_FOLDER_NAME, collectionName)
-      promises.push(install(source, targetFolder, collectionName))
+    if (promises.length) {
+      promises.push(DevCommand.runThemeDev(theme.rootFolder))
     }
 
     return Promise.all(promises)
@@ -65,22 +56,19 @@ class InstallCommand {
 
   /**
    * Install a Collection
-   * @param {string} collectionName
-   * @param {string[]} componentNames
+   * @param {import('../../models/Theme.js').default} theme
+   * @param {module:models/Collection} collection
    * @return {Promise<module:models/Collection>}
    */
-  static async installOne (collectionName, componentNames) {
-    logger.info(`Building & Installing the ${collectionName} Collection.`)
+  static async installOne (theme, collection) {
+    logger.info(`Building & Installing the ${collection.name} Collection.`)
     const startTime = new Timer()
 
-    // Creating Theme
-    const theme = ThemeFactory.fromThemeInstallCommand()
-
     // Build using the Build Command
-    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
+    await BuildCommand.buildCollection(collection)
     await BuildCommand.deployCollection(collection)
     // Install and time it!
-    logger.info(`Installing the ${collectionName} Collection for the ${theme.name} Theme.`)
+    logger.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
     const installStartTime = new Timer()
     await CollectionInstaller.install(theme, collection)
     logger.info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)
@@ -92,16 +80,19 @@ class InstallCommand {
    * On Collection Watch Event
    * @param {string} collectionName
    * @param {string[]} componentNames
+   * @param {string} collectionSource
    * @param {FSWatcher} watcher
    * @param event
    * @param eventPath
    * @return {Promise<module: models/Collection>}
    */
-  static async onCollectionWatchEvent (collectionName, componentNames, watcher, event, eventPath) {
+  static async onCollectionWatchEvent (collectionName, componentNames, collectionSource, watcher, event, eventPath) {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${filename} detected`)
 
-    const collection = await InstallCommand.installOne(collectionName, componentNames)
+    const theme = ThemeFactory.fromThemeInstallCommand()
+    const collection = await CollectionFactory.fromName(collectionName, componentNames, collectionSource)
+    await InstallCommand.installOne(theme, collection)
 
     // The Watcher is restarted on any liquid file change.
     // This is useful if any render tags were added or removed, it will reset snippet watched folders.
@@ -121,7 +112,13 @@ class InstallCommand {
 
     const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
 
-    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, watcher)
+    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, collection.source, watcher)
+    logSpacer()
+    logger.info('--------------------------------------------------------')
+    logger.info(`${collection.name}: Watching component tree for changes`)
+    logger.info('(Ctrl+C to abort)')
+    logger.info('--------------------------------------------------------')
+    logSpacer()
     Watcher.watch(watcher, onCollectionWatchEvent)
   }
 }

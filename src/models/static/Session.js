@@ -206,14 +206,6 @@ class Session {
   }
 
   /**
-   * Is The CLI Caller Of A Component Type
-   * @return {boolean}
-   */
-  static isComponent () {
-    return this.#callerType === Components.COMPONENT_TYPE_NAME
-  }
-
-  /**
    * Is The Component Type a Theme
    * @return {boolean}
    */

@@ -36,7 +36,7 @@ DESCRIPTION
   Build a component or collection of components
 ```
 
-_See code: [plugin/commands/theme/component/build.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.0.4/plugin/commands/theme/component/build.js)_
+_See code: [plugin/commands/theme/component/build.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.1.1/plugin/commands/theme/component/build.js)_
 
 ## `shopify theme component dev [COMPONENT]`
 
@@ -57,7 +57,7 @@ DESCRIPTION
   Develop a component in isolation or all available components
 ```
 
-_See code: [plugin/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.0.4/plugin/commands/theme/component/dev.js)_
+_See code: [plugin/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.1.1/plugin/commands/theme/component/dev.js)_
 
 ## `shopify theme component generate COMPONENT`
 
@@ -78,7 +78,7 @@ DESCRIPTION
   Generate a component
 ```
 
-_See code: [plugin/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.0.4/plugin/commands/theme/component/generate.js)_
+_See code: [plugin/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.1.1/plugin/commands/theme/component/generate.js)_
 
 ## `shopify theme component install`
 
@@ -97,7 +97,7 @@ DESCRIPTION
   Install a collection of components
 ```
 
-_See code: [plugin/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.0.4/plugin/commands/theme/component/install.js)_
+_See code: [plugin/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.1.1/plugin/commands/theme/component/install.js)_
 <!-- commandsstop -->
 
 # Development

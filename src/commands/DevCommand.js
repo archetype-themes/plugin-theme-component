@@ -14,6 +14,7 @@ import Watcher from '../utils/Watcher.js'
 
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
+import CollectionFactory from '../factory/CollectionFactory.js'
 
 class DevCommand {
   /**
@@ -31,8 +32,7 @@ class DevCommand {
     Session.firstRun = false
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
     const watcherPromise = this.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, componentName)
-    const themeDevPromise = this.runThemeDev(collection.rootFolder)
-
+    const themeDevPromise = this.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME))
     return Promise.all([watcherPromise, themeDevPromise])
   }
 
@@ -58,7 +58,8 @@ class DevCommand {
 
     // Build & Deploy Collection
     const componentNames = componentName && Session.targetType === Components.COMPONENT_TYPE_NAME ? [componentName] : []
-    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
+    const collection = await CollectionFactory.fromName(collectionName, componentNames)
+    await BuildCommand.buildCollection(collection)
     await BuildCommand.deployCollection(collection)
 
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
@@ -104,8 +105,7 @@ class DevCommand {
     return Watcher.watch(watcher, onCollectionWatchEvent)
   }
 
-  static async runThemeDev (collectionRootFolder) {
-    const cwd = join(collectionRootFolder, DEV_FOLDER_NAME)
+  static async runThemeDev (cwd) {
     const shopifyThemeDev = spawn('shopify', ['theme', 'dev', '--path', cwd], {
       stdio: 'inherit'
     })

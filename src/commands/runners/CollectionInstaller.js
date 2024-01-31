@@ -17,7 +17,7 @@ import logger from '../../utils/Logger.js'
 class CollectionInstaller {
   /**
    * Install Collection Within a Theme
-   * @param {Theme} theme
+   * @param {import('../../models/Theme.js').default} theme
    * @param {module:models/Collection} collection
    * @return {Promise<Awaited<unknown>[]>}
    */
@@ -43,7 +43,7 @@ class CollectionInstaller {
   /**
    * Inject references to the Collection's main CSS and JS files in the theme's main liquid file
    * @param {module:models/Collection} collection
-   * @param {Theme} theme
+   * @param {import('../../models/Theme.js').default} theme
    * @return {Promise<void>}
    */
   static async injectAssetReferences (collection, theme) {

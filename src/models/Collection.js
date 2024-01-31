@@ -9,6 +9,9 @@ class Collection {
   /** @type {string} **/
   #rootFolder
 
+  /** @type {string} **/
+  #source
+
   /** @type {Component[]} **/
   #components
 
@@ -78,6 +81,22 @@ class Collection {
    */
   set rootFolder (value) {
     this.#rootFolder = value
+  }
+
+  /**
+   * Get source
+   * @return {string|null}
+   */
+  get source () {
+    return this.#source
+  }
+
+  /**
+   * Set source
+   * @param {string|null} value
+   */
+  set source (value) {
+    this.#source = value
   }
 
   /**
