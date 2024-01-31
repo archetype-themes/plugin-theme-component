@@ -10,7 +10,7 @@ import CollectionUtils from '../utils/CollectionUtils.js'
 import { install } from '../utils/ExternalComponentUtils.js'
 import logger, { logSpacer } from '../utils/Logger.js'
 import Watcher from '../utils/Watcher.js'
-import { isUrl } from '../utils/WebUtils.js'
+import { isRepoUrl } from '../utils/WebUtils.js'
 
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
@@ -31,14 +31,14 @@ class InstallCommand {
       const collection = await CollectionFactory.fromTomlEntry(collectionEntry)
 
       // Install it locally, if the source is a URL
-      if (isUrl(collectionEntry[1].source)) {
+      if (isRepoUrl(collectionEntry[1].source)) {
         await install(collectionEntry[1].source, collection.rootFolder, collection.name)
       }
 
       await InstallCommand.installOne(theme, collection)
 
       if (Session.watchMode) {
-        if (isUrl(collectionEntry[1].source)) {
+        if (isRepoUrl(collectionEntry[1].source)) {
           logger.error(`Ignoring "${collection.name}": Unable To Watch Collection from a remote URL`)
         } else {
           promises.push(this.watch(collection))
