@@ -27,8 +27,8 @@ class InstallCommand {
       await InstallCommand.installOne(collection)
 
       if (Session.watchMode) {
-        if (isUrl(collection.rootFolder)) {
-          logger.error(`Ignoring ${collection.name}: Unable To Watch Collection from a remote URL`)
+        if (isUrl(collectionEntry[1].source)) {
+          logger.error(`Ignoring "${collection.name}": Unable To Watch Collection from a remote URL`)
         } else {
           promises.push(this.watch(collection))
         }
@@ -99,7 +99,6 @@ class InstallCommand {
 
     const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, watcher)
     logSpacer()
-    console.log(collection.rootFolder)
     logger.info('--------------------------------------------------------')
     logger.info(`${collection.name}: Watching component tree for changes`)
     logger.info('(Ctrl+C to abort)')
