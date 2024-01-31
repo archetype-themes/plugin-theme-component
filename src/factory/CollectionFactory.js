@@ -6,9 +6,7 @@ import Collection from '../models/Collection.js'
 import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import FileUtils from '../utils/FileUtils.js'
-import { install } from '../utils/ExternalComponentUtils.js'
 import logger from '../utils/Logger.js'
-import { isUrl } from '../utils/WebUtils.js'
 
 class CollectionFactory {
   /**
@@ -22,6 +20,7 @@ class CollectionFactory {
     const collection = new Collection()
 
     collection.name = collectionName
+    if (collectionSource) {collection.source = collectionSource}
     collection.rootFolder = await CollectionUtils.findRootFolder(collectionName, collectionSource)
 
     // Find .gitignore File
@@ -52,14 +51,7 @@ class CollectionFactory {
    * @return {Promise<module:models/Collection>}
    */
   static async fromTomlEntry (collectionEntry) {
-    const collection = await this.fromName(collectionEntry[0], collectionEntry[1].components, collectionEntry[1].source)
-
-    // Install it locally, if the source is a URL
-    if (isUrl(collectionEntry[1].source)) {
-      await install(collectionEntry[1].source, collection.rootFolder, collection.name)
-    }
-
-    return collection
+    return await this.fromName(collectionEntry[0], collectionEntry[1].components, collectionEntry[1].source)
   }
 }
 
