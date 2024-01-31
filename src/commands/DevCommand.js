@@ -14,6 +14,7 @@ import Watcher from '../utils/Watcher.js'
 
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
+import CollectionFactory from '../factory/CollectionFactory.js'
 
 class DevCommand {
   /**
@@ -58,7 +59,8 @@ class DevCommand {
 
     // Build & Deploy Collection
     const componentNames = componentName && Session.targetType === Components.COMPONENT_TYPE_NAME ? [componentName] : []
-    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
+    const collection = await CollectionFactory.fromName(collectionName, componentNames)
+    await BuildCommand.buildCollection(collection)
     await BuildCommand.deployCollection(collection)
 
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
