@@ -28,7 +28,6 @@ class InstallCommand {
     const theme = ThemeFactory.fromThemeInstallCommand()
 
     for (const collectionEntry of Object.entries(Session.targets)) {
-
       const collection = await CollectionFactory.fromTomlEntry(collectionEntry)
 
       // Install it locally, if the source is a URL

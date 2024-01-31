@@ -20,7 +20,7 @@ class CollectionFactory {
     const collection = new Collection()
 
     collection.name = collectionName
-    if (collectionSource) {collection.source = collectionSource}
+    if (collectionSource) { collection.source = collectionSource }
     collection.rootFolder = await CollectionUtils.findRootFolder(collectionName, collectionSource)
 
     // Find .gitignore File
