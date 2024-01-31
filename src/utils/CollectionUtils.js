@@ -57,7 +57,7 @@ class CollectionUtils {
       }
       if (collectionSource) {
         if (isUrl(collectionSource)) {
-          return join(COLLECTIONS_FOLDER_NAME, collectionName)
+          return join(process.cwd(), COLLECTIONS_FOLDER_NAME, collectionName)
         } else {
           return collectionSource
         }
