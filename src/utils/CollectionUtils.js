@@ -43,9 +43,6 @@ class CollectionUtils {
    * @returns {Promise<string>|string}
    */
   static async findRootFolder (collectionName) {
-    if (Session.isComponent()) {
-      return process.cwd()
-    }
     if (Session.isCollection()) {
       return process.cwd()
     }
