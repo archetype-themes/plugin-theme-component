@@ -32,10 +32,8 @@ class InstallCommand {
       collectionsList = Session.targets
     }
 
-    await this.setupCollectionsList(collectionsList)
-
-    for (const [collectionName, { components: componentNames }] of Object.entries(collectionsList)) {
-      const collection = await InstallCommand.installOne(collectionName, componentNames)
+      const collection = await CollectionFactory.fromTomlEntry(collectionEntry)
+      await InstallCommand.installOne(collection)
 
       if (Session.watchMode) {
         promises.push(this.watch(collection))
@@ -65,22 +63,21 @@ class InstallCommand {
 
   /**
    * Install a Collection
-   * @param {string} collectionName
-   * @param {string[]} componentNames
+   * @param {module:models/Collection} collection
    * @return {Promise<module:models/Collection>}
    */
-  static async installOne (collectionName, componentNames) {
-    logger.info(`Building & Installing the ${collectionName} Collection.`)
+  static async installOne (collection) {
+    logger.info(`Building & Installing the ${collection.name} Collection.`)
     const startTime = new Timer()
 
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
 
     // Build using the Build Command
-    const collection = await BuildCommand.buildCollection(collectionName, componentNames)
+    await BuildCommand.buildCollection(collection)
     await BuildCommand.deployCollection(collection)
     // Install and time it!
-    logger.info(`Installing the ${collectionName} Collection for the ${theme.name} Theme.`)
+    logger.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
     const installStartTime = new Timer()
     await CollectionInstaller.install(theme, collection)
     logger.info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)
@@ -101,7 +98,8 @@ class InstallCommand {
     const filename = path.basename(eventPath)
     logger.debug(`Watcher Event: "${event}" on file: ${filename} detected`)
 
-    const collection = await InstallCommand.installOne(collectionName, componentNames)
+    const collection = await CollectionFactory.fromName(collectionName, componentNames)
+    await InstallCommand.installOne(collection)
 
     // The Watcher is restarted on any liquid file change.
     // This is useful if any render tags were added or removed, it will reset snippet watched folders.
