@@ -9,7 +9,7 @@ import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
 
 import FileUtils from './FileUtils.js'
-import { isUrl } from './WebUtils.js'
+import { isRepoUrl } from './WebUtils.js'
 
 const IGNORE_PATTERNS = [
   'package.json',
@@ -56,7 +56,7 @@ class CollectionUtils {
         throw new InternalError('Unable to find root collection root folder without the collection source.')
       }
       if (collectionSource) {
-        if (isUrl(collectionSource)) {
+        if (isRepoUrl(collectionSource)) {
           return join(process.cwd(), COLLECTIONS_FOLDER_NAME, collectionName)
         } else {
           return collectionSource
