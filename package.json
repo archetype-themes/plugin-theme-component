@@ -34,8 +34,8 @@
   "repository": "https://github.com/archetype-themes/plugin-theme-component.git",
   "dependencies": {
     "@iarna/toml": "2.2.5",
-    "@types/node": "18.19.3",
-    "@oclif/core": "3.15.1",
+    "@types/node": "20.11.14",
+    "@oclif/core": "3.18.2",
     "chokidar": "^3.5.3",
     "deepmerge": "^4.3.1",
     "es-module-lexer": "^1.4.1",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "@vitest/coverage-v8": "^1.2.2",
     "dpdm": "^3.14.0",
-    "oclif": "4.0.2",
+    "oclif": "4.4.2",
     "shx": "^0.3.4",
     "standard": "latest",
     "vitest": "^1.2.2"
