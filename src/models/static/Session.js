@@ -42,6 +42,9 @@ class Session {
   /** @type {string}  **/
   static #localesRepo
 
+  /** @type {boolean}  **/
+  static #syncMode = false
+
   /** @type {string|Object}  **/
   static #targets
 
@@ -147,6 +150,22 @@ class Session {
    */
   static set localesRepo (value) {
     this.#localesRepo = value
+  }
+
+  /**
+   * Get Sync Mode
+   * @return {boolean}
+   */
+  static get syncMode () {
+    return this.#syncMode
+  }
+
+  /**
+   * Set Sync Mode
+   * @param {boolean} value
+   */
+  static set syncMode (value) {
+    this.#syncMode = value
   }
 
   /**

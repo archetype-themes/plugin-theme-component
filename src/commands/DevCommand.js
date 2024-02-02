@@ -19,7 +19,7 @@ import CollectionFactory from '../factory/CollectionFactory.js'
 class DevCommand {
   /**
    * Execute The Dev CLI Command
-   * @return {Promise<Awaited<FSWatcher|unknown>[]>}
+   * @return {Promise<Awaited<unknown>[]|Awaited<Promise<FSWatcher>>>}
    */
   static async execute () {
     const collectionName = Session.config.name
@@ -32,8 +32,12 @@ class DevCommand {
     Session.firstRun = false
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
     const watcherPromise = this.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, componentName)
-    const themeDevPromise = this.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME))
-    return Promise.all([watcherPromise, themeDevPromise])
+    if (Session.syncMode) {
+      const themeDevPromise = this.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME))
+      return Promise.all([watcherPromise, themeDevPromise])
+    }
+
+    return Promise.resolve(watcherPromise)
   }
 
   /**

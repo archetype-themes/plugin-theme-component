@@ -25,9 +25,10 @@ class SessionFactory {
    * Session Factory method From Command Line Input
    * @param {string[]} commandLineArguments
    * @param {{component: import('../models/static/Session.js').CLIConfig}} config
+   * @param {Object} [oclifFlags]
    * @return {Session}
    */
-  static fromArgsAndManifest (commandLineArguments, config) {
+  static fromArgsAndManifest (commandLineArguments, config, oclifFlags) {
     const [args, flags] = this.#splitArgs(commandLineArguments)
 
     if (args.length === 0) {
@@ -79,7 +80,15 @@ class SessionFactory {
     }
 
     // Search for the Watch Mode flag
-    Session.watchMode = WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
+    if (oclifFlags && 'watch' in oclifFlags) {
+      Session.watchMode = oclifFlags.watch
+    } else {
+      Session.watchMode = WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
+    }
+
+    if (oclifFlags && 'sync' in oclifFlags) {
+      Session.syncMode = oclifFlags.sync
+    }
 
     logger.debug({
       'CLI Computed Arguments': {
