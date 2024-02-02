@@ -114,6 +114,27 @@ class CollectionUtils {
 
     return componentsNameTree
   }
+
+  /**
+   *
+   * @param {module:models/Collection} collection
+   * @return {Promise<module:models/Collection>}
+   */
+  static async initCollectionFiles (collection) {
+    // Find .gitignore File
+    const gitignoreFile = join(collection.rootFolder, '.gitignore')
+    if (await FileUtils.exists(gitignoreFile)) {
+      collection.gitIgnoreFile = gitignoreFile
+    }
+
+    // Find All component Folders
+    const componentFolders = await CollectionUtils.getComponentFolders(collection.rootFolder)
+
+    // Create Components From components Folders
+    collection.components = CollectionUtils.findComponents(componentFolders)
+
+    return Promise.resolve(collection)
+  }
 }
 
 export default CollectionUtils

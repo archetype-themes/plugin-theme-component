@@ -11,32 +11,26 @@ Shopify CLI plugin for building theme components.
 # Commands
 
 <!-- commands -->
-* [`shopify theme component build [COMPONENT]`](#shopify-theme-component-build-component)
+* [`shopify theme component`](#shopify-theme-component)
 * [`shopify theme component dev [COMPONENT]`](#shopify-theme-component-dev-component)
-* [`shopify theme component generate COMPONENT`](#shopify-theme-component-generate-component)
 * [`shopify theme component install`](#shopify-theme-component-install)
 
-## `shopify theme component build [COMPONENT]`
+## `shopify theme component`
 
-Build a component or collection of components
+Theme Component Plugin - By Archetype Themes
 
 ```
 USAGE
-  $ shopify theme component build [COMPONENT] [-w] [--debug] [--trace]
-
-ARGUMENTS
-  COMPONENT  Component to build
+  $ shopify theme component [-v]
 
 FLAGS
-  -w, --watch  Watch for changes
-      --debug  Debug Mode is more verbose.
-      --trace  Trace Mode provides tracing and debug information.
+  -v, --version  Display Plugin Version
 
 DESCRIPTION
-  Build a component or collection of components
+  Theme Component Plugin - By Archetype Themes
 ```
 
-_See code: [plugin/commands/theme/component/build.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.1.1/plugin/commands/theme/component/build.js)_
+_See code: [plugin/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.2.0/plugin/commands/theme/component/index.js)_
 
 ## `shopify theme component dev [COMPONENT]`
 
@@ -57,28 +51,7 @@ DESCRIPTION
   Develop a component in isolation or all available components
 ```
 
-_See code: [plugin/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.1.1/plugin/commands/theme/component/dev.js)_
-
-## `shopify theme component generate COMPONENT`
-
-Generate a component
-
-```
-USAGE
-  $ shopify theme component generate COMPONENT [--debug] [--trace]
-
-ARGUMENTS
-  COMPONENT  Component to generate
-
-FLAGS
-  --debug  Debug Mode is more verbose.
-  --trace  Trace Mode provides tracing and debug information.
-
-DESCRIPTION
-  Generate a component
-```
-
-_See code: [plugin/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.1.1/plugin/commands/theme/component/generate.js)_
+_See code: [plugin/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.2.0/plugin/commands/theme/component/dev.js)_
 
 ## `shopify theme component install`
 
@@ -86,7 +59,7 @@ Install a collection of components
 
 ```
 USAGE
-  $ shopify theme component install [-w] [--debug] [--trace]
+  $ shopify theme component install [--debug] [--trace] [-w]
 
 FLAGS
   -w, --watch  Watch for changes
@@ -97,7 +70,7 @@ DESCRIPTION
   Install a collection of components
 ```
 
-_See code: [plugin/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.1.1/plugin/commands/theme/component/install.js)_
+_See code: [plugin/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.2.0/plugin/commands/theme/component/install.js)_
 <!-- commandsstop -->
 
 # Development

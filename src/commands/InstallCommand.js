@@ -28,12 +28,14 @@ class InstallCommand {
     const theme = ThemeFactory.fromThemeInstallCommand()
 
     for (const collectionEntry of Object.entries(Session.targets)) {
-      const collection = await CollectionFactory.fromTomlEntry(collectionEntry)
+      let collection = await CollectionFactory.fromTomlEntry(collectionEntry)
 
       // Install it locally, if the source is a URL
-      if (isRepoUrl(collectionEntry[1].source)) {
-        await install(collectionEntry[1].source, collection.rootFolder, collection.name)
+      if (isRepoUrl(collection.source)) {
+        await install(collection.source, collection.rootFolder, collection.name)
       }
+
+      collection = await CollectionUtils.initCollectionFiles(collection)
 
       await InstallCommand.installOne(theme, collection)
 
@@ -47,7 +49,7 @@ class InstallCommand {
     }
     Session.firstRun = false
 
-    if (promises.length) {
+    if (promises.length && Session.syncMode) {
       promises.push(DevCommand.runThemeDev(theme.rootFolder))
     }
 
