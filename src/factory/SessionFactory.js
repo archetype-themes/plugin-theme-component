@@ -80,13 +80,13 @@ class SessionFactory {
     }
 
     // Search for the Watch Mode flag
-    if (oclifFlags && oclifFlags.hasOwnProperty('watch')) {
+    if (oclifFlags && 'watch' in oclifFlags) {
       Session.watchMode = oclifFlags.watch
     } else {
       Session.watchMode = WATCH_FLAG_ACCEPTED_VALUES.some((flag) => flags.includes(flag))
     }
 
-    if (oclifFlags && oclifFlags.hasOwnProperty('sync')) {
+    if (oclifFlags && 'sync' in oclifFlags) {
       Session.syncMode = oclifFlags.sync
     }
 
