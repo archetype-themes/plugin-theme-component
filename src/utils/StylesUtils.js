@@ -18,7 +18,7 @@ class StylesUtils {
       // When building a Collection, multiple Components might include the same snippet,
       // Therefore we check for duplicates
       if (!processedStylesheets.includes(stylesheet)) {
-        masterStylesheetContents += `@import url('${stylesheet}');\n`
+        masterStylesheetContents += `@import '${stylesheet}';\n`
         processedStylesheets.push(stylesheet)
       }
     }
