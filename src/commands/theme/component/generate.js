@@ -2,22 +2,37 @@
 import { exec } from 'node:child_process'
 import { access, constants, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import Components from '../../../config/Components.js'
-import FileAccessError from '../../../errors/FileAccessError.js'
+import { Args } from '@oclif/core'
 
 // Internal Imports
 import Session from '../../../models/static/Session.js'
 import FileUtils from '../../../utils/FileUtils.js'
 import logger from '../../../utils/Logger.js'
 import NodeUtils from '../../../utils/NodeUtils.js'
+import Components from '../../../config/Components.js'
+import FileAccessError from '../../../errors/FileAccessError.js'
+import { getTomlConfig } from '../../../utils/TomlUtils.js'
+import { sessionFactory } from '../../../factory/SessionFactory.js'
 
-class Generate {
-  /**
-   * Execute The CLI's Generate Command
-   * @param {Object} packageManifest - package.json contents
-   * @returns {Promise<ChildProcess>}
-   */
-  static async execute (packageManifest) {
+export default class Generate {
+  static args = {
+    component: Args.string({
+      description: 'Name of the component to generate',
+      required: true
+    })
+  }
+
+  async run () {
+    const { args, flags, metadata } = await this.parse(Generate)
+
+    const commandElements = this.id.split(':')
+    Session.command = commandElements[commandElements.length - 1]
+
+    const tomlConfig = await getTomlConfig()
+
+    sessionFactory(this.id, tomlConfig)
+    Generate.setSessionArgs(args, tomlConfig)
+
     const workspaceFolder = Components.SNIPPETS_FOLDER_NAME
     const componentName = Session.component
     const componentFolder = join(workspaceFolder, componentName)
@@ -69,6 +84,14 @@ class Generate {
     // Run npm install; this must be done or npm will send error messages relating to monorepo integrity
     return exec('npm install', { cwd: componentRootFolder })
   }
-}
 
-export default Generate
+  static setSessionArgs (args, tomlConfig) {
+    Session.callerType = Components.COLLECTION_TYPE_NAME
+    Session.targetType = Components.COMPONENT_TYPE_NAME
+
+    if (args.component)
+      Session.component = args.component
+    else if (tomlConfig.component)
+      Session.component = tomlConfig.component
+  }
+}
