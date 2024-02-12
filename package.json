@@ -61,7 +61,7 @@
     "vitest": "^1.2.2"
   },
   "oclif": {
-    "commands": "./plugin/commands",
+    "commands": "src/commands",
     "bin": "shopify",
     "topicSeparator": " "
   },
