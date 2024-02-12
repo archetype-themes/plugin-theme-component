@@ -11,7 +11,7 @@ import FileUtils from '../utils/FileUtils.js'
 import logger from '../utils/Logger.js'
 import NodeUtils from '../utils/NodeUtils.js'
 
-class GenerateCommand {
+class Generate {
   /**
    * Execute The CLI's Generate Command
    * @param {Object} packageManifest - package.json contents
@@ -71,4 +71,4 @@ class GenerateCommand {
   }
 }
 
-export default GenerateCommand
+export default Generate
