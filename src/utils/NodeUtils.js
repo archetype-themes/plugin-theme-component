@@ -1,6 +1,6 @@
 // Node.js imports
 import { argv, exit } from 'node:process'
-import { dirname } from 'node:path'
+import { sep } from 'node:path'
 
 // Internal Imports
 import logger, { DEBUG_LOG_LEVEL } from './Logger.js'
@@ -32,15 +32,6 @@ class NodeUtils {
   }
 
   /**
-   * Check if variable is of type string
-   * @param {*} variable
-   * @returns {boolean}
-   */
-  static isString (variable) {
-    return (typeof variable === 'string' || variable instanceof String)
-  }
-
-  /**
    * Exit with Error
    * @param {Error|string} error
    */
@@ -59,24 +50,6 @@ class NodeUtils {
     }
     exit(1)
   }
-
-  /**
-   * Returns the file path of the current module.
-   * @param {string} importMetaUrl - The import.meta.url of the current module.
-   * @return {string} - The file path of the current module.
-   */
-  static getCurrentFilePath (importMetaUrl) {
-    return new URL(importMetaUrl).pathname
-  }
-
-  /**
-   * Retrieves the current folder of the file where the method is being called.
-   * @param {string} importMetaUrl - The import.meta.url of the current file.
-   * @returns {string} The current folder of the file.
-   */
-  static getCurrentFileFolder (importMetaUrl) {
-    return dirname(NodeUtils.getCurrentFilePath(importMetaUrl))
-  }
 }
 
 export default NodeUtils
@@ -84,8 +57,10 @@ export default NodeUtils
 // Export static methods individually
 export const exitWithError = NodeUtils.exitWithError
 export const getArgs = NodeUtils.getArgs
-export const getCLIRootFolderName = NodeUtils.getCLIRootFolderName
-export const getCurrentFileFolder = NodeUtils.getCurrentFileFolder
 
-export const getCurrentFilePath = NodeUtils.getCurrentFilePath
-export const isString = NodeUtils.isString
+export function getCurrentWorkingDirectory () {
+  const currentWorkingDirectory = process.cwd()
+  const directoryArray = currentWorkingDirectory.split(sep)
+
+  return directoryArray[directoryArray.length - 1]
+}
