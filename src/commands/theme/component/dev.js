@@ -191,9 +191,9 @@ export default class Dev extends BaseCommand {
     }
 
     if (metadata.flags[LOCALES_FLAG_NAME]?.setFromDefault && tomlConfig[LOCALES_FLAG_NAME]) {
-      Session.localesRepo = tomlConfig[LOCALES_FLAG_NAME]
+      Session.localesPath = tomlConfig[LOCALES_FLAG_NAME]
     } else {
-      Session.localesRepo = flags[LOCALES_FLAG_NAME]
+      Session.localesPath = flags[LOCALES_FLAG_NAME]
     }
 
     if (metadata.flags[SETUP_FLAG_NAME]?.setFromDefault && tomlConfig[SETUP_FLAG_NAME]) {

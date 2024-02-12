@@ -73,7 +73,7 @@ class CollectionBuilder {
     try {
       logChildItem('Running the Locales Processor')
       const timer = new Timer()
-      const validLocalesRepo = await validateExternalLocation(Session.localesRepo, cwd)
+      const validLocalesRepo = await validateExternalLocation(Session.localesPath, cwd)
       const locales = await LocalesProcessor.build(liquidCodeElements, validLocalesRepo, cwd)
       logChildItem(`Locales Processor completed in ${timer.now()} seconds`)
       return locales

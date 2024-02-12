@@ -20,7 +20,7 @@ class Session {
   static firstRun = true
 
   /** @type {string} Locales' source location **/
-  static localesRepo
+  static localesPath
 
   /** @type {boolean}  Copy components' setup files or not **/
   static setupFiles
