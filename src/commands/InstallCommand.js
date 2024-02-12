@@ -14,7 +14,7 @@ import { isRepoUrl } from '../utils/WebUtils.js'
 
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
-import DevCommand from './DevCommand.js'
+import Dev from '../../plugin/commands/theme/component/dev.js'
 
 class InstallCommand {
   /**
@@ -50,7 +50,7 @@ class InstallCommand {
     Session.firstRun = false
 
     if (promises.length && Session.syncMode) {
-      promises.push(DevCommand.runThemeDev(theme.rootFolder))
+      promises.push(Dev.runThemeDev(theme.rootFolder))
     }
 
     return Promise.all(promises)
