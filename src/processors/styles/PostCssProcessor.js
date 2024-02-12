@@ -1,5 +1,7 @@
+import browsers from '@shopify/browserslist-config' // A list of browsers that we support
 import postcss from 'postcss' // PostCSS is a tool for transforming styles with JS plugins.
-import postcssrc from 'postcss-load-config'
+import postcssImport from 'postcss-import' // Resolve @import statements in CSS
+import postcssPresetEnv from 'postcss-preset-env' // Convert modern CSS into something most browsers can understand
 
 class PostCssProcessor {
   /**
@@ -11,13 +13,22 @@ class PostCssProcessor {
    * @return {Promise<string>}
    */
   static async processStyles (styles, sourceFile, targetFile, contextPath) {
-    const { plugins, options } = await postcssrc({ cwd: contextPath }, contextPath)
-    const processor = postcss(plugins)
+    const processor = postcss([
+      postcssImport(),
+      postcssPresetEnv({
+        stage: 2,
+        browsers,
+        features: {
+          'nesting-rules': true
+        }
+      })
+    ])
 
-    options.from = sourceFile
-    options.to = targetFile
-
-    const result = await processor.process(styles, options)
+    const result = await processor.process(styles, {
+      from: sourceFile,
+      to: targetFile,
+      map: false
+    })
 
     return result.css
   }
