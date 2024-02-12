@@ -1,6 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 import { FSWatcher, watch } from 'chokidar'
-import logger from './Logger.js'
+import logger, { logSpacer } from './Logger.js'
+import { ucfirst } from './SyntaxUtils.js'
+import { basename } from 'node:path'
 
 class Watcher {
   /**
@@ -38,6 +40,20 @@ class Watcher {
    */
   static watch (watcher, action) {
     return watcher.on('all', action)
+  }
+
+  /**
+   * Log Watcher Event
+   * @param {string} event Watcher Event
+   * @param {string} eventPath Watcher Event Path
+   */
+  static logEvent (event, eventPath) {
+    const filename = basename(eventPath)
+    logSpacer()
+    logger.info('--------------------------------------------------------')
+    logger.info(`${ucfirst(event)} on ${filename} detected (${eventPath})`)
+    logger.info('--------------------------------------------------------')
+    logSpacer()
   }
 }
 
