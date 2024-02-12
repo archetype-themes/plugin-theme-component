@@ -1,6 +1,6 @@
 import { Args, Flags } from '@oclif/core'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
-import { BaseCommand } from '../../../../plugin/baseCommand.js'
+import { BaseCommand } from '../../baseCommand.js'
 import Session from '../../../models/static/Session.js'
 import Components from '../../../config/Components.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'

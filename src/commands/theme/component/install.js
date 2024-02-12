@@ -1,5 +1,5 @@
 import InstallCommand from '../../InstallCommand.js'
-import { BaseCommand } from '../../../../plugin/baseCommand.js'
+import { BaseCommand } from '../../baseCommand.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
 

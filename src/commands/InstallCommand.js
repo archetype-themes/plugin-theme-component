@@ -14,7 +14,7 @@ import { isRepoUrl } from '../utils/WebUtils.js'
 
 import BuildCommand from './BuildCommand.js'
 import CollectionInstaller from './runners/CollectionInstaller.js'
-import Dev from '../../plugin/commands/theme/component/dev.js'
+import Dev from './theme/component/dev.js'
 
 class InstallCommand {
   /**
