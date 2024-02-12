@@ -1,6 +1,5 @@
 // Node imports
 import path, { dirname, parse } from 'node:path'
-import Components from '../config/Components.js'
 import InternalError from '../errors/InternalError.js'
 import CollectionFactory from '../factory/CollectionFactory.js'
 import ComponentFactory from '../factory/ComponentFactory.js'
@@ -19,43 +18,13 @@ import SnippetBuilder from './runners/SnippetBuilder.js'
 
 class BuildCommand {
   /**
-   * Execute Build Command
-   * @returns {Promise<FSWatcher|null>}
-   */
-  static async execute () {
-    const collectionName = Session.config.name
-    let componentNames
-    if (Session.targetType === Components.COLLECTION_TYPE_NAME) {
-      componentNames = Session.config?.components
-    } else if (Session.targetType === Components.COMPONENT_TYPE_NAME) {
-      componentNames = [Session.targets]
-    }
-
-    const collection = await CollectionFactory.fromName(collectionName, componentNames)
-    await this.buildCollection(collection)
-    await this.deployCollection(collection)
-
-    if (Session.watchMode) {
-      Session.firstRun = false
-      return this.watchCollection(collection)
-    }
-
-    return null
-  }
-
-  /**
    * Build a Collection
    * @param {module:models/Collection} collection Collection
    * @throws InternalError - No components found
    * @return {Promise<module:models/Collection>}
    */
   static async buildCollection (collection) {
-    // If this is a Theme, the Current Target Name will always be the Collection Name.
-    // Let's use that instead of Session.targets which might contain a Collection List object.
-    /** @type {string} **/
-    const currentTargetName = Session.callerType === Components.THEME_TYPE_NAME ? collection.name : Session.targets
-
-    logTitleItem(`Initializing Components for "${currentTargetName}"`)
+    logTitleItem(`Initializing Components for "${collection.name}"`)
     const initStartTime = new Timer()
 
     // Initialize Individual Components
@@ -94,7 +63,7 @@ class BuildCommand {
 
     logSpacer()
 
-    logTitleItem(`Building Individual Components for ${currentTargetName}`)
+    logTitleItem(`Building Individual Components for ${collection.name}`)
     const buildStartTime = new Timer();
 
     // Build Components

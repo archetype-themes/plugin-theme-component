@@ -27,7 +27,7 @@ export default class Dev extends BaseCommand {
 
   static args = {
     component: Args.string({
-      description: 'Name of the component to develop'
+      description: 'Name of the component to explore'
     })
   }
 
@@ -75,21 +75,21 @@ export default class Dev extends BaseCommand {
     const tomlConfig = await getTomlConfig()
 
     sessionFactory(this.id, tomlConfig)
-    Dev.setSessionTargets(args, tomlConfig)
+    Dev.setSessionArgs(args, tomlConfig)
     Dev.setSessionFlags(flags, metadata, tomlConfig)
 
     const collectionName = getCurrentWorkingDirectory()
 
     if (!Session.watchMode) {
-      return Promise.resolve(Dev.exploreComponent(Session.devTheme, collectionName, Session.targets))
+      return Promise.resolve(Dev.exploreComponent(Session.devTheme, collectionName, Session.component))
     }
 
-    const collection = await Dev.exploreComponent(Session.devTheme, collectionName, Session.targets)
+    const collection = await Dev.exploreComponent(Session.devTheme, collectionName, Session.component)
 
     // Start watcher and shopify theme dev processes
     Session.firstRun = false
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    const watcherPromise = Dev.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, Session.targets)
+    const watcherPromise = Dev.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, Session.component)
     if (Session.syncMode) {
       const themeDevPromise = Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME))
       return Promise.all([watcherPromise, themeDevPromise])
@@ -131,7 +131,7 @@ export default class Dev extends BaseCommand {
 
     const theme = await fromDevCommand(devFolder)
 
-    logTitleItem(`Installing ${Session.targets} Build To ${relative(collection.rootFolder, devFolder)}`)
+    logTitleItem(`Installing ${collection.name} Build To ${relative(collection.rootFolder, devFolder)}`)
 
     await CollectionInstaller.install(theme, collection)
 
@@ -173,14 +173,14 @@ export default class Dev extends BaseCommand {
     })
   }
 
-  static setSessionTargets (args, tomlConfig) {
+  static setSessionArgs (args, tomlConfig) {
     Session.callerType = Components.COLLECTION_TYPE_NAME
     Session.targetType = Components.COMPONENT_TYPE_NAME
 
     if (args.component)
-      Session.targets = args.component
+      Session.component = args.component
     else if (tomlConfig.component)
-      Session.targets = tomlConfig.component
+      Session.component = tomlConfig.component
   }
 
   static setSessionFlags (flags, metadata, tomlConfig) {
@@ -224,7 +224,7 @@ export default class Dev extends BaseCommand {
     const onCollectionWatchEvent = this.exploreComponent.bind(this, collectionName, componentName, devThemeOption, watcher)
     logSpacer()
     logger.info('--------------------------------------------------------')
-    logger.info(`${Session.targets}: Watching component tree for changes`)
+    logger.info(`${collectionName}: Watching component tree for changes`)
     logger.info('(Ctrl+C to abort)')
     logger.info('--------------------------------------------------------')
     logSpacer()

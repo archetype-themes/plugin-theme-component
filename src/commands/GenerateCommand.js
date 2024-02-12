@@ -19,7 +19,7 @@ class GenerateCommand {
    */
   static async execute (packageManifest) {
     const workspaceFolder = Components.SNIPPETS_FOLDER_NAME
-    const componentName = Session.targets
+    const componentName = Session.component
     const componentFolder = join(workspaceFolder, componentName)
     const componentRootFolder = join(NodeUtils.getPackageRootFolder(), componentFolder)
 
