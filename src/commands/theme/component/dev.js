@@ -81,15 +81,15 @@ export default class Dev extends BaseCommand {
     const collectionName = getCurrentWorkingDirectory()
 
     if (!Session.watchMode) {
-      return Promise.resolve(Dev.exploreComponent(Session.devTheme, collectionName, Session.component))
+      return Promise.resolve(Dev.exploreComponent(Session.themePath, collectionName, Session.component))
     }
 
-    const collection = await Dev.exploreComponent(Session.devTheme, collectionName, Session.component)
+    const collection = await Dev.exploreComponent(Session.themePath, collectionName, Session.component)
 
     // Start watcher and shopify theme dev processes
     Session.firstRun = false
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    const watcherPromise = Dev.watchComponents(collection.rootFolder, ignorePatterns, Session.devTheme, collection.name, Session.component)
+    const watcherPromise = Dev.watchComponents(collection.rootFolder, ignorePatterns, Session.themePath, collection.name, Session.component)
     if (Session.syncMode) {
       const themeDevPromise = Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME))
       return Promise.all([watcherPromise, themeDevPromise])
@@ -100,7 +100,7 @@ export default class Dev extends BaseCommand {
 
   /**
    * Explore Components
-   * @param {string} devThemeOption
+   * @param {string} themePath
    * @param {string} collectionName
    * @param {string} [componentName]
    * @param {FSWatcher} [watcher] Watcher Instance
@@ -108,7 +108,7 @@ export default class Dev extends BaseCommand {
    * @param {string} [eventPath] Watcher Event Path
    * @returns {Promise<module:models/Collection>}
    */
-  static async exploreComponent (devThemeOption, collectionName, componentName, watcher, event, eventPath) {
+  static async exploreComponent (themePath, collectionName, componentName, watcher, event, eventPath) {
     if (event && eventPath) {
       Watcher.logEvent(event, eventPath)
     }
@@ -123,7 +123,7 @@ export default class Dev extends BaseCommand {
 
     // Setup A Theme and Create Its Model Instance
     try {
-      const validThemeFolder = await validateExternalLocation(devThemeOption, collection.rootFolder)
+      const validThemeFolder = await validateExternalLocation(themePath, collection.rootFolder)
       await install(validThemeFolder, devFolder, 'Explorer Theme')
     } catch (error) {
       exitWithError('Source Dev Theme Folder or Repository is invalid: ' + error.message)
@@ -185,9 +185,9 @@ export default class Dev extends BaseCommand {
 
   static setSessionFlags (flags, metadata, tomlConfig) {
     if (metadata.flags[THEME_FLAG_NAME]?.setFromDefault && tomlConfig[THEME_FLAG_NAME]) {
-      Session.devTheme = tomlConfig[THEME_FLAG_NAME]
+      Session.themePath = tomlConfig[THEME_FLAG_NAME]
     } else {
-      Session.devTheme = flags[THEME_FLAG_NAME]
+      Session.themePath = flags[THEME_FLAG_NAME]
     }
 
     if (metadata.flags[LOCALES_FLAG_NAME]?.setFromDefault && tomlConfig[LOCALES_FLAG_NAME]) {
@@ -215,13 +215,13 @@ export default class Dev extends BaseCommand {
    * @param {string[]} ignorePatterns
    * @param {string} collectionName
    * @param {string} componentName
-   * @param {string} devThemeOption
+   * @param {string} themePath
    * @returns {Promise<FSWatcher>}
    */
-  static async watchComponents (collectionRootFolder, ignorePatterns, collectionName, componentName, devThemeOption) {
+  static async watchComponents (collectionRootFolder, ignorePatterns, collectionName, componentName, themePath) {
     const watcher = Watcher.getWatcher(collectionRootFolder, ignorePatterns)
 
-    const onCollectionWatchEvent = this.exploreComponent.bind(this, collectionName, componentName, devThemeOption, watcher)
+    const onCollectionWatchEvent = this.exploreComponent.bind(this, collectionName, componentName, themePath, watcher)
     logSpacer()
     logger.info('--------------------------------------------------------')
     logger.info(`${collectionName}: Watching component tree for changes`)

@@ -14,7 +14,7 @@ class Session {
   static command
 
   /** @type {string} Dev Theme **/
-  static devTheme
+  static themePath
 
   /** @type {boolean} Indicates whether it is the first run. **/
   static firstRun = true
