@@ -11,10 +11,10 @@
   "type": "module",
   "version": "2.3.0",
   "bin": {
-    "component": "src/bin/component.js"
+    "component": "/bin/run.js"
   },
   "scripts": {
-    "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 src/bin/component.js",
+    "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 bin/run.js",
     "lint": "standard",
     "test": "npm run cdc && vitest run --coverage && npm ci && npm publish --dry-run",
     "postpack": "shx rm -f oclif.manifest.json",

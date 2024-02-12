@@ -77,9 +77,9 @@ Please follow the guidelines listed below.
 .
 ├── README.md
 ├── package.json
+├── bin
+│   ├── run.js   [ component entrypoint ]
 └── src
-    ├── bin
-    │   ├── component.js   [ component entrypoint ]
     ├── runners        [ component runners ]
     ├── cli
     │   └── commands    [ CLI commands ]
