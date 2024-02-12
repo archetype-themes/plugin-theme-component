@@ -1,18 +1,5 @@
 import Components from '../../config/Components.js'
 
-/**
- * @typedef CLIConfig
- * @type {Object}
- * @property {string} type - Component type (theme/collection/component)
- * @property {string} name - Component name
- * @property {string} path - Component path (ie: './src')
- * FOR THEMES ONLY
- * @property {Object.<string, string[]>} collections - In Collection mode, list of components to build.
- * FOR COLLECTIONS ONLY
- * @property {string} components - List of components to build.
- * @property {string|string[]} componentFolders - Path to components
- **/
-
 /** @type {string} **/
 export const DEFAULT_DEV_THEME = 'https://github.com/archetype-themes/expanse.git'
 
@@ -20,7 +7,7 @@ export const DEFAULT_DEV_THEME = 'https://github.com/archetype-themes/expanse.gi
 export const DEFAULT_LOCALES_REPO = 'https://github.com/archetype-themes/locales.git'
 
 class Session {
-  /** @type {CLIConfig}  **/
+  /** @type {ComponentTomlConfig}  **/
   static #config
 
   /** @type {string} CLI Caller Component Type **/
@@ -43,6 +30,9 @@ class Session {
   static #localesRepo
 
   /** @type {boolean}  **/
+  static #setupFiles
+
+  /** @type {boolean}  **/
   static #syncMode = false
 
   /** @type {string|Object}  **/
@@ -56,7 +46,7 @@ class Session {
 
   /**
    * Get CLI Config
-   * @returns {CLIConfig}
+   * @returns {ComponentTomlConfig}
    */
   static get config () {
     return this.#config
@@ -64,7 +54,7 @@ class Session {
 
   /**
    * Set CLI Config
-   * @param {CLIConfig} value
+   * @param {ComponentTomlConfig} value
    */
   static set config (value) {
     this.#config = value
@@ -150,6 +140,22 @@ class Session {
    */
   static set localesRepo (value) {
     this.#localesRepo = value
+  }
+
+  /**
+   * Get Setup Files Option
+   * @return {boolean}
+   */
+  static get setupFiles () {
+    return this.#setupFiles
+  }
+
+  /**
+   * Set Setup Files Option
+   * @param  {boolean} value
+   */
+  static set setupFiles (value) {
+    this.#setupFiles = value
   }
 
   /**
