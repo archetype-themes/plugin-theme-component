@@ -1,11 +1,28 @@
 import * as toml from '@iarna/toml'
+import FileUtils from './FileUtils.js'
+import { CONFIG_FILE_NAME } from '../config/CLI.js'
 
 /**
- * Given a TOML string, it returns a JSON object.
- *
- * @param {string} input
+ * @typedef {Object} ComponentTomlConfig
+ * @property {string} [component] - Component Name
+ * @property {string} [theme-path] - Path to a Shopify theme
+ * @property {string} [locales-path] - Path to the locales repo
+ * @property {boolean} [setup-files=true] - Copy Setup Files
+ * @property {boolean} [watch=true] - Watch for file changes
  */
-export function decodeToml (input) {
-  const normalizedInput = input.replace(/\r\n$/g, '\n')
-  return toml.parse(normalizedInput)
+
+/**
+ *
+ * @return {Promise<ComponentTomlConfig|null>}
+ */
+export async function getTomlConfig () {
+  if (!await FileUtils.isReadable(CONFIG_FILE_NAME)) {
+    return null
+  }
+
+  const fileContents = await FileUtils.getFileContents(CONFIG_FILE_NAME)
+  const normalizedInput = fileContents.replace(/\r\n$/g, '\n')
+  const tomlConfig = toml.parse(normalizedInput)
+
+  return tomlConfig['component'] || null
 }
