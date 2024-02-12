@@ -272,18 +272,11 @@ export default class FileUtils {
   }
 }
 
-export const convertToComponentRelativePath = FileUtils.convertToComponentRelativePath
-export const copy = FileUtils.copy
-export const copyFilesToFolder = FileUtils.copyFilesToFolder
 export const copyFolder = FileUtils.copyFolder
 export const exists = FileUtils.exists
 export const getFileContents = FileUtils.getFileContents
 export const getFolderFilesRecursively = FileUtils.getFolderFilesRecursively
-export const getFolders = FileUtils.getFolders
 export const getJsonFileContents = FileUtils.getJsonFileContents
-export const getMergedFilesContent = FileUtils.getMergedFilesContent
 export const isReadable = FileUtils.isReadable
 export const isWritable = FileUtils.isWritable
-export const processJsTemplateStringFile = FileUtils.processJsTemplateStringFile
 export const saveFile = FileUtils.saveFile
-export const searchFile = FileUtils.searchFile

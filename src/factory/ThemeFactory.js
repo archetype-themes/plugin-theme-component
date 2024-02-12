@@ -57,4 +57,3 @@ class ThemeFactory {
 export default ThemeFactory
 
 export const fromDevCommand = ThemeFactory.fromDevCommand
-export const fromThemeInstallCommand = ThemeFactory.fromThemeInstallCommand
