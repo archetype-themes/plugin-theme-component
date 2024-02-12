@@ -1,17 +1,14 @@
 // Node imports
-import path, { dirname, parse } from 'node:path'
+import { dirname, parse } from 'node:path'
 import InternalError from '../errors/InternalError.js'
-import CollectionFactory from '../factory/CollectionFactory.js'
 import ComponentFactory from '../factory/ComponentFactory.js'
 import Snippet from '../models/Snippet.js'
-import Session from '../models/static/Session.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../utils/Logger.js'
 
 // Internal Imports
 import { plural } from '../utils/SyntaxUtils.js'
 import Timer from '../models/Timer.js'
-import Watcher from '../utils/Watcher.js'
 import CollectionBuilder from './runners/CollectionBuilder.js'
 import ComponentBuilder from './runners/ComponentBuilder.js'
 import SnippetBuilder from './runners/SnippetBuilder.js'
@@ -187,51 +184,6 @@ class BuildCommand {
     await CollectionBuilder.deployToBuildFolder(collection)
     logChildItem(`Build Deployment Complete (${timer.now()} seconds)`)
     logSpacer()
-  }
-
-  /**
-   * Watch a Collection
-   * @param {module:models/Collection} collection
-   * @return {FSWatcher}
-   */
-  static watchCollection (collection) {
-    const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-
-    const watcher = Watcher.getWatcher(collection.rootFolder, ignorePatterns)
-    const onCollectionWatchEvent = this.onCollectionWatchEvent.bind(this, watcher)
-    logger.info('--------------------------------------------------------')
-    logger.info(`Watching Collection ${collection.name} for changes...`)
-    logger.info('(Ctrl+C to abort)')
-    logger.info('--------------------------------------------------------')
-    return Watcher.watch(watcher, onCollectionWatchEvent)
-  }
-
-  /**
-   * Action Taken On Collection Watch Event
-   * @param {FSWatcher} watcher
-   * @param {string} event
-   * @param {string} eventPath
-   * @return {Promise<FSWatcher|void>}
-   */
-  static async onCollectionWatchEvent (watcher, event, eventPath) {
-    const filename = path.basename(eventPath)
-    logger.debug(`Watcher Event: "${event}" on file: ${eventPath} detected`)
-
-    const collectionName = Session.config.name
-    const componentNames = Session.config?.components
-
-    const collection = await CollectionFactory.fromName(collectionName, componentNames)
-    await this.buildCollection(collection)
-    await this.deployCollection(collection)
-    // Restart Watcher on liquid file change to make sure we do refresh watcher snippet folders
-    if (filename.endsWith('.liquid')) {
-      await watcher.close()
-      return this.watchCollection(collection)
-    }
-    logger.info('--------------------------------------------------------')
-    logger.info(`Watching Collection ${collection.name} for changes...`)
-    logger.info('(Ctrl+C to abort)')
-    logger.info('--------------------------------------------------------')
   }
 }
 
