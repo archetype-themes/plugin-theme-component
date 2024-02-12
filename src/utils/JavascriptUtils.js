@@ -14,7 +14,7 @@ class JavascriptUtils {
     const mainJavaScriptFile = files.find(file => regex.test(file))
 
     if (!mainJavaScriptFile) {
-      return
+      return undefined
     }
 
     logger.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`)
@@ -27,27 +27,6 @@ class JavascriptUtils {
    */
   static mainJavaScriptFileRegex (componentName) {
     return new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
-  }
-
-  /**
-   * Generate JS Bundle Index
-   * @param {string[]} javascriptFiles
-   * @return string
-   */
-  static generateJsBundleIndex (javascriptFiles) {
-    let jsBundleIndexContents = ''
-    const processedJavascriptFiles = []
-
-    for (const javascriptFile of javascriptFiles) {
-      // When building a Collection, multiple Components might include the same snippet,
-      // Therefore we check for duplicates
-      if (!processedJavascriptFiles.includes(javascriptFile)) {
-        jsBundleIndexContents += `import '${javascriptFile}'\n`
-        processedJavascriptFiles.push(javascriptFile)
-      }
-    }
-
-    return jsBundleIndexContents
   }
 }
 
