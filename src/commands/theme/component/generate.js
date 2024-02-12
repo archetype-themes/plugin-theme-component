@@ -2,14 +2,14 @@
 import { exec } from 'node:child_process'
 import { access, constants, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import Components from '../config/Components.js'
-import FileAccessError from '../errors/FileAccessError.js'
+import Components from '../../../config/Components.js'
+import FileAccessError from '../../../errors/FileAccessError.js'
 
 // Internal Imports
-import Session from '../models/static/Session.js'
-import FileUtils from '../utils/FileUtils.js'
-import logger from '../utils/Logger.js'
-import NodeUtils from '../utils/NodeUtils.js'
+import Session from '../../../models/static/Session.js'
+import FileUtils from '../../../utils/FileUtils.js'
+import logger from '../../../utils/Logger.js'
+import NodeUtils from '../../../utils/NodeUtils.js'
 
 class Generate {
   /**
