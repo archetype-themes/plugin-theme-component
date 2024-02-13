@@ -15,7 +15,7 @@ import CollectionFactory from '../../../factory/CollectionFactory.js'
 import BuildCommand from '../../BuildCommand.js'
 import { install, validateExternalLocation } from '../../../utils/ExternalComponentUtils.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
-import CollectionInstaller from '../../runners/CollectionInstaller.js'
+import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 
 export const COMPONENT_ARG_NAME = 'component'
 export const THEME_FLAG_NAME = 'theme-path'
