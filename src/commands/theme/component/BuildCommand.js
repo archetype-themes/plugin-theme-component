@@ -1,17 +1,17 @@
 // Node imports
 import { dirname, parse } from 'node:path'
-import InternalError from '../errors/InternalError.js'
-import ComponentFactory from '../factory/ComponentFactory.js'
-import Snippet from '../models/Snippet.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
-import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../utils/Logger.js'
+import InternalError from '../../../errors/InternalError.js'
+import ComponentFactory from '../../../factory/ComponentFactory.js'
+import Snippet from '../../../models/Snippet.js'
+import CollectionUtils from '../../../utils/CollectionUtils.js'
+import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/Logger.js'
 
 // Internal Imports
-import { plural } from '../utils/SyntaxUtils.js'
-import Timer from '../models/Timer.js'
-import CollectionBuilder from '../builders/CollectionBuilder.js'
-import ComponentBuilder from '../builders/ComponentBuilder.js'
-import SnippetBuilder from '../builders/SnippetBuilder.js'
+import { plural } from '../../../utils/SyntaxUtils.js'
+import Timer from '../../../models/Timer.js'
+import CollectionBuilder from '../../../builders/CollectionBuilder.js'
+import ComponentBuilder from '../../../builders/ComponentBuilder.js'
+import SnippetBuilder from '../../../builders/SnippetBuilder.js'
 
 class BuildCommand {
   /**
