@@ -9,7 +9,7 @@ import { install } from '../../../utils/ExternalComponentUtils.js'
 import CollectionUtils from '../../../utils/CollectionUtils.js'
 import logger from '../../../utils/Logger.js'
 import Dev from './dev.js'
-import BuildCommand from './BuildCommand.js'
+import Build from './build.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Watcher from '../../../utils/Watcher.js'
 import { basename } from 'node:path'
@@ -67,8 +67,8 @@ export default class Install extends BaseCommand {
     const startTime = new Timer()
 
     // Build using the Build Command
-    await BuildCommand.buildCollection(collection)
-    await BuildCommand.deployCollection(collection)
+    await Build.buildCollection(collection)
+    await Build.deployCollection(collection)
     // Install and time it!
     logger.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
     const installStartTime = new Timer()

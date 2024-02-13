@@ -13,7 +13,7 @@ import CollectionBuilder from '../../../builders/CollectionBuilder.js'
 import ComponentBuilder from '../../../builders/ComponentBuilder.js'
 import SnippetBuilder from '../../../builders/SnippetBuilder.js'
 
-class BuildCommand {
+class Build {
   /**
    * Build a Collection
    * @param {module:models/Collection} collection Collection
@@ -187,4 +187,4 @@ class BuildCommand {
   }
 }
 
-export default BuildCommand
+export default Build

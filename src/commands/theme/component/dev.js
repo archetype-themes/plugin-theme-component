@@ -12,7 +12,7 @@ import Watcher from '../../../utils/Watcher.js'
 import logger, { logChildItem, logSpacer, logTitleItem } from '../../../utils/Logger.js'
 import { spawn } from 'node:child_process'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
-import BuildCommand from './BuildCommand.js'
+import Build from './build.js'
 import { install, validateExternalLocation } from '../../../utils/ExternalComponentUtils.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
@@ -117,8 +117,8 @@ export default class Dev extends BaseCommand {
     // Build & Deploy Collection
     const componentNames = componentName && Session.targetType === Components.COMPONENT_TYPE_NAME ? [componentName] : []
     const collection = await CollectionFactory.fromName(collectionName, componentNames)
-    await BuildCommand.buildCollection(collection)
-    await BuildCommand.deployCollection(collection)
+    await Build.buildCollection(collection)
+    await Build.deployCollection(collection)
 
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
 
