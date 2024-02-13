@@ -1,5 +1,5 @@
-import ComponentBuild from '../../models/ComponentBuild.js'
-import SvgProcessor from '../../processors/SvgProcessor.js'
+import ComponentBuild from '../models/ComponentBuild.js'
+import SvgProcessor from '../processors/SvgProcessor.js'
 
 class ComponentBuilder {
   /**

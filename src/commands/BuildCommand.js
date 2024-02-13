@@ -9,9 +9,9 @@ import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '
 // Internal Imports
 import { plural } from '../utils/SyntaxUtils.js'
 import Timer from '../models/Timer.js'
-import CollectionBuilder from './runners/CollectionBuilder.js'
-import ComponentBuilder from './runners/ComponentBuilder.js'
-import SnippetBuilder from './runners/SnippetBuilder.js'
+import CollectionBuilder from '../builders/CollectionBuilder.js'
+import ComponentBuilder from '../builders/ComponentBuilder.js'
+import SnippetBuilder from '../builders/SnippetBuilder.js'
 
 class BuildCommand {
   /**
