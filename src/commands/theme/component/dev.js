@@ -17,6 +17,7 @@ import { install, validateExternalLocation } from '../../../utils/ExternalCompon
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../runners/CollectionInstaller.js'
 
+export const COMPONENT_ARG_NAME = 'component'
 export const THEME_FLAG_NAME = 'theme-path'
 export const LOCALES_FLAG_NAME = 'locales-path'
 export const SETUP_FLAG_NAME = 'setup-files'
@@ -26,7 +27,7 @@ export default class Dev extends BaseCommand {
   static description = 'Develop theme components'
 
   static args = {
-    component: Args.string({
+    [COMPONENT_ARG_NAME]: Args.string({
       description: 'Name of the component to explore'
     })
   }
@@ -177,32 +178,32 @@ export default class Dev extends BaseCommand {
     Session.callerType = Components.COLLECTION_TYPE_NAME
     Session.targetType = Components.COMPONENT_TYPE_NAME
 
-    if (args.component)
-      Session.component = args.component
-    else if (tomlConfig.component)
-      Session.component = tomlConfig.component
+    if (args[COMPONENT_ARG_NAME])
+      Session.component = args[COMPONENT_ARG_NAME]
+    else if (Object.hasOwn(tomlConfig, COMPONENT_ARG_NAME))
+      Session.component = tomlConfig[COMPONENT_ARG_NAME]
   }
 
   static setSessionFlags (flags, metadata, tomlConfig) {
-    if (metadata.flags[THEME_FLAG_NAME]?.setFromDefault && tomlConfig[THEME_FLAG_NAME]) {
+    if (metadata.flags[THEME_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, THEME_FLAG_NAME)) {
       Session.themePath = tomlConfig[THEME_FLAG_NAME]
     } else {
       Session.themePath = flags[THEME_FLAG_NAME]
     }
 
-    if (metadata.flags[LOCALES_FLAG_NAME]?.setFromDefault && tomlConfig[LOCALES_FLAG_NAME]) {
+    if (metadata.flags[LOCALES_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, LOCALES_FLAG_NAME)) {
       Session.localesPath = tomlConfig[LOCALES_FLAG_NAME]
     } else {
       Session.localesPath = flags[LOCALES_FLAG_NAME]
     }
 
-    if (metadata.flags[SETUP_FLAG_NAME]?.setFromDefault && tomlConfig[SETUP_FLAG_NAME]) {
+    if (metadata.flags[SETUP_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, SETUP_FLAG_NAME)) {
       Session.setupFiles = tomlConfig[SETUP_FLAG_NAME]
     } else {
       Session.setupFiles = flags[SETUP_FLAG_NAME]
     }
 
-    if (metadata.flags[WATCH_FLAG_NAME]?.setFromDefault && tomlConfig[WATCH_FLAG_NAME]) {
+    if (metadata.flags[WATCH_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, WATCH_FLAG_NAME)) {
       Session.watchMode = tomlConfig[WATCH_FLAG_NAME]
     } else {
       Session.watchMode = flags[WATCH_FLAG_NAME]
