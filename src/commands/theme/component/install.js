@@ -27,7 +27,7 @@ export default class Install extends BaseCommand {
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
 
-    for (const collectionEntry of Object.entries(Session.targets)) {
+    for (const collectionEntry of Object.entries(Session.collections)) {
       let collection = await CollectionFactory.fromTomlEntry(collectionEntry)
 
       // Install it locally, if the source is a URL

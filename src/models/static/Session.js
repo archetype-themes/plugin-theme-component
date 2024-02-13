@@ -7,6 +7,9 @@ class Session {
   /** @type {string} CLI Caller Component Type **/
   static callerType
 
+  /** @type {Object} Install command's collection names and child components list **/
+  static collections
+
   /** @type {string} Target Component Name **/
   static component
 
@@ -27,9 +30,6 @@ class Session {
 
   /** @type {boolean} Run "shopify theme dev" in parallel to sync files with a local dev **/
   static syncMode = false
-
-  /** @type {Object} Install command's collection names and child components list **/
-  static targets
 
   /** @type {string}  target type **/
   static targetType
