@@ -40,7 +40,7 @@ class Build {
     // Filter Out Components When Applicable
     if (collection.componentNames?.length) {
       // for each component, get tree item names
-      const componentNamesToBuild = CollectionUtils.getComponentsNameTree(allComponents, collection.componentNames)
+      const componentNamesToBuild = CollectionUtils.getComponentNamesToBuild(allComponents, collection.componentNames)
 
       logChildItem(`Packaging the following component${plural(collection.componentNames)}: ${collection.componentNames.join(', ')}`)
 

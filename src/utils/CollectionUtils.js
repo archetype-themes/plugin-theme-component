@@ -10,6 +10,7 @@ import Session from '../models/static/Session.js'
 
 import FileUtils from './FileUtils.js'
 import { isRepoUrl } from './WebUtils.js'
+import FileMissingError from '../errors/FileMissingError.js'
 
 const IGNORE_PATTERNS = [
   'package.json',
@@ -98,16 +99,21 @@ class CollectionUtils {
    *
    * @param {(Component|Snippet)[]} components
    * @param {string[]} componentNames
-   * @returns {Set}
+   * @returns {Set<string>}
    */
-  static getComponentsNameTree (components, componentNames) {
+  static getComponentNamesToBuild (components, componentNames) {
     let componentsNameTree = new Set(componentNames)
 
     componentNames.forEach(componentName => {
       // Find its matching component object
       const component = components.find(component => component.name === componentName)
+
+      if (!component) {
+        throw new FileMissingError(`Unable to find the component "${componentName}".`)
+      }
+
       // Recursive call applied to snippet names
-      const componentNameTree = this.getComponentsNameTree(components, component.snippetNames)
+      const componentNameTree = this.getComponentNamesToBuild(components, component.snippetNames)
       // Merge data with the global Set
       componentsNameTree = new Set([...componentsNameTree, ...componentNameTree])
     })
