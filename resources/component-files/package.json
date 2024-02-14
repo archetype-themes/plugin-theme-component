@@ -4,7 +4,7 @@
   "description": "${collectionName}'s ${componentName} ${componentType}",
   "license": "${license}",
   "author": "${author}",
-  "main": "index.liquid",
+  "main": "${componentName}.liquid",
   "repository": {
     "type": "git",
     "url": "${gitUrl}",
