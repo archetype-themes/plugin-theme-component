@@ -40,7 +40,7 @@ class ComponentFilesUtils {
     }
 
     if (filesModel.stylesheets.length) {
-      filesModel.mainStylesheet = StylesUtils.getMainStyleSheet(filesModel.stylesheets)
+      filesModel.mainStylesheet = StylesUtils.getMainStyleSheet(filesModel.stylesheets, componentName)
     }
 
     return filesModel

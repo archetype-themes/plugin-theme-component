@@ -29,11 +29,12 @@ class StylesUtils {
   /**
    * Find Main StyleSheet within the provided file list
    * @param {string[]} styleSheets
+   * @param {string} componentName
    * @returns {string}
    * @throws Error
    */
-  static findMainStyleSheetFile (styleSheets) {
-    const regex = /[/\\]((?:index|main)+\.css)$/i
+  static findMainStyleSheetFile (styleSheets, componentName) {
+    const regex = new RegExp(`[/\\\\]((?:index|main|${componentName})\.css)$`, 'i')
     const matches = []
     for (const styleSheet of styleSheets) {
       const match = RegExp(regex).exec(styleSheet)
@@ -55,15 +56,16 @@ class StylesUtils {
   /**
    *
    * @param {string[]} styleSheets
+   * @param {string} componentName
    * @return {string}
    */
-  static getMainStyleSheet (styleSheets) {
-    // If there's only 1 JavaScript file, take it!
+  static getMainStyleSheet (styleSheets, componentName) {
+    // If there's only 1 Stylesheet file, take it!
     if (styleSheets.length === 1) {
       return styleSheets[0]
     } else {
-      // If we have more than one JavaScript file, try to find a single main/index file (one ring to rule them all)
-      return this.findMainStyleSheetFile(styleSheets)
+      // If we have more than one Stylesheet file, try to find a single main/index file (one ring to rule them all)
+      return this.findMainStyleSheetFile(styleSheets, componentName)
     }
   }
 }
