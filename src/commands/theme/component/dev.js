@@ -17,7 +17,7 @@ import { install, validateExternalLocation } from '../../../utils/ExternalCompon
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 
-export const COMPONENT_ARG_NAME = 'component'
+export const COMPONENT_ARG_NAME = 'components'
 export const THEME_FLAG_NAME = 'theme-path'
 export const LOCALES_FLAG_NAME = 'locales-path'
 export const SETUP_FLAG_NAME = 'setup-files'
@@ -28,7 +28,7 @@ export default class Dev extends BaseCommand {
 
   static args = {
     [COMPONENT_ARG_NAME]: Args.string({
-      description: 'Name of the component to explore'
+      description: 'Component name(s)'
     })
   }
 
@@ -67,8 +67,10 @@ export default class Dev extends BaseCommand {
     })
   }
 
+  static strict = false
+
   async run () {
-    const { args, flags, metadata } = await this.parse(Dev)
+    const { argv, flags, metadata } = await this.parse(Dev)
 
     const commandElements = this.id.split(':')
     Session.command = commandElements[commandElements.length - 1]
@@ -76,7 +78,7 @@ export default class Dev extends BaseCommand {
     const tomlConfig = await getTomlConfig()
 
     sessionFactory(this.id, tomlConfig)
-    Dev.setSessionArgs(args, tomlConfig)
+    Dev.setSessionArgs(argv, tomlConfig)
     Dev.setSessionFlags(flags, metadata, tomlConfig)
 
     const collectionName = getCurrentWorkingDirectory()
@@ -103,19 +105,18 @@ export default class Dev extends BaseCommand {
    * Explore Components
    * @param {string} themePath
    * @param {string} collectionName
-   * @param {string} [componentName]
+   * @param {string[]} [componentNames]
    * @param {FSWatcher} [watcher] Watcher Instance
    * @param {string} [event] Watcher Event
    * @param {string} [eventPath] Watcher Event Path
    * @returns {Promise<module:models/Collection>}
    */
-  static async exploreComponent (themePath, collectionName, componentName, watcher, event, eventPath) {
+  static async exploreComponent (themePath, collectionName, componentNames, watcher, event, eventPath) {
     if (event && eventPath) {
       Watcher.logEvent(event, eventPath)
     }
 
     // Build & Deploy Collection
-    const componentNames = componentName && Session.targetType === Components.COMPONENT_TYPE_NAME ? [componentName] : []
     const collection = await CollectionFactory.fromName(collectionName, componentNames)
     await Build.buildCollection(collection)
     await Build.deployCollection(collection)
@@ -178,10 +179,11 @@ export default class Dev extends BaseCommand {
     Session.callerType = Components.COLLECTION_TYPE_NAME
     Session.targetType = Components.COMPONENT_TYPE_NAME
 
-    if (args[COMPONENT_ARG_NAME])
-      Session.component = args[COMPONENT_ARG_NAME]
+    if (args.length)
+      Session.component = args
     else if (Object.hasOwn(tomlConfig, COMPONENT_ARG_NAME))
-      Session.component = tomlConfig[COMPONENT_ARG_NAME]
+      Session.component = typeof tomlConfig[COMPONENT_ARG_NAME] === 'string' ?
+        [tomlConfig[COMPONENT_ARG_NAME]] : tomlConfig[COMPONENT_ARG_NAME]
   }
 
   static setSessionFlags (flags, metadata, tomlConfig) {
