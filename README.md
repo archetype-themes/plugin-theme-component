@@ -30,7 +30,7 @@ DESCRIPTION
   Theme Component Plugin - By Archetype Themes
 ```
 
-_See code: [plugin/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.3.0/plugin/commands/theme/component/index.js)_
+_See code: [plugin/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.3.1/plugin/commands/theme/component/index.js)_
 
 ## `shopify theme component dev [COMPONENT]`
 
@@ -51,7 +51,7 @@ DESCRIPTION
   Develop a component in isolation or all available components
 ```
 
-_See code: [plugin/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.3.0/plugin/commands/theme/component/dev.js)_
+_See code: [plugin/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.3.1/plugin/commands/theme/component/dev.js)_
 
 ## `shopify theme component install`
 
@@ -70,7 +70,7 @@ DESCRIPTION
   Install a collection of components
 ```
 
-_See code: [plugin/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.3.0/plugin/commands/theme/component/install.js)_
+_See code: [plugin/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v2.3.1/plugin/commands/theme/component/install.js)_
 <!-- commandsstop -->
 
 # Development
