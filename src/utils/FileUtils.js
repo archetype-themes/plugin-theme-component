@@ -281,3 +281,13 @@ export const getJsonFileContents = FileUtils.getJsonFileContents
 export const isReadable = FileUtils.isReadable
 export const isWritable = FileUtils.isWritable
 export const saveFile = FileUtils.saveFile
+
+/**
+ * Get Absolute Path
+ * @param {string} path - Relative or Absolute Path
+ * @param {string} cwd - Current Working Directory
+ * @return {Promise<string>}
+ */
+export async function getAbsolutePath (path, cwd) {
+  return path.startsWith('/') ? path : join(cwd, path)
+}
