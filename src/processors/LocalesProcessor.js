@@ -1,28 +1,21 @@
-import { basename, join } from 'node:path'
+import { basename } from 'node:path'
 import { get, set } from 'lodash-es'
-import { install } from '../utils/ExternalComponentUtils.js'
-import { getFolderFilesRecursively, getJsonFileContents } from '../utils/FileUtils.js'
+import { getJsonFileContents } from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
 import { ERROR_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
-
-const LOCALES_FOLDER = '.locales'
-const LOCALES_SUBFOLDER = 'locales'
 
 const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 
 export default class LocalesProcessor {
   /**
    * Build Locales
-   * @param {string|string[]} liquidCodeElements
-   * @param {string} source
-   * @param {string} installFolderRoot - Location where to create the '.locales' sub-folder
-   * @returns {Promise<{}>}
+   * @param {string|string[]} componentsLiquidCode - Raw liquid code strings
+   * @param {string[]} localeFiles - Path to locale files
+   * @returns {Promise<Object>}
    */
-  static async build (liquidCodeElements, source, installFolderRoot) {
-    const elements = Array.isArray(liquidCodeElements) ? liquidCodeElements : [liquidCodeElements]
-    const installFolder = join(installFolderRoot, LOCALES_FOLDER)
+  static async build (componentsLiquidCode, localeFiles) {
+    const elements = Array.isArray(componentsLiquidCode) ? componentsLiquidCode : [componentsLiquidCode]
 
-    const localeFiles = await this.setupLocalesDatabase(source, installFolder, LOCALES_SUBFOLDER)
     const availableLocales = await this.parseLocaleFilesContent(localeFiles)
     const translationKeys = elements.flatMap(code => this.#getTranslationKeys(code))
 
@@ -30,7 +23,7 @@ export default class LocalesProcessor {
   }
 
   /**
-   *
+   * Filter Translations
    * @param {Object} availableLocales
    * @param {string[]} translationKeys
    * @returns {Object}
@@ -68,7 +61,8 @@ export default class LocalesProcessor {
   }
 
   /**
-   * getTranslationKeys method extracts the translation keys from given liquid code.
+   * Get Translation Keys
+   * Extracts the translation keys from given liquid code.
    * @param {string} liquidCode - The liquid code to be searched for translation keys.
    * @returns {string[]} An array of unique translation keys found in the given liquid code.
    */
@@ -91,13 +85,8 @@ export default class LocalesProcessor {
     return [...translationKeys]
   }
 
-  static async setupLocalesDatabase (localesRepoOption, localesFolder, localesSubFolder) {
-    await install(localesRepoOption, localesFolder, 'Locales DB')
-    return getFolderFilesRecursively(join(localesFolder, localesSubFolder))
-  }
-
   /**
-   * Parse Locale Files into an object
+   * Parse Locale Files Content into an object
    * @param {string[]} localeFiles
    * @return {Promise<{}>}
    */
