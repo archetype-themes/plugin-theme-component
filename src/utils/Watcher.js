@@ -8,7 +8,7 @@ class Watcher {
   /**
    * Watch target files and folders
    * @param {string} rootFolder
-   * @param {string[]} ignorePatterns
+   * @param {string[]} [ignorePatterns]
    * @return {FSWatcher}
    */
   static getWatcher (rootFolder, ignorePatterns) {
@@ -23,8 +23,11 @@ class Watcher {
         stabilityThreshold: 60
       },
       cwd: rootFolder,
-      ignoreInitial: true,
-      ignored: ignorePatterns
+      ignoreInitial: true
+    }
+
+    if (ignorePatterns) {
+      watchOptions.ignored = ignorePatterns
     }
 
     logger.debug('Chokidar will watch the following files & folders:')
@@ -40,6 +43,19 @@ class Watcher {
    */
   static watch (watcher, action) {
     return watcher.on('all', action)
+  }
+
+  /**
+   * Log Watch Initialization
+   * @param {string[]} initLines
+   */
+  static logInit (initLines) {
+    logSpacer()
+    logger.info('--------------------------------------------------------')
+    initLines.forEach(initLine => logger.info(initLine))
+    logger.info('(Ctrl+C to abort)')
+    logger.info('--------------------------------------------------------')
+    logSpacer()
   }
 
   /**
