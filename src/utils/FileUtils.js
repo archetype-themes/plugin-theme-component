@@ -160,6 +160,7 @@ export default class FileUtils {
    * @returns {Promise<T>}
    */
   static async getJsonFileContents (file) {
+    logger.debug(`Parsing JSON file "${file}"`)
     return JSON.parse(await FileUtils.getFileContents(file))
   }
 
