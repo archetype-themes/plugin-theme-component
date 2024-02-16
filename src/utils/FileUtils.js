@@ -264,7 +264,7 @@ export default class FileUtils {
    *
    * @param {string} file
    * @param {string} fileContents
-   * @returns {Promise<void>}
+   * @return {Promise<void>}
    */
   static async saveFile (file, fileContents) {
     logger.trace(`Writing to disk: ${file}`)
