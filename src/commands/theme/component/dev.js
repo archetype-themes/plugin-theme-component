@@ -77,12 +77,14 @@ export default class Dev extends BaseCommand {
 
     const tomlConfig = await getTomlConfig()
 
+    // Init Session
     sessionFactory(this.id, tomlConfig)
     Dev.setSessionArgs(argv, tomlConfig)
     Dev.setSessionFlags(flags, metadata, tomlConfig)
 
     const collectionName = getCurrentWorkingDirectory()
 
+    // No watch flag, running once and returning
     if (!Session.watchMode) {
       return Promise.resolve(Dev.exploreComponent(Session.themePath, collectionName, Session.component))
     }
