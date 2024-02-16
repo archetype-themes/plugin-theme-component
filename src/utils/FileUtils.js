@@ -38,7 +38,9 @@ export default class FileUtils {
    * @return {Promise<Awaited<void>[]>}
    */
   static async copyFilesToFolder (files, targetFolder) {
-    return Promise.all(files.map(file => copyFile(file, join(targetFolder, basename(file)))))
+    const filesCopyPromises = files.map(file => copyFile(file, join(targetFolder, basename(file))))
+
+    return Promise.all(filesCopyPromises)
   }
 
   /**
