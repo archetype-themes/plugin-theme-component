@@ -58,7 +58,7 @@ export default NodeUtils
 export const exitWithError = NodeUtils.exitWithError
 export const getArgs = NodeUtils.getArgs
 
-export function getCurrentWorkingDirectory () {
+export function getCurrentWorkingDirectoryName () {
   const currentWorkingDirectory = process.cwd()
   const directoryArray = currentWorkingDirectory.split(sep)
 
