@@ -16,6 +16,7 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import Timer from '../models/Timer.js'
 import logger, { DEBUG_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
 import Components, { LOCALES_INSTALL_FOLDER } from '../config/Components.js'
+import { cwd } from 'node:process'
 
 class CollectionBuilder {
   /**
@@ -33,7 +34,7 @@ class CollectionBuilder {
 
     [collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
       this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
-      this.#buildLocales(allComponents, collection.rootFolder),
+      this.#buildLocales(allComponents),
       this.#buildStyles(allComponents, collection.build.stylesheet, collection.rootFolder)
     ])
 
@@ -66,11 +67,10 @@ class CollectionBuilder {
    * Builds locales for the given collection and all components.
    *
    * @param {(Component|Snippet)[]} components - All components to extract liquid code from.
-   * @param {string} cwd - The working directory.
    * @throws Error When build is in error
    * @return {Promise<{}>} - A promise that resolves when the locales are built.
    */
-  static async #buildLocales (components, cwd) {
+  static async #buildLocales (components) {
     const componentsLiquidCode = components.map(component => component.liquidCode)
     try {
       logChildItem('Running the Locales Processor')
@@ -78,7 +78,7 @@ class CollectionBuilder {
 
       let localesPath
       if (isRepoUrl(Session.localesPath)) {
-        const localesInstallPath = join(cwd, LOCALES_INSTALL_FOLDER)
+        const localesInstallPath = join(cwd(), LOCALES_INSTALL_FOLDER)
         localesPath = localesInstallPath
         await install(Session.localesPath, localesInstallPath, 'Locales DB')
       } else {
