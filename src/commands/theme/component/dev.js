@@ -221,23 +221,16 @@ export default class Dev extends BaseCommand {
 
   /**
    * Watch Collection for changes
-   * @param {string} collectionRootFolder
+   * @param {string} collectionPath
    * @param {string[]} ignorePatterns
    * @param {string} collectionName
    * @param {string} componentName
    * @param {string} themePath
    * @returns {Promise<FSWatcher>}
    */
-  static async watchComponents (collectionRootFolder, ignorePatterns, collectionName, componentName, themePath) {
-    const watcher = Watcher.getWatcher(collectionRootFolder, ignorePatterns)
-
-    const onCollectionWatchEvent = this.exploreComponent.bind(this, collectionName, componentName, themePath, watcher)
-    logSpacer()
-    logger.info('--------------------------------------------------------')
-    logger.info(`${collectionName}: Watching component tree for changes`)
-    logger.info('(Ctrl+C to abort)')
-    logger.info('--------------------------------------------------------')
-    logSpacer()
+  static async watchComponents (collectionPath, ignorePatterns, collectionName, componentName, themePath) {
+    const watcher = Watcher.getWatcher(collectionPath, ignorePatterns)
+    const onCollectionWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentName)
 
     return Watcher.watch(watcher, onCollectionWatchEvent)
   }
