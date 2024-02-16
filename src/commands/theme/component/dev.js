@@ -108,12 +108,11 @@ export default class Dev extends BaseCommand {
    * @param {string} themePath
    * @param {string} collectionName
    * @param {string[]} [componentNames]
-   * @param {FSWatcher} [watcher] Watcher Instance
    * @param {string} [event] Watcher Event
    * @param {string} [eventPath] Watcher Event Path
    * @returns {Promise<module:models/Collection>}
    */
-  static async exploreComponent (themePath, collectionName, componentNames, watcher, event, eventPath) {
+  static async exploreComponent (themePath, collectionName, componentNames, event, eventPath) {
     if (event && eventPath) {
       Watcher.logEvent(event, eventPath)
     }
