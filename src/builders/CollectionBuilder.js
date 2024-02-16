@@ -7,7 +7,7 @@ import BuildFactory from '../factory/BuildFactory.js'
 import Session from '../models/static/Session.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import { install } from '../utils/ExternalComponentUtils.js'
-import FileUtils, { getAbsolutePath, getFolderFilesRecursively } from '../utils/FileUtils.js'
+import FileUtils, { getFolderFilesRecursively } from '../utils/FileUtils.js'
 import { exitWithError } from '../utils/NodeUtils.js'
 import WebUtils, { isRepoUrl } from '../utils/WebUtils.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
@@ -82,7 +82,7 @@ class CollectionBuilder {
         localesPath = localesInstallPath
         await install(Session.localesPath, localesInstallPath, 'Locales DB')
       } else {
-        localesPath = await getAbsolutePath(Session.localesPath, cwd)
+        localesPath = Session.localesPath
       }
 
       const localeFiles = await getFolderFilesRecursively(join(localesPath, Components.LOCALES_FOLDER_NAME))
