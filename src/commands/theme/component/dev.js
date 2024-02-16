@@ -4,18 +4,20 @@ import { BaseCommand } from '../../baseCommand.js'
 import Session from '../../../models/static/Session.js'
 import Components from '../../../config/Components.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
-import { exitWithError, getCurrentWorkingDirectory } from '../../../utils/NodeUtils.js'
+import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
 import CollectionUtils from '../../../utils/CollectionUtils.js'
 import { join, relative } from 'node:path'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
 import Watcher from '../../../utils/Watcher.js'
-import logger, { logChildItem, logSpacer, logTitleItem } from '../../../utils/Logger.js'
+import { logChildItem, logTitleItem } from '../../../utils/Logger.js'
 import { spawn } from 'node:child_process'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import Build from './build.js'
 import { install, validateExternalLocation } from '../../../utils/ExternalComponentUtils.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
+import { isRepoUrl } from '../../../utils/WebUtils.js'
+import FileUtils, { getAbsolutePath } from '../../../utils/FileUtils.js'
 
 export const COMPONENT_ARG_NAME = 'components'
 export const THEME_FLAG_NAME = 'theme-path'
@@ -93,14 +95,31 @@ export default class Dev extends BaseCommand {
 
     // Start watcher and shopify theme dev processes
     Session.firstRun = false
+    const promises = []
+    const logInitLines = []
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    const watcherPromise = Dev.watchComponents(collection.rootFolder, ignorePatterns, Session.themePath, collection.name, Session.component)
-    if (Session.syncMode) {
-      const themeDevPromise = Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME))
-      return Promise.all([watcherPromise, themeDevPromise])
+    promises.push(Dev.watchComponents(collection.rootFolder, ignorePatterns, collection.name, Session.component, Session.themePath))
+    logInitLines.push(`${collectionName}: Watching component tree for changes`)
+
+    if (!isRepoUrl(Session.themePath)) {
+      // promises.push(Dev.watchTheme(Session.themePath))
+      logInitLines.push(`${collectionName}: Watching theme folder for changes`)
     }
 
-    return Promise.resolve(watcherPromise)
+    if (!isRepoUrl(Session.localesPath)) {
+      promises.push(Dev.watchLocales(Session.localesPath, collection.name, Session.component, Session.themePath))
+      logInitLines.push(`${collectionName}: Watching locales folder for changes`)
+    }
+
+    // Start Shopify Theme Dev process (unused at the moment, there were config problems)
+    if (Session.syncMode) {
+      promises.push(Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME)))
+      logInitLines.push('${collectionName}: Starting `shopify theme dev` process in parallel')
+    }
+
+    Watcher.logInit(logInitLines)
+
+    return Promise.all(promises)
   }
 
   /**
@@ -233,6 +252,42 @@ export default class Dev extends BaseCommand {
     const onCollectionWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentName)
 
     return Watcher.watch(watcher, onCollectionWatchEvent)
+  }
+
+  /**
+   *
+   * @param {string} localesPath
+   * @param {string} collectionName
+   * @param {string} componentName
+   * @param {string} themePath
+   * @return {Promise<FSWatcher>}
+   */
+  static async watchLocales (localesPath, collectionName, componentName, themePath) {
+    const watchGlobExpression = join(localesPath, '**/*.json')
+
+    const watcher = Watcher.getWatcher(watchGlobExpression)
+    const onLocalesWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentName)
+
+    return Watcher.watch(watcher, onLocalesWatchEvent)
+  }
+
+  static async watchTheme (themePath, ignorePatterns) {
+    const watcher = Watcher.getWatcher(themePath, ignorePatterns)
+    const onThemeWatchEvent = this.copyThemeFile.bind(this, themePath, watcher)
+
+    return Watcher.watch(watcher, onThemeWatchEvent)
+  }
+
+  /**
+   *
+   * @param {string} themePath
+   * @param {FSWatcher} [watcher] Watcher Instance
+   * @param {string} [event] Watcher Event
+   * @param {string} [eventPath] Watcher Event Path
+   * @return {Promise<Awaited<Promise<Awaited<void>[]>>>}
+   */
+  static copyThemeFile (themePath, watcher, event, eventPath) {
+    return Promise.resolve(FileUtils.copy({}))
   }
 }
 
