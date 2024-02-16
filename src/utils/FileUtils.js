@@ -3,6 +3,7 @@ import { cwd } from 'node:process'
 import { basename, join } from 'path'
 import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import logger from './Logger.js'
+import { sep } from 'node:path'
 
 export default class FileUtils {
   /** @property {string[]} **/
@@ -287,9 +288,8 @@ export const saveFile = FileUtils.saveFile
 /**
  * Get Absolute Path
  * @param {string} path - Relative or Absolute Path
- * @param {string} cwd - Current Working Directory
  * @return {Promise<string>}
  */
-export async function getAbsolutePath (path, cwd) {
-  return path.startsWith('/') ? path : join(cwd, path)
+export async function getAbsolutePath (path) {
+  return path.startsWith(sep) ? path : join(cwd(), path)
 }
