@@ -82,7 +82,7 @@ export default class Dev extends BaseCommand {
     Dev.setSessionArgs(argv, tomlConfig)
     await Dev.setSessionFlags(flags, metadata, tomlConfig)
 
-    const collectionName = getCurrentWorkingDirectory()
+    const collectionName = getCurrentWorkingDirectoryName()
 
     // No watch flag, running once and returning
     if (!Session.watchMode) {
