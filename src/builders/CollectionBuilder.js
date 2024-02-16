@@ -6,15 +6,16 @@ import { join } from 'node:path'
 import BuildFactory from '../factory/BuildFactory.js'
 import Session from '../models/static/Session.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
-import { validateExternalLocation } from '../utils/ExternalComponentUtils.js'
-import FileUtils from '../utils/FileUtils.js'
+import { install } from '../utils/ExternalComponentUtils.js'
+import FileUtils, { getAbsolutePath, getFolderFilesRecursively } from '../utils/FileUtils.js'
 import { exitWithError } from '../utils/NodeUtils.js'
-import WebUtils from '../utils/WebUtils.js'
+import WebUtils, { isRepoUrl } from '../utils/WebUtils.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import Timer from '../models/Timer.js'
-import { logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
+import logger, { DEBUG_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
+import Components, { LOCALES_INSTALL_FOLDER } from '../config/Components.js'
 
 class CollectionBuilder {
   /**
@@ -66,19 +67,31 @@ class CollectionBuilder {
    *
    * @param {(Component|Snippet)[]} components - All components to extract liquid code from.
    * @param {string} cwd - The working directory.
+   * @throws Error When build is in error
    * @return {Promise<{}>} - A promise that resolves when the locales are built.
    */
   static async #buildLocales (components, cwd) {
-    const liquidCodeElements = components.map(component => component.liquidCode)
+    const componentsLiquidCode = components.map(component => component.liquidCode)
     try {
       logChildItem('Running the Locales Processor')
       const timer = new Timer()
-      const validLocalesRepo = await validateExternalLocation(Session.localesPath, cwd)
-      const locales = await LocalesProcessor.build(liquidCodeElements, validLocalesRepo, cwd)
+
+      let localesPath
+      if (isRepoUrl(Session.localesPath)) {
+        const localesInstallPath = join(cwd, LOCALES_INSTALL_FOLDER)
+        localesPath = localesInstallPath
+        await install(Session.localesPath, localesInstallPath, 'Locales DB')
+      } else {
+        localesPath = await getAbsolutePath(Session.localesPath, cwd)
+      }
+
+      const localeFiles = await getFolderFilesRecursively(join(localesPath, Components.LOCALES_FOLDER_NAME))
+      const locales = await LocalesProcessor.build(componentsLiquidCode, localeFiles)
       logChildItem(`Locales Processor completed in ${timer.now()} seconds`)
       return locales
     } catch (error) {
-      exitWithError('Source Locales DB Folder or Repository is invalid: ' + error.message)
+      logger.error('TIP: For JSON parsing errors, use debug flag to view the name of the file in error')
+      exitWithError('Error Building Locales: ' + error.stack && logger.isLevelEnabled(DEBUG_LOG_LEVEL) ? error.stack : error.message)
     }
   }
 
@@ -106,27 +119,28 @@ class CollectionBuilder {
   /**
    * Deploy Collection To Folder
    * @param {module:models/Collection} collection
-   * @returns {Promise<Awaited<unknown>[]>}
+   * @return {Promise<Awaited<void>[]>}
    */
   static async deployToBuildFolder (collection) {
     const allComponents = collection.allComponents
 
     const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
-    const snippetFilesWritePromises = allComponents.map(component =>
-      FileUtils.saveFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode))
+    const snippetFilesWritePromises = Promise.all(allComponents.map(component =>
+      FileUtils.saveFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)))
 
     const allAssetFiles = this.#getAssetFiles(allComponents)
     const copyAssetsPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
-
+    const stylesheetSavePromise = FileUtils.saveFile(collection.build.stylesheet, collection.build.styles ?? '')
     const promises = [
-      FileUtils.saveFile(collection.build.stylesheet, collection.build.styles ?? ''),
+      stylesheetSavePromise,
       localesWritePromise,
-      ...snippetFilesWritePromises,
+      snippetFilesWritePromises,
       copyAssetsPromise
     ]
 
     if (collection.importMapEntries?.size) {
-      promises.push(this.#deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder))
+      const deployImportMapFilesPromises = this.#deployImportMapFiles(collection.importMapEntries, collection.build.assetsFolder)
+      promises.push(deployImportMapFilesPromises)
     }
 
     return Promise.all(promises)
@@ -136,6 +150,7 @@ class CollectionBuilder {
    * Deploy import map files to the assets folder
    * @param {Map<string, string>} buildEntries
    * @param {string} assetsFolder
+   * @return {Promise<Awaited<Awaited<void>[]>[]>}
    */
   static async #deployImportMapFiles (buildEntries, assetsFolder) {
     const localFiles = []
@@ -147,7 +162,9 @@ class CollectionBuilder {
         localFiles.push(modulePath)
       }
     }
-    return Promise.all([FileUtils.copyFilesToFolder(localFiles, assetsFolder), WebUtils.downloadFiles(remoteFiles, assetsFolder)])
+    const copyPromiseAll = FileUtils.copyFilesToFolder(localFiles, assetsFolder)
+    const downloadPromiseAll = WebUtils.downloadFiles(remoteFiles, assetsFolder)
+    return Promise.all([copyPromiseAll, downloadPromiseAll])
   }
 
   /**
