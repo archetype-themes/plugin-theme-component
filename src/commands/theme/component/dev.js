@@ -80,7 +80,7 @@ export default class Dev extends BaseCommand {
     // Init Session
     sessionFactory(this.id, tomlConfig)
     Dev.setSessionArgs(argv, tomlConfig)
-    Dev.setSessionFlags(flags, metadata, tomlConfig)
+    await Dev.setSessionFlags(flags, metadata, tomlConfig)
 
     const collectionName = getCurrentWorkingDirectory()
 
@@ -188,18 +188,24 @@ export default class Dev extends BaseCommand {
         [tomlConfig[COMPONENT_ARG_NAME]] : tomlConfig[COMPONENT_ARG_NAME]
   }
 
-  static setSessionFlags (flags, metadata, tomlConfig) {
+  static async setSessionFlags (flags, metadata, tomlConfig) {
+    let themePath
     if (metadata.flags[THEME_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, THEME_FLAG_NAME)) {
-      Session.themePath = tomlConfig[THEME_FLAG_NAME]
+      themePath = tomlConfig[THEME_FLAG_NAME]
     } else {
-      Session.themePath = flags[THEME_FLAG_NAME]
+      themePath = flags[THEME_FLAG_NAME]
     }
 
+    Session.themePath = isRepoUrl(themePath) ? themePath : await getAbsolutePath(themePath)
+
+    let localesPath
     if (metadata.flags[LOCALES_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, LOCALES_FLAG_NAME)) {
-      Session.localesPath = tomlConfig[LOCALES_FLAG_NAME]
+      localesPath = tomlConfig[LOCALES_FLAG_NAME]
     } else {
-      Session.localesPath = flags[LOCALES_FLAG_NAME]
+      localesPath = flags[LOCALES_FLAG_NAME]
     }
+
+    Session.localesPath = isRepoUrl(localesPath) ? localesPath : await getAbsolutePath(localesPath)
 
     if (metadata.flags[SETUP_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, SETUP_FLAG_NAME)) {
       Session.setupFiles = tomlConfig[SETUP_FLAG_NAME]
