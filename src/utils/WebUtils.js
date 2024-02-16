@@ -9,6 +9,7 @@ class WebUtils {
    * Download a list of files to a target folder
    * @param {string[]} remoteFiles
    * @param {string} targetFolder
+   * @return {Promise<Awaited<void>[]>}
    */
   static async downloadFiles (remoteFiles, targetFolder) {
     const downloadPromises = remoteFiles.map(file => this.downloadFile(file, targetFolder))
@@ -20,6 +21,7 @@ class WebUtils {
    * Download a file to a target folder
    * @param {string} remoteFile
    * @param {string} targetFolder
+   * @return {Promise<void>}
    */
   static async downloadFile (remoteFile, targetFolder) {
     return new Promise((resolve, reject) => {
