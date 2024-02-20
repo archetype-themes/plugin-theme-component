@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Unrecognized main stylesheet when using a [component-name].css name while having multiple stylesheets in a single
   component
+- Missing Theme Name on Install: Now guessing theme name by using cwd since package.json was removed
 
 ## [2.3.0] - 2024-02-01
 

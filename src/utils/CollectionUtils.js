@@ -8,7 +8,7 @@ import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
 
-import FileUtils from './FileUtils.js'
+import { exists, getFolders } from './FileUtils.js'
 import { isRepoUrl } from './WebUtils.js'
 import FileMissingError from '../errors/FileMissingError.js'
 
@@ -23,6 +23,8 @@ const IGNORE_PATTERNS = [
   '**/.*',
   '**/*.md'
 ]
+
+const COMPONENTS_FOLDER = 'components'
 
 /**
  * Get Watch Folders for a Collection
@@ -89,9 +91,7 @@ function findComponents (componentFolders) {
  * @returns {Promise<string[]>}
  */
 async function getComponentFolders (collectionRootFolder) {
-  const componentsDir = 'components'
-
-  return FileUtils.getFolders(join(collectionRootFolder, componentsDir))
+  return getFolders(join(collectionRootFolder, COMPONENTS_FOLDER))
 }
 
 /**
@@ -128,7 +128,7 @@ export function getComponentNamesToBuild (components, componentNames) {
 export async function initCollectionFiles (collection) {
   // Find .gitignore File
   const gitignoreFile = join(collection.rootFolder, '.gitignore')
-  if (await FileUtils.exists(gitignoreFile)) {
+  if (await exists(gitignoreFile)) {
     collection.gitIgnoreFile = gitignoreFile
   }
 

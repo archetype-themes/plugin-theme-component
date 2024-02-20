@@ -1,10 +1,10 @@
 // Node Imports
 import { join } from 'path'
-import Session from '../models/static/Session.js'
 
 // Internal Imports
 import Theme from '../models/Theme.js'
 import Components from '../config/Components.js'
+import { getCurrentWorkingDirectoryName } from '../utils/NodeUtils.js'
 
 class ThemeFactory {
   /**
@@ -14,13 +14,8 @@ class ThemeFactory {
   static fromThemeInstallCommand () {
     const theme = new Theme()
 
-    theme.name = Session.config.name
-    // Set folder names
-    if (Session.config.path) {
-      theme.rootFolder = Session.config.path
-    } else {
-      theme.rootFolder = process.cwd()
-    }
+    theme.name = getCurrentWorkingDirectoryName()
+    theme.rootFolder = process.cwd()
 
     return ThemeFactory.#setChildFolders(theme)
   }
