@@ -1,10 +1,11 @@
 // Node.js imports
-import { env, exit } from 'node:process'
-import { dirname, sep } from 'node:path'
+import { cwd, env, exit } from 'node:process'
+import { dirname, join, sep } from 'node:path'
 
 // Internal Imports
 import logger, { DEBUG_LOG_LEVEL } from './Logger.js'
 import InternalError from '../errors/InternalError.js'
+import FileUtils from './FileUtils.js'
 
 /**
  * Exit with Error
@@ -70,6 +71,27 @@ export function getPackageName (packageManifest) {
   }
 
   return packageNameAndScope.includes('/') ? packageNameAndScope.split('/')[1] : packageNameAndScope
+}
+
+/**
+ * Get Package JSON Content as an Object
+ * @param {string} [path]
+ * @return {Promise<Object>}
+ */
+export async function getPackageManifest (path) {
+  if (!path && !env.npm_package_json) {
+   path = cwd()
+  }
+
+  let packageJsonFile
+
+  if (path) {
+    packageJsonFile = join(path, 'package.json')
+  } else {
+    packageJsonFile = env.npm_package_json
+  }
+
+  return await FileUtils.getJsonFileContents(packageJsonFile)
 }
 
 /**

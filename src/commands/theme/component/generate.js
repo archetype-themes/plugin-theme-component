@@ -8,7 +8,12 @@ import { Args } from '@oclif/core'
 import Session from '../../../models/static/Session.js'
 import FileUtils from '../../../utils/FileUtils.js'
 import logger from '../../../utils/Logger.js'
-import NodeUtils from '../../../utils/NodeUtils.js'
+import {
+  getCLIRootFolderName, getPackageManifest,
+  getPackageName,
+  getPackageRootFolder,
+  getPackageScope
+} from '../../../utils/NodeUtils.js'
 import Components from '../../../config/Components.js'
 import FileAccessError from '../../../errors/FileAccessError.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
@@ -23,7 +28,7 @@ export default class Generate {
   }
 
   async run () {
-    const { args, flags, metadata } = await this.parse(Generate)
+    const { args } = await this.parse(Generate)
 
     const commandElements = this.id.split(':')
     Session.command = commandElements[commandElements.length - 1]
@@ -36,7 +41,7 @@ export default class Generate {
     const workspaceFolder = Components.SNIPPETS_FOLDER_NAME
     const componentName = Session.component
     const componentFolder = join(workspaceFolder, componentName)
-    const componentRootFolder = join(NodeUtils.getPackageRootFolder(), componentFolder)
+    const componentRootFolder = join(getPackageRootFolder(), componentFolder)
 
     logger.info(`Generating "${componentName}" ${Session.targetType}`)
 
@@ -56,12 +61,13 @@ export default class Generate {
       throw new FileAccessError(`The "${componentName}" ${Session.targetType} folder already exists. Please remove it or choose a different name.`)
     }
 
-    const cliRootFolder = NodeUtils.getCLIRootFolderName()
+    const cliRootFolder = getCLIRootFolderName()
     const componentSources = join(cliRootFolder, 'resources/component-files')
 
-    const packageScope = NodeUtils.getPackageScope()
-    const packageScopeName = packageScope.charAt(0) === '@' ? packageScope.substring(1) : packageScope
-    const packageName = NodeUtils.getPackageName()
+    const packageScope = getPackageScope()
+    const packageScopeName = packageScope.startsWith('@') ? packageScope.substring(1) : packageScope
+    const packageName = getPackageName()
+    const packageManifest = await getPackageManifest()
     const copyFolderOptions = {
       recursive: true,
       jsTemplateVariables: {
