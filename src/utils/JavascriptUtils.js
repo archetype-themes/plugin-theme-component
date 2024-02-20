@@ -2,32 +2,30 @@
 import FileUtils from './FileUtils.js'
 import logger from './Logger.js'
 
-class JavascriptUtils {
-  /**
-   * Finds the main or index JavaScript file within the provided file list
-   * @param {string[]} files
-   * @param {string} componentName
-   * @returns {string | undefined}
-   */
-  static findMainJavaScriptFile (files, componentName) {
-    const regex = this.mainJavaScriptFileRegex(componentName)
-    const mainJavaScriptFile = files.find(file => regex.test(file))
+/**
+ * Finds the main or index JavaScript file within the provided file list
+ * @param {string[]} files
+ * @param {string} componentName
+ * @returns {string | undefined}
+ */
+export function findMainJavaScriptFile (files, componentName) {
+  const regex = this.mainJavaScriptFileRegex(componentName)
+  const mainJavaScriptFile = files.find(file => regex.test(file))
 
-    if (!mainJavaScriptFile) {
-      return undefined
-    }
-
-    logger.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`)
-
-    return mainJavaScriptFile
+  if (!mainJavaScriptFile) {
+    return undefined
   }
 
-  /**
-   * @param {string} componentName
-   */
-  static mainJavaScriptFileRegex (componentName) {
-    return new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
-  }
+  logger.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`)
+
+  return mainJavaScriptFile
 }
 
-export default JavascriptUtils
+/**
+ * @param {string} componentName
+ */
+export function mainJavaScriptFileRegex (componentName) {
+  return new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
+}
+
+export default { findMainJavaScriptFile, mainJavaScriptFileRegex }

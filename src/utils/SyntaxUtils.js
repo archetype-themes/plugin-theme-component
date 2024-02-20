@@ -1,16 +1,11 @@
-class SyntaxUtils {
-  static plural (array) {
-    const length = array.length
-    return length === 1 ? '' : 's'
-  }
-
-  static ucfirst (text) {
-    const firstLetter = text.slice(0, 1)
-    return firstLetter.toUpperCase() + text.substring(1)
-  }
+export function plural (array) {
+  const length = array.length
+  return length === 1 ? '' : 's'
 }
 
-export default SyntaxUtils
+export function ucFirst (text) {
+  const firstLetter = text.slice(0, 1)
+  return firstLetter.toUpperCase() + text.substring(1)
+}
 
-export const plural = SyntaxUtils.plural
-export const ucfirst = SyntaxUtils.ucfirst
+export default { plural, ucFirst }
