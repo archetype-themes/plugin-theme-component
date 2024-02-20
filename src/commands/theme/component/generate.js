@@ -50,7 +50,7 @@ export default class Generate {
     try {
       // This will throw an error if the folder doesn't exist.
       await access(componentRootFolder, constants.X_OK)
-      // This only run if the previous "access" call was successful, proving the folder already exists
+      // This only runs if the previous "access" call was successful, proving the folder already exists
       folderExists = true
     } catch {
       // An error is expected since the folder shouldn't exist
@@ -87,7 +87,7 @@ export default class Generate {
     await mkdir(componentRootFolder)
     await FileUtils.copyFolder(componentSources, componentRootFolder, copyFolderOptions)
 
-    // Run npm install; this must be done or npm will send error messages relating to monorepo integrity
+    // Run npm install; this must be done, or npm will send error messages relating to monorepo integrity
     return exec('npm install', { cwd: componentRootFolder })
   }
 

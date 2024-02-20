@@ -14,8 +14,8 @@ export function createMasterStylesheet (stylesheets) {
   const processedStylesheets = []
 
   for (const stylesheet of stylesheets) {
-    // When building a Collection, multiple Components might include the same snippet,
-    // Therefore we check for duplicates
+    // When building a Collection, multiple Components might include the same snippet;
+    // Therefore, we check for duplicates
     if (!processedStylesheets.includes(stylesheet)) {
       masterStylesheetContents += `@import '${stylesheet}';\n`
       processedStylesheets.push(stylesheet)
@@ -26,7 +26,7 @@ export function createMasterStylesheet (stylesheets) {
 }
 
 /**
- * Find Main StyleSheet within the provided file list
+ * Find the Main StyleSheet within the provided file list
  * @param {string[]} styleSheets
  * @param {string} componentName
  * @returns {string}

@@ -17,7 +17,7 @@ Shopify CLI plugin for building theme components.
 
 ## `shopify theme component`
 
-Theme Component Plugin - By Archetype Themes
+Theme Component Plugin—By Archetype Themes
 
 ```
 USAGE

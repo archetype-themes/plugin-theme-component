@@ -1,6 +1,6 @@
 # Growing Your Collection
 
-A Components Collection is a Node.js Monorepo that regroups multiple Shopify
+A Component Collection is a Node.js Monorepo that regroups multiple Shopify
 Theme [Snippet Components](Snippet-Components.md) as child repositories in their respective namespaces.
 
 ## Child Component Snippets
@@ -47,12 +47,12 @@ npx component build collection
 npx component build collection --watch
 ```
 
-This will bundle your collection's components as snippets inside the **build** sub-folder.
+This will bundle your collection's components as snippets inside the **build** subfolder.
 
 **PostCSS Build Pro Tips:**
 When using PostCSS, use of a PostCSS config file at the root of your Collection is recommended. The CLI will load it
 through the use of [postcss-load-config](https://www.npmjs.com/package/postcss-load-config) and take it into
-consideration when building a component, a collection or even when installing to a theme.
+consideration when building a component, a collection, or even when installing in a theme.
 
 - Reference to some [postcss.config.js usage examples](https://github.com/postcss/postcss#usage)
 - Reference to [available postcss process options](https://postcss.org/api/#processoptions)

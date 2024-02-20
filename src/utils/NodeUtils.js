@@ -95,7 +95,7 @@ export async function getPackageManifest (path) {
 }
 
 /**
- * Get Node.js Package Scope (ie: @archetype-themes)
+ * Get Node.js Package Scope (i.e.: @archetype-themes)
  * @return {string}
  */
 export function getPackageScope () {

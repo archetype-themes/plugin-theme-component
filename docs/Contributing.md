@@ -1,6 +1,6 @@
 # Contributing to Archetype Themes' CLI
 
-All contributions are welcome. To Contribute, simply create a branch, commit your code, and create a pull request.
+All contributions are welcome. To Contribute, create a branch, commit your code, and create a pull request.
 
 ## Install The CLI
 
@@ -103,7 +103,7 @@ CLI stands for Command Line Interface
 
 bin/component.js is the CLI's entrypoint
 
-The CLI Sub-folder should only contain files pertaining to Shell execution and management. It should analyze command
+The CLI subfolder should only contain files pertaining to Shell execution and management. It should analyze command
 input and call appropriate Factories, Builders and Installers when necessary.
 
 ### Phase 2: Factory Folder
@@ -121,14 +121,14 @@ and load data from its children Snippet Model using the SnippetFactory through a
 
 ### Phase 3: Builders Folder
 
-Builders are there to assemble and process file contents in order to deliver a final product.
+Builders are there to assemble and process file contents to deliver a final product.
 *This does not relate in any way to the Builder Design Pattern
 
 - Run after Factories have completed Component Model creation.
 - Transform data as necessary using external processors, such as esbuild, sass, post-css
 - Transform and merge data using internal processors, such as liquid code and locales
 - Copy files that do not need transformation to the build folder.
-- **SHOULD NOT** load data from disk that needs transformation.
+- **SHOULD NOT** load data from the disk that needs transformation.
 - **SHOULD NOT** install anything inside Themes or modify Themes in any way.
 
 ### Phase 4: Installers Folder
@@ -136,9 +136,9 @@ Builders are there to assemble and process file contents in order to deliver a f
 Installers are meant to install Collection Builds in a Shopify Theme.
 
 - Run after Factories and Builders have completed their tasks.
-- Copy necessary final Build files to a Theme.
+- Copy the necessary final Build files to a Theme.
 - Perform file merge with Theme files when necessary (i.e.: Schema-Locale files)
-- **SHOULD NOT** load data from disk that needs transformation.
+- **SHOULD NOT** load data from the disk that needs transformation.
 - **SHOULD NOT** transform any data.
 
 ### Errors

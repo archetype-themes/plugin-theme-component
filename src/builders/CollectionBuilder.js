@@ -130,13 +130,13 @@ class CollectionBuilder {
       FileUtils.saveFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)))
 
     const allAssetFiles = this.#getAssetFiles(allComponents)
-    const copyAssetsPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
+    const copyAssetFilesPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
     const stylesheetSavePromise = FileUtils.saveFile(collection.build.stylesheet, collection.build.styles ?? '')
     const promises = [
       stylesheetSavePromise,
       localesWritePromise,
       snippetFilesWritePromises,
-      copyAssetsPromise
+      copyAssetFilesPromise
     ]
 
     if (collection.importMapEntries?.size) {

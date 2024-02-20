@@ -161,7 +161,7 @@ You should manually insert these lines inside your "theme.liquid" file:
 
         fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
       } else {
-        // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File in order to determine 'default' status for the locale.
+        // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File to determine 'default' status for the locale.
         const defaultLocaleFilename = `${locale}.default.json`
         const realTargetFile = await exists(join(themeLocalesPath, defaultLocaleFilename)) ? defaultTargetFile : targetFile
 

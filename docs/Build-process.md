@@ -18,8 +18,8 @@ build/snippets/[component-name-three].liquid
 
 ### JavaScript Build Process
 
-The CLI will look for an `index.js` or a `main.js` file in your `src` folder. Any other javascript file or module that is
-used by your main file will automatically be processed.
+The CLI will look for an `index.js` or a `main.js` file in your `src` folder. Any other javascript file or module used
+by your main file will automatically be processed.
 
 **Recursion:** If your Component includes Snippets with external javascript files, the CLI will also look for their main javascript file and process it.
 
@@ -56,7 +56,7 @@ JavaScript is built using [esbuild](https://esbuild.github.io/) bundler
 ### Stylesheets Build Process
 
 The CLI will look for an `index.css` or a `main.css` file. Any
-other javascript file or module that is used by your main file will automatically be processed.
+other javascript file or module used by your main file will automatically be processed.
 
 **Recursion:** If your Component includes Snippets with external stylesheets, the CLI will also look for their main
 stylesheet and process it.

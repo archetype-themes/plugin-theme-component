@@ -87,7 +87,7 @@ export async function copyFolder (sourceFolder, targetFolder, options = { recurs
 }
 
 /**
- * Check If File Exists
+ * Check if a file or folder exists
  * @param {string} file
  * @return {Promise<boolean>}
  */
@@ -181,7 +181,7 @@ export async function getMergedFilesContent (files) {
 }
 
 /**
- * Check If File Is Readable
+ * Check if a file is readable
  * @param file
  * @return {Promise<boolean>}
  */
@@ -195,7 +195,7 @@ export async function isReadable (file) {
 }
 
 /**
- * Check If File Is Writable
+ * Check if a file is writable
  * @param file
  * @return {Promise<boolean>}
  */

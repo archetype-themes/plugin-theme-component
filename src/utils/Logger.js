@@ -38,7 +38,7 @@ let loglevel = INFO_LOG_LEVEL
 /**                            Setting loglevel value                                  **/
 /*                                                                                      */
 /* YARN: argv works nicely with yarn berry                                              */
-/* NPM: argv is intercepted by npm, therefore we also check for env.npm_config_loglevel */
+/* NPM: argv is intercepted by npm, therefore, we also check for env.npm_config_loglevel */
 if (argv.includes('--quiet') || (env.npm_config_loglevel && ['error', 'warn', 'silent'].includes(env.npm_config_loglevel))) {
   loglevel = ERROR_LOG_LEVEL
 } else if (argv.includes('--verbose') || argv.includes('--debug') || (env.npm_config_loglevel && env.npm_config_loglevel === 'verbose')) {

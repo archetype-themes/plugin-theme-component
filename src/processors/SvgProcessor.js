@@ -42,7 +42,7 @@ class SvgProcessor {
       const fileName = svgName.replace('.svg', '')
       const viewBoxAttr = svg.getAttribute('viewBox')
 
-      // Add necessary attributes
+      // Add the necessary attributes
       if (viewBoxAttr) {
         const width = parseInt(viewBoxAttr.split(' ')[2], 10)
         const height = parseInt(viewBoxAttr.split(' ')[3], 10)

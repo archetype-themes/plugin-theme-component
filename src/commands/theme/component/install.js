@@ -31,7 +31,7 @@ export default class Install extends BaseCommand {
     for (const collectionEntry of Object.entries(Session.collections)) {
       let collection = await CollectionFactory.fromTomlEntry(collectionEntry)
 
-      // Install it locally, if the source is a URL
+      // Install it locally if the source is a URL
       if (isRepoUrl(collection.source)) {
         await install(collection.source, collection.rootFolder, collection.name)
       }

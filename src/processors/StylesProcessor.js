@@ -13,7 +13,7 @@ class StylesProcessor {
    * Create Styles Bundle
    * @param {string[]} stylesheets
    * @param {string} outputFile
-   * @param {string} collectionRootFolder - Collection path. Will be used to look for config files
+   * @param {string} collectionRootFolder - Collection path. It will be used to look for config files
    * @return {Promise<string>}
    */
   static async buildStylesBundle (stylesheets, outputFile, collectionRootFolder) {

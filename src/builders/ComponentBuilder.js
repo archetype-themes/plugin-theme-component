@@ -9,7 +9,7 @@ class ComponentBuilder {
    * @returns {Promise<Component>}
    */
   static async build (component, collectionRootFolder) {
-    // Create build model
+    // Create the component build model
     component.build = new ComponentBuild()
 
     // Build Liquid Code
