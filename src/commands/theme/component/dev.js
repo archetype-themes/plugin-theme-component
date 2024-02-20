@@ -13,7 +13,7 @@ import { logChildItem, logTitleItem } from '../../../utils/Logger.js'
 import { spawn } from 'node:child_process'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import Build from './build.js'
-import { install, validateExternalLocation } from '../../../utils/ExternalComponentUtils.js'
+import { install, validateLocation } from '../../../utils/ExternalComponentUtils.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
@@ -145,7 +145,7 @@ export default class Dev extends BaseCommand {
 
     // Setup A Theme and Create Its Model Instance
     try {
-      const validThemeFolder = await validateExternalLocation(themePath, collection.rootFolder)
+      const validThemeFolder = await validateLocation(themePath, collection.rootFolder)
       await install(validThemeFolder, devFolder, 'Explorer Theme')
     } catch (error) {
       exitWithError('Source Dev Theme Folder or Repository is invalid: ' + error.message)
