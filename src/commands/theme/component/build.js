@@ -4,7 +4,8 @@ import InternalError from '../../../errors/InternalError.js'
 import ComponentFactory from '../../../factory/ComponentFactory.js'
 import Snippet from '../../../models/Snippet.js'
 import CollectionUtils from '../../../utils/CollectionUtils.js'
-import logger, { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/Logger.js'
+import logger from '../../../utils/Logger.js'
+import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
 
 // Internal Imports
 import { plural } from '../../../utils/SyntaxUtils.js'

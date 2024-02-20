@@ -1,6 +1,5 @@
 import { argv, env } from 'node:process'
 import pino from 'pino'
-import InternalError from '../errors/InternalError.js'
 
 export const DEBUG_LOG_LEVEL = 'debug'
 export const ERROR_LOG_LEVEL = 'error'
@@ -67,42 +66,4 @@ if ([DEBUG_LOG_LEVEL, TRACE_LOG_LEVEL].includes(loglevel)) {
 
 export default logger
 
-export const topPrefix = '════▶ '
-export const childPrefix = '  ╚══▶  '
-export const childSpacer = '  ║     '
 
-/**
- * Log Top Item
- * @param {string} message
- */
-export function logTitleItem (message) {
-  logger.info(`${topPrefix}${message}`)
-}
-
-/**
- * Log Child Item
- * @param {string} message - Message to display
- * @param {string} logLevel - Log level (info/warn/error/debug)
- */
-export function logChildItem (message, logLevel = INFO_LOG_LEVEL) {
-  if (AVAILABLE_LOG_LEVELS.includes(logLevel)) {
-    logger[logLevel](`${childPrefix}${message}`)
-  } else {
-    throw new InternalError(`Invalid Log Level ${logLevel} for logChildItem function call`)
-  }
-}
-
-/**
- * Logs an empty line as a spacer element
- */
-export function logSpacer () {
-  logger.info('')
-}
-
-/**
- * Log Child Message
- * @param {string} [message='']
- */
-export function logChildMessage (message = '') {
-  logger.info(childSpacer + message)
-}

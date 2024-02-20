@@ -8,8 +8,7 @@ import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/No
 import CollectionUtils from '../../../utils/CollectionUtils.js'
 import { join, relative } from 'node:path'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
-import Watcher from '../../../utils/Watcher.js'
-import { logChildItem, logTitleItem } from '../../../utils/Logger.js'
+import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
 import { spawn } from 'node:child_process'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import Build from './build.js'
@@ -18,6 +17,7 @@ import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
 import FileUtils, { getAbsolutePath } from '../../../utils/FileUtils.js'
+import { getWatcher, watch } from '../../../utils/Watcher.js'
 
 export const COMPONENT_ARG_NAME = 'components'
 export const THEME_FLAG_NAME = 'theme-path'
@@ -117,7 +117,7 @@ export default class Dev extends BaseCommand {
       logInitLines.push('${collectionName}: Starting `shopify theme dev` process in parallel')
     }
 
-    Watcher.logInit(logInitLines)
+    logWatcherInit(logInitLines)
 
     return Promise.all(promises)
   }
@@ -133,7 +133,7 @@ export default class Dev extends BaseCommand {
    */
   static async exploreComponent (themePath, collectionName, componentNames, event, eventPath) {
     if (event && eventPath) {
-      Watcher.logEvent(event, eventPath)
+      logWatcherEvent(event, eventPath)
     }
 
     // Build & Deploy Collection
@@ -248,10 +248,10 @@ export default class Dev extends BaseCommand {
    * @returns {Promise<FSWatcher>}
    */
   static async watchComponents (collectionPath, ignorePatterns, collectionName, componentName, themePath) {
-    const watcher = Watcher.getWatcher(collectionPath, ignorePatterns)
+    const watcher = getWatcher(collectionPath, ignorePatterns)
     const onCollectionWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentName)
 
-    return Watcher.watch(watcher, onCollectionWatchEvent)
+    return watch(watcher, onCollectionWatchEvent)
   }
 
   /**
@@ -265,17 +265,17 @@ export default class Dev extends BaseCommand {
   static async watchLocales (localesPath, collectionName, componentName, themePath) {
     const watchGlobExpression = join(localesPath, '**/*.json')
 
-    const watcher = Watcher.getWatcher(watchGlobExpression)
+    const watcher = getWatcher(watchGlobExpression)
     const onLocalesWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentName)
 
-    return Watcher.watch(watcher, onLocalesWatchEvent)
+    return watch(watcher, onLocalesWatchEvent)
   }
 
   static async watchTheme (themePath, ignorePatterns) {
-    const watcher = Watcher.getWatcher(themePath, ignorePatterns)
+    const watcher = getWatcher(themePath, ignorePatterns)
     const onThemeWatchEvent = this.copyThemeFile.bind(this, themePath, watcher)
 
-    return Watcher.watch(watcher, onThemeWatchEvent)
+    return watch(watcher, onThemeWatchEvent)
   }
 
   /**

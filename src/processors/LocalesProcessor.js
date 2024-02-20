@@ -2,7 +2,8 @@ import { basename } from 'node:path'
 import { get, set } from 'lodash-es'
 import { getJsonFileContents } from '../utils/FileUtils.js'
 import LiquidUtils from '../utils/LiquidUtils.js'
-import { ERROR_LOG_LEVEL, logChildItem, WARN_LOG_LEVEL } from '../utils/Logger.js'
+import { ERROR_LOG_LEVEL, WARN_LOG_LEVEL } from '../utils/Logger.js'
+import { logChildItem } from '../utils/LoggerUtils.js'
 
 const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 

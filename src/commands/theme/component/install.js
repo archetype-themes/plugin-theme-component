@@ -11,9 +11,10 @@ import logger from '../../../utils/Logger.js'
 import Dev from './dev.js'
 import Build from './build.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
-import Watcher from '../../../utils/Watcher.js'
+import { getWatcher, watch } from '../../../utils/Watcher.js'
 import { basename } from 'node:path'
 import Timer from '../../../models/Timer.js'
+import { logWatcherInit } from '../../../utils/LoggerUtils.js'
 
 export default class Install extends BaseCommand {
   static description = 'Install a collection of components'
@@ -115,12 +116,7 @@ export default class Install extends BaseCommand {
     const watcher = getWatcher(collection.rootFolder, ignorePatterns)
 
     const onCollectionWatchEvent = Install.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, collection.source, watcher)
-    logSpacer()
-    logger.info('--------------------------------------------------------')
-    logger.info(`${collection.name}: Watching component tree for changes`)
-    logger.info('(Ctrl+C to abort)')
-    logger.info('--------------------------------------------------------')
-    logSpacer()
-    Watcher.watch(watcher, onCollectionWatchEvent)
+    logWatcherInit([`${collection.name}: Watching component tree for changes`])
+    watch(watcher, onCollectionWatchEvent)
   }
 }
