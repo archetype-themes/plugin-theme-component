@@ -116,7 +116,7 @@ export default class Install extends BaseCommand {
     const watcher = getWatcher(collection.rootFolder, ignorePatterns)
 
     const onCollectionWatchEvent = Install.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, collection.source, watcher)
-    logWatcherInit([`${collection.name}: Watching component tree for changes`])
+    logWatcherInit(`${collection.name}: Watching component tree for changes`)
     watch(watcher, onCollectionWatchEvent)
   }
 }
