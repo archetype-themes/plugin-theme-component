@@ -142,7 +142,7 @@ export async function getFolders (folder, recursive = false) {
   const folders = []
 
   const promises = entries.map(async (entry) => {
-    if (entry.isDirectory() && EXCLUDED_FOLDERS.includes(entry.name)) {
+    if (entry.isDirectory() && !EXCLUDED_FOLDERS.includes(entry.name)) {
       const absolutePath = join(folder, entry.name)
       folders.push(absolutePath)
       if (recursive) {
