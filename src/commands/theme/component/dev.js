@@ -87,10 +87,10 @@ export default class Dev extends BaseCommand {
 
     // No watch flag, running once and returning
     if (!Session.watchMode) {
-      return Promise.resolve(Dev.exploreComponent(Session.themePath, collectionName, Session.component))
+      return Promise.resolve(Dev.exploreComponent(Session.themePath, collectionName, Session.components))
     }
 
-    const collection = await Dev.exploreComponent(Session.themePath, collectionName, Session.component)
+    const collection = await Dev.exploreComponent(Session.themePath, collectionName, Session.components)
 
     // Start watcher and shopify theme dev processes
     Session.firstRun = false
@@ -98,18 +98,18 @@ export default class Dev extends BaseCommand {
     const logInitLines = []
 
     // Watch Local Component Collection
-    promises.push(Dev.watchComponents(collection.rootFolder, getIgnorePatterns(collection.rootFolder), Session.themePath, collection.name, Session.component))
+    promises.push(Dev.watchComponents(collection.rootFolder, getIgnorePatterns(collection.rootFolder), Session.themePath, collection.name, Session.components))
     logInitLines.push(`${collectionName}: Watching component tree for changes`)
 
     // Watch Local Theme
     if (!isRepoUrl(Session.themePath)) {
-      promises.push(Dev.watchTheme(Session.themePath, getIgnorePatterns(Session.themePath), collection.rootFolder, collection.name, Session.component))
+      promises.push(Dev.watchTheme(Session.themePath, getIgnorePatterns(Session.themePath), collection.rootFolder, collection.name, Session.components))
       logInitLines.push(`${collectionName}: Watching theme folder for changes`)
     }
 
     // Watch Local Locales
     if (!isRepoUrl(Session.localesPath)) {
-      promises.push(Dev.watchLocales(Session.localesPath, Session.themePath, collection.name, Session.component))
+      promises.push(Dev.watchLocales(Session.localesPath, Session.themePath, collection.name, Session.components))
       logInitLines.push(`${collectionName}: Watching locales folder for changes`)
     }
 
@@ -202,9 +202,9 @@ export default class Dev extends BaseCommand {
     Session.targetType = Components.COMPONENT_TYPE_NAME
 
     if (args.length)
-      Session.component = args
+      Session.components = args
     else if (Object.hasOwn(tomlConfig, COMPONENT_ARG_NAME))
-      Session.component = typeof tomlConfig[COMPONENT_ARG_NAME] === 'string' ?
+      Session.components = typeof tomlConfig[COMPONENT_ARG_NAME] === 'string' ?
         [tomlConfig[COMPONENT_ARG_NAME]] : tomlConfig[COMPONENT_ARG_NAME]
   }
 

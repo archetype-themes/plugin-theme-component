@@ -11,7 +11,7 @@ class Session {
   static collections
 
   /** @type {string[]} Target Component Name **/
-  static component
+  static components
 
   /** @type {string} Command Name  **/
   static command
