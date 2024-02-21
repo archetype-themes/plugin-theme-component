@@ -5,7 +5,6 @@ import Session from '../../../models/static/Session.js'
 import Components from '../../../config/Components.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
-import CollectionUtils from '../../../utils/CollectionUtils.js'
 import { join, relative } from 'node:path'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
 import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
@@ -16,8 +15,8 @@ import { install, validateLocation } from '../../../utils/ExternalComponentUtils
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
-import { getAbsolutePath } from '../../../utils/FileUtils.js'
-import { getWatcher, watch } from '../../../utils/Watcher.js'
+import { copy, getAbsolutePath } from '../../../utils/FileUtils.js'
+import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
 
 export const COMPONENT_ARG_NAME = 'components'
 export const THEME_FLAG_NAME = 'theme-path'
@@ -97,12 +96,12 @@ export default class Dev extends BaseCommand {
     Session.firstRun = false
     const promises = []
     const logInitLines = []
-    const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    promises.push(Dev.watchComponents(collection.rootFolder, ignorePatterns, Session.themePath, collection.name, Session.component))
+
+    promises.push(Dev.watchComponents(collection.rootFolder, getIgnorePatterns(collection.rootFolder), Session.themePath, collection.name, Session.component))
     logInitLines.push(`${collectionName}: Watching component tree for changes`)
 
     if (!isRepoUrl(Session.themePath)) {
-      // promises.push(Dev.watchTheme(Session.themePath))
+      promises.push(Dev.watchTheme(Session.themePath, getIgnorePatterns(Session.themePath)))
       logInitLines.push(`${collectionName}: Watching theme folder for changes`)
     }
 
@@ -287,7 +286,7 @@ export default class Dev extends BaseCommand {
    * @return {Promise<Awaited<Promise<Awaited<void>[]>>>}
    */
   static copyThemeFile (themePath, watcher, event, eventPath) {
-    return Promise.resolve(FileUtils.copy({}))
+    return Promise.resolve(copy({}))
   }
 }
 

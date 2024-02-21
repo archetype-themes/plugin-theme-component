@@ -11,7 +11,7 @@ import logger from '../../../utils/Logger.js'
 import Dev from './dev.js'
 import Build from './build.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
-import { getWatcher, watch } from '../../../utils/Watcher.js'
+import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
 import { basename } from 'node:path'
 import Timer from '../../../models/Timer.js'
 import { logWatcherInit } from '../../../utils/LoggerUtils.js'
@@ -111,11 +111,9 @@ export default class Install extends BaseCommand {
    * @return {Promise<module: models/Collection>}
    */
   static async watch (collection) {
-    const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-
-    const watcher = getWatcher(collection.rootFolder, ignorePatterns)
-
+    const watcher = getWatcher(collection.rootFolder, getIgnorePatterns(collection.rootFolder))
     const onCollectionWatchEvent = Install.onCollectionWatchEvent.bind(null, collection.name, collection.componentNames, collection.source, watcher)
+
     logWatcherInit(`${collection.name}: Watching component tree for changes`)
     watch(watcher, onCollectionWatchEvent)
   }

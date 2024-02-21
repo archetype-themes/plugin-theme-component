@@ -1,9 +1,8 @@
 // Node.js imports
 import { join } from 'node:path'
-import gitignore from 'parse-gitignore'
 
 // Internal Imports
-import { COLLECTIONS_FOLDER_NAME, CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { COLLECTIONS_FOLDER_NAME } from '../config/CLI.js'
 import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
@@ -12,33 +11,7 @@ import { exists, getFolders } from './FileUtils.js'
 import { isRepoUrl } from './WebUtils.js'
 import FileMissingError from '../errors/FileMissingError.js'
 
-const IGNORE_PATTERNS = [
-  'package.json',
-  'package-lock.json',
-  '.git',
-  '.github',
-  DEV_FOLDER_NAME,
-  CONFIG_FILE_NAME,
-  'bin',
-  '**/.*',
-  '**/*.md'
-]
-
 const COMPONENTS_FOLDER = 'components'
-
-/**
- * Get Watch Folders for a Collection
- * @param {module:models/Collection} collection
- * @returns {string[]}
- */
-export function getIgnorePatterns (collection) {
-  const ignorePatterns = IGNORE_PATTERNS
-  if (collection.gitIgnoreFile) {
-    const gitIgnorePatterns = gitignore.parse(collection.gitIgnoreFile).patterns
-    ignorePatterns.push(...gitIgnorePatterns)
-  }
-  return ignorePatterns
-}
 
 /**
  * Get Collection Root Folder
@@ -144,6 +117,5 @@ export async function initCollectionFiles (collection) {
 export default {
   findRootFolder,
   getComponentNamesToBuild,
-  getIgnorePatterns,
   initCollectionFiles
 }
