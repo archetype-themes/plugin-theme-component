@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { FSWatcher } from 'chokidar'
+import { FSWatcher, watch as chokidarWatch } from 'chokidar'
 import logger from './Logger.js'
 
 /**
@@ -29,7 +29,7 @@ export function getWatcher (rootFolder, ignorePatterns) {
 
   logger.debug('Chokidar will watch the following files & folders:')
   logger.debug(targets)
-  return watch(targets, watchOptions)
+  return chokidarWatch(targets, watchOptions)
 }
 
 /**
