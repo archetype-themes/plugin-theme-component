@@ -39,7 +39,7 @@ export default class Generate {
     Generate.setSessionArgs(args, tomlConfig)
 
     const workspaceFolder = Components.SNIPPETS_FOLDER_NAME
-    const componentName = Session.component
+    const componentName = Session.components
     const componentFolder = join(workspaceFolder, componentName)
     const componentRootFolder = join(getPackageRootFolder(), componentFolder)
 
@@ -96,8 +96,8 @@ export default class Generate {
     Session.targetType = Components.COMPONENT_TYPE_NAME
 
     if (args.component)
-      Session.component = args.component
+      Session.components = args.component
     else if (tomlConfig.component)
-      Session.component = tomlConfig.component
+      Session.components = tomlConfig.component
   }
 }
