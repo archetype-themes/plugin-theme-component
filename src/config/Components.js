@@ -45,4 +45,7 @@ class Components {
 export default Components
 
 /** @type {string} **/
+export const COMPONENTS_FOLDER = 'components'
+
+/** @type {string} **/
 export const LOCALES_INSTALL_FOLDER = '.locales'

@@ -10,8 +10,7 @@ import Session from '../models/static/Session.js'
 import { exists, getFolders } from './FileUtils.js'
 import { isRepoUrl } from './WebUtils.js'
 import FileMissingError from '../errors/FileMissingError.js'
-
-const COMPONENTS_FOLDER = 'components'
+import { COMPONENTS_FOLDER } from '../config/Components.js'
 
 /**
  * Get Collection Root Folder
