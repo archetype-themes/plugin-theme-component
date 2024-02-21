@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { FSWatcher, watch } from 'chokidar'
+import { FSWatcher } from 'chokidar'
 import logger from './Logger.js'
 
 /**
