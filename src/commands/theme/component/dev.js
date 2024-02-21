@@ -16,7 +16,7 @@ import { install, validateLocation } from '../../../utils/ExternalComponentUtils
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
-import FileUtils, { getAbsolutePath } from '../../../utils/FileUtils.js'
+import { getAbsolutePath } from '../../../utils/FileUtils.js'
 import { getWatcher, watch } from '../../../utils/Watcher.js'
 
 export const COMPONENT_ARG_NAME = 'components'
@@ -98,7 +98,7 @@ export default class Dev extends BaseCommand {
     const promises = []
     const logInitLines = []
     const ignorePatterns = CollectionUtils.getIgnorePatterns(collection)
-    promises.push(Dev.watchComponents(collection.rootFolder, ignorePatterns, collection.name, Session.component, Session.themePath))
+    promises.push(Dev.watchComponents(collection.rootFolder, ignorePatterns, Session.themePath, collection.name, Session.component))
     logInitLines.push(`${collectionName}: Watching component tree for changes`)
 
     if (!isRepoUrl(Session.themePath)) {
@@ -107,11 +107,11 @@ export default class Dev extends BaseCommand {
     }
 
     if (!isRepoUrl(Session.localesPath)) {
-      promises.push(Dev.watchLocales(Session.localesPath, collection.name, Session.component, Session.themePath))
+      promises.push(Dev.watchLocales(Session.localesPath, Session.themePath, collection.name, Session.component))
       logInitLines.push(`${collectionName}: Watching locales folder for changes`)
     }
 
-    // Start Shopify Theme Dev process (unused at the moment, there were config problems)
+    // Run the "shopify theme dev" command (unused at the moment, there were config problems)
     if (Session.syncMode) {
       promises.push(Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME)))
       logInitLines.push('${collectionName}: Starting `shopify theme dev` process in parallel')
@@ -247,7 +247,7 @@ export default class Dev extends BaseCommand {
    * @param {string} themePath
    * @returns {Promise<FSWatcher>}
    */
-  static async watchComponents (collectionPath, ignorePatterns, collectionName, componentName, themePath) {
+  static async watchComponents (collectionPath, ignorePatterns, themePath, collectionName, componentName) {
     const watcher = getWatcher(collectionPath, ignorePatterns)
     const onCollectionWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentName)
 
@@ -262,7 +262,7 @@ export default class Dev extends BaseCommand {
    * @param {string} themePath
    * @return {Promise<FSWatcher>}
    */
-  static async watchLocales (localesPath, collectionName, componentName, themePath) {
+  static async watchLocales (localesPath, themePath, collectionName, componentName) {
     const watchGlobExpression = join(localesPath, '**/*.json')
 
     const watcher = getWatcher(watchGlobExpression)
