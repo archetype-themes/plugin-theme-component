@@ -5,9 +5,10 @@ import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import logger from './Logger.js'
 import { sep } from 'node:path'
 
-/** @property {string[]} **/
+/** @type {string[]} **/
 const EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
-/** @property {Object} **/
+
+/** @type {Object} **/
 const FILE_ENCODING_OPTION = { encoding: 'utf8' }
 
 /**
@@ -122,7 +123,7 @@ export async function getFolderFilesRecursively (folder) {
   for (const entry of entries) {
     const absolutePath = join(folder, entry.name)
     if (entry.isDirectory()) {
-      if (EXCLUDED_FOLDERS.includes(entry.name)) {
+      if (!EXCLUDED_FOLDERS.includes(entry.name)) {
         files.push(...(await getFolderFilesRecursively(absolutePath)))
       }
     } else { files.push(absolutePath) }
