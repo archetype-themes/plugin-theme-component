@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - code: Logger cleanup: All recently added log utility functions were moved to a new file: LoggerUtils.js
 - code: all utils files were restructured to adopt a Node.js typical non-object-oriented architecture
+- code: The oclif and Archie commands have been merged under src; the plugins folder is gone.
+- code: model properties are now public, useless getter and setters are gone
 
 ### Fixed
 
