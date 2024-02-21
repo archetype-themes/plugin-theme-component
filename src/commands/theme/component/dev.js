@@ -97,20 +97,23 @@ export default class Dev extends BaseCommand {
     const promises = []
     const logInitLines = []
 
+    // Watch Local Component Collection
     promises.push(Dev.watchComponents(collection.rootFolder, getIgnorePatterns(collection.rootFolder), Session.themePath, collection.name, Session.component))
     logInitLines.push(`${collectionName}: Watching component tree for changes`)
 
+    // Watch Local Theme
     if (!isRepoUrl(Session.themePath)) {
-      promises.push(Dev.watchTheme(Session.themePath, getIgnorePatterns(Session.themePath)))
+      promises.push(Dev.watchTheme(Session.themePath, getIgnorePatterns(Session.themePath), collection.rootFolder, collection.name, Session.component))
       logInitLines.push(`${collectionName}: Watching theme folder for changes`)
     }
 
+    // Watch Local Locales
     if (!isRepoUrl(Session.localesPath)) {
       promises.push(Dev.watchLocales(Session.localesPath, Session.themePath, collection.name, Session.component))
       logInitLines.push(`${collectionName}: Watching locales folder for changes`)
     }
 
-    // Run the "shopify theme dev" command (unused at the moment, there were config problems)
+    // Run "shopify theme dev" -- unused at the moment due to config challenges
     if (Session.syncMode) {
       promises.push(Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME)))
       logInitLines.push('${collectionName}: Starting `shopify theme dev` process in parallel')
@@ -257,20 +260,20 @@ export default class Dev extends BaseCommand {
    *
    * @param {string} localesPath
    * @param {string} collectionName
-   * @param {string} componentName
+   * @param {string[]} componentNames
    * @param {string} themePath
    * @return {Promise<FSWatcher>}
    */
-  static async watchLocales (localesPath, themePath, collectionName, componentName) {
+  static async watchLocales (localesPath, themePath, collectionName, componentNames) {
     const watchGlobExpression = join(localesPath, '**/*.json')
 
     const watcher = getWatcher(watchGlobExpression)
-    const onLocalesWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentName)
+    const onLocalesWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentNames)
 
     return watch(watcher, onLocalesWatchEvent)
   }
 
-  static async watchTheme (themePath, ignorePatterns) {
+  static async watchTheme (themePath, ignorePatterns, collectionRootFolder, collectionName, componentNames) {
     const watcher = getWatcher(themePath, ignorePatterns)
     const onThemeWatchEvent = this.copyThemeFile.bind(this, themePath, watcher)
 

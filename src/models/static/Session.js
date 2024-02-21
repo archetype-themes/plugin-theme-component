@@ -10,7 +10,7 @@ class Session {
   /** @type {Object} Install command's collection names and child components list **/
   static collections
 
-  /** @type {string} Target Component Name **/
+  /** @type {string[]} Target Component Name **/
   static component
 
   /** @type {string} Command Name  **/
