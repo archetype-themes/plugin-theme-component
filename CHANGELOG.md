@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   component
 - Missing Theme Name on Install: Now guessing theme name by using cwd since package.json was removed
 
+## [2.3.1] - 2024-02-14
+
+### Fixed
+
+- Stylesheet filename fix https://github.com/archetype-themes/plugin-theme-component/pull/337
+
 ## [2.3.0] - 2024-02-01
 
 ### Added
