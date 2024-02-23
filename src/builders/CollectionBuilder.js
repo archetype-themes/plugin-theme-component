@@ -81,7 +81,9 @@ class CollectionBuilder {
       if (isRepoUrl(Session.localesPath)) {
         const localesInstallPath = join(cwd(), LOCALES_INSTALL_FOLDER)
         localesPath = localesInstallPath
-        await install(Session.localesPath, localesInstallPath, 'Locales DB')
+        if (Session.firstRun) {
+          await install(Session.localesPath, localesInstallPath, 'Locales DB')
+        }
       } else {
         localesPath = Session.localesPath
       }

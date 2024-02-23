@@ -2,7 +2,7 @@
 import { join } from 'node:path'
 
 // Internal Imports
-import { COLLECTIONS_FOLDER_NAME } from '../config/CLI.js'
+import { COLLECTIONS_INSTALL_FOLDER_NAME } from '../config/CLI.js'
 import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
@@ -31,7 +31,7 @@ export async function findRootFolder (collectionName, collectionSource) {
     }
     if (collectionSource) {
       if (isRepoUrl(collectionSource)) {
-        return join(process.cwd(), COLLECTIONS_FOLDER_NAME, collectionName)
+        return join(process.cwd(), COLLECTIONS_INSTALL_FOLDER_NAME, collectionName)
       } else {
         return collectionSource
       }
