@@ -2,7 +2,7 @@
 import { basename, dirname, extname } from 'path'
 
 // Internal Modules
-import Components from '../config/Components.js'
+import { ASSETS_FOLDER_NAME } from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import FileUtils from './FileUtils.js'
@@ -58,7 +58,7 @@ function filterFiles (files, componentFiles, componentName) {
     const folder = dirname(file).toLowerCase()
     const filename = basename(file).toLowerCase()
 
-    if (folder.endsWith(`/${Components.ASSETS_FOLDER_NAME}`)) {
+    if (folder.endsWith(`/${ASSETS_FOLDER_NAME}`)) {
       componentFiles.assetFiles.push(file)
       continue
     }

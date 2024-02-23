@@ -3,7 +3,13 @@ import { join } from 'path'
 
 // Internal Imports
 import Theme from '../models/Theme.js'
-import Components from '../config/Components.js'
+import {
+  ASSETS_FOLDER_NAME,
+  CONFIG_FOLDER_NAME,
+  LOCALES_FOLDER_NAME,
+  SECTIONS_FOLDER_NAME,
+  SNIPPETS_FOLDER_NAME
+} from '../config/Components.js'
 import { getCurrentWorkingDirectoryName } from '../utils/NodeUtils.js'
 
 class ThemeFactory {
@@ -39,11 +45,11 @@ class ThemeFactory {
    * @returns {Theme}
    */
   static #setChildFolders (theme) {
-    theme.assetsFolder = join(theme.rootFolder, Components.ASSETS_FOLDER_NAME)
-    theme.configFolder = join(theme.rootFolder, Components.CONFIG_FOLDER_NAME)
-    theme.localesFolder = join(theme.rootFolder, Components.LOCALES_FOLDER_NAME)
-    theme.sectionsFolder = join(theme.rootFolder, Components.SECTIONS_FOLDER_NAME)
-    theme.snippetsFolder = join(theme.rootFolder, Components.SNIPPETS_FOLDER_NAME)
+    theme.assetsFolder = join(theme.rootFolder, ASSETS_FOLDER_NAME)
+    theme.configFolder = join(theme.rootFolder, CONFIG_FOLDER_NAME)
+    theme.localesFolder = join(theme.rootFolder, LOCALES_FOLDER_NAME)
+    theme.sectionsFolder = join(theme.rootFolder, SECTIONS_FOLDER_NAME)
+    theme.snippetsFolder = join(theme.rootFolder, SNIPPETS_FOLDER_NAME)
 
     return theme
   }

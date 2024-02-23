@@ -1,51 +1,44 @@
-class Components {
-  /** @type {string}  **/
-  static DEFAULT_PACKAGE_SCOPE = '@archetype-themes'
+/*********************/
+/** COMPONENT TYPES **/
+/*********************/
 
-  /**************************/
-  /** COMPONENT TYPE NAMES **/
-  /**************************/
+/** @type {string}  **/
+export const COLLECTION_TYPE_NAME = 'collection'
 
-  /** @type {string}  **/
-  static COLLECTION_TYPE_NAME = 'collection'
+/** @type {string}  **/
+export const COMPONENT_TYPE_NAME = 'component'
 
-  /** @type {string}  **/
-  static COMPONENT_TYPE_NAME = 'component'
+/** @type {string}  **/
+export const THEME_TYPE_NAME = 'theme'
 
-  /** @type {string}  **/
-  static THEME_TYPE_NAME = 'theme'
+/******************/
+/** FOLDER NAMES **/
+/******************/
 
-  /******************/
-  /** FOLDER NAMES **/
-  /******************/
-
-  /** @type {string} **/
-  static ASSETS_FOLDER_NAME = 'assets'
-
-  /** @type {string} **/
-  static CONFIG_FOLDER_NAME = 'config'
-
-  /** @type {string} **/
-  static LOCALES_FOLDER_NAME = 'locales'
-
-  /** @type {string} **/
-  static SECTIONS_FOLDER_NAME = 'sections'
-
-  /** @type {string} **/
-  static SNIPPETS_FOLDER_NAME = 'snippets'
-
-  /******************/
-  /**  FILE NAMES  **/
-  /******************/
-
-  /** @type {string} **/
-  static IMPORT_MAP_SNIPPET_FILENAME = 'import-map.liquid'
-}
-
-export default Components
+/** @type {string} **/
+export const ASSETS_FOLDER_NAME = 'assets'
 
 /** @type {string} **/
 export const COMPONENTS_FOLDER = 'components'
 
 /** @type {string} **/
+export const CONFIG_FOLDER_NAME = 'config'
+
+/** @type {string} **/
+export const LOCALES_FOLDER_NAME = 'locales'
+
+/** @type {string} **/
 export const LOCALES_INSTALL_FOLDER = '.locales'
+
+/** @type {string} **/
+export const SECTIONS_FOLDER_NAME = 'sections'
+
+/** @type {string} **/
+export const SNIPPETS_FOLDER_NAME = 'snippets'
+
+/******************/
+/**  FILE NAMES  **/
+/******************/
+
+/** @type {string} **/
+export const IMPORT_MAP_SNIPPET_FILENAME = 'import-map.liquid'

@@ -16,7 +16,7 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import Timer from '../models/Timer.js'
 import logger, { DEBUG_LOG_LEVEL, WARN_LOG_LEVEL } from '../utils/Logger.js'
 import { logChildItem } from '../utils/LoggerUtils.js'
-import Components, { LOCALES_INSTALL_FOLDER } from '../config/Components.js'
+import { LOCALES_FOLDER_NAME, LOCALES_INSTALL_FOLDER } from '../config/Components.js'
 import { cwd } from 'node:process'
 
 class CollectionBuilder {
@@ -86,7 +86,7 @@ class CollectionBuilder {
         localesPath = Session.localesPath
       }
 
-      const localeFiles = await getFolderFilesRecursively(join(localesPath, Components.LOCALES_FOLDER_NAME))
+      const localeFiles = await getFolderFilesRecursively(join(localesPath, LOCALES_FOLDER_NAME))
       const locales = await LocalesProcessor.build(componentsLiquidCode, localeFiles)
       logChildItem(`Locales Processor completed in ${timer.now()} seconds`)
       return locales

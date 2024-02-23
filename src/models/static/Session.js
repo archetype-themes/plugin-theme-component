@@ -1,4 +1,4 @@
-import Components from '../../config/Components.js'
+import { COLLECTION_TYPE_NAME, THEME_TYPE_NAME } from '../../config/Components.js'
 
 class Session {
   /** @type {ComponentTomlConfig} Plugin TOML config  **/
@@ -42,7 +42,7 @@ class Session {
    * @return {boolean}
    */
   static isCollection () {
-    return this.callerType === Components.COLLECTION_TYPE_NAME
+    return this.callerType === COLLECTION_TYPE_NAME
   }
 
   /**
@@ -50,7 +50,7 @@ class Session {
    * @return {boolean}
    */
   static isTheme () {
-    return this.callerType === Components.THEME_TYPE_NAME
+    return this.callerType === THEME_TYPE_NAME
   }
 }
 

@@ -2,7 +2,7 @@ import { Args, Flags } from '@oclif/core'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
 import { BaseCommand } from '../../baseCommand.js'
 import Session from '../../../models/static/Session.js'
-import Components from '../../../config/Components.js'
+import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME } from '../../../config/Components.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
 import { join, relative } from 'node:path'
@@ -198,8 +198,8 @@ export default class Dev extends BaseCommand {
   }
 
   static setSessionArgs (args, tomlConfig) {
-    Session.callerType = Components.COLLECTION_TYPE_NAME
-    Session.targetType = Components.COMPONENT_TYPE_NAME
+    Session.callerType = COLLECTION_TYPE_NAME
+    Session.targetType = COMPONENT_TYPE_NAME
 
     if (args.length)
       Session.components = args
