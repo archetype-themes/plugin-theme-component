@@ -1,6 +1,5 @@
 import { join } from 'path'
 import FileAccessError from '../errors/FileAccessError.js'
-import Session from '../models/static/Session.js'
 import { copyFolder, exists, getFolderFilesRecursively, isReadable } from './FileUtils.js'
 import { clone, pull, restore } from './GitUtils.js'
 import { logChildItem } from './LoggerUtils.js'
@@ -11,22 +10,22 @@ export async function install (sourceLocation, targetFolder, name) {
   logChildItem(`Searching for "${name}" locally`)
   const timer = new Timer()
 
-  if (await exists(join(targetFolder, '.git'))) {
-    logChildItem(`${name} repository found locally`)
-    restore(targetFolder)
-    if (Session.firstRun) {
+  if (isRepoUrl(sourceLocation)) {
+    if (await exists(join(targetFolder, '.git'))) {
+      logChildItem(`${name} repository found locally: Running git restore & git pull`)
+      restore(targetFolder)
       pull(targetFolder)
+    } else {
+      logChildItem(`Cloning ${name} repository`)
+      clone(sourceLocation, targetFolder)
     }
   } else if (await exists(targetFolder)) {
-    logChildItem(`${name} found locally`)
-  } else if (isRepoUrl(sourceLocation)) {
-    logChildItem(`Cloning missing local ${name} repository`)
-    clone(sourceLocation, targetFolder)
+    logChildItem(`${name} copy found locally`)
   } else {
-    logChildItem(`Installing missing local ${name} copy`)
+    logChildItem(`Copying ${name}`)
     await copyFolder(sourceLocation, targetFolder, { recursive: true })
   }
-  logChildItem(`${name} is now ready (${timer.now()} seconds)`)
+  logChildItem(`${name} is ready (${timer.now()} seconds)`)
 
   return getFolderFilesRecursively(targetFolder)
 }
