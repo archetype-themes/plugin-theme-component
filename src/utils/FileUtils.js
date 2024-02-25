@@ -1,5 +1,5 @@
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, cpSync } from 'node:fs'
 import { cwd } from 'node:process'
 import { basename, join } from 'path'
 import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
@@ -47,7 +47,7 @@ export async function copyFilesToFolder (files, targetFolder) {
       const destinationContents = readFileSync(destination, 'utf8')
       const fileContents = readFileSync(file, 'utf8')
       if (destinationContents !== fileContents) {
-        filesCopyPromises.push(copyFile(file, destination))
+        filesCopyPromises.push(cpSync(file, destination, { preserveTimestamps: true }))
       }
     } else {
       filesCopyPromises.push(copyFile(file, destination))
@@ -71,7 +71,7 @@ export async function copyFilesToFolder (files, targetFolder) {
  * @param {CopyFolderOptions} [options]
  * @return {Promise<Awaited<void>[]>}
  */
-export async function copyFolder (sourceFolder, targetFolder, options = { recursive: false }) {
+export async function copyFolder (sourceFolder, targetFolder, options = { recursive: false, preserveTimestamps: true }) {
   const fileOperations = []
   logger.debug(`Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `)
   const folderContent = await readdir(sourceFolder, { withFileTypes: true })
@@ -89,12 +89,11 @@ export async function copyFolder (sourceFolder, targetFolder, options = { recurs
       if (options.jsTemplateVariables) {
         fileOperations.push(processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
       } else {
-        fileOperations.push(copyFile(sourceFile, targetFile))
+        fileOperations.push(cpSync(sourceFile, targetFile, { preserveTimestamps: true }))
       }
     } else if (dirent.isDirectory() && options.recursive) {
       const newTargetFolder = join(targetFolder, dirent.name)
-      await mkdir(newTargetFolder, { recursive: true })
-      fileOperations.push(copyFolder(join(sourceFolder, dirent.name), newTargetFolder, options))
+      fileOperations.push(cpSync(join(sourceFolder, dirent.name), newTargetFolder, options))
     }
   }
   return Promise.all(fileOperations)
