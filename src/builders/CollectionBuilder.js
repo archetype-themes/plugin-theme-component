@@ -30,7 +30,9 @@ class CollectionBuilder {
 
     const timer = new Timer()
     collection.build = BuildFactory.fromCollection(collection)
-    await this.#resetBuildFolders(collection.build)
+    if (Session.firstRun) {
+      await this.#resetBuildFolders(collection.build)
+    }
     logChildItem(`Collection Build Initialized (${timer.now()} seconds)`);
 
     [collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([

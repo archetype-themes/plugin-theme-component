@@ -1,4 +1,5 @@
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { readFileSync, existsSync } from 'node:fs'
 import { cwd } from 'node:process'
 import { basename, join } from 'path'
 import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
@@ -39,7 +40,19 @@ export async function copy (files) {
  * @return {Promise<Awaited<void>[]>}
  */
 export async function copyFilesToFolder (files, targetFolder) {
-  const filesCopyPromises = files.map(file => copyFile(file, join(targetFolder, basename(file))))
+  const filesCopyPromises = []
+  files.forEach(file => {
+    const destination = join(targetFolder, basename(file))
+    if (existsSync(destination)) {
+      const destinationContents = readFileSync(destination, 'utf8')
+      const fileContents = readFileSync(file, 'utf8')
+      if (destinationContents !== fileContents) {
+        filesCopyPromises.push(copyFile(file, destination))
+      }
+    } else {
+      filesCopyPromises.push(copyFile(file, destination))
+    }
+  })
 
   return Promise.all(filesCopyPromises)
 }
@@ -271,8 +284,14 @@ export async function searchFile (path, filename, recursive = false) {
  */
 export async function saveFile (file, fileContents) {
   logger.trace(`Writing to disk: ${file}`)
-
-  return writeFile(file, fileContents, FILE_ENCODING_OPTION)
+  if (existsSync(file)) {
+    const destinationContents = readFileSync(file, 'utf8')
+    if (destinationContents !== fileContents) {
+      return writeFile(file, fileContents, FILE_ENCODING_OPTION)
+    }
+  } else {
+    return writeFile(file, fileContents, FILE_ENCODING_OPTION)
+  }
 }
 
 /**
