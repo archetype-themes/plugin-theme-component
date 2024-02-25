@@ -19,9 +19,10 @@ class ImportMapProcessor {
     const importMap = await FileUtils.getJsonFileContents(path.join(collectionRootFolder, this.ImportMapFile))
     const importMapEntries = this.resolveImportMapEntries(importMap.imports, collectionRootFolder)
     const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries)
-    const importMapTags = this.generateImportMapTags(buildEntries)
+    const sortedBuildEntries = new Map([...buildEntries.entries()].sort())
+    const importMapTags = this.generateImportMapTags(sortedBuildEntries)
     await FileUtils.saveFile(outputFile, importMapTags)
-    return this.filterBuildEntries(buildEntries, jsFiles)
+    return this.filterBuildEntries(sortedBuildEntries, jsFiles)
   }
 
   /**
