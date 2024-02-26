@@ -2,7 +2,12 @@ import { Args, Flags } from '@oclif/core'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
 import { BaseCommand } from '../../baseCommand.js'
 import Session from '../../../models/static/Session.js'
-import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME } from '../../../config/Components.js'
+import {
+  ASSETS_FOLDER_NAME,
+  COLLECTION_TYPE_NAME,
+  COMPONENT_TYPE_NAME,
+  SNIPPETS_FOLDER_NAME
+} from '../../../config/Components.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
 import { join, relative } from 'node:path'
@@ -17,6 +22,9 @@ import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
 import { getAbsolutePath } from '../../../utils/FileUtils.js'
 import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
+import { copyFile, mkdir, rm, rmdir } from 'node:fs/promises'
+import logger from '../../../utils/Logger.js'
+import { basename } from 'path'
 
 export const COMPONENT_ARG_NAME = 'components'
 export const THEME_FLAG_NAME = 'theme-path'
@@ -104,6 +112,15 @@ export default class Dev extends BaseCommand {
     // Watch Local Theme
     if (!isRepoUrl(Session.themePath)) {
       promises.push(Dev.watchTheme(Session.themePath, getIgnorePatterns(Session.themePath), collection.rootFolder, collection.name, Session.components))
+      // Get default ignore patterns with .gitignore entries
+      const ignorePatterns = getIgnorePatterns(Session.themePath)
+      // Ignore all component snippet liquid files
+      ignorePatterns.push(...collection.allComponents.map(component => join(SNIPPETS_FOLDER_NAME, `${component.name}.liquid`)))
+      // Ignore all component static asset files
+      ignorePatterns.push(...collection.allComponents.map(component => component.files.assetFiles.map(assetFile => join(ASSETS_FOLDER_NAME, basename(assetFile)))).flat())
+      // Ignore all storefront locale files
+      ignorePatterns.push('locales/*.json', '!locales/*schema.json')
+      promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder, collection.name, Session.components))
       logInitLines.push(`${collectionName}: Watching theme folder for changes`)
     }
 
@@ -277,7 +294,7 @@ export default class Dev extends BaseCommand {
 
   static async watchTheme (themePath, ignorePatterns, collectionRootFolder, collectionName, componentNames) {
     const watcher = getWatcher(themePath, ignorePatterns)
-    const onThemeWatchEvent = this.copyThemeFile.bind(this, themePath, watcher)
+    const onThemeWatchEvent = this.copyThemeFile.bind(this, themePath, collectionRootFolder)
 
     return watch(watcher, onThemeWatchEvent)
   }
@@ -285,13 +302,32 @@ export default class Dev extends BaseCommand {
   /**
    *
    * @param {string} themePath
-   * @param {FSWatcher} [watcher] Watcher Instance
+   * @param {string} collectionPath Watcher Instance
    * @param {string} [event] Watcher Event
    * @param {string} [eventPath] Watcher Event Path
-   * @return {Promise<Awaited<Promise<Awaited<void>[]>>>}
+   * @return {Promise<void>}
    */
-  static copyThemeFile (themePath, watcher, event, eventPath) {
-    return Promise.resolve(copy({}))
+  static copyThemeFile (themePath, collectionPath, event, eventPath) {
+    const source = join(themePath, eventPath)
+    const destination = join(collectionPath, DEV_FOLDER_NAME, eventPath)
+
+    console.log(event)
+    console.log(eventPath)
+    if (['add', 'change'].includes(event)) {
+      return copyFile(source, destination)
+    }
+    if (event === 'unlink') {
+      return rm(destination)
+    }
+    if (event === 'addDir') {
+      return mkdir(destination)
+    }
+    if (event === 'unlinkDir') {
+      return rmdir(destination)
+    }
+    if (event === 'error') {
+      logger.error(eventPath)
+    }
   }
 }
 
