@@ -146,11 +146,13 @@ export default class Dev extends BaseCommand {
     const devFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
 
     // Setup A Theme and Create Its Model Instance
-    try {
-      const validThemeFolder = await validateLocation(themePath, collection.rootFolder)
-      await install(validThemeFolder, devFolder, 'Explorer Theme')
-    } catch (error) {
-      exitWithError('Source Dev Theme Folder or Repository is invalid: ' + error.message)
+    if (Session.firstRun) {
+      try {
+        const validThemeFolder = await validateLocation(themePath, collection.rootFolder)
+        await install(validThemeFolder, devFolder, 'Explorer Theme')
+      } catch (error) {
+        exitWithError('Source Dev Theme Folder or Repository is invalid: ' + error.message)
+      }
     }
 
     const theme = await fromDevCommand(devFolder)
