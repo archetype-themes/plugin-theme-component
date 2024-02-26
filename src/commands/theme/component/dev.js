@@ -291,7 +291,7 @@ export default class Dev extends BaseCommand {
     return watch(watcher, onLocalesWatchEvent)
   }
 
-  static async watchTheme (themePath, ignorePatterns, collectionRootFolder ) {
+  static async watchTheme (themePath, ignorePatterns, collectionRootFolder) {
     const watcher = getWatcher(themePath, ignorePatterns)
     const onThemeWatchEvent = this.copyThemeFile.bind(this, themePath, collectionRootFolder)
 
@@ -322,7 +322,7 @@ export default class Dev extends BaseCommand {
       return mkdir(destination)
     }
     if (event === 'unlinkDir') {
-      return rmdir(destination)
+      return rm(destination, { recursive: true, force: true })
     }
     if (event === 'error') {
       logger.error(eventPath)
