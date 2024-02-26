@@ -12,7 +12,13 @@ import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
 import { join, relative } from 'node:path'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
-import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
+import {
+  logChildItem,
+  logTitleItem,
+  logWatcherAction,
+  logWatcherEvent,
+  logWatcherInit
+} from '../../../utils/LoggerUtils.js'
 import { spawn } from 'node:child_process'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import Build from './build.js'
@@ -22,7 +28,7 @@ import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
 import { getAbsolutePath } from '../../../utils/FileUtils.js'
 import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
-import { copyFile, mkdir, rm, rmdir } from 'node:fs/promises'
+import { copyFile, mkdir, rm } from 'node:fs/promises'
 import logger from '../../../utils/Logger.js'
 import { basename } from 'path'
 
@@ -310,18 +316,20 @@ export default class Dev extends BaseCommand {
     const source = join(themePath, eventPath)
     const destination = join(collectionPath, DEV_FOLDER_NAME, eventPath)
 
-    console.log(event)
-    console.log(eventPath)
     if (['add', 'change'].includes(event)) {
+      logWatcherAction(event === 'add' ? `Creating ${eventPath} theme file` : `Updating ${eventPath} theme file`)
       return copyFile(source, destination)
     }
     if (event === 'unlink') {
+      logWatcherAction(`Removing ${eventPath} theme file`)
       return rm(destination)
     }
     if (event === 'addDir') {
+      logWatcherAction(`Creating ${eventPath} theme folder`)
       return mkdir(destination)
     }
     if (event === 'unlinkDir') {
+      logWatcherAction(`Removing ${eventPath} theme folder`)
       return rm(destination, { recursive: true, force: true })
     }
     if (event === 'error') {
