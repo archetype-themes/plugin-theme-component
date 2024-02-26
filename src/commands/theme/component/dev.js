@@ -119,7 +119,7 @@ export default class Dev extends BaseCommand {
       ignorePatterns.push(...collection.allComponents.map(component => component.files.assetFiles.map(assetFile => join(ASSETS_FOLDER_NAME, basename(assetFile)))).flat())
       // Ignore all storefront locale files
       ignorePatterns.push('locales/*.json', '!locales/*schema.json')
-      promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder, collection.name, Session.components))
+      promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder))
       logInitLines.push(`${collectionName}: Watching theme folder for changes`)
     }
 
@@ -291,7 +291,7 @@ export default class Dev extends BaseCommand {
     return watch(watcher, onLocalesWatchEvent)
   }
 
-  static async watchTheme (themePath, ignorePatterns, collectionRootFolder, collectionName, componentNames) {
+  static async watchTheme (themePath, ignorePatterns, collectionRootFolder ) {
     const watcher = getWatcher(themePath, ignorePatterns)
     const onThemeWatchEvent = this.copyThemeFile.bind(this, themePath, collectionRootFolder)
 
