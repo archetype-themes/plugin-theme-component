@@ -111,7 +111,6 @@ export default class Dev extends BaseCommand {
 
     // Watch Local Theme
     if (!isRepoUrl(Session.themePath)) {
-      promises.push(Dev.watchTheme(Session.themePath, getIgnorePatterns(Session.themePath), collection.rootFolder, collection.name, Session.components))
       // Get default ignore patterns with .gitignore entries
       const ignorePatterns = getIgnorePatterns(Session.themePath)
       // Ignore all component snippet liquid files
