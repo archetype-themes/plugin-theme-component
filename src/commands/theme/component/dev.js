@@ -15,7 +15,7 @@ import { install, validateLocation } from '../../../utils/ExternalComponentUtils
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
-import { copy, getAbsolutePath } from '../../../utils/FileUtils.js'
+import { getAbsolutePath } from '../../../utils/FileUtils.js'
 import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
 
 export const COMPONENT_ARG_NAME = 'components'
@@ -247,13 +247,13 @@ export default class Dev extends BaseCommand {
    * @param {string} collectionPath
    * @param {string[]} ignorePatterns
    * @param {string} collectionName
-   * @param {string} componentName
+   * @param {string[]} componentNames
    * @param {string} themePath
    * @returns {Promise<FSWatcher>}
    */
-  static async watchComponents (collectionPath, ignorePatterns, themePath, collectionName, componentName) {
+  static async watchComponents (collectionPath, ignorePatterns, themePath, collectionName, componentNames) {
     const watcher = getWatcher(collectionPath, ignorePatterns)
-    const onCollectionWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentName)
+    const onCollectionWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentNames)
 
     return watch(watcher, onCollectionWatchEvent)
   }
