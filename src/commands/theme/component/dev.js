@@ -118,13 +118,14 @@ export default class Dev extends BaseCommand {
     // Watch Local Theme
     if (!isRepoUrl(Session.themePath)) {
       // Get default ignore patterns with .gitignore entries
+      /** @type {(string|RegExp)[]} **/
       const ignorePatterns = getIgnorePatterns(Session.themePath)
       // Ignore all component snippet liquid files
       ignorePatterns.push(...collection.allComponents.map(component => join(SNIPPETS_FOLDER_NAME, `${component.name}.liquid`)))
       // Ignore all component static asset files
       ignorePatterns.push(...collection.allComponents.map(component => component.files.assetFiles.map(assetFile => join(ASSETS_FOLDER_NAME, basename(assetFile)))).flat())
       // Ignore all storefront locale files
-      ignorePatterns.push('locales/*.json', '!locales/*schema.json')
+      ignorePatterns.push(/(^|[/\\])locales(?!.*schema\.json$).*\.json$/)
       promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder))
       logInitLines.push(`${collectionName}: Watching theme folder for changes`)
     }
@@ -265,7 +266,7 @@ export default class Dev extends BaseCommand {
   }
 
   /**
-   * Watch Collection for changes
+   * Watch Collection for file changes
    * @param {string} collectionPath
    * @param {string[]} ignorePatterns
    * @param {string} collectionName
@@ -281,7 +282,7 @@ export default class Dev extends BaseCommand {
   }
 
   /**
-   *
+   * Watch locales for file changes
    * @param {string} localesPath
    * @param {string} collectionName
    * @param {string[]} componentNames
@@ -297,22 +298,29 @@ export default class Dev extends BaseCommand {
     return watch(watcher, onLocalesWatchEvent)
   }
 
+  /**
+   * Watch Theme for file changes
+   * @param themePath
+   * @param {(string|RegExp)[]} ignorePatterns
+   * @param collectionRootFolder
+   * @return {Promise<FSWatcher>}
+   */
   static async watchTheme (themePath, ignorePatterns, collectionRootFolder) {
     const watcher = getWatcher(themePath, ignorePatterns)
-    const onThemeWatchEvent = this.copyThemeFile.bind(this, themePath, collectionRootFolder)
+    const onThemeWatchEvent = this.updateTheme.bind(this, themePath, collectionRootFolder)
 
     return watch(watcher, onThemeWatchEvent)
   }
 
   /**
-   *
+   * Update Theme in .explorer folder on file change
    * @param {string} themePath
    * @param {string} collectionPath Watcher Instance
    * @param {string} [event] Watcher Event
    * @param {string} [eventPath] Watcher Event Path
    * @return {Promise<void>}
    */
-  static copyThemeFile (themePath, collectionPath, event, eventPath) {
+  static updateTheme (themePath, collectionPath, event, eventPath) {
     const source = join(themePath, eventPath)
     const destination = join(collectionPath, DEV_FOLDER_NAME, eventPath)
 
