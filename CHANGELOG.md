@@ -7,18 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED] = 2024-02-14
 
+### Added
+
+- Dev command: Component arg now handles multiple component names
+- Dev command: New locales-path flag => Allows for a path to locale files to be specified manually
+- Dev command: New theme-path flag => Allows for a path to theme files to be specified manually
+- Dev command: New setup-files flag => A boolean flag to enable setup files copy
+- Dev command: New watch flag => This functionality will watch for changes in the components, locales and theme folders
+
 ### Changed
 
 - code: Logger cleanup: All recently added log utility functions were moved to a new file: LoggerUtils.js
 - code: all utils files were restructured to adopt a Node.js typical non-object-oriented architecture
 - code: The oclif and Archie commands have been merged under src; the plugins folder is gone.
 - code: model properties are now public, useless getter and setters are gone
+- toml config: The toml config properties were renamed to match the new command flag names.
+- toml config: The toml config file is now optional.
+- toml config: The new command flags have priority over toml values
+- toml config: All config options have default values through command flag default values
 
 ### Fixed
 
 - Unrecognized main stylesheet when using a [component-name].css name while having multiple stylesheets in a single
   component
 - Missing Theme Name on Install: Now guessing theme name by using cwd since package.json was removed
+
+### Removed
+
+- Install command: Removed watch option. Use the Dev command's new features instead.
 
 ## [2.3.1] - 2024-02-14
 
