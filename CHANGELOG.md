@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED] = 2024-02-14
+## [3.0.0] = 2024-02-27
 
 ### Added
 
@@ -18,13 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - code: Logger cleanup: All recently added log utility functions were moved to a new file: LoggerUtils.js
-- code: all utils files were restructured to adopt a Node.js typical non-object-oriented architecture
-- code: The oclif and Archie commands have been merged under src; the plugins folder is gone.
-- code: model properties are now public, useless getter and setters are gone
-- toml config: The toml config properties were renamed to match the new command flag names.
-- toml config: The toml config file is now optional.
-- toml config: The new command flags have priority over toml values
-- toml config: All config options have default values through command flag default values
+- code: Utility libraries now adopt a Node.js typical, non-object-oriented architecture
+- code: The oclif and Archie commands are now merged under src; the plugins folder is gone.
+- code: model properties are now public, non-transformative getter and setters were removed
+- toml config - dev command: The toml config properties were renamed to match the new command flag names.
+- toml config - dev command: The toml config file is now optional.
+- toml config - dev command: The new command flags have priority over toml values
+- toml config - dev command: All config options have default values through command flag default values
 
 ### Fixed
 
