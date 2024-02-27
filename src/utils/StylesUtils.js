@@ -33,7 +33,7 @@ export function createMasterStylesheet (stylesheets) {
  * @throws Error
  */
 export function findMainStyleSheetFile (styleSheets, componentName) {
-  const regex = new RegExp(`[/\\\\]((?:index|main|${componentName})\.css)$`, 'i')
+  const regex = new RegExp(`[/\\\\]((?:index|main|${componentName}).css)$`, 'i')
   const matches = []
   for (const styleSheet of styleSheets) {
     const match = RegExp(regex).exec(styleSheet)

@@ -63,7 +63,7 @@ export default class Dev extends BaseCommand {
       helpGroup: 'Path',
       helpValue: '<path-or-github-url>',
       char: 't',
-      default: 'https://github.com/archetype-themes/explorer.git',
+      default: 'https://github.com/archetype-themes/explorer.git'
 
     }),
     [SETUP_FLAG_NAME]: Flags.boolean({
@@ -139,7 +139,7 @@ export default class Dev extends BaseCommand {
     // Run "shopify theme dev" -- unused at the moment due to config challenges
     if (Session.syncMode) {
       promises.push(Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME)))
-      logInitLines.push('${collectionName}: Starting `shopify theme dev` process in parallel')
+      logInitLines.push(`${collectionName}: Starting \`shopify theme dev\` process in parallel`)
     }
 
     logWatcherInit(logInitLines)
@@ -226,11 +226,11 @@ export default class Dev extends BaseCommand {
     Session.callerType = COLLECTION_TYPE_NAME
     Session.targetType = COMPONENT_TYPE_NAME
 
-    if (args.length)
+    if (args.length) {
       Session.components = args
-    else if (Object.hasOwn(tomlConfig, COMPONENT_ARG_NAME))
-      Session.components = typeof tomlConfig[COMPONENT_ARG_NAME] === 'string' ?
-        [tomlConfig[COMPONENT_ARG_NAME]] : tomlConfig[COMPONENT_ARG_NAME]
+    } else if (Object.hasOwn(tomlConfig, COMPONENT_ARG_NAME)) {
+      Session.components = typeof tomlConfig[COMPONENT_ARG_NAME] === 'string' ? [tomlConfig[COMPONENT_ARG_NAME]] : tomlConfig[COMPONENT_ARG_NAME]
+    }
   }
 
   static async setSessionFlags (flags, metadata, tomlConfig) {
@@ -345,4 +345,3 @@ export default class Dev extends BaseCommand {
     }
   }
 }
-

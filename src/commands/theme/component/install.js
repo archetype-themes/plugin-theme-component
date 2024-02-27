@@ -40,7 +40,7 @@ export default class Install extends BaseCommand {
       helpGroup: 'Path',
       helpValue: '<path-or-github-url>',
       char: 'c',
-      default: 'https://github.com/archetype-themes/reference-components.git',
+      default: 'https://github.com/archetype-themes/reference-components.git'
     })
   }
 
