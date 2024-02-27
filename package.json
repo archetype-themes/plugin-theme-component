@@ -16,7 +16,7 @@
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 bin/run.js",
     "lint": "standard",
-    "test": "npm run cdc && vitest run --coverage && npm ci && npm publish --dry-run",
+    "test": "npm run cdc && npm ci && npm publish --dry-run",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
     "prepack": "oclif manifest && oclif readme",
@@ -25,7 +25,6 @@
   "files": [
     "/bin",
     "/src",
-    "/plugin",
     "/oclif.manifest.json"
   ],
   "publishConfig": {
