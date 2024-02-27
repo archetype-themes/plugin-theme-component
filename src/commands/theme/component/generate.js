@@ -18,8 +18,11 @@ import FileAccessError from '../../../errors/FileAccessError.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
 import Dev, { COMPONENT_ARG_NAME } from './dev.js'
+import { BaseCommand } from '../../baseCommand.js'
 
-export default class Generate {
+export default class Generate extends BaseCommand {
+  static hidden = true // Hide the command from help
+
   static args = {
     [COMPONENT_ARG_NAME]: Args.string({
       description: 'Component name(s)',
@@ -73,9 +76,9 @@ export default class Generate {
           author: packageManifest.author ? packageManifest.author : 'Archetype Themes Limited Partnership',
           collectionName: packageName,
           collectionScope: packageScope,
-          componentName: componentName,
+          componentName,
           componentType: Session.targetType,
-          componentFolder: componentFolder,
+          componentFolder,
           gitUrl: `https://github.com/${packageScopeName}/${packageName}.git`,
           license: packageManifest.license ? packageManifest.license : 'UNLICENSED',
           packageName: `${packageScope}/${componentName}-${Session.targetType}`

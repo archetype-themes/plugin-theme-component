@@ -13,8 +13,11 @@ import Timer from '../../../models/Timer.js'
 import CollectionBuilder from '../../../builders/CollectionBuilder.js'
 import ComponentBuilder from '../../../builders/ComponentBuilder.js'
 import SnippetBuilder from '../../../builders/SnippetBuilder.js'
+import { BaseCommand } from '../../baseCommand.js'
 
-class Build {
+class Build extends BaseCommand {
+  static hidden = true // Hide the command from help
+
   /**
    * Build a Collection
    * @param {module:models/Collection} collection Collection
