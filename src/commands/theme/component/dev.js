@@ -50,7 +50,7 @@ export default class Dev extends BaseCommand {
   static flags = {
     [LOCALES_FLAG_NAME]: Flags.string({
       summary: 'Path to your locales data',
-      description: 'The path to your locales data should point to a GitHub URL or an absolute path on your local machine. The default value points to Archetype Themes\' publicly shared locales database.',
+      description: 'The path to your locales data should point to a GitHub URL or a local path. This defaults to Archetype Themes\' publicly shared locales database.',
       helpGroup: 'Path',
       helpValue: '<path-or-github-url>',
       char: 'l',
@@ -59,7 +59,7 @@ export default class Dev extends BaseCommand {
     }),
     [THEME_FLAG_NAME]: Flags.string({
       summary: 'Path to your theme',
-      description: 'The path to your theme should point to a GitHub URL or an absolute path on your local machine. The default value points to Archetype Themes\' publicly shared component explorer theme.',
+      description: 'The path to your theme should point to a GitHub URL or a local path. This defaults to Archetype Themes\' publicly shared component explorer theme.',
       helpGroup: 'Path',
       helpValue: '<path-or-github-url>',
       char: 't',
@@ -68,14 +68,14 @@ export default class Dev extends BaseCommand {
     }),
     [SETUP_FLAG_NAME]: Flags.boolean({
       summary: 'Copy Setup Files',
-      description: 'Active by default, this option will copy component setup files in your theme to allow you to explore that component in an isolated environment.',
+      description: 'Installs component setup files in your dev theme to allow component exploration in an isolated environment.',
       char: 's',
       default: true,
       allowNo: true
     }),
     [WATCH_FLAG_NAME]: Flags.boolean({
       summary: 'Watch For Changes',
-      description: 'Active by default, this option will trigger a component build on file change. It will also refresh your theme fiels and locale files when changes to local files are detected.',
+      description: 'Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.',
       char: 'w',
       default: true,
       allowNo: true
