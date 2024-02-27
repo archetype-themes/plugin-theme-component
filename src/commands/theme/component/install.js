@@ -8,19 +8,45 @@ import { isRepoUrl } from '../../../utils/WebUtils.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
 import CollectionUtils from '../../../utils/CollectionUtils.js'
 import logger from '../../../utils/Logger.js'
-import Dev from './dev.js'
+import { COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from './dev.js'
 import Build from './build.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Timer from '../../../models/Timer.js'
+import { Args, Flags } from '@oclif/core'
 
+export const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
   static description = 'Install a collection of components'
+
+  static args = {
+    [COMPONENT_ARG_NAME]: Args.string({
+      description: 'Component name(s)'
+    })
+  }
+
+  static flags = {
+    [LOCALES_FLAG_NAME]: Flags.string({
+      summary: 'Path to your locales data',
+      description: 'The path to your locales data should point to a GitHub URL or a local path. This defaults to Archetype Themes\' publicly shared locales database.',
+      helpGroup: 'Path',
+      helpValue: '<path-or-github-url>',
+      char: 'l',
+      default: 'https://github.com/archetype-themes/locales.git',
+      defaultHelp: 'Path to the publicly shared locales repository form Archetype Themes'
+    }),
+    [COMPONENTS_FLAG_NAME]: Flags.string({
+      summary: 'Path to your components',
+      description: 'The path to your components should point to a GitHub URL or a local path. This defaults to Archetype Themes\' publicly shared reference components.',
+      helpGroup: 'Path',
+      helpValue: '<path-or-github-url>',
+      char: 'c',
+      default: 'https://github.com/archetype-themes/reference-components.git',
+    })
+  }
 
   async run () {
     const tomlConfig = await getTomlConfig()
     sessionFactory(this.id, tomlConfig)
-
-    const promises = []
 
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
@@ -37,13 +63,6 @@ export default class Install extends BaseCommand {
 
       await Install.installOne(theme, collection)
     }
-    Session.firstRun = false
-
-    if (promises.length && Session.syncMode) {
-      promises.push(Dev.runThemeDev(theme.rootFolder))
-    }
-
-    return Promise.all(promises)
   }
 
   /**
