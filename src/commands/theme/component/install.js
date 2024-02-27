@@ -1,4 +1,4 @@
-import { BaseCommand } from '../../baseCommand.js'
+import { BaseCommand } from '../../../config/baseCommand.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'

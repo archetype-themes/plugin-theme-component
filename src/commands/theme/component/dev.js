@@ -1,6 +1,6 @@
 import { Args, Flags } from '@oclif/core'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
-import { BaseCommand } from '../../baseCommand.js'
+import { BaseCommand } from '../../../config/baseCommand.js'
 import Session from '../../../models/static/Session.js'
 import {
   ASSETS_FOLDER_NAME,

@@ -18,7 +18,7 @@ import FileAccessError from '../../../errors/FileAccessError.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
 import Dev, { COMPONENT_ARG_NAME } from './dev.js'
-import { BaseCommand } from '../../baseCommand.js'
+import { BaseCommand } from '../../../config/baseCommand.js'
 
 export default class Generate extends BaseCommand {
   static hidden = true // Hide the command from help
