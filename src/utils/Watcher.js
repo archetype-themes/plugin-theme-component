@@ -35,7 +35,7 @@ export function getIgnorePatterns (path) {
 /**
  * Watch target files and folders
  * @param {string} rootFolder
- * @param {string[]} [ignorePatterns]
+ * @param {(string|RegExp)[]} [ignorePatterns]
  * @return {FSWatcher}
  */
 export function getWatcher (rootFolder, ignorePatterns) {

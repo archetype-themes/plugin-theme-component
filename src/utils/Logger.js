@@ -65,5 +65,3 @@ if ([DEBUG_LOG_LEVEL, TRACE_LOG_LEVEL].includes(loglevel)) {
 }
 
 export default logger
-
-

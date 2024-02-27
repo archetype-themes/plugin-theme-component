@@ -66,9 +66,17 @@ export function logWatcherInit (customText) {
  */
 export function logWatcherEvent (event, eventPath) {
   const filename = basename(eventPath)
+  logWatcherAction(`${ucFirst(event)} on ${filename} detected (${eventPath})`)
+}
+
+/**
+ * Log Watcher Action
+ * @param {string} action
+ */
+export function logWatcherAction (action) {
   logSpacer()
   logger.info('--------------------------------------------------------')
-  logger.info(`${ucFirst(event)} on ${filename} detected (${eventPath})`)
+  logger.info(`${action}`)
   logger.info('--------------------------------------------------------')
   logSpacer()
 }

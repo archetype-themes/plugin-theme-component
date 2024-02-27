@@ -80,7 +80,7 @@ export function getPackageName (packageManifest) {
  */
 export async function getPackageManifest (path) {
   if (!path && !env.npm_package_json) {
-   path = cwd()
+    path = cwd()
   }
 
   let packageJsonFile

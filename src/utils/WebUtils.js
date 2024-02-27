@@ -51,4 +51,3 @@ export function isRepoUrl (possibleRepoUrl) {
 }
 
 export default { downloadFile, downloadFiles, isRepoUrl, isUrl }
-

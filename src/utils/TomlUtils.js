@@ -24,7 +24,7 @@ export async function getTomlConfig () {
   const normalizedInput = fileContents.replace(/\r\n$/g, '\n')
   const tomlConfig = toml.parse(normalizedInput)
 
-  return tomlConfig['component'] || null
+  return tomlConfig.component || null
 }
 
 export default { getTomlConfig }
