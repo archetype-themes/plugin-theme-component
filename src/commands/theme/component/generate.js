@@ -13,7 +13,7 @@ import {
   getPackageRootFolder,
   getPackageScope
 } from '../../../utils/NodeUtils.js'
-import { COMPONENTS_FOLDER } from '../../../config/Components.js'
+import { COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../../config/Components.js'
 import FileAccessError from '../../../errors/FileAccessError.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { sessionFactory } from '../../../factory/SessionFactory.js'
@@ -45,7 +45,7 @@ export default class Generate extends BaseCommand {
       const componentFolder = join(COMPONENTS_FOLDER, componentName)
       const componentRootFolder = join(getPackageRootFolder(), componentFolder)
 
-      logger.info(`Generating "${componentName}" ${Session.targetType}`)
+      logger.info(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
 
       // Exit if the folder already exists
       let folderExists = false
@@ -60,7 +60,7 @@ export default class Generate extends BaseCommand {
 
       // Don't overwrite an existing component, throw an error
       if (folderExists) {
-        throw new FileAccessError(`The "${componentName}" ${Session.targetType} folder already exists. Please remove it or choose a different name.`)
+        throw new FileAccessError(`The "${componentName}" ${COMPONENT_TYPE_NAME} folder already exists. Please remove it or choose a different name.`)
       }
 
       const cliRootFolder = getCLIRootFolderName()
@@ -77,11 +77,11 @@ export default class Generate extends BaseCommand {
           collectionName: packageName,
           collectionScope: packageScope,
           componentName,
-          componentType: Session.targetType,
+          componentType: COMPONENT_TYPE_NAME,
           componentFolder,
           gitUrl: `https://github.com/${packageScopeName}/${packageName}.git`,
           license: packageManifest.license ? packageManifest.license : 'UNLICENSED',
-          packageName: `${packageScope}/${componentName}-${Session.targetType}`
+          packageName: `${packageScope}/${componentName}-${COMPONENT_TYPE_NAME}`
         }
       }
 

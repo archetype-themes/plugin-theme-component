@@ -5,7 +5,6 @@ import Session from '../../../models/static/Session.js'
 import {
   ASSETS_FOLDER_NAME,
   COLLECTION_TYPE_NAME,
-  COMPONENT_TYPE_NAME,
   SNIPPETS_FOLDER_NAME
 } from '../../../config/Components.js'
 import { getTomlConfig } from '../../../utils/TomlUtils.js'
@@ -224,7 +223,6 @@ export default class Dev extends BaseCommand {
 
   static setSessionArgs (args, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
-    Session.targetType = COMPONENT_TYPE_NAME
 
     if (args.length) {
       Session.components = args

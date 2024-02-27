@@ -31,9 +31,6 @@ class Session {
   /** @type {boolean} Run "shopify theme dev" in parallel to sync files with a local dev **/
   static syncMode = false
 
-  /** @type {string}  target type **/
-  static targetType
-
   /** @type {boolean} Watch for source file changes **/
   static watchMode = false
 
