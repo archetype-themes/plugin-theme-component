@@ -13,16 +13,19 @@ class Session {
   /** @type {string[]} Target Component Name **/
   static components
 
+  /** @type {string} Path to external components **/
+  static componentsPath
+
   /** @type {string} Command Name  **/
   static command
 
-  /** @type {string} Dev Theme **/
+  /** @type {string} Path to the dev theme **/
   static themePath
 
   /** @type {boolean} Indicates whether it is the first run. **/
   static firstRun = true
 
-  /** @type {string} Locales' source location **/
+  /** @type {string} Path to the external locales library **/
   static localesPath
 
   /** @type {boolean}  Copy components' setup files or not **/
