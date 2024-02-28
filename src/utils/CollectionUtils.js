@@ -18,7 +18,7 @@ import { COMPONENTS_FOLDER } from '../config/Components.js'
  * @param {string} [collectionSource] - Required in a multiple Collection environment only
  * @returns {Promise<string>|string}
  */
-export async function findRootFolder (collectionName, collectionSource) {
+export async function getRootFolder (collectionName, collectionSource) {
   if (Session.isCollection()) {
     return process.cwd()
   }
@@ -63,6 +63,10 @@ function findComponents (componentFolders) {
  * @returns {Promise<string[]>}
  */
 async function getComponentFolders (collectionRootFolder) {
+  const componentsFolder = join(collectionRootFolder, COMPONENTS_FOLDER)
+  if (!await exists(componentsFolder)) {
+    throw new FileMissingError(`Unable to locate components folder ${componentsFolder}`)
+  }
   return getFolders(join(collectionRootFolder, COMPONENTS_FOLDER))
 }
 
@@ -114,7 +118,7 @@ export async function initCollectionFiles (collection) {
 }
 
 export default {
-  findRootFolder,
   getComponentNamesToBuild,
+  getRootFolder,
   initCollectionFiles
 }

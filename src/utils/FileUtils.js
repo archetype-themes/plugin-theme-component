@@ -64,6 +64,7 @@ export async function copyFilesToFolder (files, targetFolder) {
  *
  * @typedef {Object} CopyFolderOptions
  * @property {boolean} recursive
+ * @property {string[]} rename - Rename source file from/to value pair
  * @property {JsTemplateVariables} jsTemplateVariables
  *
  * @param {string} sourceFolder
@@ -85,7 +86,8 @@ export async function copyFolder (sourceFolder, targetFolder, options = { recurs
   for (const dirent of folderContent) {
     if (dirent.isFile()) {
       const sourceFile = join(sourceFolder, dirent.name)
-      const targetFile = join(targetFolder, dirent.name)
+      const targetFileName = options.rename ? dirent.name.replace(options.rename[0], options.rename[1]) : dirent.name
+      const targetFile = join(targetFolder, targetFileName)
       if (options.jsTemplateVariables) {
         fileOperations.push(processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
       } else {
