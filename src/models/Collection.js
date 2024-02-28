@@ -18,7 +18,7 @@ class Collection {
   /** @type {string | undefined} **/
   gitIgnoreFile
 
-  /** @type {string[]} **/
+  /** @type {string[]|null} **/
   componentNames
 
   /** @type {Snippet[]} **/

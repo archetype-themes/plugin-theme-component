@@ -1,13 +1,11 @@
 import { Args, Flags } from '@oclif/core'
-import { sessionFactory } from '../../../factory/SessionFactory.js'
-import { BaseCommand } from '../../../config/baseCommand.js'
+import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import Session from '../../../models/static/Session.js'
 import {
   ASSETS_FOLDER_NAME,
   COLLECTION_TYPE_NAME,
   SNIPPETS_FOLDER_NAME
 } from '../../../config/Components.js'
-import { getTomlConfig } from '../../../utils/TomlUtils.js'
 import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
 import { join, relative } from 'node:path'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
@@ -25,17 +23,22 @@ import { install, validateLocation } from '../../../utils/ExternalComponentUtils
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
-import { getAbsolutePath } from '../../../utils/FileUtils.js'
 import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
 import { copyFile, mkdir, rm } from 'node:fs/promises'
 import logger from '../../../utils/Logger.js'
 import { basename } from 'path'
+import {
+  getValuesFromArgvOrToml,
+  getValueFromFlagOrToml,
+  getPathFromFlagOrTomlValue
+} from '../../../utils/SessionUtils.js'
 
-export const COMPONENT_ARG_NAME = 'components'
-export const THEME_FLAG_NAME = 'theme-path'
-export const LOCALES_FLAG_NAME = 'locales-path'
-export const SETUP_FLAG_NAME = 'setup-files'
-export const WATCH_FLAG_NAME = 'watch'
+/** @type {string} **/
+const THEME_FLAG_NAME = 'theme-path'
+/** @type {string} **/
+const SETUP_FLAG_NAME = 'setup-files'
+/** @type {string} **/
+const WATCH_FLAG_NAME = 'watch'
 
 export default class Dev extends BaseCommand {
   static description = 'Develop theme components'
@@ -47,15 +50,6 @@ export default class Dev extends BaseCommand {
   }
 
   static flags = {
-    [LOCALES_FLAG_NAME]: Flags.string({
-      summary: 'Path to your locales data',
-      description: 'The path to your locales data should point to a GitHub URL or a local path. This defaults to Archetype Themes\' publicly shared locales database.',
-      helpGroup: 'Path',
-      helpValue: '<path-or-github-url>',
-      char: 'l',
-      default: 'https://github.com/archetype-themes/locales.git',
-      defaultHelp: 'Path to the publicly shared locales repository form Archetype Themes'
-    }),
     [THEME_FLAG_NAME]: Flags.string({
       summary: 'Path to your theme',
       description: 'The path to your theme should point to a GitHub URL or a local path. This defaults to Archetype Themes\' publicly shared component explorer theme.',
@@ -64,6 +58,15 @@ export default class Dev extends BaseCommand {
       char: 't',
       default: 'https://github.com/archetype-themes/explorer.git'
 
+    }),
+    [LOCALES_FLAG_NAME]: Flags.string({
+      summary: 'Path to your locales data',
+      description: 'The path to your locales data should point to a GitHub URL or a local path. This defaults to Archetype Themes\' publicly shared locales database.',
+      helpGroup: 'Path',
+      helpValue: '<path-or-github-url>',
+      char: 'l',
+      default: 'https://github.com/archetype-themes/locales.git',
+      defaultHelp: 'Path to the publicly shared locales repository form Archetype Themes'
     }),
     [SETUP_FLAG_NAME]: Flags.boolean({
       summary: 'Copy Setup Files',
@@ -81,20 +84,14 @@ export default class Dev extends BaseCommand {
     })
   }
 
+  // Enables limitless args entry
   static strict = false
 
   async run () {
     const { argv, flags, metadata } = await this.parse(Dev)
+    const tomlConfig = await super.run()
 
-    const commandElements = this.id.split(':')
-    Session.command = commandElements[commandElements.length - 1]
-
-    const tomlConfig = await getTomlConfig()
-
-    // Init Session
-    sessionFactory(this.id, tomlConfig)
-    Dev.setSessionArgs(argv, tomlConfig)
-    await Dev.setSessionFlags(flags, metadata, tomlConfig)
+    await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
 
     const collectionName = getCurrentWorkingDirectoryName()
 
@@ -222,45 +219,16 @@ export default class Dev extends BaseCommand {
   }
 
   static setSessionArgs (args, tomlConfig) {
-    Session.callerType = COLLECTION_TYPE_NAME
 
-    if (args.length) {
-      Session.components = args
-    } else if (Object.hasOwn(tomlConfig, COMPONENT_ARG_NAME)) {
-      Session.components = typeof tomlConfig[COMPONENT_ARG_NAME] === 'string' ? [tomlConfig[COMPONENT_ARG_NAME]] : tomlConfig[COMPONENT_ARG_NAME]
-    }
   }
 
-  static async setSessionFlags (flags, metadata, tomlConfig) {
-    let themePath
-    if (metadata.flags[THEME_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, THEME_FLAG_NAME)) {
-      themePath = tomlConfig[THEME_FLAG_NAME]
-    } else {
-      themePath = flags[THEME_FLAG_NAME]
-    }
-
-    Session.themePath = isRepoUrl(themePath) ? themePath : await getAbsolutePath(themePath)
-
-    let localesPath
-    if (metadata.flags[LOCALES_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, LOCALES_FLAG_NAME)) {
-      localesPath = tomlConfig[LOCALES_FLAG_NAME]
-    } else {
-      localesPath = flags[LOCALES_FLAG_NAME]
-    }
-
-    Session.localesPath = isRepoUrl(localesPath) ? localesPath : await getAbsolutePath(localesPath)
-
-    if (metadata.flags[SETUP_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, SETUP_FLAG_NAME)) {
-      Session.setupFiles = tomlConfig[SETUP_FLAG_NAME]
-    } else {
-      Session.setupFiles = flags[SETUP_FLAG_NAME]
-    }
-
-    if (metadata.flags[WATCH_FLAG_NAME]?.setFromDefault && Object.hasOwn(tomlConfig, WATCH_FLAG_NAME)) {
-      Session.watchMode = tomlConfig[WATCH_FLAG_NAME]
-    } else {
-      Session.watchMode = flags[WATCH_FLAG_NAME]
-    }
+  static async setSessionValues (argv, flags, metadata, tomlConfig) {
+    Session.callerType = COLLECTION_TYPE_NAME
+    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
+    Session.themePath = await getPathFromFlagOrTomlValue(THEME_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.setupFiles = getValueFromFlagOrToml(SETUP_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.watchMode = getValueFromFlagOrToml(WATCH_FLAG_NAME, flags, metadata, tomlConfig)
   }
 
   /**

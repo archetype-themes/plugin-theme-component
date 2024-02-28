@@ -3,6 +3,10 @@ import Collection from '../models/Collection.js'
 import CollectionUtils from '../utils/CollectionUtils.js'
 import Session from '../models/static/Session.js'
 import logger from '../utils/Logger.js'
+import { isRepoUrl } from '../utils/WebUtils.js'
+import { basename } from 'path'
+import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
+import { getAbsolutePath } from '../utils/FileUtils.js'
 
 class CollectionFactory {
   /**
@@ -17,7 +21,7 @@ class CollectionFactory {
 
     collection.name = collectionName
     if (collectionSource) { collection.source = collectionSource }
-    collection.rootFolder = await CollectionUtils.findRootFolder(collectionName, collectionSource)
+    collection.rootFolder = await CollectionUtils.getRootFolder(collectionName, collectionSource)
 
     // Get Component Names and Create Them
     if (componentNames?.length) {
@@ -30,24 +34,34 @@ class CollectionFactory {
   }
 
   /**
-   * Create a collection from a Toml Entry
-   * @param {Array} collectionEntry
-   * @return {Promise<module:models/Collection>}
+   *
+   * @param {string} source
+   * @param {string[]|null} componentNames
+   * @return {module:models/Collection}
    */
-  static async fromTomlEntry (collectionEntry) {
+  static async fromInstallCommand (source, componentNames) {
     const collection = new Collection()
-    collection.name = collectionEntry[0]
-    if (collectionEntry[1].source) { collection.source = collectionEntry[1].source }
-    collection.rootFolder = await CollectionUtils.findRootFolder(collection.name, collection.source)
+    collection.source = source
+    collection.componentNames = componentNames
 
-    // Get Component Names and Create Them
-    if (collectionEntry[1].components?.length) {
-      collection.componentNames = collectionEntry[1].components
-    } else if (Session.isTheme()) {
-      logger.warn(`No component list found for the "${collection.name}" collection; all components will be installed.`)
+    if (isRepoUrl(collection.source)) {
+      collection.name = basename(collection.source)
+      if (collection.name.endsWith('.git')) {
+        collection.name = collection.name.slice(0, -4)
+      }
+      collection.rootFolder = await CollectionUtils.getRootFolder(collection.name, collection.source)
+    } else {
+      collection.rootFolder = await getAbsolutePath(collection.source)
+      try {
+        const packageManifest = await getPackageManifest(collection.rootFolder)
+        collection.name = getPackageName(packageManifest)
+      } catch (error) {
+        // Fallback on folder name if we don't have a package name
+        collection.name = basename(collection.source)
+      }
     }
 
-    return Promise.resolve(collection)
+    return collection
   }
 }
 
