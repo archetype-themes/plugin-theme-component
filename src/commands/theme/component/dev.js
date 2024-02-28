@@ -41,7 +41,7 @@ const SETUP_FLAG_NAME = 'setup-files'
 const WATCH_FLAG_NAME = 'watch'
 
 export default class Dev extends BaseCommand {
-  static description = 'Develop theme components'
+  static description = 'Develop using theme components'
 
   static args = {
     [COMPONENT_ARG_NAME]: Args.string({

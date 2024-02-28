@@ -23,6 +23,8 @@ import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
 import { cwd } from 'node:process'
 
 export default class Generate extends BaseCommand {
+  static description = 'Generate canvas files for new components'
+
   static args = {
     [COMPONENT_ARG_NAME]: Args.string({
       description: 'Component name(s)',
