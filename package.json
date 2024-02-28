@@ -16,7 +16,8 @@
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 bin/run.js",
     "lint": "standard",
-    "test": "npm run cdc && npm ci && npm publish --dry-run",
+    "test": "mocha --forbid-only \"test/**/*.test.js\"",
+    "tests": "npm run cdc && npm ci && npm publish --dry-run",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
     "prepack": "oclif manifest && oclif readme",
@@ -53,8 +54,10 @@
     "svgo": "^3.2.0"
   },
   "devDependencies": {
+    "@oclif/test": "^3.2.1",
     "@vitest/coverage-v8": "^1.3.1",
     "dpdm": "^3.14.0",
+    "mocha": "^10.3.0",
     "oclif": "4.0.2",
     "shx": "^0.3.4",
     "standard": "latest",
