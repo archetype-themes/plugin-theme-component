@@ -96,13 +96,19 @@ export async function getPackageManifest (path) {
 
 /**
  * Get Node.js Package Scope (i.e.: @archetype-themes)
+ * @param {Object} [packageManifest] Optional Package Manifest JSON object
  * @return {string}
  */
-export function getPackageScope () {
-  if (!env.npm_package_name) {
+export function getPackageScope (packageManifest) {
+  let packageNameAndScope
+  if (packageManifest?.name) {
+    packageNameAndScope = packageManifest.name
+  } else if (env.npm_package_name) {
+    packageNameAndScope = env.npm_package_name
+  } else {
     throw new InternalError('Unavailable NPM Package Name environment variable')
   }
-  return env.npm_package_name.includes('/') ? env.npm_package_name.split('/')[0] : ''
+  return packageNameAndScope.includes('/') ? packageNameAndScope.split('/')[0] : ''
 }
 
 export default {
