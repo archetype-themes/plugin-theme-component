@@ -23,8 +23,6 @@ import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
 import { cwd } from 'node:process'
 
 export default class Generate extends BaseCommand {
-  static hidden = true // Hide the command from help
-
   static args = {
     [COMPONENT_ARG_NAME]: Args.string({
       description: 'Component name(s)',
