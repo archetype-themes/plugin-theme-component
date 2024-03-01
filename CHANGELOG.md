@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - toml config - dev command: The toml config file is now optional.
 - toml config - dev command: The new command flags have priority over toml values
 - toml config - dev command: All config options have default values through command flag default values
+- logs: replaced pino logs with @oclif/core's ux functions (mocha and pino-pretty didn't play well together)
 
 ### Fixed
 
