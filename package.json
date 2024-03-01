@@ -16,7 +16,7 @@
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 bin/run.js",
     "lint": "standard",
-    "test": "NODE_ENV=test mocha --forbid-only \"test/**/*.test.js\"",
+    "test": "NODE_ENV=test mocha --forbid-only -p false \"test/**/*.test.js\"",
     "tests": "npm run cdc && npm ci && npm publish --dry-run",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
