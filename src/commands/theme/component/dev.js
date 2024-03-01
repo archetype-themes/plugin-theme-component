@@ -1,14 +1,23 @@
-import { Args, Flags } from '@oclif/core'
+// External Dependencies
+import { spawn } from 'node:child_process'
+import { copyFile, mkdir, rm } from 'node:fs/promises'
+import { basename, join, relative } from 'node:path'
+import { Args, Flags, ux } from '@oclif/core'
+
+// Internal Dependencies
+import Build from './build.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
-import Session from '../../../models/static/Session.js'
+import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
 import {
   ASSETS_FOLDER_NAME,
   COLLECTION_TYPE_NAME,
   SNIPPETS_FOLDER_NAME
 } from '../../../config/Components.js'
-import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
-import { join, relative } from 'node:path'
-import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
+import CollectionFactory from '../../../factory/CollectionFactory.js'
+import { fromDevCommand } from '../../../factory/ThemeFactory.js'
+import CollectionInstaller from '../../../installers/CollectionInstaller.js'
+import Session from '../../../models/static/Session.js'
+import { install, validateLocation } from '../../../utils/ExternalComponentUtils.js'
 import {
   logChildItem,
   logTitleItem,
@@ -16,22 +25,12 @@ import {
   logWatcherEvent,
   logWatcherInit
 } from '../../../utils/LoggerUtils.js'
-import { spawn } from 'node:child_process'
-import CollectionFactory from '../../../factory/CollectionFactory.js'
-import Build from './build.js'
-import { install, validateLocation } from '../../../utils/ExternalComponentUtils.js'
-import { fromDevCommand } from '../../../factory/ThemeFactory.js'
-import CollectionInstaller from '../../../installers/CollectionInstaller.js'
-import { isRepoUrl } from '../../../utils/WebUtils.js'
-import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
-import { copyFile, mkdir, rm } from 'node:fs/promises'
-import logger from '../../../utils/Logger.js'
-import { basename } from 'path'
+import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
 import {
-  getValuesFromArgvOrToml,
-  getValueFromFlagOrToml,
-  getPathFromFlagOrTomlValue
+  getValuesFromArgvOrToml, getValueFromFlagOrToml, getPathFromFlagOrTomlValue
 } from '../../../utils/SessionUtils.js'
+import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
+import { isRepoUrl } from '../../../utils/WebUtils.js'
 
 /** @type {string} **/
 const THEME_FLAG_NAME = 'theme-path'
@@ -89,6 +88,7 @@ export default class Dev extends BaseCommand {
 
   async run () {
     const { argv, flags, metadata } = await this.parse(Dev)
+    BaseCommand.setUxOutputLevel(flags)
     const tomlConfig = await super.run()
 
     await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
@@ -97,7 +97,7 @@ export default class Dev extends BaseCommand {
 
     // No watch flag, running once and returning
     if (!Session.watchMode) {
-      return Promise.resolve(Dev.exploreComponent(Session.themePath, collectionName, Session.components))
+      return Dev.exploreComponent(Session.themePath, collectionName, Session.components)
     }
 
     const collection = await Dev.exploreComponent(Session.themePath, collectionName, Session.components)
@@ -307,7 +307,7 @@ export default class Dev extends BaseCommand {
       return rm(destination, { recursive: true, force: true })
     }
     if (event === 'error') {
-      logger.error(eventPath)
+      ux.error(eventPath)
     }
   }
 }
