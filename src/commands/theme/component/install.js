@@ -32,7 +32,7 @@ export default class Install extends BaseCommand {
       helpGroup: 'Path',
       helpValue: '<path-or-github-url>',
       char: 'c',
-      default: 'https://github.com/archetype-themes/reference-components.git'
+      default: 'https://github.com/archetype-themes/components.git'
     }),
     [LOCALES_FLAG_NAME]: Flags.string({
       summary: 'Path to your locales data',
