@@ -11,7 +11,7 @@ const URL_REGEX = /^(http:\/\/|https:\/\/|\/\/)/
  * @return {Promise<Awaited<void>[]>}
  */
 export async function downloadFiles (remoteFiles, targetFolder) {
-  const downloadPromises = remoteFiles.map(file => this.downloadFile(file, targetFolder))
+  const downloadPromises = remoteFiles.map(file => downloadFile(file, targetFolder))
 
   return Promise.all(downloadPromises)
 }
