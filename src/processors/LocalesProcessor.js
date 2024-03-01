@@ -1,11 +1,11 @@
 // External Dependencies
 import { basename } from 'node:path'
+import { ux } from '@oclif/core'
 import { get, set } from 'lodash-es'
 
 // Internal Dependencies
 import { getJsonFileContents } from '../utils/FileUtils.js'
 import { stripComments } from '../utils/LiquidUtils.js'
-import { Levels, logChildItem } from '../utils/LoggerUtils.js'
 
 const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 
@@ -56,7 +56,7 @@ export default class LocalesProcessor {
 
     sortedMissingLocales.forEach(([translationKey, locales]) => {
       locales.forEach(locale => {
-        logChildItem(`Translation missing "${translationKey}" for the "${locale}" locale.`, Levels.Warn)
+        ux.warn(`Translation missing "${translationKey}" for the "${locale}" locale.`)
       })
     })
 
@@ -80,8 +80,7 @@ export default class LocalesProcessor {
       if (translationKey.startsWith('\'') && translationKey.endsWith('\'')) {
         translationKeys.add(translationKey.slice(1, -1))
       } else {
-        logChildItem(`(1/2) Incompatible translation syntax for variable ${translationKey}.`, Levels.Error)
-        logChildItem(`(2/2) You must use the 't' filter at when defining ${translationKey} instead of when using it.`, Levels.Error)
+        ux.error(`Incompatible translation syntax for variable ${translationKey}. You must use the 't' filter at when defining ${translationKey} instead of when using it.`, { exit: false })
       }
     }
 
