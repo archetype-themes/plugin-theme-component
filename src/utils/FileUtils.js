@@ -1,9 +1,11 @@
+// External Dependencies
 import { access, constants, copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { basename, join, sep } from 'node:path'
 import { cwd } from 'node:process'
-import { basename, join } from 'path'
+import { ux } from '@oclif/core'
+
+// Internal Dependencies
 import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
-import logger from './Logger.js'
-import { sep } from 'node:path'
 
 /** @type {string[]} **/
 const EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
@@ -61,12 +63,12 @@ export async function copyFilesToFolder (files, targetFolder) {
  */
 export async function copyFolder (sourceFolder, targetFolder, options = { recursive: false }) {
   const fileOperations = []
-  logger.debug(`Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `)
+  ux.debug(`Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `)
   const folderContent = await readdir(sourceFolder, { withFileTypes: true })
 
   // Create Target Folder if it does not exist
   if (!await exists(targetFolder)) {
-    logger.debug(`copyFolder: Target Folder "${targetFolder}" not found. Attempting to create it.`)
+    ux.debug(`copyFolder: Target Folder "${targetFolder}" not found. Attempting to create it.`)
     await mkdir(targetFolder, { recursive: true })
   }
 
@@ -109,7 +111,7 @@ export async function exists (file) {
  * @returns {Promise<string>}
  */
 export async function getFileContents (file) {
-  logger.trace(`Reading from disk: ${file}`)
+  ux.trace(`Reading from disk: ${file}`)
   return readFile(file, FILE_ENCODING_OPTION)
 }
 
@@ -165,7 +167,7 @@ export async function getFolders (folder, recursive = false) {
  * @returns {Promise<T>}
  */
 export async function getJsonFileContents (file) {
-  logger.debug(`Parsing JSON file "${file}"`)
+  ux.debug(`Parsing JSON file "${file}"`)
   return JSON.parse(await getFileContents(file))
 }
 
@@ -219,7 +221,7 @@ export async function isWritable (file) {
  * @returns {Promise<void>}
  */
 export async function processJsTemplateStringFile (sourceFile, targetFile, jsTemplateVariables) {
-  logger.debug(`Processing JS Template String file ${sourceFile}`)
+  ux.debug(`Processing JS Template String file ${sourceFile}`)
   // Read the file's content
   const data = await readFile(sourceFile, 'utf8')
 
@@ -272,7 +274,7 @@ export async function searchFile (path, filename, recursive = false) {
  * @return {Promise<void>}
  */
 export async function saveFile (file, fileContents) {
-  logger.trace(`Writing to disk: ${file}`)
+  ux.trace(`Writing to disk: ${file}`)
 
   return writeFile(file, fileContents, FILE_ENCODING_OPTION)
 }

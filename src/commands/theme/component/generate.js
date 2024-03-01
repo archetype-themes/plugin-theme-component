@@ -1,26 +1,25 @@
-// Node.js Imports
+// External Dependencies
 import { access, constants, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { Args } from '@oclif/core'
+import { cwd } from 'node:process'
+import { Args, ux } from '@oclif/core'
 
-// Internal Imports
-import Session from '../../../models/static/Session.js'
-import { copyFolder } from '../../../utils/FileUtils.js'
-import logger from '../../../utils/Logger.js'
-import {
-  getCLIRootFolderName, getPackageManifest,
-  getPackageName,
-  getPackageScope
-} from '../../../utils/NodeUtils.js'
+// Internal Dependencies
+import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
 import {
   COLLECTION_TYPE_NAME,
   COMPONENT_TYPE_NAME,
   COMPONENTS_FOLDER
 } from '../../../config/Components.js'
 import FileAccessError from '../../../errors/FileAccessError.js'
-import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
+import Session from '../../../models/static/Session.js'
+import { copyFolder } from '../../../utils/FileUtils.js'
+import {
+  getCLIRootFolderName, getPackageManifest,
+  getPackageName,
+  getPackageScope
+} from '../../../utils/NodeUtils.js'
 import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
-import { cwd } from 'node:process'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate canvas files for new components'
@@ -46,7 +45,7 @@ export default class Generate extends BaseCommand {
       const componentPath = join(COMPONENTS_FOLDER, componentName)
       const componentAbsolutePath = join(cwd(), componentPath)
 
-      logger.info(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
+      ux.info(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
 
       // Exit if the folder already exists
       let folderExists = false

@@ -1,6 +1,8 @@
-// Internal Modules
+// External Dependencies
+import { ux } from '@oclif/core'
+
+// Internal Dependencies
 import FileUtils from './FileUtils.js'
-import logger from './Logger.js'
 
 /**
  * Finds the main or index JavaScript file within the provided file list
@@ -16,7 +18,7 @@ export function findMainJavaScriptFile (files, componentName) {
     return undefined
   }
 
-  logger.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`)
+  ux.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`)
 
   return mainJavaScriptFile
 }

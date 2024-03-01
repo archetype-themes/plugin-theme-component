@@ -1,12 +1,14 @@
-// Internal Imports
+// External Dependencies
+import { basename } from 'node:path'
+import { ux } from '@oclif/core'
+
+// Internal Dependencies
 import Collection from '../models/Collection.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
 import Session from '../models/static/Session.js'
-import logger from '../utils/Logger.js'
-import { isRepoUrl } from '../utils/WebUtils.js'
-import { basename } from 'path'
-import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
+import CollectionUtils from '../utils/CollectionUtils.js'
 import { getAbsolutePath } from '../utils/FileUtils.js'
+import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
+import { isRepoUrl } from '../utils/WebUtils.js'
 
 class CollectionFactory {
   /**
@@ -27,7 +29,7 @@ class CollectionFactory {
     if (componentNames?.length) {
       collection.componentNames = componentNames
     } else if (Session.isTheme()) {
-      logger.warn(`No component list found for the "${collection.name}" collection; all components will be installed.`)
+      ux.warn(`No component list found for the "${collection.name}" collection; all components will be installed.`)
     }
 
     return CollectionUtils.initCollectionFiles(collection)

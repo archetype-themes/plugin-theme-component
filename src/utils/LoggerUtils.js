@@ -1,7 +1,11 @@
-import InternalError from '../errors/InternalError.js'
-import logger, { AVAILABLE_LOG_LEVELS, INFO_LOG_LEVEL } from './Logger.js'
+// External Dependencies
 import { basename } from 'node:path'
+import { ux } from '@oclif/core'
+
+// Internal Dependencies
+import { AVAILABLE_LOG_LEVELS, INFO_LOG_LEVEL } from './Logger.js'
 import { ucFirst } from './SyntaxUtils.js'
+import InternalError from '../errors/InternalError.js'
 
 export const topPrefix = '════▶ '
 export const childPrefix = '  ╚══▶  '
@@ -12,7 +16,7 @@ export const childSpacer = '  ║     '
  * @param {string} message
  */
 export function logTitleItem (message) {
-  logger.info(`${topPrefix}${message}`)
+  ux.info(`${topPrefix}${message}`)
 }
 
 /**
@@ -22,7 +26,7 @@ export function logTitleItem (message) {
  */
 export function logChildItem (message, logLevel = INFO_LOG_LEVEL) {
   if (AVAILABLE_LOG_LEVELS.includes(logLevel)) {
-    logger[logLevel](`${childPrefix}${message}`)
+    ux[logLevel](`${childPrefix}${message}`)
   } else {
     throw new InternalError(`Invalid Log Level ${logLevel} for logChildItem function call`)
   }
@@ -32,7 +36,7 @@ export function logChildItem (message, logLevel = INFO_LOG_LEVEL) {
  * Logs an empty line as a spacer element
  */
 export function logSpacer () {
-  logger.info('')
+  ux.info('')
 }
 
 /**
@@ -40,7 +44,7 @@ export function logSpacer () {
  * @param {string} [message='']
  */
 export function logChildMessage (message = '') {
-  logger.info(childSpacer + message)
+  ux.info(childSpacer + message)
 }
 
 /**
@@ -52,10 +56,10 @@ export function logWatcherInit (customText) {
     customText = [customText]
   }
   logSpacer()
-  logger.info('--------------------------------------------------------')
-  customText.forEach(initLine => logger.info(initLine))
-  logger.info('(Ctrl+C to abort)')
-  logger.info('--------------------------------------------------------')
+  ux.info('--------------------------------------------------------')
+  customText.forEach(initLine => ux.info(initLine))
+  ux.info('(Ctrl+C to abort)')
+  ux.info('--------------------------------------------------------')
   logSpacer()
 }
 
@@ -75,8 +79,8 @@ export function logWatcherEvent (event, eventPath) {
  */
 export function logWatcherAction (action) {
   logSpacer()
-  logger.info('--------------------------------------------------------')
-  logger.info(`${action}`)
-  logger.info('--------------------------------------------------------')
+  ux.info('--------------------------------------------------------')
+  ux.info(`${action}`)
+  ux.info('--------------------------------------------------------')
   logSpacer()
 }

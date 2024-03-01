@@ -1,15 +1,15 @@
-// Node.js Modules
-import { basename, dirname, extname } from 'path'
+// External Dependencies
+import { basename, dirname, extname } from 'node:path'
+import { ux } from '@oclif/core'
 
-// Internal Modules
+// Internal Dependencies
+import FileUtils from './FileUtils.js'
+import JavascriptUtils from './JavascriptUtils.js'
+import StylesUtils from './StylesUtils.js'
 import { ASSETS_FOLDER_NAME } from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
-import FileUtils from './FileUtils.js'
 import InputFileError from '../errors/InputFileError.js'
-import JavascriptUtils from './JavascriptUtils.js'
-import logger from './Logger.js'
-import StylesUtils from './StylesUtils.js'
 
 const STYLE_EXTENSIONS = ['.css']
 const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
@@ -86,7 +86,7 @@ function filterFiles (files, componentFiles, componentName) {
           componentFiles.snippetFiles.push(file)
           break
         }
-        logger.warn(`Ignored liquid file ${filename}`)
+        ux.warn(`Ignored liquid file ${filename}`)
         break
       case '.json':
         if (filename === 'package.json') {
@@ -94,11 +94,11 @@ function filterFiles (files, componentFiles, componentName) {
           break
         }
 
-        logger.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
+        ux.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
         break
 
       default:
-        logger.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
+        ux.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
         break
     }
   }
@@ -113,7 +113,7 @@ function filterFiles (files, componentFiles, componentName) {
  */
 export async function validateFolderAccess (folder, componentName) {
   if (!await FileUtils.isReadable(folder)) {
-    logger.debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
+    ux.debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
     throw new FileAccessError(`Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`)
   }
 }

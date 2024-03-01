@@ -1,8 +1,9 @@
-// Node Core imports
-import merge from 'deepmerge'
+// External Dependencies
 import { basename, join } from 'node:path'
+import { ux } from '@oclif/core'
+import merge from 'deepmerge'
 
-// Internal Imports
+// Internal Dependencies
 import {
   copyFolder,
   exists,
@@ -12,7 +13,6 @@ import {
   isWritable,
   saveFile
 } from '../utils/FileUtils.js'
-import logger from '../utils/Logger.js'
 
 class CollectionInstaller {
   /**
@@ -70,13 +70,13 @@ class CollectionInstaller {
     for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
       if (!asset || !await exists(asset)) continue
 
-      logger.debug(loggerMessage, basename(asset))
+      ux.debug(loggerMessage, basename(asset))
 
       let assetBasename = basename(asset)
       if (nameModifier) assetBasename = nameModifier(assetBasename)
 
       if (themeLiquid.includes(assetBasename)) {
-        logger.warn(`Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`)
+        ux.warn(`Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`)
         continue
       }
 
@@ -113,14 +113,14 @@ class CollectionInstaller {
       )
     }
 
-    logger.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
+    ux.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
     themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
 
     await saveFile(themeLiquidFile, themeLiquid)
   }
 
   static injectionFailureWarning (message, injections) {
-    logger.warn(`
+    ux.warn(`
 **************************************************************************************************
 ${message}
 
@@ -139,7 +139,7 @@ You should manually insert these lines inside your "theme.liquid" file:
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async writeLocales (locales, themeLocalesPath) {
-    logger.debug('Merging Collection Locales with the Theme\'s Locales')
+    ux.debug('Merging Collection Locales with the Theme\'s Locales')
     const fileOperations = []
 
     // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })

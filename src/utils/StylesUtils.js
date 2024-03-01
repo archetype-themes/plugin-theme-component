@@ -1,8 +1,10 @@
-// Internal Modules
+// External Dependencies
+import { ux } from '@oclif/core'
+
+// Internal Dependencies
+import FileUtils from './FileUtils.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
-import logger from './Logger.js'
-import FileUtils from './FileUtils.js'
 
 /**
  * Create Master Stylesheet
@@ -43,12 +45,12 @@ export function findMainStyleSheetFile (styleSheets, componentName) {
   }
 
   if (matches.length === 1) {
-    logger.debug(`Main StyleSheet Found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
+    ux.debug(`Main StyleSheet Found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
     return matches[0]
   } else if (matches.length === 0) {
     throw new FileMissingError('An index or main StyleSheet file could not be found.')
   }
-  logger.debug(matches)
+  ux.debug(matches)
   throw new InputFileError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
 }
 

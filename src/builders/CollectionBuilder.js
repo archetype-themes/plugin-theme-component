@@ -1,14 +1,15 @@
-// Node imports
+// External Dependencies
 import { mkdir, rm } from 'node:fs/promises'
 import { join } from 'node:path'
+import { cwd } from 'node:process'
+import { ux } from '@oclif/core'
 
-// Internal Imports
+// Internal Dependencies
 import BuildFactory from '../factory/BuildFactory.js'
 import Session from '../models/static/Session.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import { install } from '../utils/ExternalComponentUtils.js'
 import FileUtils, { getFolderFilesRecursively } from '../utils/FileUtils.js'
-import { exitWithError } from '../utils/NodeUtils.js'
 import WebUtils, { isRepoUrl } from '../utils/WebUtils.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
@@ -17,7 +18,6 @@ import Timer from '../models/Timer.js'
 import logger, { DEBUG_LOG_LEVEL, WARN_LOG_LEVEL } from '../utils/Logger.js'
 import { logChildItem } from '../utils/LoggerUtils.js'
 import { LOCALES_FOLDER_NAME, LOCALES_INSTALL_FOLDER } from '../config/Components.js'
-import { cwd } from 'node:process'
 
 class CollectionBuilder {
   /**
@@ -93,8 +93,8 @@ class CollectionBuilder {
       logChildItem(`Locales Processor completed in ${timer.now()} seconds`)
       return locales
     } catch (error) {
-      logger.error('TIP: For JSON parsing errors, use debug flag to view the name of the file in error')
-      exitWithError('Error Building Locales: ' + error.stack && logger.isLevelEnabled(DEBUG_LOG_LEVEL) ? error.stack : error.message)
+      ux.error('TIP: For JSON parsing errors, use debug flag to view the name of the file in error', { exit: false })
+      ux.error('Error Building Locales: ' + error.stack && logger.isLevelEnabled(DEBUG_LOG_LEVEL) ? error.stack : error.message)
     }
   }
 

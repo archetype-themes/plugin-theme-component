@@ -1,11 +1,12 @@
-// Node.js imports
+// External Dependencies
 import { cwd, env, exit } from 'node:process'
 import { dirname, join, sep } from 'node:path'
+import { ux } from '@oclif/core'
 
-// Internal Imports
+// Internal Dependencies
 import logger, { DEBUG_LOG_LEVEL } from './Logger.js'
-import InternalError from '../errors/InternalError.js'
 import FileUtils from './FileUtils.js'
+import InternalError from '../errors/InternalError.js'
 
 /**
  * Exit with Error
@@ -13,7 +14,7 @@ import FileUtils from './FileUtils.js'
  */
 export function exitWithError (error) {
   if (typeof error === 'string' || error instanceof String || logger.isLevelEnabled(DEBUG_LOG_LEVEL)) {
-    logger.error(error)
+    ux.error(error)
   } else {
     let errorMessage = ''
     if (error.name && error.name.toLowerCase() !== 'error') {
@@ -22,7 +23,7 @@ export function exitWithError (error) {
     if (error.message) {
       errorMessage += error.message
     }
-    logger.error(errorMessage)
+    ux.error(errorMessage)
   }
   exit(1)
 }

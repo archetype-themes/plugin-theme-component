@@ -1,19 +1,19 @@
-// Node imports
+// Node Dependencies
 import { dirname, parse } from 'node:path'
-import InternalError from '../../../errors/InternalError.js'
-import ComponentFactory from '../../../factory/ComponentFactory.js'
-import Snippet from '../../../models/Snippet.js'
-import CollectionUtils from '../../../utils/CollectionUtils.js'
-import logger from '../../../utils/Logger.js'
-import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
+import { ux } from '@oclif/core'
 
-// Internal Imports
-import { plural } from '../../../utils/SyntaxUtils.js'
-import Timer from '../../../models/Timer.js'
+// Internal Dependencies
 import CollectionBuilder from '../../../builders/CollectionBuilder.js'
 import ComponentBuilder from '../../../builders/ComponentBuilder.js'
 import SnippetBuilder from '../../../builders/SnippetBuilder.js'
 import { BaseCommand } from '../../../config/baseCommand.js'
+import InternalError from '../../../errors/InternalError.js'
+import ComponentFactory from '../../../factory/ComponentFactory.js'
+import Timer from '../../../models/Timer.js'
+import Snippet from '../../../models/Snippet.js'
+import CollectionUtils from '../../../utils/CollectionUtils.js'
+import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
+import { plural } from '../../../utils/SyntaxUtils.js'
 
 class Build extends BaseCommand {
   static hidden = true // Hide the command from help
@@ -141,7 +141,7 @@ class Build extends BaseCommand {
           if (snippet !== undefined) {
             topComponent.snippets.push(snippet)
           } else {
-            logger.error(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
+            ux.error(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
           }
         }
       }
