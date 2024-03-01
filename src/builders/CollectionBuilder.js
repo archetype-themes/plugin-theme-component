@@ -5,19 +5,18 @@ import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
-import BuildFactory from '../factory/BuildFactory.js'
-import Session from '../models/static/Session.js'
-import LocalesProcessor from '../processors/LocalesProcessor.js'
-import { install } from '../utils/ExternalComponentUtils.js'
-import FileUtils, { getFolderFilesRecursively } from '../utils/FileUtils.js'
-import WebUtils, { isRepoUrl } from '../utils/WebUtils.js'
-import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
-import LocaleUtils from '../utils/LocaleUtils.js'
-import StylesProcessor from '../processors/StylesProcessor.js'
-import Timer from '../models/Timer.js'
-import logger, { DEBUG_LOG_LEVEL, WARN_LOG_LEVEL } from '../utils/Logger.js'
-import { logChildItem } from '../utils/LoggerUtils.js'
 import { LOCALES_FOLDER_NAME, LOCALES_INSTALL_FOLDER } from '../config/Components.js'
+import BuildFactory from '../factory/BuildFactory.js'
+import Timer from '../models/Timer.js'
+import Session from '../models/static/Session.js'
+import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
+import LocalesProcessor from '../processors/LocalesProcessor.js'
+import StylesProcessor from '../processors/StylesProcessor.js'
+import { install } from '../utils/ExternalComponentUtils.js'
+import { copyFilesToFolder, getFolderFilesRecursively, saveFile } from '../utils/FileUtils.js'
+import LocaleUtils from '../utils/LocaleUtils.js'
+import { isDebugEnabled, Levels, logChildItem } from '../utils/LoggerUtils.js'
+import { downloadFiles, isRepoUrl, isUrl } from '../utils/WebUtils.js'
 
 class CollectionBuilder {
   /**
@@ -60,7 +59,7 @@ class CollectionBuilder {
       logChildItem(`Import Map Processor completed in ${timer.now()} seconds`)
       return importMapEntries
     } else {
-      logChildItem('No Javascript Files Found. Javascript Build Process Was Skipped.', WARN_LOG_LEVEL)
+      logChildItem('No Javascript Files Found. Javascript Build Process Was Skipped.', Levels.Warn)
     }
   }
 
@@ -94,7 +93,7 @@ class CollectionBuilder {
       return locales
     } catch (error) {
       ux.error('TIP: For JSON parsing errors, use debug flag to view the name of the file in error', { exit: false })
-      ux.error('Error Building Locales: ' + error.stack && logger.isLevelEnabled(DEBUG_LOG_LEVEL) ? error.stack : error.message)
+      ux.error('Error Building Locales: ' + error.stack && isDebugEnabled() ? error.stack : error.message)
     }
   }
 
@@ -129,11 +128,11 @@ class CollectionBuilder {
 
     const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
     const snippetFilesWritePromises = Promise.all(allComponents.map(component =>
-      FileUtils.saveFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)))
+      saveFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)))
 
     const allAssetFiles = this.#getAssetFiles(allComponents)
-    const copyAssetFilesPromise = FileUtils.copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
-    const stylesheetSavePromise = FileUtils.saveFile(collection.build.stylesheet, collection.build.styles ?? '')
+    const copyAssetFilesPromise = copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
+    const stylesheetSavePromise = saveFile(collection.build.stylesheet, collection.build.styles ?? '')
     const promises = [
       stylesheetSavePromise,
       localesWritePromise,
@@ -159,14 +158,14 @@ class CollectionBuilder {
     const localFiles = []
     const remoteFiles = []
     for (const [, modulePath] of buildEntries) {
-      if (WebUtils.isUrl(modulePath)) {
+      if (isUrl(modulePath)) {
         remoteFiles.push(modulePath)
       } else {
         localFiles.push(modulePath)
       }
     }
-    const copyPromiseAll = FileUtils.copyFilesToFolder(localFiles, assetsFolder)
-    const downloadPromiseAll = WebUtils.downloadFiles(remoteFiles, assetsFolder)
+    const copyPromiseAll = copyFilesToFolder(localFiles, assetsFolder)
+    const downloadPromiseAll = downloadFiles(remoteFiles, assetsFolder)
     return Promise.all([copyPromiseAll, downloadPromiseAll])
   }
 

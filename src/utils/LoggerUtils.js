@@ -3,9 +3,18 @@ import { basename } from 'node:path'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
-import { AVAILABLE_LOG_LEVELS, INFO_LOG_LEVEL } from './Logger.js'
 import { ucFirst } from './SyntaxUtils.js'
 import InternalError from '../errors/InternalError.js'
+
+export const Levels = {
+  Fatal: 'fatal',
+  Error: 'error',
+  Warn: 'warn',
+  Info: 'info',
+  Debug: 'debug',
+  Trace: 'trace'
+
+}
 
 export const topPrefix = '════▶ '
 export const childPrefix = '  ╚══▶  '
@@ -24,8 +33,8 @@ export function logTitleItem (message) {
  * @param {string} message - Message to display
  * @param {string} logLevel - Log level (info/warn/error/debug)
  */
-export function logChildItem (message, logLevel = INFO_LOG_LEVEL) {
-  if (AVAILABLE_LOG_LEVELS.includes(logLevel)) {
+export function logChildItem (message, logLevel = Levels.Info) {
+  if (Object.values(Levels).includes(logLevel)) {
     ux[logLevel](`${childPrefix}${message}`)
   } else {
     throw new InternalError(`Invalid Log Level ${logLevel} for logChildItem function call`)
@@ -83,4 +92,13 @@ export function logWatcherAction (action) {
   ux.info(`${action}`)
   ux.info('--------------------------------------------------------')
   logSpacer()
+}
+
+/**
+ * Is Debug Level Enabled
+ * Returns true when output level is debug or trace.
+ * @return {boolean}
+ */
+export function isDebugEnabled () {
+  return [Levels.Debug, Levels.Trace].includes(ux.config.outputLevel)
 }

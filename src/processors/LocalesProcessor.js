@@ -1,9 +1,11 @@
+// External Dependencies
 import { basename } from 'node:path'
 import { get, set } from 'lodash-es'
+
+// Internal Dependencies
 import { getJsonFileContents } from '../utils/FileUtils.js'
-import LiquidUtils from '../utils/LiquidUtils.js'
-import { ERROR_LOG_LEVEL, WARN_LOG_LEVEL } from '../utils/Logger.js'
-import { logChildItem } from '../utils/LoggerUtils.js'
+import { stripComments } from '../utils/LiquidUtils.js'
+import { Levels, logChildItem } from '../utils/LoggerUtils.js'
 
 const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 
@@ -54,7 +56,7 @@ export default class LocalesProcessor {
 
     sortedMissingLocales.forEach(([translationKey, locales]) => {
       locales.forEach(locale => {
-        logChildItem(`Translation missing "${translationKey}" for the "${locale}" locale.`, WARN_LOG_LEVEL)
+        logChildItem(`Translation missing "${translationKey}" for the "${locale}" locale.`, Levels.Warn)
       })
     })
 
@@ -68,7 +70,7 @@ export default class LocalesProcessor {
    * @returns {string[]} An array of unique translation keys found in the given liquid code.
    */
   static #getTranslationKeys (liquidCode) {
-    const cleanLiquidCode = LiquidUtils.stripComments(liquidCode)
+    const cleanLiquidCode = stripComments(liquidCode)
     const translationKeys = new Set()
 
     let match
@@ -78,8 +80,8 @@ export default class LocalesProcessor {
       if (translationKey.startsWith('\'') && translationKey.endsWith('\'')) {
         translationKeys.add(translationKey.slice(1, -1))
       } else {
-        logChildItem(`(1/2) Incompatible translation syntax for variable ${translationKey}.`, ERROR_LOG_LEVEL)
-        logChildItem(`(2/2) You must use the 't' filter at when defining ${translationKey} instead of when using it.`, ERROR_LOG_LEVEL)
+        logChildItem(`(1/2) Incompatible translation syntax for variable ${translationKey}.`, Levels.Error)
+        logChildItem(`(2/2) You must use the 't' filter at when defining ${translationKey} instead of when using it.`, Levels.Error)
       }
     }
 

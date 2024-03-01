@@ -4,8 +4,8 @@ import { dirname, join, sep } from 'node:path'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
-import logger, { DEBUG_LOG_LEVEL } from './Logger.js'
 import FileUtils from './FileUtils.js'
+import { isDebugEnabled } from './LoggerUtils.js'
 import InternalError from '../errors/InternalError.js'
 
 /**
@@ -13,7 +13,7 @@ import InternalError from '../errors/InternalError.js'
  * @param {Error|string} error
  */
 export function exitWithError (error) {
-  if (typeof error === 'string' || error instanceof String || logger.isLevelEnabled(DEBUG_LOG_LEVEL)) {
+  if (typeof error === 'string' || error instanceof String || isDebugEnabled()) {
     ux.error(error)
   } else {
     let errorMessage = ''
