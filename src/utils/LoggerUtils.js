@@ -42,6 +42,10 @@ export function logSpacer () {
   ux.info('')
 }
 
+export function logSeparator () {
+  ux.info('--------------------------------------------------------')
+}
+
 /**
  * Log Child Message
  * @param {string} [message='']

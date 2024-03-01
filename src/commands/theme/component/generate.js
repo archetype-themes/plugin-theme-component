@@ -1,6 +1,6 @@
 // External Dependencies
 import { access, constants, mkdir } from 'node:fs/promises'
-import { join } from 'node:path'
+import { join, relative } from 'node:path'
 import { cwd } from 'node:process'
 import { Args, ux } from '@oclif/core'
 
@@ -13,13 +13,14 @@ import {
 } from '../../../config/Components.js'
 import FileAccessError from '../../../errors/FileAccessError.js'
 import Session from '../../../models/static/Session.js'
-import { copyFolder } from '../../../utils/FileUtils.js'
+import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
 import {
   getCLIRootFolderName, getPackageManifest,
   getPackageName,
   getPackageScope
 } from '../../../utils/NodeUtils.js'
 import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
+import { logSeparator, logSpacer } from '../../../utils/LoggerUtils.js'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate canvas files for new components'
@@ -42,10 +43,10 @@ export default class Generate extends BaseCommand {
     await Generate.setSessionValues(argv, tomlConfig)
 
     for (const componentName of Session.components) {
+      ux.action.start(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
+
       const componentPath = join(COMPONENTS_FOLDER, componentName)
       const componentAbsolutePath = join(cwd(), componentPath)
-
-      ux.info(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
 
       // Exit if the folder already exists
       let folderExists = false
@@ -90,6 +91,17 @@ export default class Generate extends BaseCommand {
       // Copy files recursively
       await mkdir(componentAbsolutePath)
       await copyFolder(sourcesPath, componentAbsolutePath, copyFolderOptions)
+
+      ux.action.stop('complete')
+      ux.info('\nThe following files were created:')
+      const files = await getFolderFilesRecursively(componentPath)
+      files.map(file => ux.info(relative(componentPath, file)))
+      logSpacer()
+
+      ux.info('Your new component is available at')
+      ux.info('./' + componentPath)
+      logSeparator()
+      logSpacer()
     }
   }
 
