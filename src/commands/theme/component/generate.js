@@ -35,8 +35,8 @@ export default class Generate extends BaseCommand {
   static strict = false
 
   async run () {
-    const { argv } = await this.parse(Generate)
-
+    const { argv, flags } = await this.parse(Generate)
+    BaseCommand.setUxOutputLevel(flags)
     const tomlConfig = await super.run()
 
     await Generate.setSessionValues(argv, tomlConfig)

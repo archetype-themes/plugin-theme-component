@@ -50,6 +50,7 @@ export default class Install extends BaseCommand {
 
   async run () {
     const { argv, flags, metadata } = await this.parse(Install)
+    BaseCommand.setUxOutputLevel(flags)
     const tomlConfig = await super.run()
 
     await Install.setSessionValues(argv, flags, metadata, tomlConfig)

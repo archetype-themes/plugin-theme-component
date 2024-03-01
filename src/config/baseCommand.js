@@ -1,4 +1,4 @@
-import { Command, Flags } from '@oclif/core'
+import { Command, Flags, ux } from '@oclif/core'
 import Session from '../models/static/Session.js'
 import { getTomlConfig } from '../utils/TomlUtils.js'
 import { sessionFactory } from '../factory/SessionFactory.js'
@@ -30,5 +30,14 @@ export class BaseCommand extends Command {
     sessionFactory(this.id, tomlConfig)
 
     return tomlConfig
+  }
+
+  static setUxOutputLevel (flags) {
+    if (flags.debug) {
+      ux.config.outputLevel = 'debug'
+    }
+    if (flags.trace) {
+      ux.config.outputLevel = 'trace'
+    }
   }
 }

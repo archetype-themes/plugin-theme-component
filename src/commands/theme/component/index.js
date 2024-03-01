@@ -1,4 +1,8 @@
+// External Dependencies
 import { Command, Flags } from '@oclif/core'
+
+// Internal Dependencies
+import { BaseCommand } from '../../../config/baseCommand.js'
 
 export default class Component extends Command {
   static description = 'Theme Component Plugin - By Archetype Themes'
@@ -9,6 +13,7 @@ export default class Component extends Command {
 
   async run () {
     const { flags } = await this.parse(Component)
+    BaseCommand.setUxOutputLevel(flags)
 
     if (flags.version) {
       this.log(`\nShopify CLI Version: ${this.config.version}`)
