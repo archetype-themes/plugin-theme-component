@@ -1,7 +1,7 @@
 import { expect, test } from '@oclif/test'
 import { describe } from 'mocha'
 
-describe('component', () => {
+describe('component command', () => {
   test
     .stdout()
     .command(['theme:component'])
