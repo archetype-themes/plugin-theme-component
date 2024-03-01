@@ -27,18 +27,14 @@ const baseInstallPath = resolve(tmpdir(), 'plugin-theme-component', 'test')
  * @return {Promise<string>} components repo path
  */
 export async function setupComponentsRepo () {
-  const installPath = resolve(baseInstallPath, 'components')
+  const componentsInstallPath = resolve(baseInstallPath, 'components')
   const componentsRepoUrl =
     process.env.GITHUB_COMPONENTS_REPO
       ? process.env.GITHUB_COMPONENTS_REPO
       : `https://${GITHUB_ID}:${GITHUB_TOKEN}@github.com/archetype-themes/components.git`
 
-  if (await exists(installPath)) {
-    await rm(installPath, { recursive: true, force: true })
-  }
-  await mkdir(installPath, { recursive: true })
-  await clone(componentsRepoUrl, installPath)
-  return installPath
+  await setupRepo(componentsRepoUrl, componentsInstallPath)
+  return componentsInstallPath
 }
 
 /**
@@ -46,30 +42,29 @@ export async function setupComponentsRepo () {
  * @return {Promise<string>} components repo path
  */
 export async function setupThemeRepo () {
+  const themeInstallPath = resolve(baseInstallPath, 'theme')
   const themeRepoUrl =
-    process.env.GITHUB_COMPONENTS_REPO
-      ? process.env.GITHUB_COMPONENTS_REPO
+    process.env.GITHUB_THEME_REPO
+      ? process.env.GITHUB_THEME_REPO
       : `https://${GITHUB_ID}:${GITHUB_TOKEN}@github.com/archetype-themes/expanse.git`
 
-  const installPath = resolve(baseInstallPath, 'theme')
-
-  await setupRepo(themeRepoUrl, installPath)
-  return installPath
+  await setupRepo(themeRepoUrl, themeInstallPath)
+  return themeInstallPath
 }
 
 /**
  *
- * @param {string} repository
+ * @param {string} repositoryUrl
  * @param {string} installPath
  * @return {Promise<*>}
  */
-async function setupRepo (repository, installPath) {
+async function setupRepo (repositoryUrl, installPath) {
   if (await exists(installPath)) {
     await rm(installPath, { recursive: true, force: true })
   }
 
-  await mkdir(baseInstallPath, { recursive: true })
-  return clone(repository, installPath)
+  await mkdir(installPath, { recursive: true })
+  return clone(repositoryUrl, installPath)
 }
 
 export function chDirToDefault () {
