@@ -35,7 +35,7 @@ export function logTitleItem (message) {
  */
 export function logChildItem (message, logLevel = Levels.Info) {
   if (Object.values(Levels).includes(logLevel)) {
-    ux[logLevel](`${childPrefix}${message}`)
+    ux[logLevel](`${childPrefix}${message}`, { exit: false })
   } else {
     throw new InternalError(`Invalid Log Level ${logLevel} for logChildItem function call`)
   }
