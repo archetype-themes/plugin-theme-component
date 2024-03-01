@@ -4,7 +4,6 @@ import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import { ucFirst } from './SyntaxUtils.js'
-import InternalError from '../errors/InternalError.js'
 
 export const Levels = {
   Fatal: 'fatal',
@@ -31,14 +30,9 @@ export function logTitleItem (message) {
 /**
  * Log Child Item
  * @param {string} message - Message to display
- * @param {string} logLevel - Log level (info/warn/error/debug)
  */
-export function logChildItem (message, logLevel = Levels.Info) {
-  if (Object.values(Levels).includes(logLevel)) {
-    ux[logLevel](`${childPrefix}${message}`, { exit: false })
-  } else {
-    throw new InternalError(`Invalid Log Level ${logLevel} for logChildItem function call`)
-  }
+export function logChildItem (message) {
+  ux.info(`${childPrefix}${message}`)
 }
 
 /**

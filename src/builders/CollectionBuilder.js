@@ -15,7 +15,7 @@ import StylesProcessor from '../processors/StylesProcessor.js'
 import { install } from '../utils/ExternalComponentUtils.js'
 import { copyFilesToFolder, getFolderFilesRecursively, saveFile } from '../utils/FileUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
-import { isDebugEnabled, Levels, logChildItem } from '../utils/LoggerUtils.js'
+import { isDebugEnabled, logChildItem } from '../utils/LoggerUtils.js'
 import { downloadFiles, isRepoUrl, isUrl } from '../utils/WebUtils.js'
 
 class CollectionBuilder {
@@ -59,7 +59,7 @@ class CollectionBuilder {
       logChildItem(`Import Map Processor completed in ${timer.now()} seconds`)
       return importMapEntries
     } else {
-      logChildItem('No Javascript Files Found. Javascript Build Process Was Skipped.', Levels.Warn)
+      ux.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
     }
   }
 
