@@ -14,7 +14,7 @@ describe('dev command', function () {
     .timeout(10000)
     .stdout()
     .command(['theme:component:dev', '--no-watch'])
-    .it('runs: component dev --no-watch', async ctx => {
+    .it('runs: component dev --no-watch', async function (ctx) {
       expect(ctx.stdout).to.contain('Install Complete')
     })
 
