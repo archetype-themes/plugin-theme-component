@@ -29,7 +29,7 @@ export function exitWithError (error) {
 }
 
 export function getCurrentWorkingDirectoryName () {
-  const currentWorkingDirectory = process.cwd()
+  const currentWorkingDirectory = cwd()
   const directoryArray = currentWorkingDirectory.split(sep)
 
   return directoryArray[directoryArray.length - 1]

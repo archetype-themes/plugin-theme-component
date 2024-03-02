@@ -1,16 +1,16 @@
-// Node.js imports
+// External Dependencies
 import { join } from 'node:path'
+import { cwd } from 'node:process'
 
-// Internal Imports
+// Internal Dependencies
+import { exists, getFolders } from './FileUtils.js'
+import { isRepoUrl } from './WebUtils.js'
 import { COLLECTIONS_INSTALL_FOLDER_NAME } from '../config/CLI.js'
+import { COMPONENTS_FOLDER } from '../config/Components.js'
+import FileMissingError from '../errors/FileMissingError.js'
 import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
 import Session from '../models/static/Session.js'
-
-import { exists, getFolders } from './FileUtils.js'
-import { isRepoUrl } from './WebUtils.js'
-import FileMissingError from '../errors/FileMissingError.js'
-import { COMPONENTS_FOLDER } from '../config/Components.js'
 
 /**
  * Get Collection Root Folder
@@ -20,7 +20,7 @@ import { COMPONENTS_FOLDER } from '../config/Components.js'
  */
 export async function getRootFolder (collectionName, collectionSource) {
   if (Session.isCollection()) {
-    return process.cwd()
+    return cwd()
   }
   if (Session.isTheme()) {
     if (!collectionName) {
@@ -31,7 +31,7 @@ export async function getRootFolder (collectionName, collectionSource) {
     }
     if (collectionSource) {
       if (isRepoUrl(collectionSource)) {
-        return join(process.cwd(), COLLECTIONS_INSTALL_FOLDER_NAME, collectionName)
+        return join(cwd(), COLLECTIONS_INSTALL_FOLDER_NAME, collectionName)
       } else {
         return collectionSource
       }

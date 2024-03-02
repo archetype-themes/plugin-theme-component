@@ -1,8 +1,8 @@
-// Node Imports
+// External Dependencies
 import { join } from 'path'
+import { cwd } from 'node:process'
 
-// Internal Imports
-import Theme from '../models/Theme.js'
+// Internal Dependencies
 import {
   ASSETS_FOLDER_NAME,
   CONFIG_FOLDER_NAME,
@@ -10,6 +10,7 @@ import {
   SECTIONS_FOLDER_NAME,
   SNIPPETS_FOLDER_NAME
 } from '../config/Components.js'
+import Theme from '../models/Theme.js'
 import { getCurrentWorkingDirectoryName } from '../utils/NodeUtils.js'
 
 class ThemeFactory {
@@ -21,7 +22,7 @@ class ThemeFactory {
     const theme = new Theme()
 
     theme.name = getCurrentWorkingDirectoryName()
-    theme.rootFolder = process.cwd()
+    theme.rootFolder = cwd()
 
     return ThemeFactory.#setChildFolders(theme)
   }
