@@ -11,16 +11,16 @@
   "type": "module",
   "version": "3.0.0",
   "bin": {
-    "component": "/bin/run.js"
+    "component": "bin/run.js"
   },
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 bin/run.js",
     "lint": "standard",
-    "test": "NODE_ENV=test mocha --forbid-only -p false \"test/**/*.test.js\"",
-    "tests": "npm run cdc && npm ci && npm publish --dry-run",
-    "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "npm run lint",
     "prepack": "oclif manifest && oclif readme",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "pretest": "npm ci && npm run lint && npm run cdc",
+    "test": "NODE_ENV=test mocha --forbid-only -p false \"test/**/*.test.js\"",
+    "posttest": "npm publish --dry-run && echo '\nTest Run completed succesfully'",
     "version": "oclif readme && git add README.md"
   },
   "files": [
@@ -31,7 +31,10 @@
   "publishConfig": {
     "@archetype-themes:registry": "https://npm.pkg.github.com"
   },
-  "repository": "https://github.com/archetype-themes/plugin-theme-component.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/archetype-themes/plugin-theme-component.git"
+  },
   "dependencies": {
     "@iarna/toml": "2.2.5",
     "@oclif/core": "3.15.1",
