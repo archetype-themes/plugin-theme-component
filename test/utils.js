@@ -26,12 +26,11 @@ const baseInstallPath = resolve(tmpdir(), 'plugin-theme-component', 'test')
  * Setup Components Repo
  * @return {Promise<string>} components repo path
  */
-export async function setupComponentsRepo () {
+export async function setupComponentsRepo() {
   const componentsInstallPath = resolve(baseInstallPath, 'components')
-  const componentsRepoUrl =
-    env.COMPONENTS_REPO
-      ? env.COMPONENTS_REPO
-      : `https://${GITHUB_ID}:${GITHUB_TOKEN}@github.com/archetype-themes/components.git`
+  const componentsRepoUrl = env.COMPONENTS_REPO
+    ? env.COMPONENTS_REPO
+    : `https://${GITHUB_ID}:${GITHUB_TOKEN}@github.com/archetype-themes/components.git`
 
   await setupRepo(componentsRepoUrl, componentsInstallPath)
   return componentsInstallPath
@@ -41,12 +40,11 @@ export async function setupComponentsRepo () {
  * Setup Components Repo
  * @return {Promise<string>} components repo path
  */
-export async function setupThemeRepo () {
+export async function setupThemeRepo() {
   const themeInstallPath = resolve(baseInstallPath, 'theme')
-  const themeRepoUrl =
-    env.THEME_REPO
-      ? env.THEME_REPO
-      : `https://${GITHUB_ID}:${GITHUB_TOKEN}@github.com/archetype-themes/expanse.git`
+  const themeRepoUrl = env.THEME_REPO
+    ? env.THEME_REPO
+    : `https://${GITHUB_ID}:${GITHUB_TOKEN}@github.com/archetype-themes/expanse.git`
 
   await setupRepo(themeRepoUrl, themeInstallPath)
   return themeInstallPath
@@ -58,7 +56,7 @@ export async function setupThemeRepo () {
  * @param {string} installPath
  * @return {Promise<*>}
  */
-async function setupRepo (repositoryUrl, installPath) {
+async function setupRepo(repositoryUrl, installPath) {
   if (await exists(installPath)) {
     await rm(installPath, { recursive: true, force: true })
   }
@@ -67,6 +65,6 @@ async function setupRepo (repositoryUrl, installPath) {
   return clone(repositoryUrl, installPath)
 }
 
-export function chDirToDefault () {
+export function chDirToDefault() {
   chdir(workingDirectory)
 }

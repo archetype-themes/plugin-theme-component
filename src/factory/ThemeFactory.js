@@ -18,7 +18,7 @@ class ThemeFactory {
    * From Build Script
    * @return {Theme}
    */
-  static fromThemeInstallCommand () {
+  static fromThemeInstallCommand() {
     const theme = new Theme()
 
     theme.name = getCurrentWorkingDirectoryName()
@@ -32,7 +32,7 @@ class ThemeFactory {
    * @param {string} themeRootFolder
    * @returns {Promise<Theme>}
    */
-  static async fromDevCommand (themeRootFolder) {
+  static async fromDevCommand(themeRootFolder) {
     const theme = new Theme()
 
     theme.rootFolder = themeRootFolder
@@ -45,7 +45,7 @@ class ThemeFactory {
    * @param {Theme} theme
    * @returns {Theme}
    */
-  static #setChildFolders (theme) {
+  static #setChildFolders(theme) {
     theme.assetsFolder = join(theme.rootFolder, ASSETS_FOLDER_NAME)
     theme.configFolder = join(theme.rootFolder, CONFIG_FOLDER_NAME)
     theme.localesFolder = join(theme.rootFolder, LOCALES_FOLDER_NAME)

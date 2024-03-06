@@ -16,11 +16,15 @@ export default class LocalesProcessor {
    * @param {string[]} localeFiles - Path to locale files
    * @returns {Promise<Object>}
    */
-  static async build (componentsLiquidCode, localeFiles) {
-    const elements = Array.isArray(componentsLiquidCode) ? componentsLiquidCode : [componentsLiquidCode]
+  static async build(componentsLiquidCode, localeFiles) {
+    const elements = Array.isArray(componentsLiquidCode)
+      ? componentsLiquidCode
+      : [componentsLiquidCode]
 
     const availableLocales = await this.parseLocaleFilesContent(localeFiles)
-    const translationKeys = elements.flatMap(code => this.#getTranslationKeys(code))
+    const translationKeys = elements.flatMap((code) =>
+      this.#getTranslationKeys(code)
+    )
 
     return this.filterTranslations(availableLocales, translationKeys)
   }
@@ -31,20 +35,22 @@ export default class LocalesProcessor {
    * @param {string[]} translationKeys
    * @returns {Object}
    */
-  static filterTranslations (availableLocales, translationKeys) {
+  static filterTranslations(availableLocales, translationKeys) {
     const filteredLocales = {}
     /** @type {Map<string,Set>} **/
     const missingLocales = new Map()
 
-    Object.keys(availableLocales).forEach(locale => {
-      translationKeys.forEach(key => {
+    Object.keys(availableLocales).forEach((locale) => {
+      translationKeys.forEach((key) => {
         const fullKey = `${locale}.${key}`
         const value = get(availableLocales, fullKey)
 
         if (value) {
           set(filteredLocales, fullKey, value)
         } else {
-          if (!missingLocales.has(key)) { missingLocales.set(key, new Set()) }
+          if (!missingLocales.has(key)) {
+            missingLocales.set(key, new Set())
+          }
           if (!missingLocales.get(key).has(locale)) {
             missingLocales.get(key).add(locale)
           }
@@ -52,11 +58,15 @@ export default class LocalesProcessor {
       })
     })
 
-    const sortedMissingLocales = [...missingLocales.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+    const sortedMissingLocales = [...missingLocales.entries()].sort((a, b) =>
+      a[0].localeCompare(b[0])
+    )
 
     sortedMissingLocales.forEach(([translationKey, locales]) => {
-      locales.forEach(locale => {
-        ux.warn(`Translation missing "${translationKey}" for the "${locale}" locale.`)
+      locales.forEach((locale) => {
+        ux.warn(
+          `Translation missing "${translationKey}" for the "${locale}" locale.`
+        )
       })
     })
 
@@ -69,7 +79,7 @@ export default class LocalesProcessor {
    * @param {string} liquidCode - The liquid code to be searched for translation keys.
    * @returns {string[]} An array of unique translation keys found in the given liquid code.
    */
-  static #getTranslationKeys (liquidCode) {
+  static #getTranslationKeys(liquidCode) {
     const cleanLiquidCode = stripComments(liquidCode)
     const translationKeys = new Set()
 
@@ -77,10 +87,13 @@ export default class LocalesProcessor {
     while ((match = TRANSLATION_KEYS_REGEX.exec(cleanLiquidCode)) !== null) {
       const translationKey = match[1]
 
-      if (translationKey.startsWith('\'') && translationKey.endsWith('\'')) {
+      if (translationKey.startsWith("'") && translationKey.endsWith("'")) {
         translationKeys.add(translationKey.slice(1, -1))
       } else {
-        ux.error(`Incompatible translation syntax for variable ${translationKey}. You must use the 't' filter at when defining ${translationKey} instead of when using it.`, { exit: false })
+        ux.error(
+          `Incompatible translation syntax for variable ${translationKey}. You must use the 't' filter at when defining ${translationKey} instead of when using it.`,
+          { exit: false }
+        )
       }
     }
 
@@ -92,10 +105,11 @@ export default class LocalesProcessor {
    * @param {string[]} localeFiles
    * @return {Promise<{}>}
    */
-  static async parseLocaleFilesContent (localeFiles) {
+  static async parseLocaleFilesContent(localeFiles) {
     const locales = {}
 
-    const localeFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2})?)(\.default)?\.json$/
+    const localeFileRegex =
+      /^(?<locale>([a-z]{2})(-[a-z]{2})?)(\.default)?\.json$/
 
     for (const file of localeFiles) {
       const fileName = basename(file).toLowerCase()

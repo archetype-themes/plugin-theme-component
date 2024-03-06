@@ -10,6 +10,7 @@ the name of the component and put at the root of the `build` folder. Files are p
 - Schema will be appended. The content will consist of an assembly of locales.json and schema.json
 
 Output files :
+
 ```shell
 build/snippets/[component-name-one].liquid
 build/snippets/[component-name-two].liquid
@@ -24,6 +25,7 @@ by your main file will automatically be processed.
 **Recursion:** If your Component includes Snippets with external javascript files, the CLI will also look for their main javascript file and process it.
 
 **Notes**
+
 - The mjs file extension is also accepted.
 
 **Resulting files**
@@ -37,6 +39,7 @@ build/assets/[component-name].js
 ```
 
 A reference to this JavaScript file will be inserted
+
 - For A Component Build: At the end of the component's liquid file
 - For A Theme Install: Just before the closing </head> tag of a `theme.liquid` file (only if missing - won't add twice)
 
@@ -45,13 +48,13 @@ A reference to this JavaScript file will be inserted
 ```
 
 **Note**
+
 - Theme install: Customization of that script tag is possible. The CLI will check for an existing reference to the
   javascript file before insertion and will not proceed if it already exists, it will not be overwritten.
 
 **External Tools**
 
 JavaScript is built using [esbuild](https://esbuild.github.io/) bundler
-
 
 ### Stylesheets Build Process
 
@@ -62,6 +65,7 @@ other javascript file or module used by your main file will automatically be pro
 stylesheet and process it.
 
 **Notes**
+
 - Use of a styles sub-folder is recommended but not compulsory. The CLI will recursively search the whole directory tree for your main stylesheet.
 
 **Resulting files**
@@ -74,8 +78,8 @@ build/assets/[collection-name].css
 build/assets/[componet-name].css
 ```
 
-
 A reference to this CSS file will be inserted
+
 - For A Component Build: At the end of the component's liquid file
 - For A Theme Install: Just before the closing </head> tag of a `theme.liquid` file (only if missing - won't add twice)
   A reference to this CSS file will be inserted at the end of the liquid file.

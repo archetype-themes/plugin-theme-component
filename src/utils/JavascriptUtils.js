@@ -10,15 +10,17 @@ import FileUtils from './FileUtils.js'
  * @param {string} componentName
  * @returns {string | undefined}
  */
-export function findMainJavaScriptFile (files, componentName) {
+export function findMainJavaScriptFile(files, componentName) {
   const regex = this.mainJavaScriptFileRegex(componentName)
-  const mainJavaScriptFile = files.find(file => regex.test(file))
+  const mainJavaScriptFile = files.find((file) => regex.test(file))
 
   if (!mainJavaScriptFile) {
     return undefined
   }
 
-  ux.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`)
+  ux.debug(
+    `JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`
+  )
 
   return mainJavaScriptFile
 }
@@ -26,7 +28,7 @@ export function findMainJavaScriptFile (files, componentName) {
 /**
  * @param {string} componentName
  */
-export function mainJavaScriptFileRegex (componentName) {
+export function mainJavaScriptFileRegex(componentName) {
   return new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
 }
 

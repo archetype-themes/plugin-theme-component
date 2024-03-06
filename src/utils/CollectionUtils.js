@@ -18,16 +18,20 @@ import Session from '../models/static/Session.js'
  * @param {string} [collectionSource] - Required in a multiple Collection environment only
  * @returns {Promise<string>|string}
  */
-export async function getRootFolder (collectionName, collectionSource) {
+export async function getRootFolder(collectionName, collectionSource) {
   if (Session.isCollection()) {
     return cwd()
   }
   if (Session.isTheme()) {
     if (!collectionName) {
-      throw new InternalError('Unable to find root collection root folder without the collection name.')
+      throw new InternalError(
+        'Unable to find root collection root folder without the collection name.'
+      )
     }
     if (!collectionSource) {
-      throw new InternalError('Unable to find root collection root folder without the collection source.')
+      throw new InternalError(
+        'Unable to find root collection root folder without the collection source.'
+      )
     }
     if (collectionSource) {
       if (isRepoUrl(collectionSource)) {
@@ -36,7 +40,9 @@ export async function getRootFolder (collectionName, collectionSource) {
         return collectionSource
       }
     } else {
-      throw new InternalError('Collection source is missing from shopify.theme.toml file.')
+      throw new InternalError(
+        'Collection source is missing from shopify.theme.toml file.'
+      )
     }
   }
 }
@@ -46,7 +52,7 @@ export async function getRootFolder (collectionName, collectionSource) {
  * @param {string[]} componentFolders
  * @returns {Component[]}
  */
-function findComponents (componentFolders) {
+function findComponents(componentFolders) {
   const components = []
 
   for (const componentFolder of componentFolders) {
@@ -62,10 +68,12 @@ function findComponents (componentFolders) {
  * @param {string} collectionRootFolder
  * @returns {Promise<string[]>}
  */
-async function getComponentFolders (collectionRootFolder) {
+async function getComponentFolders(collectionRootFolder) {
   const componentsFolder = join(collectionRootFolder, COMPONENTS_FOLDER)
-  if (!await exists(componentsFolder)) {
-    throw new FileMissingError(`Unable to locate components folder ${componentsFolder}`)
+  if (!(await exists(componentsFolder))) {
+    throw new FileMissingError(
+      `Unable to locate components folder ${componentsFolder}`
+    )
   }
   return getFolders(join(collectionRootFolder, COMPONENTS_FOLDER))
 }
@@ -76,19 +84,26 @@ async function getComponentFolders (collectionRootFolder) {
  * @param {string[]} componentNames
  * @returns {Set<string>}
  */
-export function getComponentNamesToBuild (components, componentNames) {
+export function getComponentNamesToBuild(components, componentNames) {
   let componentsNameTree = new Set(componentNames)
 
-  componentNames.forEach(componentName => {
+  componentNames.forEach((componentName) => {
     // Find its matching component object
-    const component = components.find(component => component.name === componentName)
+    const component = components.find(
+      (component) => component.name === componentName
+    )
 
     if (!component) {
-      throw new FileMissingError(`Unable to find the component "${componentName}".`)
+      throw new FileMissingError(
+        `Unable to find the component "${componentName}".`
+      )
     }
 
     // Recursive call applied to snippet names
-    const componentNameTree = this.getComponentNamesToBuild(components, component.snippetNames)
+    const componentNameTree = this.getComponentNamesToBuild(
+      components,
+      component.snippetNames
+    )
     // Merge data with the global Set
     componentsNameTree = new Set([...componentsNameTree, ...componentNameTree])
   })
@@ -101,7 +116,7 @@ export function getComponentNamesToBuild (components, componentNames) {
  * @param {module:models/Collection} collection
  * @return {Promise<module:models/Collection>}
  */
-export async function initCollectionFiles (collection) {
+export async function initCollectionFiles(collection) {
   // Find .gitignore File
   const gitignoreFile = join(collection.rootFolder, '.gitignore')
   if (await exists(gitignoreFile)) {

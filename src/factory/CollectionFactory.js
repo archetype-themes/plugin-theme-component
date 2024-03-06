@@ -18,18 +18,25 @@ class CollectionFactory {
    * @param {string} [collectionSource] - Collection Source Path or URL
    * @return {Promise<module:models/Collection>}
    */
-  static async fromName (collectionName, componentNames, collectionSource) {
+  static async fromName(collectionName, componentNames, collectionSource) {
     const collection = new Collection()
 
     collection.name = collectionName
-    if (collectionSource) { collection.source = collectionSource }
-    collection.rootFolder = await CollectionUtils.getRootFolder(collectionName, collectionSource)
+    if (collectionSource) {
+      collection.source = collectionSource
+    }
+    collection.rootFolder = await CollectionUtils.getRootFolder(
+      collectionName,
+      collectionSource
+    )
 
     // Get Component Names and Create Them
     if (componentNames?.length) {
       collection.componentNames = componentNames
     } else if (Session.isTheme()) {
-      ux.warn(`No component list found for the "${collection.name}" collection; all components will be installed.`)
+      ux.warn(
+        `No component list found for the "${collection.name}" collection; all components will be installed.`
+      )
     }
 
     return CollectionUtils.initCollectionFiles(collection)
@@ -41,7 +48,7 @@ class CollectionFactory {
    * @param {string[]|null} componentNames
    * @return {module:models/Collection}
    */
-  static async fromInstallCommand (source, componentNames) {
+  static async fromInstallCommand(source, componentNames) {
     const collection = new Collection()
     collection.source = source
     collection.componentNames = componentNames
@@ -51,7 +58,10 @@ class CollectionFactory {
       if (collection.name.endsWith('.git')) {
         collection.name = collection.name.slice(0, -4)
       }
-      collection.rootFolder = await CollectionUtils.getRootFolder(collection.name, collection.source)
+      collection.rootFolder = await CollectionUtils.getRootFolder(
+        collection.name,
+        collection.source
+      )
     } else {
       collection.rootFolder = await getAbsolutePath(collection.source)
       try {

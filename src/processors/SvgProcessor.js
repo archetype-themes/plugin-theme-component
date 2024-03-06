@@ -16,12 +16,14 @@ class SvgProcessor {
    * @param {string} cwd
    * @return {Promise<string>}
    */
-  static async buildSvg (svgName, svgSource, cwd) {
+  static async buildSvg(svgName, svgSource, cwd) {
     // SVGO processing
     if (!this.#svgoConfigCheck) {
       this.#svgoConfig = await loadConfig(null, cwd)
       if (!this.#svgoConfig) {
-        ux.warn('SVGO configuration not found. Proceeding with default settings.')
+        ux.warn(
+          'SVGO configuration not found. Proceeding with default settings.'
+        )
       }
       this.#svgoConfigCheck = true
     }
@@ -66,7 +68,9 @@ class SvgProcessor {
       svg.parentNode.replaceChild(newSvg, svg)
       return newSvg.outerHTML
     }
-    ux.warn(`No SVG found inside "${svgName}". Source code will be returned as is.`)
+    ux.warn(
+      `No SVG found inside "${svgName}". Source code will be returned as is.`
+    )
     return svgSource
   }
 }

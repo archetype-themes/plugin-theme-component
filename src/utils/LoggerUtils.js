@@ -12,7 +12,6 @@ export const Levels = {
   Info: 'info',
   Debug: 'debug',
   Trace: 'trace'
-
 }
 
 export const topPrefix = '════▶ '
@@ -23,7 +22,7 @@ export const childSpacer = '  ║     '
  * Log Top Item
  * @param {string} message
  */
-export function logTitleItem (message) {
+export function logTitleItem(message) {
   ux.info(`${topPrefix}${message}`)
 }
 
@@ -31,18 +30,18 @@ export function logTitleItem (message) {
  * Log Child Item
  * @param {string} message - Message to display
  */
-export function logChildItem (message) {
+export function logChildItem(message) {
   ux.info(`${childPrefix}${message}`)
 }
 
 /**
  * Logs an empty line as a spacer element
  */
-export function logSpacer () {
+export function logSpacer() {
   ux.info('')
 }
 
-export function logSeparator () {
+export function logSeparator() {
   ux.info('--------------------------------------------------------')
 }
 
@@ -50,7 +49,7 @@ export function logSeparator () {
  * Log Child Message
  * @param {string} [message='']
  */
-export function logChildMessage (message = '') {
+export function logChildMessage(message = '') {
   ux.info(childSpacer + message)
 }
 
@@ -58,13 +57,13 @@ export function logChildMessage (message = '') {
  * Log Watcher Initialization
  * @param {string|string[]} customText
  */
-export function logWatcherInit (customText) {
+export function logWatcherInit(customText) {
   if (!Array.isArray(customText)) {
     customText = [customText]
   }
   logSpacer()
   ux.info('--------------------------------------------------------')
-  customText.forEach(initLine => ux.info(initLine))
+  customText.forEach((initLine) => ux.info(initLine))
   ux.info('(Ctrl+C to abort)')
   ux.info('--------------------------------------------------------')
   logSpacer()
@@ -75,7 +74,7 @@ export function logWatcherInit (customText) {
  * @param {string} event Watcher Event
  * @param {string} eventPath Watcher Event Path
  */
-export function logWatcherEvent (event, eventPath) {
+export function logWatcherEvent(event, eventPath) {
   const filename = basename(eventPath)
   logWatcherAction(`${ucFirst(event)} on ${filename} detected (${eventPath})`)
 }
@@ -84,7 +83,7 @@ export function logWatcherEvent (event, eventPath) {
  * Log Watcher Action
  * @param {string} action
  */
-export function logWatcherAction (action) {
+export function logWatcherAction(action) {
   logSpacer()
   ux.info('--------------------------------------------------------')
   ux.info(`${action}`)
@@ -97,6 +96,6 @@ export function logWatcherAction (action) {
  * Returns true when output level is debug or trace.
  * @return {boolean}
  */
-export function isDebugEnabled () {
+export function isDebugEnabled() {
   return [Levels.Debug, Levels.Trace].includes(ux.config.outputLevel)
 }

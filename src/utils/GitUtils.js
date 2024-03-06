@@ -5,7 +5,7 @@ import { execSync } from 'node:child_process'
  *
  * @param {string} path - The path of the working directory to clean.
  */
-export function clean (path) {
+export function clean(path) {
   execSync('git clean -f -d --quiet', { cwd: path })
 }
 
@@ -17,7 +17,7 @@ export function clean (path) {
  *
  * @return {void}
  */
-export function clone (repository, path) {
+export function clone(repository, path) {
   execSync(`git clone ${repository} ${path} --quiet`)
 }
 
@@ -27,7 +27,7 @@ export function clone (repository, path) {
  * @param {string} path - The path to the local repository.
  * @return {void}
  */
-export function restore (path) {
+export function restore(path) {
   execSync('git restore . --quiet', { cwd: path })
 }
 
@@ -37,7 +37,7 @@ export function restore (path) {
  * @param {string} path - The path to the local repository.
  * @return {void}
  */
-export function pull (path) {
+export function pull(path) {
   execSync('git pull --quiet', { cwd: path })
 }
 

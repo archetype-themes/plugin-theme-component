@@ -6,7 +6,9 @@ describe('component command', function () {
     .stdout()
     .command(['theme:component'])
     .it('runs: component', function (ctx) {
-      expect(ctx.stdout).to.contain('Welcome To The Theme Component Plugin, by Archetype Themes.')
+      expect(ctx.stdout).to.contain(
+        'Welcome To The Theme Component Plugin, by Archetype Themes.'
+      )
     })
   test
     .stdout()

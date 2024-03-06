@@ -40,10 +40,7 @@ Next, you will need to edit your package.json to add or replace the following se
     "build": "component build",
     "dev": "component build --watch"
   },
-  "workspaces": [
-    "./components/*",
-    "./shared/*"
-  ]
+  "workspaces": ["./components/*", "./shared/*"]
 }
 ```
 

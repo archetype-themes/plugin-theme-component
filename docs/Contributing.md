@@ -35,8 +35,8 @@ npm link @archetype-themes/plugin-theme-component --workspace=[worskspace-folder
 
 - Please note this does not alter you package.json file, more importantly, your package.json file will always be
   prioritized when running subsequent `npm install` commands in your `[collection-repo|theme-repo]` folder. Therefore,
-  if `@archetype-themes/plugin-theme-component` is listed as a dependency in you package.json, it will result in an *
-  *OVERWRITE** of
+  if `@archetype-themes/plugin-theme-component` is listed as a dependency in you package.json, it will result in an \*
+  \*OVERWRITE\*\* of
   your previous `npm link @archetype-themes/plugin-theme-component` command and your will need to run it again.
 
 Use the following commands to manage your links:
@@ -122,7 +122,7 @@ and load data from its children Snippet Model using the SnippetFactory through a
 ### Phase 3: Builders Folder
 
 Builders are there to assemble and process file contents to deliver a final product.
-*This does not relate in any way to the Builder Design Pattern
+\*This does not relate in any way to the Builder Design Pattern
 
 - Run after Factories have completed Component Model creation.
 - Transform data as necessary using external processors, such as esbuild, sass, post-css

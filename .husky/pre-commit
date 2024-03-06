@@ -1,2 +1,1 @@
-npm lint
-npm test
+npx eslint --fix

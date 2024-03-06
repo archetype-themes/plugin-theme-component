@@ -11,8 +11,12 @@ import { getAbsolutePath } from './FileUtils.js'
  * @param {ComponentTomlConfig|null} tomlConfig
  * @return {string|boolean}
  */
-export function getValueFromFlagOrToml (key, flags, metadata, tomlConfig) {
-  if (metadata.flags[key]?.setFromDefault && tomlConfig != null && Object.hasOwn(tomlConfig, key)) {
+export function getValueFromFlagOrToml(key, flags, metadata, tomlConfig) {
+  if (
+    metadata.flags[key]?.setFromDefault &&
+    tomlConfig != null &&
+    Object.hasOwn(tomlConfig, key)
+  ) {
     return tomlConfig[key]
   } else {
     return flags[key]
@@ -27,12 +31,14 @@ export function getValueFromFlagOrToml (key, flags, metadata, tomlConfig) {
  * @param {ComponentTomlConfig|null} tomlConfig
  * @return {string[]|null} Components list
  */
-export function getValuesFromArgvOrToml (key, argv, tomlConfig) {
+export function getValuesFromArgvOrToml(key, argv, tomlConfig) {
   if (argv.length) {
     return argv
   }
   if (tomlConfig != null && Object.hasOwn(tomlConfig, COMPONENT_ARG_NAME)) {
-    return typeof tomlConfig[COMPONENT_ARG_NAME] === 'string' ? [tomlConfig[COMPONENT_ARG_NAME]] : tomlConfig[COMPONENT_ARG_NAME]
+    return typeof tomlConfig[COMPONENT_ARG_NAME] === 'string'
+      ? [tomlConfig[COMPONENT_ARG_NAME]]
+      : tomlConfig[COMPONENT_ARG_NAME]
   }
   return null
 }
@@ -46,8 +52,18 @@ export function getValuesFromArgvOrToml (key, argv, tomlConfig) {
  * @param {ComponentTomlConfig|null} tomlConfig
  * @return {Promise<string>}
  */
-export async function getPathFromFlagOrTomlValue (pathName, flags, metadata, tomlConfig) {
-  const flagValue = getValueFromFlagOrToml(pathName, flags, metadata, tomlConfig)
+export async function getPathFromFlagOrTomlValue(
+  pathName,
+  flags,
+  metadata,
+  tomlConfig
+) {
+  const flagValue = getValueFromFlagOrToml(
+    pathName,
+    flags,
+    metadata,
+    tomlConfig
+  )
 
   return isRepoUrl(flagValue) ? flagValue : await getAbsolutePath(flagValue)
 }

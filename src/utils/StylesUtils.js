@@ -11,7 +11,7 @@ import InputFileError from '../errors/InputFileError.js'
  * @param stylesheets
  * @return {string}
  */
-export function createMasterStylesheet (stylesheets) {
+export function createMasterStylesheet(stylesheets) {
   let masterStylesheetContents = ''
   const processedStylesheets = []
 
@@ -34,7 +34,7 @@ export function createMasterStylesheet (stylesheets) {
  * @returns {string}
  * @throws Error
  */
-export function findMainStyleSheetFile (styleSheets, componentName) {
+export function findMainStyleSheetFile(styleSheets, componentName) {
   const regex = new RegExp(`[/\\\\]((?:index|main|${componentName}).css)$`, 'i')
   const matches = []
   for (const styleSheet of styleSheets) {
@@ -45,13 +45,19 @@ export function findMainStyleSheetFile (styleSheets, componentName) {
   }
 
   if (matches.length === 1) {
-    ux.debug(`Main StyleSheet Found: ${FileUtils.convertToComponentRelativePath(matches[0])}`)
+    ux.debug(
+      `Main StyleSheet Found: ${FileUtils.convertToComponentRelativePath(matches[0])}`
+    )
     return matches[0]
   } else if (matches.length === 0) {
-    throw new FileMissingError('An index or main StyleSheet file could not be found.')
+    throw new FileMissingError(
+      'An index or main StyleSheet file could not be found.'
+    )
   }
   ux.debug(matches)
-  throw new InputFileError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
+  throw new InputFileError(
+    'Only one index or main StyleSheet file is allowed but multiple matches were found.'
+  )
 }
 
 /**
@@ -60,7 +66,7 @@ export function findMainStyleSheetFile (styleSheets, componentName) {
  * @param {string} componentName
  * @return {string}
  */
-export function getMainStyleSheet (styleSheets, componentName) {
+export function getMainStyleSheet(styleSheets, componentName) {
   // If there's only 1 Stylesheet file, take it!
   if (styleSheets.length === 1) {
     return styleSheets[0]
@@ -70,4 +76,8 @@ export function getMainStyleSheet (styleSheets, componentName) {
   }
 }
 
-export default { createMasterStylesheet, findMainStyleSheetFile, getMainStyleSheet }
+export default {
+  createMasterStylesheet,
+  findMainStyleSheetFile,
+  getMainStyleSheet
+}

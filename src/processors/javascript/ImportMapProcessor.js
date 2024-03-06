@@ -14,11 +14,19 @@ class ImportMapProcessor {
    * @param {string} outputFile
    * @param {string} collectionRootFolder
    */
-  static async build (jsFiles, outputFile, collectionRootFolder) {
+  static async build(jsFiles, outputFile, collectionRootFolder) {
     /** @type {{imports: Object<string, string>}} */
-    const importMap = await FileUtils.getJsonFileContents(path.join(collectionRootFolder, this.ImportMapFile))
-    const importMapEntries = this.resolveImportMapEntries(importMap.imports, collectionRootFolder)
-    const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries)
+    const importMap = await FileUtils.getJsonFileContents(
+      path.join(collectionRootFolder, this.ImportMapFile)
+    )
+    const importMapEntries = this.resolveImportMapEntries(
+      importMap.imports,
+      collectionRootFolder
+    )
+    const buildEntries = await this.resolveBuildEntries(
+      jsFiles,
+      importMapEntries
+    )
     const importMapTags = this.generateImportMapTags(buildEntries)
     await FileUtils.saveFile(outputFile, importMapTags)
     return this.filterBuildEntries(buildEntries, jsFiles)
@@ -29,18 +37,26 @@ class ImportMapProcessor {
    * @param {Object<string, string>} imports
    * @param {string} collectionRootFolder
    */
-  static resolveImportMapEntries (imports, collectionRootFolder) {
+  static resolveImportMapEntries(imports, collectionRootFolder) {
     /** @type {Map<string, string>} */
     const map = new Map()
     const entries = Object.entries(imports)
     const modulePatterns = this.resolveModulePatterns(entries)
-    const files = glob.sync(modulePatterns, { cwd: collectionRootFolder, absolute: true })
+    const files = glob.sync(modulePatterns, {
+      cwd: collectionRootFolder,
+      absolute: true
+    })
     for (const [specifierPattern, modulePattern] of entries) {
       if (WebUtils.isUrl(modulePattern)) {
         map.set(specifierPattern, modulePattern)
         continue
       }
-      const filteredFiles = files.filter(file => picomatch.isMatch(file, path.resolve(collectionRootFolder, modulePattern)))
+      const filteredFiles = files.filter((file) =>
+        picomatch.isMatch(
+          file,
+          path.resolve(collectionRootFolder, modulePattern)
+        )
+      )
       for (const file of filteredFiles) {
         map.set(this.getModuleSpecifier(file, specifierPattern), file)
       }
@@ -52,10 +68,10 @@ class ImportMapProcessor {
    * Resolve glob patterns from import map entries
    * @param {[string, string][]} entries
    */
-  static resolveModulePatterns (entries) {
+  static resolveModulePatterns(entries) {
     return entries
       .map(([, modulePattern]) => modulePattern)
-      .filter(modulePattern => !WebUtils.isUrl(modulePattern))
+      .filter((modulePattern) => !WebUtils.isUrl(modulePattern))
   }
 
   /**
@@ -63,7 +79,7 @@ class ImportMapProcessor {
    * @param {string} file
    * @param {string} specifierPattern
    */
-  static getModuleSpecifier (file, specifierPattern) {
+  static getModuleSpecifier(file, specifierPattern) {
     return specifierPattern.replace(/\*$/, path.parse(file).name)
   }
 
@@ -72,7 +88,7 @@ class ImportMapProcessor {
    * @param {Set<string>} jsFiles
    * @param {Map<string, string>} importMapEntries
    */
-  static async resolveBuildEntries (jsFiles, importMapEntries) {
+  static async resolveBuildEntries(jsFiles, importMapEntries) {
     await init
     /** @type {Map<string, string>} */
     const map = new Map()
@@ -94,7 +110,7 @@ class ImportMapProcessor {
    * @param {Map<string, string>} importMapEntries
    * @param {Map<string, string>} buildEntries
    */
-  static async processJsFile (file, importMapEntries, buildEntries) {
+  static async processJsFile(file, importMapEntries, buildEntries) {
     const fileContents = await FileUtils.getFileContents(file)
     const [imports] = parse(fileContents)
     const promises = []
@@ -109,7 +125,9 @@ class ImportMapProcessor {
       }
       if (!buildEntries.has(moduleSpecifier)) {
         buildEntries.set(moduleSpecifier, modulePath)
-        promises.push(this.processJsFile(modulePath, importMapEntries, buildEntries))
+        promises.push(
+          this.processJsFile(modulePath, importMapEntries, buildEntries)
+        )
       }
     }
     await Promise.all(promises)
@@ -119,7 +137,7 @@ class ImportMapProcessor {
    * Generate import map tags
    * @param {Map<string, string>} buildEntries
    */
-  static generateImportMapTags (buildEntries) {
+  static generateImportMapTags(buildEntries) {
     const entriesWithAssetUrl = this.getEntriesWithAssetUrl(buildEntries)
     return [this.generateImportMapTag(entriesWithAssetUrl)].join('\n')
   }
@@ -128,7 +146,7 @@ class ImportMapProcessor {
    * Get import map entries with asset URLs
    * @param {Map<string, string>} buildEntries
    */
-  static getEntriesWithAssetUrl (buildEntries) {
+  static getEntriesWithAssetUrl(buildEntries) {
     /** @type {Map<string, string>} */
     const map = new Map()
     for (const [specifier, modulePath] of buildEntries) {
@@ -141,7 +159,7 @@ class ImportMapProcessor {
    * Generate the tag for the import map
    * @param {Map<string, string>} entriesWithAssetUrl
    */
-  static generateImportMapTag (entriesWithAssetUrl) {
+  static generateImportMapTag(entriesWithAssetUrl) {
     return `<script type="importmap">\n${JSON.stringify({ imports: Object.fromEntries(entriesWithAssetUrl) }, null, 2)}\n</script>`
   }
 
@@ -149,15 +167,17 @@ class ImportMapProcessor {
    * Generate module preload tags for the entries in the import map
    * @param {Map<string, string>} entriesWithAssetUrl
    */
-  static generateModulePreloadTags (entriesWithAssetUrl) {
-    return [...entriesWithAssetUrl.values()].map(modulePath => `<link rel="modulepreload" href="${modulePath}">`)
+  static generateModulePreloadTags(entriesWithAssetUrl) {
+    return [...entriesWithAssetUrl.values()].map(
+      (modulePath) => `<link rel="modulepreload" href="${modulePath}">`
+    )
   }
 
   /**
    * Get the asset URL for a given asset path
    * @param {string} assetPath
    */
-  static assetUrl (assetPath) {
+  static assetUrl(assetPath) {
     return `{{ '${path.basename(assetPath)}' | asset_url }}`
   }
 
@@ -166,7 +186,7 @@ class ImportMapProcessor {
    * @param {Map<string, string>} buildEntries
    * @param {Set<string>} jsFiles
    */
-  static filterBuildEntries (buildEntries, jsFiles) {
+  static filterBuildEntries(buildEntries, jsFiles) {
     /** @type {Map<string, string>} */
     const map = new Map()
     for (const [specifier, modulePath] of buildEntries) {

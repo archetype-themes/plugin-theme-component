@@ -10,8 +10,10 @@ const URL_REGEX = /^(http:\/\/|https:\/\/|\/\/)/
  * @param {string} targetFolder
  * @return {Promise<Awaited<void>[]>}
  */
-export async function downloadFiles (remoteFiles, targetFolder) {
-  const downloadPromises = remoteFiles.map(file => downloadFile(file, targetFolder))
+export async function downloadFiles(remoteFiles, targetFolder) {
+  const downloadPromises = remoteFiles.map((file) =>
+    downloadFile(file, targetFolder)
+  )
 
   return Promise.all(downloadPromises)
 }
@@ -22,19 +24,23 @@ export async function downloadFiles (remoteFiles, targetFolder) {
  * @param {string} targetFolder
  * @return {Promise<void>}
  */
-export async function downloadFile (remoteFile, targetFolder) {
+export async function downloadFile(remoteFile, targetFolder) {
   return new Promise((resolve, reject) => {
-    https.get(remoteFile, (response) => {
-      let data = ''
-      response.on('data', (chunk) => {
-        data += chunk
+    https
+      .get(remoteFile, (response) => {
+        let data = ''
+        response.on('data', (chunk) => {
+          data += chunk
+        })
+        response.on('end', () => {
+          resolve(
+            FileUtils.saveFile(join(targetFolder, basename(remoteFile)), data)
+          )
+        })
       })
-      response.on('end', () => {
-        resolve(FileUtils.saveFile(join(targetFolder, basename(remoteFile)), data))
+      .on('error', (error) => {
+        reject(error)
       })
-    }).on('error', (error) => {
-      reject(error)
-    })
   })
 }
 
@@ -42,11 +48,11 @@ export async function downloadFile (remoteFile, targetFolder) {
  * Check if a string is a URL
  * @param {string} possibleUrl
  */
-export function isUrl (possibleUrl) {
+export function isUrl(possibleUrl) {
   return URL_REGEX.test(possibleUrl)
 }
 
-export function isRepoUrl (possibleRepoUrl) {
+export function isRepoUrl(possibleRepoUrl) {
   return /github\.com/.test(possibleRepoUrl)
 }
 

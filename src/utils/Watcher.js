@@ -25,7 +25,7 @@ const IGNORE_PATTERNS = [
  * @param {string} [path] - Path to .gitignore file to scan for patterns
  * @returns {string[]}
  */
-export function getIgnorePatterns (path) {
+export function getIgnorePatterns(path) {
   const ignorePatterns = IGNORE_PATTERNS
   if (path) {
     const gitIgnoreFile = join(path, '.gitignore')
@@ -41,7 +41,7 @@ export function getIgnorePatterns (path) {
  * @param {(string|RegExp)[]} [ignorePatterns]
  * @return {FSWatcher}
  */
-export function getWatcher (rootFolder, ignorePatterns) {
+export function getWatcher(rootFolder, ignorePatterns) {
   const targets = [rootFolder]
 
   /** @type {import('chokidar').WatchOptions} */
@@ -59,7 +59,7 @@ export function getWatcher (rootFolder, ignorePatterns) {
   }
 
   ux.debug('Chokidar will watch the following files & folders:')
-  targets.map(target => ux.debug(target))
+  targets.map((target) => ux.debug(target))
   return chokidarWatch(targets, watchOptions)
 }
 
@@ -69,7 +69,7 @@ export function getWatcher (rootFolder, ignorePatterns) {
  * @param {function} action
  * @return {FSWatcher}
  */
-export function watch (watcher, action) {
+export function watch(watcher, action) {
   return watcher.on('all', action)
 }
 

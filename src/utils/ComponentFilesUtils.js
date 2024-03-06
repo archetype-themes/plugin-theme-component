@@ -21,7 +21,7 @@ const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
  * @param {ComponentFiles} filesModel
  * @return {Promise<ComponentFiles>}
  */
-export async function indexFiles (componentName, folder, filesModel) {
+export async function indexFiles(componentName, folder, filesModel) {
   // Validation: make sure the folder is readable.
   await this.validateFolderAccess(folder, componentName)
 
@@ -31,15 +31,23 @@ export async function indexFiles (componentName, folder, filesModel) {
 
   // Validation: Make sure that a liquid file was found
   if (!filesModel.liquidFile) {
-    throw new FileMissingError(`No liquid files file found for the "${componentName}" component`)
+    throw new FileMissingError(
+      `No liquid files file found for the "${componentName}" component`
+    )
   }
 
   if (files) {
-    filesModel.javascriptIndex = JavascriptUtils.findMainJavaScriptFile(files, componentName)
+    filesModel.javascriptIndex = JavascriptUtils.findMainJavaScriptFile(
+      files,
+      componentName
+    )
   }
 
   if (filesModel.stylesheets.length) {
-    filesModel.mainStylesheet = StylesUtils.getMainStyleSheet(filesModel.stylesheets, componentName)
+    filesModel.mainStylesheet = StylesUtils.getMainStyleSheet(
+      filesModel.stylesheets,
+      componentName
+    )
   }
 
   return filesModel
@@ -51,7 +59,7 @@ export async function indexFiles (componentName, folder, filesModel) {
  * @param {ComponentFiles} componentFiles
  * @param {string} componentName
  */
-function filterFiles (files, componentFiles, componentName) {
+function filterFiles(files, componentFiles, componentName) {
   // Categorize files for the build steps
   for (const file of files) {
     const extension = extname(file).toLowerCase()
@@ -75,9 +83,14 @@ function filterFiles (files, componentFiles, componentName) {
 
     switch (extension) {
       case '.liquid':
-        if (filename.split('.')[0] === componentName || filename === 'index.liquid') {
+        if (
+          filename.split('.')[0] === componentName ||
+          filename === 'index.liquid'
+        ) {
           if (componentFiles.liquidFile) {
-            throw new InputFileError(`Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`)
+            throw new InputFileError(
+              `Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`
+            )
           }
           componentFiles.liquidFile = file
           break
@@ -94,11 +107,15 @@ function filterFiles (files, componentFiles, componentName) {
           break
         }
 
-        ux.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
+        ux.debug(
+          `Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`
+        )
         break
 
       default:
-        ux.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
+        ux.debug(
+          `Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`
+        )
         break
     }
   }
@@ -111,10 +128,14 @@ function filterFiles (files, componentFiles, componentName) {
  * @return {Promise<void>}
  * @throws FileAccessError
  */
-export async function validateFolderAccess (folder, componentName) {
-  if (!await FileUtils.isReadable(folder)) {
-    ux.debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
-    throw new FileAccessError(`Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`)
+export async function validateFolderAccess(folder, componentName) {
+  if (!(await FileUtils.isReadable(folder))) {
+    ux.debug(
+      `Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`
+    )
+    throw new FileAccessError(
+      `Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`
+    )
   }
 }
 

@@ -12,7 +12,7 @@ class PostCssProcessor {
    * @param {string} contextPath
    * @return {Promise<string>}
    */
-  static async processStyles (styles, sourceFile, targetFile, contextPath) {
+  static async processStyles(styles, sourceFile, targetFile, contextPath) {
     const processor = postcss([
       postcssImport(),
       postcssPresetEnv({

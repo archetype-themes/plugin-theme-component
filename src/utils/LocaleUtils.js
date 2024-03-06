@@ -8,7 +8,7 @@ import { join } from 'node:path'
  * @param {string} localesFolder
  * @return {Promise<Awaited<void>[]>}
  */
-export async function writeLocales (locales, localesFolder) {
+export async function writeLocales(locales, localesFolder) {
   const promises = []
 
   // Create one file per locale key

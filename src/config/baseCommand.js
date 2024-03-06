@@ -22,7 +22,7 @@ export class BaseCommand extends Command {
    * abstract run function for BaseCommand
    * @return {Promise<{component?: string, 'theme-path'?: string, 'locales-path'?: string, 'setup-files'?: boolean, watch?: boolean}|null>}
    */
-  async run () {
+  async run() {
     const commandElements = this.id.split(':')
     Session.command = commandElements[commandElements.length - 1]
 
@@ -32,7 +32,7 @@ export class BaseCommand extends Command {
     return tomlConfig
   }
 
-  static setUxOutputLevel (flags) {
+  static setUxOutputLevel(flags) {
     if (flags.debug) {
       ux.config.outputLevel = 'debug'
     }

@@ -11,7 +11,7 @@ Shopify Themes.
 
 - Bundle as many Reusable Components, as Snippets, as you want, within your Collection.
 - Share common JavaScript and Styles with your Sections
-- Say *"goodbye"* to duplicate code by sharing your Collection with as many Themes as you want
+- Say _"goodbye"_ to duplicate code by sharing your Collection with as many Themes as you want
 - Configure your Theme to use all or a selection of Components within a Collection
 - Fix your bug once; in the collection repository.
   - Update the Collection dependency in your Themes repository.
@@ -102,9 +102,9 @@ on any source file change. You can stop the process by pressing **Ctrl+C** on yo
 The CLI has a three-level log system, using the standard `info`, `debug`, `error` categories. `info` is the default
 level. To use a different log level, use the following flags when running the builder command:
 
-* `--verbose` will activate `debug` log level and a great number of details on internal processes will be
+- `--verbose` will activate `debug` log level and a great number of details on internal processes will be
   displayed.
-* `--quiet` will activate `error` log level. Only errors will be displayed.
+- `--quiet` will activate `error` log level. Only errors will be displayed.
 
 ```shell
 # Show Error, Info and Debug messages
@@ -118,11 +118,11 @@ npx component build --quiet
 
 ## Current Limitations
 
-* [Issue 21](https://github.com/archetype-themes/plugin-theme-component/issues/21): Collections must be part of the
-  *@archetype-themes*
-  namespace. Upon Theme Install, the namespace *@archetype-themes*
-  is Hardcoded when searching for collections in *node_modules* folder.
-* [Issue 34](https://github.com/archetype-themes/plugin-theme-component/issues/34): Installing multiple collections in a
+- [Issue 21](https://github.com/archetype-themes/plugin-theme-component/issues/21): Collections must be part of the
+  _@archetype-themes_
+  namespace. Upon Theme Install, the namespace _@archetype-themes_
+  is Hardcoded when searching for collections in _node_modules_ folder.
+- [Issue 34](https://github.com/archetype-themes/plugin-theme-component/issues/34): Installing multiple collections in a
   theme is not
   handled at the moment.
 
