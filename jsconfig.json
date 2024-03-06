@@ -10,7 +10,10 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "checkJs": true
+    "checkJs": true,
+    "paths": {
+      "@shopify/cli-kit/*": ["./node_modules/@shopify/cli-kit/dist/public/*"]
+    }
   },
   "include": ["src", "bin", "plugin"]
 }
