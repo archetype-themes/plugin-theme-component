@@ -33,11 +33,10 @@ Shopify CLI plugin for building theme components.
 # Commands
 
 <!-- commands -->
-
-- [`shopify theme component`](#shopify-theme-component)
-- [`shopify theme component dev [COMPONENTS]`](#shopify-theme-component-dev-components)
-- [`shopify theme component generate COMPONENTS`](#shopify-theme-component-generate-components)
-- [`shopify theme component install [COMPONENTS]`](#shopify-theme-component-install-components)
+* [`shopify theme component`](#shopify-theme-component)
+* [`shopify theme component dev [COMPONENTS]`](#shopify-theme-component-dev-components)
+* [`shopify theme component generate COMPONENTS`](#shopify-theme-component-generate-components)
+* [`shopify theme component install [COMPONENTS]`](#shopify-theme-component-install-components)
 
 ## `shopify theme component`
 
@@ -164,5 +163,4 @@ FLAG DESCRIPTIONS
 ```
 
 _See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.0.0/src/commands/theme/component/install.js)_
-
 <!-- commandsstop -->
