@@ -49,11 +49,7 @@ class CollectionBuilder {
         collection.rootFolder
       ),
       this.#buildLocales(allComponents),
-      this.#buildStyles(
-        allComponents,
-        collection.build.stylesheet,
-        collection.rootFolder
-      )
+      this.#buildStyles(allComponents, collection.build.stylesheet)
     ])
 
     return collection
@@ -140,10 +136,9 @@ class CollectionBuilder {
    *
    * @param {(Component|Snippet)[]} components - An array containing all the components.
    * @param {string} outputFile - The collection's css bundle file.
-   * @param {string} cwd - The working directory.
    * @return {Promise<string>} - A promise that resolves when the styles are built.
    */
-  static async #buildStyles(components, outputFile, cwd) {
+  static async #buildStyles(components, outputFile) {
     const mainStylesheets = this.#getMainStylesheets(components)
 
     if (mainStylesheets.length) {
@@ -152,8 +147,7 @@ class CollectionBuilder {
 
       const styles = await StylesProcessor.buildStylesBundle(
         mainStylesheets,
-        outputFile,
-        cwd
+        outputFile
       )
       logChildItem(`Styles Processor completed in ${timer.now()} seconds`)
       return styles

@@ -13,13 +13,11 @@ class StylesProcessor {
    * Create Styles Bundle
    * @param {string[]} stylesheets
    * @param {string} outputFile
-   * @param {string} collectionRootFolder - Collection path. It will be used to look for config files
    * @return {Promise<string>}
    */
   static async buildStylesBundle(
     stylesheets,
-    outputFile,
-    collectionRootFolder
+    outputFile
   ) {
     const masterStylesheet = path.join(os.tmpdir(), 'masterStylesheet.css')
     const masterStylesheetContents =
@@ -29,8 +27,7 @@ class StylesProcessor {
     const css = await PostCssProcessor.processStyles(
       masterStylesheetContents,
       masterStylesheet,
-      outputFile,
-      collectionRootFolder
+      outputFile
     )
     await unlink(masterStylesheet)
     return css
