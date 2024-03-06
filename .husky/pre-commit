@@ -1,1 +1,1 @@
-npx eslint --fix
+npm run lint:fix

@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dev command: New theme-path flag => Allows for a path to theme files to be specified manually
 - Dev command: New setup-files flag => A boolean flag to enable setup files copy
 - Dev command: New watch flag => This functionality will watch for changes in the components, locales and theme folders
+- Git Hooks: Automatically run "npm ci" after git merge and checkout actions
+- Git Hooks: Automatically run "npm ci" after git merge and checkout actions
 
 ### Changed
 
