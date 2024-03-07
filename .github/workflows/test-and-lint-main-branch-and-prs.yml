@@ -8,5 +8,5 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-and-lint:
+  lint-and-test:
     uses: archetype-themes/workflows/.github/workflows/npm-test-and-lint.yml@main
