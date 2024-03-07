@@ -293,8 +293,6 @@ export default class Dev extends BaseCommand {
     })
   }
 
-  static setSessionArgs(args, tomlConfig) {}
-
   static async setSessionValues(argv, flags, metadata, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
     Session.components = getValuesFromArgvOrToml(
