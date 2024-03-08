@@ -30,19 +30,10 @@ jobs:
           cache: 'npm'
           registry-url: https://npm.pkg.github.com
           scope: '@archetype-themes'
-      - name: Install Dependencies
-        run: npm ci
-      - name: Build The Release
-        run: npm run build --if-present
-      - name: Show tokens
-        run: |
-          echo "TEST_ENV"
-          echo "$TEST_ENV"
-          echo "GH_ID"
-          echo "$GITHUB_ID"
-          echo "GH_TK"
-          echo "$GITHUB_TOKEN"
-          echo "NAT"
-          echo "$NODE_AUTH_TOKEN"
       - name: Test The Release
-        run: npm test
+        run: |
+          npm ci
+          npm run build --if-present
+          git config --global user.name "${{ secrets.PERSONAL_ACCESS_ID }}"
+          git config --global user.email "${{ secrets.PERSONAL_ACCESS_EMAIL }}"
+          npm test
