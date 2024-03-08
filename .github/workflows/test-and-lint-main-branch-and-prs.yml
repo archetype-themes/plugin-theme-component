@@ -7,11 +7,6 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-#jobs:
-#  lint-and-test:
-#    uses: archetype-themes/workflows/.github/workflows/npm-test-and-lint.yml@main
-
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,7 +14,6 @@ jobs:
       GITHUB_ID: ${{ secrets.PERSONAL_ACCESS_ID }}
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       NODE_AUTH_TOKEN: ${{ github.token }}
-      TEST_ENV: "Cow Milk"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,9 +25,4 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: '@archetype-themes'
       - name: Test The Release
-        run: |
-          git config --global user.name "${{ secrets.PERSONAL_ACCESS_ID }}"
-          git config --global user.email "${{ secrets.PERSONAL_ACCESS_EMAIL }}"
-          git config --global url."https://github.com/".insteadOf git@github.com:
-          git config --global url."https://".insteadOf git://
-          npm test
+        run: npm test
