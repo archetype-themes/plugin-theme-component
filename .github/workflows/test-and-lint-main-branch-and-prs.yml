@@ -16,8 +16,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      GITHUB_ID: ${{ secrets.PERSONAL_GITHUB_ID }}
-      GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+      GITHUB_ID: ${{ secrets.PERSONAL_ACCESS_ID }}
+      GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       NODE_AUTH_TOKEN: ${{ github.token }}
       TEST_ENV: "Cow Milk"
     steps:
@@ -32,16 +32,9 @@ jobs:
           scope: '@archetype-themes'
       - name: Install Dependencies
         run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build The Release
         run: npm run build --if-present
       - name: Show tokens
-        env:
-          GITHUB_ID: ${{ secrets.PERSONAL_GITHUB_ID }}
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ github.token }}
-          TEST_ENV: "Cow Milk"
         run: |
           echo "TEST_ENV"
           echo "$TEST_ENV"
@@ -52,9 +45,4 @@ jobs:
           echo "NAT"
           echo "$NODE_AUTH_TOKEN"
       - name: Test The Release
-        env:
-          GITHUB_ID: ${{ secrets.PERSONAL_GITHUB_ID }}
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ github.token }}
-          TEST_ENV: "Cow Milk"
         run: npm test
