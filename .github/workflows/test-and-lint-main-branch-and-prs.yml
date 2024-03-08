@@ -22,11 +22,11 @@ jobs:
       TEST_ENV: "Cow Milk"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: 18.12.0
           cache: 'npm'
           registry-url: https://npm.pkg.github.com
           scope: '@archetype-themes'
