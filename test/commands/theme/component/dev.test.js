@@ -1,12 +1,14 @@
 import { chdir } from 'node:process'
 import { expect, test } from '@oclif/test'
-import { describe } from 'mocha'
+import { after, before, describe } from 'mocha'
 import { chDirToDefault, setupComponentsRepo } from '../../../utils.js'
 
-describe('dev command', function () {
-  this.timeout(10000)
-  const componentsInstallPath = await setupComponentsRepo()
-  chdir(componentsInstallPath)
+describe('dev command', async function () {
+  before(async function () {
+    this.timeout(10000)
+    const componentsInstallPath = await setupComponentsRepo()
+    chdir(componentsInstallPath)
+  })
 
   test
     .timeout(10000)
@@ -16,6 +18,7 @@ describe('dev command', function () {
       expect(ctx.stdout).to.contain('Install Complete')
     })
 
-  chDirToDefault()
-
+  after(function () {
+    chDirToDefault()
+  })
 })

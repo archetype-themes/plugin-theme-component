@@ -3,7 +3,7 @@ import { expect, test } from '@oclif/test'
 import { after, before, describe } from 'mocha'
 import { chDirToDefault, setupThemeRepo } from '../../../utils.js'
 
-describe('install command', function () {
+describe('install command', async function () {
   before(async function () {
     this.timeout(10000)
     const themeInstallPath = await setupThemeRepo()

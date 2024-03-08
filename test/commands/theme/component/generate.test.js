@@ -3,7 +3,7 @@ import { expect, test } from '@oclif/test'
 import { after, before, describe } from 'mocha'
 import { chDirToDefault, setupComponentsRepo } from '../../../utils.js'
 
-describe('generate command', function () {
+describe('generate command', async function () {
   before(async function () {
     this.timeout(10000)
     const componentsInstallPath = await setupComponentsRepo()
