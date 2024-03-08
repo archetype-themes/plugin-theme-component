@@ -1,7 +1,7 @@
 # Themes
 
 A Theme is a component type used by the CLI to identify a standard Shopify Theme. The CLI enhances Shopify Themes by
-enabling installation of one or more Components Collection.
+enabling installation of one or more Component Collection.
 
 ## Configuring your theme to use the CLI
 
@@ -34,11 +34,11 @@ npm link [collection-namespace]/[collection-name]
 
 Next, you will need to edit your package.json to add the component configuration element, at the location of your choice
 
-* Make sure you indicate your `type` as a **"theme"**
-* *Optional:* Follow with `path` to point to your theme source files if they are not at the root folder of the
+- Make sure you indicate your `type` as a **"theme"**
+- _Optional:_ Follow with `path` to point to your theme source files if they are not at the root folder of the
   repository.
-* *Optional:* Include a list of components from your collection for a partial install
-* *Optional:* Create shortcuts to the CLI commands in the scripts section
+- _Optional:_ Include a list of components from your collection for a partial installation
+- _Optional:_ Create shortcuts to the CLI commands in the scripts section
 
 ```json
 {
@@ -60,7 +60,7 @@ Next, you will need to edit your package.json to add the component configuration
 
 ### Install your collection
 
-The **"install"** command run a fresh build of your collection and installs it within your Theme.
+The **"install"** command runs a fresh build of your collection and installs it within your Theme.
 
 ```shell
 # If you want to use plugin-theme-component manually, you should use "npx"
@@ -74,7 +74,7 @@ npm run ai
 **Watch Flag**
 
 Using the watch flag, `--watch` or`-w`, will keep the CLI active and monitor the collection's source folders
-and refresh your install on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
+and refresh your installation on any file change. You can stop the process by pressing **Ctrl+C** on your keyboard.
 
 ```shell
 # If you want to use plugin-theme-component manually, you should use "npx"
@@ -102,7 +102,7 @@ snippets/[component-two].liquid
 snippets/[snippet-one].liquid
 ```
 
-The following files will be edited or created if need be:
+The following files will be edited or created if needed:
 
 ```shell
 # Adding JavaScript and Styles references if needed

@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] = 2024-03-08
+
+### Added
+
+- Dev command: Component arg now handles multiple component names
+- Dev command: New locales-path flag => Allows for a path to locale files to be specified manually
+- Dev command: New theme-path flag => Allows for a path to theme files to be specified manually
+- Dev command: New setup-files flag => A boolean flag to enable setup files copy
+- Dev command: New watch flag => This functionality will watch for changes in the components, locales and theme folders
+- Git Hooks: Automatically run "npm ci" after git merge and checkout actions
+- Git Hooks: Automatically run "npm ci" after git merge and checkout actions
+
+### Changed
+
+- code: Logger cleanup: All recently added log utility functions were moved to a new file: LoggerUtils.js
+- code: Utility libraries now adopt a Node.js typical, non-object-oriented architecture
+- code: The oclif and Archie commands are now merged under src; the plugins folder is gone.
+- code: model properties are now public, non-transformative getter and setters were removed
+- lint: now using eslint with standard JS and prettier plugin
+- toml config - dev command: The toml config properties were renamed to match the new command flag names.
+- toml config - dev command: The toml config file is now optional.
+- toml config - dev command: The new command flags have priority over toml values
+- toml config - dev command: All config options have default values through command flag default values
+- logs: replaced pino logs with @oclif/core's ux functions (mocha and pino-pretty didn't play well together)
+
+### Fixed
+
+- Unrecognized main stylesheet when using a [component-name].css name while having multiple stylesheets in a single
+  component
+- Missing Theme Name on Install: Now guessing theme name by using cwd since package.json was removed
+
+### Removed
+
+- Install command: Removed watch option. Use the Dev command's new features instead.
+
 ## [2.3.1] - 2024-02-14
 
 ### Fixed
@@ -54,7 +89,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Add omitted watch flag for install oclif command
+- Add the omitted watch flag for the oclif install command
 - Add missing trace/debug flags
 
 ## [2.0.3] - 2024-01-29
@@ -80,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Drop package.json functions https://github.com/archetype-themes/plugin-theme-component/pull/299
-- archie name and executable renamed to component in order to match the plugin name.
+- archie name and executable renamed to "component" to match the plugin name.
 
 ### Fixed
 
@@ -126,7 +161,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Missing Translation Warnings are now in alphabetical order and deduplicated
-- Components Tree filters out images
+- THe component tree now filters out images
 
 ### Fixed
 
@@ -138,7 +173,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Timer is a proper object model now instead of a utility class.
-- package tests now includes a check for cyclic redundancy.
+- The package tests now include a check for cyclic redundancy.
 
 ## [1.9.0] - 2023-12-14
 
@@ -155,7 +190,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   components
 - Updated dependencies
 - Renaming FileUtils.writeFile to FileUtils.saveFile to avoid name conflict with Node.js
-- Components tree will try to list section items only. It will list everything only if no section entry is found.
+- The component tree will try to list section items only. It will list everything only if no section entry is found.
 - FileUtils.js installExternalComponent was moved to its own Utils file to avoid circular dependencies.
 - PinoPretty as a stream was lagging, using it in sync.
 
@@ -185,13 +220,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Excluded modulepreload tags from importmap's output
+- Excluded modulepreload tags from the importmap output
 
 ## [1.8.5] - 2023-11-24
 
 ### Fixed
 
-- Git Clean Command burdens shopify theme dev with 100 deletes and re-uploads
+- The Git Clean Command burdens shopify theme dev with 100 files deletion and re-uploads
 
 ## [1.8.4] - 2023-11-22
 
@@ -322,15 +357,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added Components support (WIP)
-- CLI scans all folders for Components, Sections and Snippets, enforced structure is removed
+- CLI scans all folders for Components, Sections and Snippets; enforced structure is removed
 - Added a trace log level with pino, using silly log level as a proxy with Node.js
 
 ## [1.5.5] - 2023-09-02
 
 ### Changed
 
-- feature: settings schema array is now merged by name key. Before they were only merged with the theme's data upon
-  install.
+- feature: The settings schema array is now merged by name key. They were only merged with the theme's data upon
+  installation before.
 
 ## [1.5.4] - 2023-09-02
 
@@ -354,7 +389,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- bug: When building Collection, sections Schema Locales were always used instead of section Storefront Locales
+- bug: When building Collection, section Schema Locales were always used instead of section Storefront Locales
 
 ## [1.5.1] - 2023-08-29
 
@@ -368,18 +403,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- code: Render model and Render Factory were removed. They were originally needed for snippet inlining.
+- code: Render model and Render Factory were removed. They were originally needed for snippet in-lining.
 
 ## [1.5.0] - 2023-08-22
 
 ### Added
 
-- Locales: JS files input now accepted.
-- Schemas: JS files input now accepted.
+- Locales: JS files input is now accepted.
+- Schemas: JS files input is now accepted.
 
 ### Fixed
 
-- Storefront Locales and Schema Locales from snippets overwrite each other.
+- Storefront and Schema Locales from snippets overwrite each other.
 
 ### Changed
 
@@ -459,7 +494,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Install: ACTION REQUIRED: "component.componentPath" setting added in package.json, this allows for theme install in
   any
   folder. When not provided, this now defaults to the package's root folder rather than the previously hardcoded 'src'
-  sub-folder. Current Themes located in the src folder will need to add component.componentPath="src" to their
+  subfolder. Current Themes located in the src folder will need to add component.componentPath="src" to their
   package.json
   configuration. This closes #20
 - Section Schema: Section Schema now handles enabled_on and disabled_on missing additional properties. This closes #59
@@ -469,7 +504,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Workflow: PR Test workflow now also checks for proper code linting and circular dependencies.
 - SVG: SVGO config is now cached, preventing it from being loaded for every single svg file.
 - Internal: ComponentFilesUtils was moved to its proper location, the utils folder
-- Internal: Main sub-folder created in src to regroup all main components.
+- Internal: Main subfolder created in src to regroup all main components.
 
 ### Removed
 
@@ -513,7 +548,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Snippets inlining is disabled, files are now copied individually.
+- Snippets inlining are disabled, files are now copied individually.
 - Section liquid files are not built in the section folder anymore on collection commands, there is no need.
 
 ### Removed
@@ -522,8 +557,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.3] - 2023-05-19
 
-### Changed - External and Shareable Automated Node.js Package Publication
+### Changed
 
+- External and Shareable Automated Node.js Package Publication
 - CI: Automated Node.js package publishing is now external and can be shared with Next and other repositories.
 
 ## [1.2.2] - 2023-05-16 - Automated Node.js package publication
@@ -570,7 +606,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- NPM: Node engine version required was bumped to the current LTS version
+- NPM: The Node engine version required was bumped to the current LTS version
 - Documentation: Clarified the mission and added "main benefits" list on the main README.md
 - Documentation: Added GitHub Package Repository setup link in Prerequisites
 - Documentation: Modified NPM command examples to use the GitHub Package Repository

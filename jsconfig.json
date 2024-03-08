@@ -15,5 +15,5 @@
       "@shopify/cli-kit/*": ["./node_modules/@shopify/cli-kit/dist/public/*"]
     }
   },
-  "include": ["src", "bin", "plugin"]
+  "include": ["src", "bin"]
 }

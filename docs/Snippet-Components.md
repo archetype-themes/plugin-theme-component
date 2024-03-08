@@ -8,7 +8,7 @@ features, and more.
 You'll find it easy to [add a new component](Growing-Your-Collection.md#adding-a-new-component) to your collection with
 our CLI. We can create your component's folder structure and add some example files to it.
 
-Let's take a look at a component's structure. Below you'll find three examples of component folders.
+Let's take a look at a component's structure. Below, you'll find three examples of component folders.
 
 **The Minimalist**
 
@@ -67,7 +67,7 @@ more advanced stylesheets structure. Note that, `locales` folder uses the classi
 ### Root Folder
 
 **package.json**
-Your standard Node.js package configuration file, pre-populated with a few presets to help our CLI with component type
+Your standard Node.js package configuration file, pre-populated with a few presets to help our CLI with a component type
 and the likes.
 
 **README.md**
@@ -122,10 +122,7 @@ further Collections.
 
 ```json
 {
-  "workspaces": [
-    "components/*",
-    "shared/*"
-  ]
+  "workspaces": ["components/*", "shared/*"]
 }
 ```
 
@@ -186,21 +183,21 @@ should be created as an **Individual Component**.
 Whether your snippet is internal or external, you can refer to it in liquid files the usual way, using
 the `{% render %}` liquid tag. Our CLI will handle snippet resolution automatically at build time.
 
-#### How The CLI Handle Internal Snippets
+#### How The CLI Handles Internal Snippets
 
-When our CLI encounter the `{% render %}` liquid tag, it will first search your component's internal snippets
-sub-folder. When it is not found, it will then search your Collection's `components` workspace folder.
+When our CLI encounter the `{% render %}` liquid tag, it will first search your component's internal snippets'
+subfolder. When it is not found, it will then search your Collection's `components` workspace folder.
 
 ---
 
 ### SVG Components
 
 There is a subtype of component that benefits from SVG optimisation process. The liquid files need to be named in a
-specific way and their content should be limited to a single SVG image.
+specific way, and their content should be limited to a single SVG image.
 
 #### Name formats recognized as SVG
 
-Any one of these name patterns, or any combination of them, will trigger SVG Optimization process.
+Any one of these name patterns, or any combination of them, will trigger the SVG Optimization process.
 
 - Ends with `.svg.liquid`, ie: `star.svg.liquid`
 - Ends with `-svg`, ie: `star-svg.liquid`
@@ -209,17 +206,17 @@ Any one of these name patterns, or any combination of them, will trigger SVG Opt
 #### Process for the files
 
 - The files will be optimized through SVGO
-    - Options for SVGO optimization can be set using an `svgo.config.js` file at the root of your Collection repository.
-        - See the SVGO [Configuration](https://github.com/svg/svgo#configuration) documentation for available options.
+  - Options for SVGO optimization can be set using an `svgo.config.js` file at the root of your Collection repository.
+    - See the SVGO [Configuration](https://github.com/svg/svgo#configuration) documentation for available options.
 - The HTML `<svg>` tag will be added the following attributes:
-    - `"aria-hidden"="true"`
-    - `"focusable"="false"`
-    - `"role"="presentation"`
+  - `"aria-hidden"="true"`
+  - `"focusable"="false"`
+  - `"role"="presentation"`
 - Their HTML `<svg>` tag will be added the following classes:
-    - The `icon` CSS class.
-    - The `[filename]` CSS class. I.e.: `"class"="star-svg"`
-    - The `icon--wide` CSS class **if** the Width to Height ratio being above 1.5.
-    - The `icon--full-color` CSS class ** if** the svg file name contains `-full-color`.
+  - The `icon` CSS class.
+  - The `[filename]` CSS class. I.e.: `"class"="star-svg"`
+  - The `icon--wide` CSS class **if** the Width to Height ratio being above 1.5.
+  - The `icon--full-color` CSS class ** if** the svg file name contains `-full-color`.
 
 ---
 
@@ -236,7 +233,7 @@ consistency, even though embedding it in a Node.js package is not required.
 The additional namespace configuration in package.json and npm init command necessary for a Javascript Core library do
 not apply here since we will include the files through a relative path.
 
-Simply create the necessary folders and code away.
+Create the necessary folders and code away.
 
 ```shell
 # From the Collection's root folder, create your shared stylesheets path
@@ -257,7 +254,7 @@ your Collection's postcss.config.js file [options](https://github.com/postcss/po
 
 ```css
 /* CSS/PostCSS Import styles core example */
-@import "@archetype-themes/styles/index.css";
+@import '@archetype-themes/styles/index.css';
 ```
 
 ---
@@ -266,7 +263,7 @@ your Collection's postcss.config.js file [options](https://github.com/postcss/po
 
 ### Build a Component
 
-Building a component is pretty simple with Archetype Themes' CLI, simply run
+Building a component is pretty straightforward with Archetype Themes' CLI, run
 
 ```shell
 npx component build component [component-name]

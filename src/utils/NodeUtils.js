@@ -1,91 +1,134 @@
-// Node.js imports
-import { argv, exit } from 'node:process'
-import { dirname } from 'node:path'
+// External Dependencies
+import { cwd, env, exit } from 'node:process'
+import { dirname, join, sep } from 'node:path'
+import { ux } from '@oclif/core'
 
-// Internal Imports
-import logger, { DEBUG_LOG_LEVEL } from './Logger.js'
+// Internal Dependencies
+import FileUtils from './FileUtils.js'
+import { isDebugEnabled } from './LoggerUtils.js'
+import InternalError from '../errors/InternalError.js'
 
-class NodeUtils {
-  /**
-   * Get Command Line Args
-   * @return {string[]}
-   */
-  static getArgs () {
-    const args = argv.slice(2)
-    const filteredArgs = []
-
-    for (const arg of args) {
-      if (!/^--(verbose|quiet|debug)$/i.exec(arg)) {
-        filteredArgs.push(arg)
-      }
+/**
+ * Exit with Error
+ * @param {Error|string} error
+ */
+export function exitWithError(error) {
+  if (
+    typeof error === 'string' ||
+    error instanceof String ||
+    isDebugEnabled()
+  ) {
+    ux.error(error)
+  } else {
+    let errorMessage = ''
+    if (error.name && error.name.toLowerCase() !== 'error') {
+      errorMessage = `${error.name}: `
     }
-
-    return filteredArgs
-  }
-
-  /**
-   * Shortcut to a method to get root folder username
-   * @returns {string}
-   */
-  static getCLIRootFolderName () {
-    return new URL('../../', import.meta.url).pathname
-  }
-
-  /**
-   * Check if variable is of type string
-   * @param {*} variable
-   * @returns {boolean}
-   */
-  static isString (variable) {
-    return (typeof variable === 'string' || variable instanceof String)
-  }
-
-  /**
-   * Exit with Error
-   * @param {Error|string} error
-   */
-  static exitWithError (error) {
-    if (typeof error === 'string' || error instanceof String || logger.isLevelEnabled(DEBUG_LOG_LEVEL)) {
-      logger.error(error)
-    } else {
-      let errorMessage = ''
-      if (error.name && error.name.toLowerCase() !== 'error') {
-        errorMessage = `${error.name}: `
-      }
-      if (error.message) {
-        errorMessage += error.message
-      }
-      logger.error(errorMessage)
+    if (error.message) {
+      errorMessage += error.message
     }
-    exit(1)
+    ux.error(errorMessage)
   }
-
-  /**
-   * Returns the file path of the current module.
-   * @param {string} importMetaUrl - The import.meta.url of the current module.
-   * @return {string} - The file path of the current module.
-   */
-  static getCurrentFilePath (importMetaUrl) {
-    return new URL(importMetaUrl).pathname
-  }
-
-  /**
-   * Retrieves the current folder of the file where the method is being called.
-   * @param {string} importMetaUrl - The import.meta.url of the current file.
-   * @returns {string} The current folder of the file.
-   */
-  static getCurrentFileFolder (importMetaUrl) {
-    return dirname(NodeUtils.getCurrentFilePath(importMetaUrl))
-  }
+  exit(1)
 }
 
-export default NodeUtils
+export function getCurrentWorkingDirectoryName() {
+  const currentWorkingDirectory = cwd()
+  const directoryArray = currentWorkingDirectory.split(sep)
 
-// Export static methods individually
-export const exitWithError = NodeUtils.exitWithError
-export const getArgs = NodeUtils.getArgs
-export const getCLIRootFolderName = NodeUtils.getCLIRootFolderName
-export const getCurrentFileFolder = NodeUtils.getCurrentFileFolder
+  return directoryArray[directoryArray.length - 1]
+}
 
-export const getCurrentFilePath = NodeUtils.getCurrentFilePath
-export const isString = NodeUtils.isString
+/**
+ * Shortcut to a method to get root folder username
+ * @returns {string}
+ */
+export function getCLIRootFolderName() {
+  return new URL('../../', import.meta.url).pathname
+}
+
+/**
+ * Get Package Root Folder
+ * @return {string}
+ */
+export function getPackageRootFolder() {
+  // Generic env variable (should be set by npm and yarn)
+  if (env.npm_package_json) {
+    return dirname(env.npm_package_json)
+  }
+
+  throw new InternalError(
+    'Unable to get Package Root Folder through Environment Variables. Please make sure you are running this CLI from within a Node Package folder.'
+  )
+}
+
+/**
+ * Get Node.js package name without the scope
+ * @param {Object} [packageManifest] Optional Package Manifest JSON object
+ * @return {string}
+ */
+export function getPackageName(packageManifest) {
+  let packageNameAndScope
+  if (packageManifest?.name) {
+    packageNameAndScope = packageManifest.name
+  } else if (env.npm_package_name) {
+    packageNameAndScope = env.npm_package_name
+  } else {
+    throw new InternalError(
+      'Unavailable NPM Package Name environment variable and/or Package Manifest'
+    )
+  }
+
+  return packageNameAndScope.includes('/')
+    ? packageNameAndScope.split('/')[1]
+    : packageNameAndScope
+}
+
+/**
+ * Get Package JSON Content as an Object
+ * @param {string} [path]
+ * @return {Promise<Object>}
+ */
+export async function getPackageManifest(path) {
+  if (!path && !env.npm_package_json) {
+    path = cwd()
+  }
+
+  let packageJsonFile
+
+  if (path) {
+    packageJsonFile = join(path, 'package.json')
+  } else {
+    packageJsonFile = env.npm_package_json
+  }
+
+  return await FileUtils.getJsonFileContents(packageJsonFile)
+}
+
+/**
+ * Get Node.js Package Scope (i.e.: @archetype-themes)
+ * @param {Object} [packageManifest] Optional Package Manifest JSON object
+ * @return {string}
+ */
+export function getPackageScope(packageManifest) {
+  let packageNameAndScope
+  if (packageManifest?.name) {
+    packageNameAndScope = packageManifest.name
+  } else if (env.npm_package_name) {
+    packageNameAndScope = env.npm_package_name
+  } else {
+    throw new InternalError('Unavailable NPM Package Name environment variable')
+  }
+  return packageNameAndScope.includes('/')
+    ? packageNameAndScope.split('/')[0]
+    : ''
+}
+
+export default {
+  exitWithError,
+  getCurrentWorkingDirectoryName,
+  getCLIRootFolderName,
+  getPackageRootFolder,
+  getPackageName,
+  getPackageScope
+}

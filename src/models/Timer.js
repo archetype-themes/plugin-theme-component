@@ -5,7 +5,7 @@ class Timer {
   /** @type {bigint} **/
   time
 
-  constructor () {
+  constructor() {
     this.time = hrtime.bigint()
   }
 
@@ -27,13 +27,18 @@ class Timer {
    * // Get time elapsed in milliseconds
    * const timerNowMilliseconds = timer.now(false);
    */
-  now (inSeconds = true, precision = 3) {
+  now(inSeconds = true, precision = 3) {
     const now = hrtime.bigint() - this.time
 
     if (inSeconds) {
       const bigIntEndTimer = now / BigInt(Math.pow(10, 9 - precision))
-      if (bigIntEndTimer > Number.MAX_SAFE_INTEGER && bigIntEndTimer < Number.MIN_SAFE_INTEGER) {
-        throw new InternalError('Timer conversion issue. BigInt Value is out of bounds')
+      if (
+        bigIntEndTimer > Number.MAX_SAFE_INTEGER &&
+        bigIntEndTimer < Number.MIN_SAFE_INTEGER
+      ) {
+        throw new InternalError(
+          'Timer conversion issue. BigInt Value is out of bounds'
+        )
       }
 
       return Number(bigIntEndTimer) / Math.pow(10, precision)

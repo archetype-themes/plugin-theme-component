@@ -2,25 +2,23 @@
 import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-class LocaleUtils {
-  /**
-   * Write Locales
-   * @param {Object} locales
-   * @param {string} localesFolder
-   * @return {Promise<Awaited<void>[]>}
-   */
-  static async writeLocales (locales, localesFolder) {
-    const promises = []
+/**
+ * Write Locales
+ * @param {Object} locales
+ * @param {string} localesFolder
+ * @return {Promise<Awaited<void>[]>}
+ */
+export async function writeLocales(locales, localesFolder) {
+  const promises = []
 
-    // Create one file per locale key
-    for (const locale of Object.keys(locales)) {
-      const localeFilename = join(localesFolder, `${locale}.json`)
-      const localeJsonString = JSON.stringify(locales[locale], null, 2)
-      promises.push(writeFile(localeFilename, localeJsonString))
-    }
-
-    return Promise.all(promises)
+  // Create one file per locale key
+  for (const locale of Object.keys(locales)) {
+    const localeFilename = join(localesFolder, `${locale}.json`)
+    const localeJsonString = JSON.stringify(locales[locale], null, 2)
+    promises.push(writeFile(localeFilename, localeJsonString))
   }
+
+  return Promise.all(promises)
 }
 
-export default LocaleUtils
+export default { writeLocales }
