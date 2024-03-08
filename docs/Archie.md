@@ -4,14 +4,14 @@ Archetype Themes' CLI (Command Line Interface) is designed to facilitate Shopify
 it fast and easy to populate and maintain Themes with tons of Sections.
 
 Gone are the days of manually copying sections from one theme to another, Archetype Themes' CLI allows you to create a
-shareable Collection of Sections that we bundle as an NPM package. Simply add the dependency to install them within your
+shareable Collection of Sections that we bundle as an NPM package. Add the dependency to install them within your
 Shopify Themes.
 
 **Main Benefits**
 
 - Bundle as many Reusable Components, as Snippets, as you want, within your Collection.
 - Share common JavaScript and Styles with your Sections
-- Say *"goodbye"* to duplicated code by sharing your Collection with as many Themes as you want
+- Say _"goodbye"_ to duplicate code by sharing your Collection with as many Themes as you want
 - Configure your Theme to use all or a selection of Components within a Collection
 - Fix your bug once; in the collection repository.
   - Update the Collection dependency in your Themes repository.
@@ -31,10 +31,9 @@ Collections.
 
 ## CLI Components
 
-Archetype Themes' CLI interacts with multiple component types: ComponentsComponents (Snippets), Component Collections
-and Themes.
+Archetype Themes' CLI interacts with multiple component types: Components, Snippets, Component Collections, and Themes.
 
-You can easily create and maintain a Collection of Components to share amongst your Themes. Collections are
+You can create and maintain a Collection of Components to share amongst your Themes. Collections are
 structured as a Node.js Monorepo of child repositories of Components and shared elements in their respective workspaces.
 
 ### Please read the following guides to help you on your journey
@@ -100,12 +99,12 @@ on any source file change. You can stop the process by pressing **Ctrl+C** on yo
 
 ### Log Level
 
-The CLI has a three levels log system, using the standard `info`, `debug`, `error` categories. `info` is the default
+The CLI has a three-level log system, using the standard `info`, `debug`, `error` categories. `info` is the default
 level. To use a different log level, use the following flags when running the builder command:
 
-* `--verbose` will activate `debug` log level and a great number of details on internal processes will be
+- `--verbose` will activate `debug` log level and a great number of details on internal processes will be
   displayed.
-* `--quiet` will activate `error` log level. Only errors will be displayed.
+- `--quiet` will activate `error` log level. Only errors will be displayed.
 
 ```shell
 # Show Error, Info and Debug messages
@@ -119,11 +118,11 @@ npx component build --quiet
 
 ## Current Limitations
 
-* [Issue 21](https://github.com/archetype-themes/plugin-theme-component/issues/21): Collections must be part of the
-  *@archetype-themes*
-  namespace. Upon Theme Install, the namespace *@archetype-themes*
-  is Hardcoded when searching for collections in *node_modules* folder.
-* [Issue 34](https://github.com/archetype-themes/plugin-theme-component/issues/34): Installing multiple collections in a
+- [Issue 21](https://github.com/archetype-themes/plugin-theme-component/issues/21): Collections must be part of the
+  _@archetype-themes_
+  namespace. Upon Theme Install, the namespace _@archetype-themes_
+  is Hardcoded when searching for collections in _node_modules_ folder.
+- [Issue 34](https://github.com/archetype-themes/plugin-theme-component/issues/34): Installing multiple collections in a
   theme is not
   handled at the moment.
 

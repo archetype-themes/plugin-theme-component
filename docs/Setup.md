@@ -4,7 +4,7 @@
 
 ### Installing NodeJS
 
-Installing Node.js is necessary in order to use the CLI. You can use Node Version Manager if you might need multiple
+Installing Node.js is necessary to use the CLI. You can use Node Version Manager if you might need multiple
 different versions of node on your system. You can use Homebrew to always have the latest stable version on your system.
 You can also get binaries from the [node.js](https://nodejs.org/en/) website.
 
@@ -14,7 +14,7 @@ You can also get binaries from the [node.js](https://nodejs.org/en/) website.
 installed per-user, and invoked per-shell. `nvm` works on any POSIX-compliant shell (sh, dash, ksh, zsh, bash), in
 particular on these platforms: unix, macOS, and [windows WSL](https://github.com/nvm-sh/nvm#important-notes).
 
-[nvm](https://github.com/nvm-sh/nvm) allows you to quickly install and use different versions of node via the command
+[nvm](https://github.com/nvm-sh/nvm) allows you to quickly install and use different versions of Node.js via the command
 line.
 
 Follow instructions on the [nvm](https://github.com/nvm-sh/nvm) page to install it and to see how to install the latest

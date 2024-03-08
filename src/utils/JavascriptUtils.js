@@ -1,54 +1,35 @@
-// Internal Modules
+// External Dependencies
+import { ux } from '@oclif/core'
+
+// Internal Dependencies
 import FileUtils from './FileUtils.js'
-import logger from './Logger.js'
 
-class JavascriptUtils {
-  /**
-   * Finds the main or index JavaScript file within the provided file list
-   * @param {string[]} files
-   * @param {string} componentName
-   * @returns {string | undefined}
-   */
-  static findMainJavaScriptFile (files, componentName) {
-    const regex = this.mainJavaScriptFileRegex(componentName)
-    const mainJavaScriptFile = files.find(file => regex.test(file))
+/**
+ * Finds the main or index JavaScript file within the provided file list
+ * @param {string[]} files
+ * @param {string} componentName
+ * @returns {string | undefined}
+ */
+export function findMainJavaScriptFile(files, componentName) {
+  const regex = this.mainJavaScriptFileRegex(componentName)
+  const mainJavaScriptFile = files.find((file) => regex.test(file))
 
-    if (!mainJavaScriptFile) {
-      return
-    }
-
-    logger.debug(`JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`)
-
-    return mainJavaScriptFile
+  if (!mainJavaScriptFile) {
+    return undefined
   }
 
-  /**
-   * @param {string} componentName
-   */
-  static mainJavaScriptFileRegex (componentName) {
-    return new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
-  }
+  ux.debug(
+    `JavaScript Entrypoint found: ${FileUtils.convertToComponentRelativePath(mainJavaScriptFile)}`
+  )
 
-  /**
-   * Generate JS Bundle Index
-   * @param {string[]} javascriptFiles
-   * @return string
-   */
-  static generateJsBundleIndex (javascriptFiles) {
-    let jsBundleIndexContents = ''
-    const processedJavascriptFiles = []
-
-    for (const javascriptFile of javascriptFiles) {
-      // When building a Collection, multiple Components might include the same snippet,
-      // Therefore we check for duplicates
-      if (!processedJavascriptFiles.includes(javascriptFile)) {
-        jsBundleIndexContents += `import '${javascriptFile}'\n`
-        processedJavascriptFiles.push(javascriptFile)
-      }
-    }
-
-    return jsBundleIndexContents
-  }
+  return mainJavaScriptFile
 }
 
-export default JavascriptUtils
+/**
+ * @param {string} componentName
+ */
+export function mainJavaScriptFileRegex(componentName) {
+  return new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
+}
+
+export default { findMainJavaScriptFile, mainJavaScriptFileRegex }

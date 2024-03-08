@@ -1,8 +1,9 @@
-// Node Core imports
-import merge from 'deepmerge'
+// External Dependencies
 import { basename, join } from 'node:path'
+import { ux } from '@oclif/core'
+import merge from 'deepmerge'
 
-// Internal Imports
+// Internal Dependencies
 import {
   copyFolder,
   exists,
@@ -11,27 +12,32 @@ import {
   isReadable,
   isWritable,
   saveFile
-} from '../../utils/FileUtils.js'
-import logger from '../../utils/Logger.js'
+} from '../utils/FileUtils.js'
 
 class CollectionInstaller {
   /**
    * Install Collection Within a Theme
-   * @param {import('../../models/Theme.js').default} theme
+   * @param {import('../models/Theme.js').default} theme
    * @param {module:models/Collection} collection
    * @return {Promise<Awaited<unknown>[]>}
    */
-  static async install (theme, collection) {
+  static async install(theme, collection) {
     const fileOperations = []
     // Copy Asset Folder
-    fileOperations.push(copyFolder(collection.build.assetsFolder, theme.assetsFolder))
+    fileOperations.push(
+      copyFolder(collection.build.assetsFolder, theme.assetsFolder)
+    )
 
     // Copy Snippets Folder
-    fileOperations.push(copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
+    fileOperations.push(
+      copyFolder(collection.build.snippetsFolder, theme.snippetsFolder)
+    )
 
     // Merge & Install Storefront Locales
     if (collection.build.locales) {
-      fileOperations.push(this.writeLocales(collection.build.locales, theme.localesFolder))
+      fileOperations.push(
+        this.writeLocales(collection.build.locales, theme.localesFolder)
+      )
     }
 
     // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
@@ -43,21 +49,26 @@ class CollectionInstaller {
   /**
    * Inject references to the Collection's main CSS and JS files in the theme's main liquid file
    * @param {module:models/Collection} collection
-   * @param {import('../../models/Theme.js').default} theme
+   * @param {import('../models/Theme.js').default} theme
    * @return {Promise<void>}
    */
-  static async injectAssetReferences (collection, theme) {
+  static async injectAssetReferences(collection, theme) {
     const injectableAssets = [
       {
         asset: collection.build.javascriptFile,
-        tagTemplate: filename => `<script src="{{ '${filename}' | asset_url }}" async></script>`,
+        tagTemplate: (filename) =>
+          `<script src="{{ '${filename}' | asset_url }}" async></script>`,
         loggerMessage: 'Source Collection Javascript file %s found.'
       },
       {
         asset: collection.build.stylesheet,
-        tagTemplate: filename => `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
+        tagTemplate: (filename) =>
+          `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
         loggerMessage: 'Source Collection Stylesheet file %s found.',
-        nameModifier: name => name.endsWith('.liquid') ? name.substring(0, name.lastIndexOf('.')) : name
+        nameModifier: (name) =>
+          name.endsWith('.liquid')
+            ? name.substring(0, name.lastIndexOf('.'))
+            : name
       }
     ]
 
@@ -67,26 +78,40 @@ class CollectionInstaller {
       ? await getFileContents(themeLiquidFile)
       : ''
 
-    for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
-      if (!asset || !await exists(asset)) continue
+    for (const {
+      asset,
+      tagTemplate,
+      loggerMessage,
+      nameModifier
+    } of injectableAssets) {
+      if (!asset || !(await exists(asset))) continue
 
-      logger.debug(loggerMessage, basename(asset))
+      ux.debug(loggerMessage, basename(asset))
 
       let assetBasename = basename(asset)
       if (nameModifier) assetBasename = nameModifier(assetBasename)
 
       if (themeLiquid.includes(assetBasename)) {
-        logger.warn(`Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`)
+        ux.warn(
+          `Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`
+        )
         continue
       }
 
       injections.push(tagTemplate(assetBasename))
     }
 
-    if (await isWritable(themeLiquidFile) && injections.length > 0) {
-      await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
+    if ((await isWritable(themeLiquidFile)) && injections.length > 0) {
+      await this.writeAssetReferencesToThemeLiquidFile(
+        injections,
+        themeLiquid,
+        themeLiquidFile
+      )
     } else if (injections.length > 0) {
-      this.injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
+      this.injectionFailureWarning(
+        `Theme Liquid file (${themeLiquidFile}) is not writable.`,
+        injections
+      )
     }
   }
 
@@ -97,12 +122,19 @@ class CollectionInstaller {
    * @param {string} themeLiquidFile
    * @return {Promise<void>}
    */
-  static async writeAssetReferencesToThemeLiquidFile (injections, themeLiquid, themeLiquidFile) {
+  static async writeAssetReferencesToThemeLiquidFile(
+    injections,
+    themeLiquid,
+    themeLiquidFile
+  ) {
     const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
 
     // Exit if No </head> tag was found
     if (closingHtmlHeadTagCount === 0) {
-      return this.injectionFailureWarning('Html head tag closure not found in "theme.liquid".', injections)
+      return this.injectionFailureWarning(
+        'Html head tag closure not found in "theme.liquid".',
+        injections
+      )
     }
 
     // Exit if Multiple </head> tags were found
@@ -113,14 +145,19 @@ class CollectionInstaller {
       )
     }
 
-    logger.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
-    themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
+    ux.debug(
+      'Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.'
+    )
+    themeLiquid = themeLiquid.replace(
+      '</head>',
+      `${injections.join('\n')}\n</head>`
+    )
 
     await saveFile(themeLiquidFile, themeLiquid)
   }
 
-  static injectionFailureWarning (message, injections) {
-    logger.warn(`
+  static injectionFailureWarning(message, injections) {
+    ux.warn(`
 **************************************************************************************************
 ${message}
 
@@ -138,8 +175,8 @@ You should manually insert these lines inside your "theme.liquid" file:
    * @param {string} themeLocalesPath
    * @return {Promise<Awaited<unknown>[]>}
    */
-  static async writeLocales (locales, themeLocalesPath) {
-    logger.debug('Merging Collection Locales with the Theme\'s Locales')
+  static async writeLocales(locales, themeLocalesPath) {
+    ux.debug("Merging Collection Locales with the Theme's Locales")
     const fileOperations = []
 
     // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
@@ -159,13 +196,21 @@ You should manually insert these lines inside your "theme.liquid" file:
         const themeLocale = await getJsonFileContents(realTargetFile)
         const mergedLocale = merge(collectionLocale, themeLocale)
 
-        fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
+        fileOperations.push(
+          saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2))
+        )
       } else {
-        // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File in order to determine 'default' status for the locale.
+        // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File to determine 'default' status for the locale.
         const defaultLocaleFilename = `${locale}.default.json`
-        const realTargetFile = await exists(join(themeLocalesPath, defaultLocaleFilename)) ? defaultTargetFile : targetFile
+        const realTargetFile = (await exists(
+          join(themeLocalesPath, defaultLocaleFilename)
+        ))
+          ? defaultTargetFile
+          : targetFile
 
-        fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
+        fileOperations.push(
+          saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2))
+        )
       }
     }
     return Promise.all(fileOperations)

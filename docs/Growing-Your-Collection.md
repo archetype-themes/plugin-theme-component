@@ -1,6 +1,6 @@
 # Growing Your Collection
 
-A Components Collection is a Node.js Monorepo that regroups multiple Shopify
+A Component Collection is a Node.js Monorepo that regroups multiple Shopify
 Theme [Snippet Components](Snippet-Components.md) as child repositories in their respective namespaces.
 
 ## Child Component Snippets
@@ -21,21 +21,21 @@ Please refer to the [Snippet Components](Snippet-Components.md) guide for more d
 
 ### The Template Files
 
-The source template files are located under the [``resources/component-files``](../resources/component-files) folder.
+The source template files are located under the [`resources/component-files`](../resources/component-files) folder.
 The files will be copied as is into the newly created component folder.
 
 The files contain variables in the form of JavaScript Template Strings. These variables will be replaced with their
 actual value upon creation. The available variables are:
 
-````javascript
+```javascript
 ${collectionName}   // The collection's name
 ${componentName}    // The component's name
 ${componentType}    // The component's type
 ${packageName}      // The component's NPM package name (including scope)
-````
+```
 
 **Pro Tip:** As an Archetype Themes developer, you can edit these files to your liking. You can also add new files to
-the [``resources/component-files``](../resources/component-files) folder, and they will be copied over to the new
+the [`resources/component-files`](../resources/component-files) folder, and they will be copied over to the new
 component.
 
 ## Building your collection
@@ -47,12 +47,12 @@ npx component build collection
 npx component build collection --watch
 ```
 
-This will bundle your collection's components as snippets inside the **build** sub-folder.
+This will bundle your collection's components as snippets inside the **build** subfolder.
 
 **PostCSS Build Pro Tips:**
 When using PostCSS, use of a PostCSS config file at the root of your Collection is recommended. The CLI will load it
 through the use of [postcss-load-config](https://www.npmjs.com/package/postcss-load-config) and take it into
-consideration when building a component, a collection or even when installing to a theme.
+consideration when building a component, a collection, or even when installing in a theme.
 
 - Reference to some [postcss.config.js usage examples](https://github.com/postcss/postcss#usage)
 - Reference to [available postcss process options](https://postcss.org/api/#processoptions)

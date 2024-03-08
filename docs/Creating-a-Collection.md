@@ -29,7 +29,7 @@ npm install @archetype-themes/plugin-theme-component
 
 ## Node Package Configuration
 
-Next, you will need to edit your package.json in order to add/replace the following sections.
+Next, you will need to edit your package.json to add or replace the following sections.
 
 ```json
 {
@@ -40,16 +40,13 @@ Next, you will need to edit your package.json in order to add/replace the follow
     "build": "component build",
     "dev": "component build --watch"
   },
-  "workspaces": [
-    "./components/*",
-    "./shared/*"
-  ]
+  "workspaces": ["./components/*", "./shared/*"]
 }
 ```
 
 - Add the **component** group with
-  - Set the component `type` to **"collection"**  to ensure the CLI identifies your package as a collection monorepo.
-- Add or change the **scripts**  groups
+  - Set the component `type` to **"collection"** to ensure the CLI identifies your package as a collection monorepo.
+- Add or change the **scripts** groups
   - The **"build"** script starts a Collection build with the CLI. This is a shortcut to the full `npx component build`
     command.
   - The **"dev"** script starts a Collection build with the CLI and watches for file changes within the Collection's

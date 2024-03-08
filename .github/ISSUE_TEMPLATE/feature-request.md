@@ -4,7 +4,6 @@ about: Suggest a new feature for the DevKit CLI
 title: ''
 labels: feature
 assignees: ''
-
 ---
 
 **Current Situation**
