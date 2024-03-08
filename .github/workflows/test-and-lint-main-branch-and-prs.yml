@@ -32,8 +32,8 @@ jobs:
           scope: '@archetype-themes'
       - name: Test The Release
         run: |
-          npm ci
-          npm run build --if-present
           git config --global user.name "${{ secrets.PERSONAL_ACCESS_ID }}"
           git config --global user.email "${{ secrets.PERSONAL_ACCESS_EMAIL }}"
+          git config --global user.name
+          git config --global user.email
           npm test
