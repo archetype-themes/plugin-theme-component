@@ -60,7 +60,6 @@ async function setupRepo(repositoryUrl, installPath) {
   if (await exists(installPath)) {
     await rm(installPath, { recursive: true, force: true })
   }
-  console.log(`SETUP REPO: ${repositoryUrl}`)
   await mkdir(installPath, { recursive: true })
   return clone(repositoryUrl, installPath)
 }
