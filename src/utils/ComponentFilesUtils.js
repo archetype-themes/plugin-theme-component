@@ -11,8 +11,14 @@ import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
 
-const STYLE_EXTENSIONS = ['.css']
-const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
+/** @type {string[]}  **/
+export const STYLE_EXTENSIONS = ['.css']
+/** @type {string[]}  **/
+export const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
+/** @type {string}  **/
+export const LIQUID_EXTENSION = '.liquid'
+/** @type {string}  **/
+export const JSON_EXTENSION = '.json'
 
 /**
  * Index Component Files
@@ -82,7 +88,7 @@ function filterFiles(files, componentFiles, componentName) {
     }
 
     switch (extension) {
-      case '.liquid':
+      case LIQUID_EXTENSION:
         if (
           filename.split('.')[0] === componentName ||
           filename === 'index.liquid'
@@ -101,7 +107,7 @@ function filterFiles(files, componentFiles, componentName) {
         }
         ux.warn(`Ignored liquid file ${filename}`)
         break
-      case '.json':
+      case JSON_EXTENSION:
         if (filename === 'package.json') {
           componentFiles.packageJson = file
           break

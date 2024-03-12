@@ -1,5 +1,5 @@
 // External Dependencies
-import { join } from 'node:path'
+import { extname, join } from 'node:path'
 import { ux } from '@oclif/core'
 // eslint-disable-next-line no-unused-vars
 import { FSWatcher, watch as chokidarWatch } from 'chokidar'
@@ -7,6 +7,19 @@ import gitignore from 'parse-gitignore'
 
 // Internal Dependencies
 import { CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import {
+  JSON_EXTENSION,
+  LIQUID_EXTENSION,
+  SCRIPT_EXTENSIONS,
+  STYLE_EXTENSIONS
+} from './ComponentFilesUtils.js'
+
+export const ChangeType = {
+  Stylesheet: 'stylesheet',
+  JavaScript: 'JavaScript',
+  Liquid: 'liquid',
+  Locale: 'locale'
+}
 
 const IGNORE_PATTERNS = [
   'package.json',
@@ -73,4 +86,21 @@ export function watch(watcher, action) {
   return watcher.on('all', action)
 }
 
-export default { getWatcher, watch }
+export function getChangeTypeFromName(filename) {
+  const extension = extname(filename)
+
+  if (STYLE_EXTENSIONS.includes(extension)) {
+    return ChangeType.Stylesheet
+  }
+  if (SCRIPT_EXTENSIONS.includes(extension)) {
+    return ChangeType.JavaScript
+  }
+  if (LIQUID_EXTENSION === extension) {
+    return ChangeType.Liquid
+  }
+  if (JSON_EXTENSION === extension) {
+    return ChangeType.Locale
+  }
+}
+
+export default { getWatcher, getChangeTypeFromName, watch }

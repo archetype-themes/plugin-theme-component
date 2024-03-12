@@ -13,6 +13,7 @@ import {
   isWritable,
   saveFile
 } from '../utils/FileUtils.js'
+import { LIQUID_EXTENSION } from '../utils/ComponentFilesUtils.js'
 
 class CollectionInstaller {
   /**
@@ -66,7 +67,7 @@ class CollectionInstaller {
           `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
         loggerMessage: 'Source Collection Stylesheet file %s found.',
         nameModifier: (name) =>
-          name.endsWith('.liquid')
+          name.endsWith(LIQUID_EXTENSION)
             ? name.substring(0, name.lastIndexOf('.'))
             : name
       }

@@ -10,6 +10,9 @@ class Session {
   /** @type {string} CLI Caller Component Type **/
   static callerType
 
+  /** @type {ChangeType} Watcher Change Type **/
+  static changeType
+
   /** @type {Object} Install command's collection names and child components list **/
   static collections
 
