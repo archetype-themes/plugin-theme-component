@@ -42,7 +42,7 @@ import {
   getPathFromFlagOrTomlValue
 } from '../../../utils/SessionUtils.js'
 import {
-  getChangeTypeFromName,
+  getChangeTypeFromFilename,
   getIgnorePatterns,
   getWatcher,
   watch
@@ -225,7 +225,7 @@ export default class Dev extends BaseCommand {
   ) {
     if (event && eventPath) {
       logWatcherEvent(event, eventPath)
-      Session.changeType = getChangeTypeFromName(eventPath)
+      Session.changeType = getChangeTypeFromFilename(eventPath)
     }
 
     // Build & Deploy Collection

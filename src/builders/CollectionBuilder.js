@@ -24,6 +24,7 @@ import {
 import LocaleUtils from '../utils/LocaleUtils.js'
 import { isDebugEnabled, logChildItem } from '../utils/LoggerUtils.js'
 import { downloadFiles, isRepoUrl, isUrl } from '../utils/WebUtils.js'
+import { ChangeType } from '../utils/Watcher.js'
 
 class CollectionBuilder {
   /**
@@ -38,19 +39,41 @@ class CollectionBuilder {
     collection.build = BuildFactory.fromCollection(collection)
     await this.#resetBuildFolders(collection.build)
     logChildItem(`Collection Build Initialized (${timer.now()} seconds)`)
-    ;[
-      collection.importMapEntries,
-      collection.build.locales,
-      collection.build.styles
-    ] = await Promise.all([
-      this.#buildJavaScript(
-        allComponents,
-        collection.build.importMapFile,
-        collection.rootFolder
-      ),
-      this.#buildLocales(allComponents),
-      this.#buildStyles(allComponents, collection.build.stylesheet)
-    ])
+
+    if (Session.firstRun) {
+      ;[
+        collection.importMapEntries,
+        collection.build.locales,
+        collection.build.styles
+      ] = await Promise.all([
+        this.#buildJavaScript(
+          allComponents,
+          collection.build.importMapFile,
+          collection.rootFolder
+        ),
+        this.#buildLocales(allComponents),
+        this.#buildStyles(allComponents, collection.build.stylesheet)
+      ])
+    } else {
+      switch (Session.changeType) {
+        case ChangeType.JavaScript:
+          collection.importMapEntries = await this.#buildJavaScript(
+            allComponents,
+            collection.build.importMapFile,
+            collection.rootFolder
+          )
+          break
+        case ChangeType.Locale:
+          collection.build.locales = await this.#buildLocales(allComponents)
+          break
+        case ChangeType.Stylesheet:
+          collection.build.styles = await this.#buildStyles(
+            allComponents,
+            collection.build.stylesheet
+          )
+          break
+      }
+    }
 
     return collection
   }
@@ -161,37 +184,52 @@ class CollectionBuilder {
    */
   static async deployToBuildFolder(collection) {
     const allComponents = collection.allComponents
+    const promises = []
 
-    const localesWritePromise = LocaleUtils.writeLocales(
-      collection.build.locales,
-      collection.build.localesFolder
-    )
-    const snippetFilesWritePromises = Promise.all(
-      allComponents.map((component) =>
-        saveFile(
-          join(collection.build.snippetsFolder, `${component.name}.liquid`),
-          component.build.liquidCode
+    if (Session.firstRun || Session.changeType === ChangeType.Locale) {
+      const localesWritePromise = LocaleUtils.writeLocales(
+        collection.build.locales,
+        collection.build.localesFolder
+      )
+      promises.push(localesWritePromise)
+    }
+
+    if (
+      collection.build.styles &&
+      (Session.firstRun || Session.changeType === ChangeType.Stylesheet)
+    ) {
+      const stylesheetSavePromise = saveFile(
+        collection.build.stylesheet,
+        collection.build.styles
+      )
+      promises.push(stylesheetSavePromise)
+    }
+
+    if (Session.firstRun || Session.changeType === ChangeType.Asset) {
+      const allAssetFiles = this.#getAssetFiles(allComponents)
+      const copyAssetFilesPromise = copyFilesToFolder(
+        allAssetFiles,
+        collection.build.assetsFolder
+      )
+      promises.push(copyAssetFilesPromise)
+    }
+
+    if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
+      const snippetFilesWritePromises = Promise.all(
+        allComponents.map((component) =>
+          saveFile(
+            join(collection.build.snippetsFolder, `${component.name}.liquid`),
+            component.build.liquidCode
+          )
         )
       )
-    )
+      promises.push(snippetFilesWritePromises)
+    }
 
-    const allAssetFiles = this.#getAssetFiles(allComponents)
-    const copyAssetFilesPromise = copyFilesToFolder(
-      allAssetFiles,
-      collection.build.assetsFolder
-    )
-    const stylesheetSavePromise = saveFile(
-      collection.build.stylesheet,
-      collection.build.styles ?? ''
-    )
-    const promises = [
-      stylesheetSavePromise,
-      localesWritePromise,
-      snippetFilesWritePromises,
-      copyAssetFilesPromise
-    ]
-
-    if (collection.importMapEntries?.size) {
+    if (
+      collection.importMapEntries?.size &&
+      (Session.firstRun || Session.changeType === ChangeType.JavaScript)
+    ) {
       const deployImportMapFilesPromises = this.#deployImportMapFiles(
         collection.importMapEntries,
         collection.build.assetsFolder

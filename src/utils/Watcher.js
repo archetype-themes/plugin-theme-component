@@ -15,6 +15,7 @@ import {
 } from './ComponentFilesUtils.js'
 
 export const ChangeType = {
+  Asset: 'asset',
   Stylesheet: 'stylesheet',
   JavaScript: 'JavaScript',
   Liquid: 'liquid',
@@ -86,7 +87,12 @@ export function watch(watcher, action) {
   return watcher.on('all', action)
 }
 
-export function getChangeTypeFromName(filename) {
+/**
+ *
+ * @param {string} filename
+ * @return {string} ChangeType enum value
+ */
+export function getChangeTypeFromFilename(filename) {
   const extension = extname(filename)
 
   if (STYLE_EXTENSIONS.includes(extension)) {
@@ -101,6 +107,11 @@ export function getChangeTypeFromName(filename) {
   if (JSON_EXTENSION === extension) {
     return ChangeType.Locale
   }
+  return ChangeType.Asset
 }
 
-export default { getWatcher, getChangeTypeFromName, watch }
+export default {
+  getWatcher,
+  getChangeTypeFromFilename,
+  watch
+}
