@@ -8,6 +8,7 @@ import {
   readFile,
   writeFile
 } from 'node:fs/promises'
+import { cpSync, existsSync, readFileSync } from 'node:fs'
 import { basename, join, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
@@ -57,9 +58,21 @@ export async function copy(files) {
  * @return {Promise<Awaited<void>[]>}
  */
 export async function copyFilesToFolder(files, targetFolder) {
-  const filesCopyPromises = files.map((file) =>
-    copyFile(file, join(targetFolder, basename(file)))
-  )
+  const filesCopyPromises = []
+  files.forEach((file) => {
+    const destination = join(targetFolder, basename(file))
+    if (existsSync(destination)) {
+      const destinationContents = readFileSync(destination, 'utf8')
+      const fileContents = readFileSync(file, 'utf8')
+      if (destinationContents !== fileContents) {
+        filesCopyPromises.push(
+          cpSync(file, destination, { preserveTimestamps: true })
+        )
+      }
+    } else {
+      filesCopyPromises.push(copyFile(file, destination))
+    }
+  })
 
   return Promise.all(filesCopyPromises)
 }
@@ -114,13 +127,14 @@ export async function copyFolder(
           )
         )
       } else {
-        fileOperations.push(copyFile(sourceFile, targetFile))
+        fileOperations.push(
+          cpSync(sourceFile, targetFile, { preserveTimestamps: true })
+        )
       }
     } else if (dirent.isDirectory() && options.recursive) {
       const newTargetFolder = join(targetFolder, dirent.name)
-      await mkdir(newTargetFolder, { recursive: true })
       fileOperations.push(
-        copyFolder(join(sourceFolder, dirent.name), newTargetFolder, options)
+        cpSync(join(sourceFolder, dirent.name), newTargetFolder, options)
       )
     }
   }
@@ -319,8 +333,14 @@ export async function searchFile(path, filename, recursive = false) {
  */
 export async function saveFile(file, fileContents) {
   ux.trace(`Writing to disk: ${file}`)
-
-  return writeFile(file, fileContents, FILE_ENCODING_OPTION)
+  if (existsSync(file)) {
+    const destinationContents = readFileSync(file, 'utf8')
+    if (destinationContents !== fileContents) {
+      return writeFile(file, fileContents, FILE_ENCODING_OPTION)
+    }
+  } else {
+    return writeFile(file, fileContents, FILE_ENCODING_OPTION)
+  }
 }
 
 /**

@@ -27,9 +27,10 @@ class ImportMapProcessor {
       jsFiles,
       importMapEntries
     )
-    const importMapTags = this.generateImportMapTags(buildEntries)
+    const sortedBuildEntries = new Map([...buildEntries.entries()].sort())
+    const importMapTags = this.generateImportMapTags(sortedBuildEntries)
     await FileUtils.saveFile(outputFile, importMapTags)
-    return this.filterBuildEntries(buildEntries, jsFiles)
+    return this.filterBuildEntries(sortedBuildEntries, jsFiles)
   }
 
   /**

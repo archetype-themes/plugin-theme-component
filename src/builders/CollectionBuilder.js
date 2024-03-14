@@ -37,7 +37,9 @@ class CollectionBuilder {
 
     const timer = new Timer()
     collection.build = BuildFactory.fromCollection(collection)
-    await this.#resetBuildFolders(collection.build)
+    if (Session.firstRun) {
+      await this.#resetBuildFolders(collection.build)
+    }
     logChildItem(`Collection Build Initialized (${timer.now()} seconds)`)
 
     if (Session.firstRun) {
