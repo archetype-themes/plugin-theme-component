@@ -3,6 +3,7 @@ import {
   access,
   constants,
   copyFile,
+  cp,
   mkdir,
   readdir,
   readFile,
@@ -128,13 +129,13 @@ export async function copyFolder(
         )
       } else {
         fileOperations.push(
-          cpSync(sourceFile, targetFile, { preserveTimestamps: true })
+          cp(sourceFile, targetFile, { preserveTimestamps: true })
         )
       }
     } else if (dirent.isDirectory() && options.recursive) {
       const newTargetFolder = join(targetFolder, dirent.name)
       fileOperations.push(
-        cpSync(join(sourceFolder, dirent.name), newTargetFolder, options)
+        cp(join(sourceFolder, dirent.name), newTargetFolder, options)
       )
     }
   }
