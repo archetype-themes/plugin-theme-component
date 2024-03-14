@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.0] = 2024-02-27
+## [3.0.0] = 2024-03-08
 
 ### Added
 
@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dev command: New theme-path flag => Allows for a path to theme files to be specified manually
 - Dev command: New setup-files flag => A boolean flag to enable setup files copy
 - Dev command: New watch flag => This functionality will watch for changes in the components, locales and theme folders
+- Git Hooks: Automatically run "npm ci" after git merge and checkout actions
+- Git Hooks: Automatically run "npm ci" after git merge and checkout actions
 
 ### Changed
 
@@ -21,10 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - code: Utility libraries now adopt a Node.js typical, non-object-oriented architecture
 - code: The oclif and Archie commands are now merged under src; the plugins folder is gone.
 - code: model properties are now public, non-transformative getter and setters were removed
+- lint: now using eslint with standard JS and prettier plugin
 - toml config - dev command: The toml config properties were renamed to match the new command flag names.
 - toml config - dev command: The toml config file is now optional.
 - toml config - dev command: The new command flags have priority over toml values
 - toml config - dev command: All config options have default values through command flag default values
+- logs: replaced pino logs with @oclif/core's ux functions (mocha and pino-pretty didn't play well together)
 
 ### Fixed
 

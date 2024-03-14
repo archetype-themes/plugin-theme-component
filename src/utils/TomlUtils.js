@@ -15,8 +15,8 @@ import { CONFIG_FILE_NAME } from '../config/CLI.js'
  *
  * @return {Promise<ComponentTomlConfig|null>}
  */
-export async function getTomlConfig () {
-  if (!await FileUtils.isReadable(CONFIG_FILE_NAME)) {
+export async function getTomlConfig() {
+  if (!(await FileUtils.isReadable(CONFIG_FILE_NAME))) {
     return null
   }
 

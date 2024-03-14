@@ -34,11 +34,11 @@ npm link [collection-namespace]/[collection-name]
 
 Next, you will need to edit your package.json to add the component configuration element, at the location of your choice
 
-* Make sure you indicate your `type` as a **"theme"**
-* *Optional:* Follow with `path` to point to your theme source files if they are not at the root folder of the
+- Make sure you indicate your `type` as a **"theme"**
+- _Optional:_ Follow with `path` to point to your theme source files if they are not at the root folder of the
   repository.
-* *Optional:* Include a list of components from your collection for a partial installation
-* *Optional:* Create shortcuts to the CLI commands in the scripts section
+- _Optional:_ Include a list of components from your collection for a partial installation
+- _Optional:_ Create shortcuts to the CLI commands in the scripts section
 
 ```json
 {

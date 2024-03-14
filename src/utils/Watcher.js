@@ -1,9 +1,12 @@
+// External Dependencies
+import { join } from 'node:path'
+import { ux } from '@oclif/core'
 // eslint-disable-next-line no-unused-vars
 import { FSWatcher, watch as chokidarWatch } from 'chokidar'
-import logger from './Logger.js'
-import { CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import gitignore from 'parse-gitignore'
-import { join } from 'node:path'
+
+// Internal Dependencies
+import { CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
 const IGNORE_PATTERNS = [
   'package.json',
@@ -22,7 +25,7 @@ const IGNORE_PATTERNS = [
  * @param {string} [path] - Path to .gitignore file to scan for patterns
  * @returns {string[]}
  */
-export function getIgnorePatterns (path) {
+export function getIgnorePatterns(path) {
   const ignorePatterns = IGNORE_PATTERNS
   if (path) {
     const gitIgnoreFile = join(path, '.gitignore')
@@ -38,7 +41,7 @@ export function getIgnorePatterns (path) {
  * @param {(string|RegExp)[]} [ignorePatterns]
  * @return {FSWatcher}
  */
-export function getWatcher (rootFolder, ignorePatterns) {
+export function getWatcher(rootFolder, ignorePatterns) {
   const targets = [rootFolder]
 
   /** @type {import('chokidar').WatchOptions} */
@@ -55,8 +58,8 @@ export function getWatcher (rootFolder, ignorePatterns) {
     watchOptions.ignored = ignorePatterns
   }
 
-  logger.debug('Chokidar will watch the following files & folders:')
-  logger.debug(targets)
+  ux.debug('Chokidar will watch the following files & folders:')
+  targets.map((target) => ux.debug(target))
   return chokidarWatch(targets, watchOptions)
 }
 
@@ -66,7 +69,7 @@ export function getWatcher (rootFolder, ignorePatterns) {
  * @param {function} action
  * @return {FSWatcher}
  */
-export function watch (watcher, action) {
+export function watch(watcher, action) {
   return watcher.on('all', action)
 }
 

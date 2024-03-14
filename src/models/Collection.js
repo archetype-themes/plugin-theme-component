@@ -27,7 +27,7 @@ class Collection {
   /** @type {Map<string, string> | undefined} **/
   importMapEntries
 
-  constructor () {
+  constructor() {
     this.componentNames = []
     this.components = []
   }
@@ -36,7 +36,7 @@ class Collection {
    * Get all components and snippets in a single array
    * @return {(Component|Snippet)[]}
    */
-  get allComponents () {
+  get allComponents() {
     return [...this.components, ...this.snippets]
   }
 }

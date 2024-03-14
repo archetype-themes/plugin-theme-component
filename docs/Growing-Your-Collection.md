@@ -21,21 +21,21 @@ Please refer to the [Snippet Components](Snippet-Components.md) guide for more d
 
 ### The Template Files
 
-The source template files are located under the [``resources/component-files``](../resources/component-files) folder.
+The source template files are located under the [`resources/component-files`](../resources/component-files) folder.
 The files will be copied as is into the newly created component folder.
 
 The files contain variables in the form of JavaScript Template Strings. These variables will be replaced with their
 actual value upon creation. The available variables are:
 
-````javascript
+```javascript
 ${collectionName}   // The collection's name
 ${componentName}    // The component's name
 ${componentType}    // The component's type
 ${packageName}      // The component's NPM package name (including scope)
-````
+```
 
 **Pro Tip:** As an Archetype Themes developer, you can edit these files to your liking. You can also add new files to
-the [``resources/component-files``](../resources/component-files) folder, and they will be copied over to the new
+the [`resources/component-files`](../resources/component-files) folder, and they will be copied over to the new
 component.
 
 ## Building your collection

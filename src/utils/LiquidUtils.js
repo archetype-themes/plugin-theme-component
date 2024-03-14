@@ -1,18 +1,19 @@
 /** @type {RegExp} **/
-const LIQUID_BLOCK_REGEX = /\{%-?.*?-?%}/sg
+const LIQUID_BLOCK_REGEX = /\{%-?.*?-?%}/gs
 
 /** @type {RegExp} **/
-const LIQUID_COMMENTS_REGEX = /\{%-?\s*comment\s*-?%}[\s\S]*?\{%-?\s*endcomment\s*-?%}/gi
+const LIQUID_COMMENTS_REGEX =
+  /\{%-?\s*comment\s*-?%}[\s\S]*?\{%-?\s*endcomment\s*-?%}/gi
 
 /** @type {RegExp} **/
-const LIQUID_RENDER_REGEX = /\srender\s+'([^']+)'/sg
+const LIQUID_RENDER_REGEX = /\srender\s+'([^']+)'/gs
 
 /**
  * Finds snippet names from render tags in liquid code
  * @param {string} liquidCode
  * @returns {string[]}
  */
-export function getSnippetNames (liquidCode) {
+export function getSnippetNames(liquidCode) {
   const cleanLiquidCode = stripComments(liquidCode)
 
   const snippetNames = new Set()
@@ -25,7 +26,7 @@ export function getSnippetNames (liquidCode) {
   return [...snippetNames]
 }
 
-export function stripComments (liquidCode) {
+export function stripComments(liquidCode) {
   return liquidCode.replace(LIQUID_COMMENTS_REGEX, '')
 }
 

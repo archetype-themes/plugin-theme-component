@@ -28,13 +28,17 @@ class Component {
    * @param {string} [name] - Component Name
    * @param {string} [path] - Component Path
    */
-  constructor (name, path) {
+  constructor(name, path) {
     if (name) this.name = name
     if (path) this.rootFolder = path
   }
 
-  isSvg () {
-    return !!((this.name.startsWith('icon-') || this.name.endsWith('-svg') || this.name.endsWith('.svg')))
+  isSvg() {
+    return !!(
+      this.name.startsWith('icon-') ||
+      this.name.endsWith('-svg') ||
+      this.name.endsWith('.svg')
+    )
   }
 }
 

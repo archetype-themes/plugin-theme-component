@@ -122,10 +122,7 @@ further Collections.
 
 ```json
 {
-  "workspaces": [
-    "components/*",
-    "shared/*"
-  ]
+  "workspaces": ["components/*", "shared/*"]
 }
 ```
 
@@ -209,17 +206,17 @@ Any one of these name patterns, or any combination of them, will trigger the SVG
 #### Process for the files
 
 - The files will be optimized through SVGO
-    - Options for SVGO optimization can be set using an `svgo.config.js` file at the root of your Collection repository.
-        - See the SVGO [Configuration](https://github.com/svg/svgo#configuration) documentation for available options.
+  - Options for SVGO optimization can be set using an `svgo.config.js` file at the root of your Collection repository.
+    - See the SVGO [Configuration](https://github.com/svg/svgo#configuration) documentation for available options.
 - The HTML `<svg>` tag will be added the following attributes:
-    - `"aria-hidden"="true"`
-    - `"focusable"="false"`
-    - `"role"="presentation"`
+  - `"aria-hidden"="true"`
+  - `"focusable"="false"`
+  - `"role"="presentation"`
 - Their HTML `<svg>` tag will be added the following classes:
-    - The `icon` CSS class.
-    - The `[filename]` CSS class. I.e.: `"class"="star-svg"`
-    - The `icon--wide` CSS class **if** the Width to Height ratio being above 1.5.
-    - The `icon--full-color` CSS class ** if** the svg file name contains `-full-color`.
+  - The `icon` CSS class.
+  - The `[filename]` CSS class. I.e.: `"class"="star-svg"`
+  - The `icon--wide` CSS class **if** the Width to Height ratio being above 1.5.
+  - The `icon--full-color` CSS class ** if** the svg file name contains `-full-color`.
 
 ---
 
@@ -257,7 +254,7 @@ your Collection's postcss.config.js file [options](https://github.com/postcss/po
 
 ```css
 /* CSS/PostCSS Import styles core example */
-@import "@archetype-themes/styles/index.css";
+@import '@archetype-themes/styles/index.css';
 ```
 
 ---

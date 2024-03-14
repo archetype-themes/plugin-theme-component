@@ -1,8 +1,8 @@
-// Node Imports
+// External Dependencies
 import { join } from 'path'
+import { cwd } from 'node:process'
 
-// Internal Imports
-import Theme from '../models/Theme.js'
+// Internal Dependencies
 import {
   ASSETS_FOLDER_NAME,
   CONFIG_FOLDER_NAME,
@@ -10,6 +10,7 @@ import {
   SECTIONS_FOLDER_NAME,
   SNIPPETS_FOLDER_NAME
 } from '../config/Components.js'
+import Theme from '../models/Theme.js'
 import { getCurrentWorkingDirectoryName } from '../utils/NodeUtils.js'
 
 class ThemeFactory {
@@ -17,11 +18,11 @@ class ThemeFactory {
    * From Build Script
    * @return {Theme}
    */
-  static fromThemeInstallCommand () {
+  static fromThemeInstallCommand() {
     const theme = new Theme()
 
     theme.name = getCurrentWorkingDirectoryName()
-    theme.rootFolder = process.cwd()
+    theme.rootFolder = cwd()
 
     return ThemeFactory.#setChildFolders(theme)
   }
@@ -31,7 +32,7 @@ class ThemeFactory {
    * @param {string} themeRootFolder
    * @returns {Promise<Theme>}
    */
-  static async fromDevCommand (themeRootFolder) {
+  static async fromDevCommand(themeRootFolder) {
     const theme = new Theme()
 
     theme.rootFolder = themeRootFolder
@@ -44,7 +45,7 @@ class ThemeFactory {
    * @param {Theme} theme
    * @returns {Theme}
    */
-  static #setChildFolders (theme) {
+  static #setChildFolders(theme) {
     theme.assetsFolder = join(theme.rootFolder, ASSETS_FOLDER_NAME)
     theme.configFolder = join(theme.rootFolder, CONFIG_FOLDER_NAME)
     theme.localesFolder = join(theme.rootFolder, LOCALES_FOLDER_NAME)
