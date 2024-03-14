@@ -59,9 +59,9 @@ export async function copy(files) {
  */
 export async function copyFilesToFolder(files, targetFolder) {
   const filesCopyPromises = []
-  files.forEach((file) => {
+  for (const file of files) {
     const destination = join(targetFolder, basename(file))
-    if (existsSync(destination)) {
+    if (await isReadable(destination)) {
       const destinationContents = readFileSync(destination, 'utf8')
       const fileContents = readFileSync(file, 'utf8')
       if (destinationContents !== fileContents) {
@@ -72,7 +72,7 @@ export async function copyFilesToFolder(files, targetFolder) {
     } else {
       filesCopyPromises.push(copyFile(file, destination))
     }
-  })
+  }
 
   return Promise.all(filesCopyPromises)
 }
