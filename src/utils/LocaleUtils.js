@@ -1,7 +1,7 @@
 // Node.js imports
 import { writeFile } from 'node:fs/promises'
-import { exists, existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { getFileContents, isReadable } from './FileUtils.js'
 
 /**
  * Write Locales
@@ -16,8 +16,8 @@ export async function writeLocales(locales, localesFolder) {
   for (const locale of Object.keys(locales)) {
     const localeFilename = join(localesFolder, `${locale}.json`)
     const localeJsonString = JSON.stringify(locales[locale], null, 2)
-    if (existsSync(localeFilename)) {
-      const fileContents = readFileSync(localeFilename, 'utf8')
+    if (await isReadable(localeFilename)) {
+      const fileContents = await getFileContents(localeFilename)
       if (localeJsonString !== fileContents) {
         promises.push(writeFile(localeFilename, localeJsonString))
       }
