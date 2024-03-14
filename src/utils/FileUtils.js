@@ -8,7 +8,7 @@ import {
   readFile,
   writeFile
 } from 'node:fs/promises'
-import { cpSync, readFileSync } from 'node:fs'
+import { cpSync } from 'node:fs'
 import { basename, join, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
@@ -62,8 +62,8 @@ export async function copyFilesToFolder(files, targetFolder) {
   for (const file of files) {
     const destination = join(targetFolder, basename(file))
     if (await isReadable(destination)) {
-      const destinationContents = readFileSync(destination, 'utf8')
-      const fileContents = readFileSync(file, 'utf8')
+      const destinationContents = await getFileContents(destination)
+      const fileContents = await getFileContents(file)
       if (destinationContents !== fileContents) {
         filesCopyPromises.push(
           cpSync(file, destination, { preserveTimestamps: true })
@@ -334,7 +334,7 @@ export async function searchFile(path, filename, recursive = false) {
 export async function saveFile(file, fileContents) {
   ux.trace(`Writing to disk: ${file}`)
   if (await isReadable(file)) {
-    const destinationContents = readFileSync(file, 'utf8')
+    const destinationContents = await getFileContents(file)
     if (destinationContents !== fileContents) {
       return writeFile(file, fileContents, FILE_ENCODING_OPTION)
     }
