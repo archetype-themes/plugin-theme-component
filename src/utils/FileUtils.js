@@ -9,7 +9,6 @@ import {
   readFile,
   writeFile
 } from 'node:fs/promises'
-import { cpSync } from 'node:fs'
 import { basename, join, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
@@ -66,9 +65,7 @@ export async function copyFilesToFolder(files, targetFolder) {
       const destinationContents = await getFileContents(destination)
       const fileContents = await getFileContents(file)
       if (destinationContents !== fileContents) {
-        filesCopyPromises.push(
-          cpSync(file, destination, { preserveTimestamps: true })
-        )
+        await cp(file, destination, { preserveTimestamps: true })
       }
     } else {
       filesCopyPromises.push(copyFile(file, destination))
