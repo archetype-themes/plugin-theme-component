@@ -41,7 +41,12 @@ import {
   getValueFromFlagOrToml,
   getPathFromFlagOrTomlValue
 } from '../../../utils/SessionUtils.js'
-import { getIgnorePatterns, getWatcher, watch } from '../../../utils/Watcher.js'
+import {
+  getChangeTypeFromFilename,
+  getIgnorePatterns,
+  getWatcher,
+  watch
+} from '../../../utils/Watcher.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
 
 /** @type {string} **/
@@ -220,6 +225,7 @@ export default class Dev extends BaseCommand {
   ) {
     if (event && eventPath) {
       logWatcherEvent(event, eventPath)
+      Session.changeType = getChangeTypeFromFilename(eventPath)
     }
 
     // Build & Deploy Collection

@@ -13,6 +13,9 @@ import {
   isWritable,
   saveFile
 } from '../utils/FileUtils.js'
+import { LIQUID_EXTENSION } from '../utils/ComponentFilesUtils.js'
+import Session from '../models/static/Session.js'
+import { ChangeType } from '../utils/Watcher.js'
 
 class CollectionInstaller {
   /**
@@ -23,25 +26,39 @@ class CollectionInstaller {
    */
   static async install(theme, collection) {
     const fileOperations = []
+
     // Copy Asset Folder
-    fileOperations.push(
-      copyFolder(collection.build.assetsFolder, theme.assetsFolder)
-    )
-
-    // Copy Snippets Folder
-    fileOperations.push(
-      copyFolder(collection.build.snippetsFolder, theme.snippetsFolder)
-    )
-
-    // Merge & Install Storefront Locales
-    if (collection.build.locales) {
+    if (
+      Session.firstRun ||
+      [ChangeType.Asset, ChangeType.JavaScript, ChangeType.Stylesheet].includes(
+        Session.changeType
+      )
+    ) {
       fileOperations.push(
-        this.writeLocales(collection.build.locales, theme.localesFolder)
+        copyFolder(collection.build.assetsFolder, theme.assetsFolder)
       )
     }
 
-    // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
-    fileOperations.push(this.injectAssetReferences(collection, theme))
+    // Copy Snippets Folder
+    if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
+      fileOperations.push(
+        copyFolder(collection.build.snippetsFolder, theme.snippetsFolder)
+      )
+    }
+
+    // Merge & Install Storefront Locales
+    if (Session.firstRun || Session.changeType === ChangeType.Locale) {
+      if (collection.build.locales) {
+        fileOperations.push(
+          this.writeLocales(collection.build.locales, theme.localesFolder)
+        )
+      }
+    }
+
+    if (Session.firstRun) {
+      // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
+      fileOperations.push(this.injectAssetReferences(collection, theme))
+    }
 
     return Promise.all(fileOperations)
   }
@@ -66,7 +83,7 @@ class CollectionInstaller {
           `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
         loggerMessage: 'Source Collection Stylesheet file %s found.',
         nameModifier: (name) =>
-          name.endsWith('.liquid')
+          name.endsWith(LIQUID_EXTENSION)
             ? name.substring(0, name.lastIndexOf('.'))
             : name
       }
