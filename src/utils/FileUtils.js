@@ -8,7 +8,7 @@ import {
   readFile,
   writeFile
 } from 'node:fs/promises'
-import { cpSync, existsSync, readFileSync } from 'node:fs'
+import { cpSync, readFileSync } from 'node:fs'
 import { basename, join, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
@@ -333,7 +333,7 @@ export async function searchFile(path, filename, recursive = false) {
  */
 export async function saveFile(file, fileContents) {
   ux.trace(`Writing to disk: ${file}`)
-  if (existsSync(file)) {
+  if (await isReadable(file)) {
     const destinationContents = readFileSync(file, 'utf8')
     if (destinationContents !== fileContents) {
       return writeFile(file, fileContents, FILE_ENCODING_OPTION)
