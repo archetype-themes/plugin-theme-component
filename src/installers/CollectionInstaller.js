@@ -211,7 +211,7 @@ You should manually insert these lines inside your "theme.liquid" file:
       if (targetFileExists || defaultTargetFileExists) {
         const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
         const themeLocale = await getJsonFileContents(realTargetFile)
-        const mergedLocale = merge(collectionLocale, themeLocale)
+        const mergedLocale = merge(themeLocale, collectionLocale)
 
         fileOperations.push(
           saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2))
