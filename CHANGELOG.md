@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Changed locales do not update upon install
+- Restoring the @archetype-themes package namespace to resolve automated GitHub npm package publishing issues
 
 ### Removed
 
