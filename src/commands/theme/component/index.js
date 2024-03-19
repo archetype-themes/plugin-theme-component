@@ -22,7 +22,7 @@ export default class Component extends Command {
     if (flags.version) {
       this.log(`\nShopify CLI Version: ${this.config.version}`)
       this.log(
-        `Theme Component Plugin Version: ${this.config.plugins.get('plugin-theme-component').version}`
+        `Theme Component Plugin Version: ${this.config.plugins.get('@archetype-themes/plugin-theme-component').version}`
       )
     } else {
       this.log(
