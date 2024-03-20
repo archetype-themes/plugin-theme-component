@@ -207,7 +207,10 @@ class CollectionBuilder {
       promises.push(stylesheetSavePromise)
     }
 
-    if (Session.firstRun || Session.changeType === ChangeType.Asset) {
+    if (
+      Session.firstRun ||
+      [ChangeType.Asset, ChangeType.JavaScript].includes(Session.changeType)
+    ) {
       const allAssetFiles = this.#getAssetFiles(allComponents)
       const copyAssetFilesPromise = copyFilesToFolder(
         allAssetFiles,
