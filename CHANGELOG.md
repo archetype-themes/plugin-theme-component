@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.2] = 2024-03-20
+
+### Fixed
+
+- Dev command: Changed JS assets do not refresh on partial builds
+- Tests: We now delete the shopify.theme.toml file from checked-out repos to avoid constant test failure due to invalid custom values overriding defaults.
+
+### Removed
+
+- Obsolete pino logger dependencies
+
+## [3.1.1] = 2024-03-19
+
+### Fixed
+
+- Changed locales do not update upon install
+- Restoring the @archetype-themes package namespace to resolve automated GitHub npm package publishing issues
+
+### Removed
+
+- Obsolete vitest dependency
+- Obsolete vitest config file
+
+## [3.1.0] = 2024-03-14
+
+### Added
+
+- Diff on files before writing to disk
+
+### Changed
+
+- partial builds on watch events instead of full builds
+
 ## [3.0.0] = 2024-03-08
 
 ### Added

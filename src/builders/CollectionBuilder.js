@@ -37,7 +37,9 @@ class CollectionBuilder {
 
     const timer = new Timer()
     collection.build = BuildFactory.fromCollection(collection)
-    await this.#resetBuildFolders(collection.build)
+    if (Session.firstRun) {
+      await this.#resetBuildFolders(collection.build)
+    }
     logChildItem(`Collection Build Initialized (${timer.now()} seconds)`)
 
     if (Session.firstRun) {
@@ -205,7 +207,10 @@ class CollectionBuilder {
       promises.push(stylesheetSavePromise)
     }
 
-    if (Session.firstRun || Session.changeType === ChangeType.Asset) {
+    if (
+      Session.firstRun ||
+      [ChangeType.Asset, ChangeType.JavaScript].includes(Session.changeType)
+    ) {
       const allAssetFiles = this.#getAssetFiles(allComponents)
       const copyAssetFilesPromise = copyFilesToFolder(
         allAssetFiles,

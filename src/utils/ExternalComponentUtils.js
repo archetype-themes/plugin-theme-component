@@ -10,6 +10,7 @@ import { clone, pull, restore } from './GitUtils.js'
 import { logChildItem } from './LoggerUtils.js'
 import Timer from '../models/Timer.js'
 import { isRepoUrl } from './WebUtils.js'
+import Session from '../models/static/Session.js'
 
 export async function install(sourceLocation, targetFolder, name) {
   logChildItem(`Searching for "${name}" locally`)
@@ -20,8 +21,10 @@ export async function install(sourceLocation, targetFolder, name) {
       logChildItem(
         `${name} repository found locally: Running git restore & git pull`
       )
-      restore(targetFolder)
-      pull(targetFolder)
+      if (Session.firstRun) {
+        restore(targetFolder)
+        pull(targetFolder)
+      }
     } else {
       logChildItem(`Cloning ${name} repository`)
       clone(sourceLocation, targetFolder)
