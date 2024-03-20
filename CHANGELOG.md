@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dev command: Changed JS assets do not refresh on partial builds
 - Tests: We now delete the shopify.theme.toml file from checked-out repos to avoid constant test failure due to invalid custom values overriding defaults.
 
+### Removed
+
+- Obsolete pino logger dependencies
+
 ## [3.1.1] = 2024-03-19
 
 ### Fixed

@@ -9,7 +9,7 @@
   },
   "name": "@archetype-themes/plugin-theme-component",
   "type": "module",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "bin": {
     "component": "bin/run.js"
   },
@@ -51,8 +51,6 @@
     "lodash-es": "^4.17.21",
     "parse-gitignore": "^2.0.0",
     "picomatch": "^3.0.1",
-    "pino": "^8.19.0",
-    "pino-pretty": "^10.3.1",
     "postcss": "^8.4.36",
     "postcss-import": "^16.0.1",
     "postcss-preset-env": "^9.5.2",
