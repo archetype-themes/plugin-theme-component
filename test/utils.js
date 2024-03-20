@@ -8,6 +8,7 @@ import dotenv from 'dotenv'
 // Internal Dependencies
 import { exists } from '../src/utils/FileUtils.js'
 import { clone } from '../src/utils/GitUtils.js'
+import { CONFIG_FILE_NAME } from '../src/config/CLI.js'
 
 const workingDirectory = cwd()
 
@@ -33,6 +34,7 @@ export async function setupComponentsRepo() {
     : `https://${GITHUB_ID}:${GITHUB_TOKEN}@github.com/archetype-themes/components.git`
 
   await setupRepo(componentsRepoUrl, componentsInstallPath)
+  await rm(resolve(componentsInstallPath, CONFIG_FILE_NAME))
   return componentsInstallPath
 }
 
@@ -47,6 +49,8 @@ export async function setupThemeRepo() {
     : `https://${GITHUB_ID}:${GITHUB_TOKEN}@github.com/archetype-themes/expanse.git`
 
   await setupRepo(themeRepoUrl, themeInstallPath)
+
+  await rm(resolve(themeInstallPath, CONFIG_FILE_NAME))
   return themeInstallPath
 }
 
