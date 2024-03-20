@@ -6,7 +6,7 @@ import { ux } from '@oclif/core'
 import FileUtils from './FileUtils.js'
 import JavascriptUtils from './JavascriptUtils.js'
 import StylesUtils from './StylesUtils.js'
-import { ASSETS_FOLDER_NAME } from '../config/Components.js'
+import { ASSETS_FOLDER_NAME, SETUP_FOLDER_NAME } from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
@@ -71,6 +71,11 @@ function filterFiles(files, componentFiles, componentName) {
     const extension = extname(file).toLowerCase()
     const folder = dirname(file).toLowerCase()
     const filename = basename(file).toLowerCase()
+
+    if (folder.startsWith(SETUP_FOLDER_NAME)) {
+      componentFiles.setupFiles.push(file)
+      continue
+    }
 
     if (folder.endsWith(`/${ASSETS_FOLDER_NAME}`)) {
       componentFiles.assetFiles.push(file)
