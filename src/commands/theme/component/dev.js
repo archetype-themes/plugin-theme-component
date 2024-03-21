@@ -1,53 +1,36 @@
 // External Dependencies
 import { spawn } from 'node:child_process'
-import { copyFile, mkdir, rm } from 'node:fs/promises'
 import { basename, join, relative } from 'node:path'
-import { Args, Flags, ux } from '@oclif/core'
+import { cwd } from 'node:process'
+import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
 import Build from './build.js'
-import {
-  BaseCommand,
-  COMPONENT_ARG_NAME,
-  LOCALES_FLAG_NAME
-} from '../../../config/baseCommand.js'
+import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
-import {
-  ASSETS_FOLDER_NAME,
-  COLLECTION_TYPE_NAME,
-  SNIPPETS_FOLDER_NAME
-} from '../../../config/Components.js'
+import { ASSETS_FOLDER_NAME, COLLECTION_TYPE_NAME, SNIPPETS_FOLDER_NAME } from '../../../config/Components.js'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
-import {
-  install,
-  validateLocation
-} from '../../../utils/ExternalComponentUtils.js'
-import {
-  logChildItem,
-  logTitleItem,
-  logWatcherAction,
-  logWatcherEvent,
-  logWatcherInit
-} from '../../../utils/LoggerUtils.js'
-import {
-  exitWithError,
-  getCurrentWorkingDirectoryName
-} from '../../../utils/NodeUtils.js'
+import { install, validateLocation } from '../../../utils/ExternalComponentUtils.js'
+import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
+import { exitWithError, getCurrentWorkingDirectoryName } from '../../../utils/NodeUtils.js'
 import {
   getValuesFromArgvOrToml,
   getValueFromFlagOrToml,
   getPathFromFlagOrTomlValue
 } from '../../../utils/SessionUtils.js'
 import {
+  ChangeType,
   getChangeTypeFromFilename,
   getIgnorePatterns,
   getWatcher,
+  updateFile,
   watch
 } from '../../../utils/Watcher.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
+import { installSetupFiles, updateSetupFile } from '../../../utils/SetupFilesUtils.js'
 
 /** @type {string} **/
 const THEME_FLAG_NAME = 'theme-path'
@@ -83,8 +66,7 @@ export default class Dev extends BaseCommand {
       helpValue: '<path-or-github-url>',
       char: 'l',
       default: 'https://github.com/archetype-themes/locales.git',
-      defaultHelp:
-        'Path to the publicly shared locales repository form Archetype Themes'
+      defaultHelp: 'Path to the publicly shared locales repository form Archetype Themes'
     }),
     [SETUP_FLAG_NAME]: Flags.boolean({
       summary: 'Copy Setup Files',
@@ -118,18 +100,15 @@ export default class Dev extends BaseCommand {
 
     // No watch flag, running once and returning
     if (!Session.watchMode) {
-      return Dev.exploreComponent(
-        Session.themePath,
-        collectionName,
-        Session.components
-      )
+      return Dev.exploreComponent(Session.themePath, collectionName, Session.components)
     }
 
-    const collection = await Dev.exploreComponent(
-      Session.themePath,
-      collectionName,
-      Session.components
-    )
+    const collection = await Dev.exploreComponent(Session.themePath, collectionName, Session.components)
+
+    if (Session.firstRun && flags[SETUP_FLAG_NAME]) {
+      const installFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
+      await installSetupFiles(installFolder, collection.components)
+    }
 
     // Start watcher and shopify theme dev processes
     Session.firstRun = false
@@ -155,51 +134,32 @@ export default class Dev extends BaseCommand {
       const ignorePatterns = getIgnorePatterns(Session.themePath)
       // Ignore all component snippet liquid files
       ignorePatterns.push(
-        ...collection.allComponents.map((component) =>
-          join(SNIPPETS_FOLDER_NAME, `${component.name}.liquid`)
-        )
+        ...collection.allComponents.map((component) => join(SNIPPETS_FOLDER_NAME, `${component.name}.liquid`))
       )
       // Ignore all component static asset files
       ignorePatterns.push(
         ...collection.allComponents
           .map((component) =>
-            component.files.assetFiles.map((assetFile) =>
-              join(ASSETS_FOLDER_NAME, basename(assetFile))
-            )
+            component.files.assetFiles.map((assetFile) => join(ASSETS_FOLDER_NAME, basename(assetFile)))
           )
           .flat()
       )
       // Ignore all storefront locale files
       ignorePatterns.push(/(^|[/\\])locales(?!.*schema\.json$).*\.json$/)
-      promises.push(
-        Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder)
-      )
+      promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder))
       logInitLines.push(`${collectionName}: Watching theme folder for changes`)
     }
 
     // Watch Local Locales
     if (!isRepoUrl(Session.localesPath)) {
-      promises.push(
-        Dev.watchLocales(
-          Session.localesPath,
-          Session.themePath,
-          collection.name,
-          Session.components
-        )
-      )
-      logInitLines.push(
-        `${collectionName}: Watching locales folder for changes`
-      )
+      promises.push(Dev.watchLocales(Session.localesPath, Session.themePath, collection.name, Session.components))
+      logInitLines.push(`${collectionName}: Watching locales folder for changes`)
     }
 
     // Run "shopify theme dev" -- unused at the moment due to config challenges
     if (Session.syncMode) {
-      promises.push(
-        Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME))
-      )
-      logInitLines.push(
-        `${collectionName}: Starting \`shopify theme dev\` process in parallel`
-      )
+      promises.push(Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME)))
+      logInitLines.push(`${collectionName}: Starting \`shopify theme dev\` process in parallel`)
     }
 
     logWatcherInit(logInitLines)
@@ -214,25 +174,21 @@ export default class Dev extends BaseCommand {
    * @param {string[]} [componentNames]
    * @param {string} [event] Watcher Event
    * @param {string} [eventPath] Watcher Event Path
-   * @returns {Promise<module:models/Collection>}
+   * @returns {Promise<module:models/Collection|void>}
    */
-  static async exploreComponent(
-    themePath,
-    collectionName,
-    componentNames,
-    event,
-    eventPath
-  ) {
+  static async exploreComponent(themePath, collectionName, componentNames, event, eventPath) {
     if (event && eventPath) {
       logWatcherEvent(event, eventPath)
       Session.changeType = getChangeTypeFromFilename(eventPath)
+      if (Session.changeType === ChangeType.SetupFiles) {
+        const componentsFolder = cwd()
+        const devFolder = join(componentsFolder, DEV_FOLDER_NAME)
+        return updateSetupFile(componentsFolder, devFolder, event, eventPath)
+      }
     }
 
     // Build & Deploy Collection
-    const collection = await CollectionFactory.fromName(
-      collectionName,
-      componentNames
-    )
+    const collection = await CollectionFactory.fromName(collectionName, componentNames)
     await Build.buildCollection(collection)
     await Build.deployCollection(collection)
 
@@ -241,23 +197,16 @@ export default class Dev extends BaseCommand {
     // Setup A Theme and Create Its Model Instance
     if (Session.firstRun) {
       try {
-        const validThemeFolder = await validateLocation(
-          themePath,
-          collection.rootFolder
-        )
+        const validThemeFolder = await validateLocation(themePath, collection.rootFolder)
         await install(validThemeFolder, devFolder, 'Explorer Theme')
       } catch (error) {
-        exitWithError(
-          'Source Dev Theme Folder or Repository is invalid: ' + error.message
-        )
+        exitWithError('Source Dev Theme Folder or Repository is invalid: ' + error.message)
       }
     }
 
     const theme = await fromDevCommand(devFolder)
 
-    logTitleItem(
-      `Installing ${collection.name} Build To ${relative(collection.rootFolder, devFolder)}`
-    )
+    logTitleItem(`Installing ${collection.name} Build To ${relative(collection.rootFolder, devFolder)}`)
 
     await CollectionInstaller.install(theme, collection)
 
@@ -301,35 +250,11 @@ export default class Dev extends BaseCommand {
 
   static async setSessionValues(argv, flags, metadata, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
-    Session.components = getValuesFromArgvOrToml(
-      COMPONENT_ARG_NAME,
-      argv,
-      tomlConfig
-    )
-    Session.themePath = await getPathFromFlagOrTomlValue(
-      THEME_FLAG_NAME,
-      flags,
-      metadata,
-      tomlConfig
-    )
-    Session.localesPath = await getPathFromFlagOrTomlValue(
-      LOCALES_FLAG_NAME,
-      flags,
-      metadata,
-      tomlConfig
-    )
-    Session.setupFiles = getValueFromFlagOrToml(
-      SETUP_FLAG_NAME,
-      flags,
-      metadata,
-      tomlConfig
-    )
-    Session.watchMode = getValueFromFlagOrToml(
-      WATCH_FLAG_NAME,
-      flags,
-      metadata,
-      tomlConfig
-    )
+    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
+    Session.themePath = await getPathFromFlagOrTomlValue(THEME_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.setupFiles = getValueFromFlagOrToml(SETUP_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.watchMode = getValueFromFlagOrToml(WATCH_FLAG_NAME, flags, metadata, tomlConfig)
   }
 
   /**
@@ -341,20 +266,9 @@ export default class Dev extends BaseCommand {
    * @param {string} themePath
    * @returns {Promise<FSWatcher>}
    */
-  static async watchComponents(
-    collectionPath,
-    ignorePatterns,
-    themePath,
-    collectionName,
-    componentNames
-  ) {
+  static async watchComponents(collectionPath, ignorePatterns, themePath, collectionName, componentNames) {
     const watcher = getWatcher(collectionPath, ignorePatterns)
-    const onCollectionWatchEvent = this.exploreComponent.bind(
-      this,
-      themePath,
-      collectionName,
-      componentNames
-    )
+    const onCollectionWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentNames)
 
     return watch(watcher, onCollectionWatchEvent)
   }
@@ -367,39 +281,25 @@ export default class Dev extends BaseCommand {
    * @param {string} themePath
    * @return {Promise<FSWatcher>}
    */
-  static async watchLocales(
-    localesPath,
-    themePath,
-    collectionName,
-    componentNames
-  ) {
+  static async watchLocales(localesPath, themePath, collectionName, componentNames) {
     const watchGlobExpression = join(localesPath, '**/*.json')
 
     const watcher = getWatcher(watchGlobExpression)
-    const onLocalesWatchEvent = this.exploreComponent.bind(
-      this,
-      themePath,
-      collectionName,
-      componentNames
-    )
+    const onLocalesWatchEvent = this.exploreComponent.bind(this, themePath, collectionName, componentNames)
 
     return watch(watcher, onLocalesWatchEvent)
   }
 
   /**
    * Watch Theme for file changes
-   * @param themePath
+   * @param {string} themePath
    * @param {(string|RegExp)[]} ignorePatterns
-   * @param collectionRootFolder
+   * @param {string} collectionRootFolder
    * @return {Promise<FSWatcher>}
    */
   static async watchTheme(themePath, ignorePatterns, collectionRootFolder) {
     const watcher = getWatcher(themePath, ignorePatterns)
-    const onThemeWatchEvent = this.updateTheme.bind(
-      this,
-      themePath,
-      collectionRootFolder
-    )
+    const onThemeWatchEvent = await this.updateThemeFile.bind(this, themePath, collectionRootFolder)
 
     return watch(watcher, onThemeWatchEvent)
   }
@@ -408,36 +308,14 @@ export default class Dev extends BaseCommand {
    * Update Theme in .explorer folder on file change
    * @param {string} themePath
    * @param {string} collectionPath Watcher Instance
-   * @param {string} [event] Watcher Event
-   * @param {string} [eventPath] Watcher Event Path
+   * @param {string} event Watcher Event Name
+   * @param {string} eventPath Watcher Event Path
    * @return {Promise<void>}
    */
-  static updateTheme(themePath, collectionPath, event, eventPath) {
+  static async updateThemeFile(themePath, collectionPath, event, eventPath) {
     const source = join(themePath, eventPath)
     const destination = join(collectionPath, DEV_FOLDER_NAME, eventPath)
 
-    if (['add', 'change'].includes(event)) {
-      logWatcherAction(
-        event === 'add'
-          ? `Creating ${eventPath} theme file`
-          : `Updating ${eventPath} theme file`
-      )
-      return copyFile(source, destination)
-    }
-    if (event === 'unlink') {
-      logWatcherAction(`Removing ${eventPath} theme file`)
-      return rm(destination)
-    }
-    if (event === 'addDir') {
-      logWatcherAction(`Creating ${eventPath} theme folder`)
-      return mkdir(destination)
-    }
-    if (event === 'unlinkDir') {
-      logWatcherAction(`Removing ${eventPath} theme folder`)
-      return rm(destination, { recursive: true, force: true })
-    }
-    if (event === 'error') {
-      ux.error(eventPath)
-    }
+    return updateFile(event, eventPath, source, destination)
   }
 }
