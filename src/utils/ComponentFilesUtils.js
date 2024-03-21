@@ -1,5 +1,5 @@
 // External Dependencies
-import { basename, dirname, extname } from 'node:path'
+import { basename, dirname, extname, join } from 'node:path'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
@@ -72,7 +72,7 @@ function filterFiles(files, componentFiles, componentName) {
     const folder = dirname(file).toLowerCase()
     const filename = basename(file).toLowerCase()
 
-    if (folder.startsWith(SETUP_FOLDER_NAME)) {
+    if (folder.includes(join(componentName, SETUP_FOLDER_NAME))) {
       componentFiles.setupFiles.push(file)
       continue
     }
