@@ -1,5 +1,5 @@
 // External Dependencies
-import { extname, join } from 'node:path'
+import { extname, join, sep } from 'node:path'
 import { ux } from '@oclif/core'
 // eslint-disable-next-line no-unused-vars
 import { FSWatcher, watch as chokidarWatch } from 'chokidar'
@@ -7,6 +7,7 @@ import gitignore from 'parse-gitignore'
 
 // Internal Dependencies
 import { CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { SETUP_FOLDER_NAME } from '../config/Components.js'
 import {
   JSON_EXTENSION,
   LIQUID_EXTENSION,
@@ -19,7 +20,8 @@ export const ChangeType = {
   Stylesheet: 'stylesheet',
   JavaScript: 'JavaScript',
   Liquid: 'liquid',
-  Locale: 'locale'
+  Locale: 'locale',
+  SetupFiles: 'setup-files'
 }
 
 const IGNORE_PATTERNS = [
@@ -93,8 +95,11 @@ export function watch(watcher, action) {
  * @return {string} ChangeType enum value
  */
 export function getChangeTypeFromFilename(filename) {
-  const extension = extname(filename)
+  const extension = extname(filename).toLowerCase()
 
+  if (filename.includes(join(sep, SETUP_FOLDER_NAME, sep))) {
+    return ChangeType.SetupFiles
+  }
   if (STYLE_EXTENSIONS.includes(extension)) {
     return ChangeType.Stylesheet
   }
