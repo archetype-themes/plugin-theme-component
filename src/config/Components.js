@@ -39,6 +39,8 @@ export const SETUP_FOLDER_NAME = 'setup'
 /** @type {string} **/
 export const SNIPPETS_FOLDER_NAME = 'snippets'
 
+/** @type {string} **/
+export const TEMPLATES_FOLDER_NAME = 'templates'
 /******************/
 /**  FILE NAMES  **/
 /******************/

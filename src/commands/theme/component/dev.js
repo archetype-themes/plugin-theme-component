@@ -8,7 +8,12 @@ import { Args, Flags } from '@oclif/core'
 import Build from './build.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
-import { ASSETS_FOLDER_NAME, COLLECTION_TYPE_NAME, SNIPPETS_FOLDER_NAME } from '../../../config/Components.js'
+import {
+  ASSETS_FOLDER_NAME,
+  COLLECTION_TYPE_NAME,
+  SNIPPETS_FOLDER_NAME,
+  TEMPLATES_FOLDER_NAME
+} from '../../../config/Components.js'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
@@ -30,7 +35,8 @@ import {
   watch
 } from '../../../utils/Watcher.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
-import { installSetupFiles, updateSetupFile } from '../../../utils/SetupFilesUtils.js'
+import { generateIndexTemplate, installSetupFiles, updateSetupFile } from '../../../utils/SetupFilesUtils.js'
+import { saveFile } from '../../../utils/FileUtils.js'
 
 /** @type {string} **/
 const THEME_FLAG_NAME = 'theme-path'
@@ -108,6 +114,9 @@ export default class Dev extends BaseCommand {
     if (Session.firstRun && flags[SETUP_FLAG_NAME]) {
       const installFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
       await installSetupFiles(installFolder, collection.components)
+      const indexTemplateContents = generateIndexTemplate(collection.allComponents)
+      const indexTemplatePath = join(installFolder, TEMPLATES_FOLDER_NAME, 'index.liquid')
+      await saveFile(indexTemplatePath, indexTemplateContents)
     }
 
     // Start watcher and shopify theme dev processes
@@ -183,7 +192,7 @@ export default class Dev extends BaseCommand {
       if (Session.changeType === ChangeType.SetupFiles) {
         const componentsFolder = cwd()
         const devFolder = join(componentsFolder, DEV_FOLDER_NAME)
-        return updateSetupFile(componentsFolder, devFolder, event, eventPath)
+        await updateSetupFile(componentsFolder, devFolder, event, eventPath)
       }
     }
 
