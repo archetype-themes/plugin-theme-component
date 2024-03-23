@@ -4,7 +4,7 @@ import { basename, join, sep } from 'node:path'
 
 // Internal Dependencies
 import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME } from '../config/Components.js'
-import { updateFile } from './Watcher.js'
+import { handleWatcherEvent } from './Watcher.js'
 import { JSON_EXTENSION } from './ComponentFilesUtils.js'
 import { ucFirst } from './SyntaxUtils.js'
 
@@ -47,12 +47,12 @@ export async function installSetupFiles(installFolder, components) {
  * @param {string} eventPath Watcher Event Path
  * @returns {Promise<void>}
  */
-export async function updateSetupFile(componentsFolder, themeFolder, event, eventPath) {
+export async function handleSetupFileWatcherEvent(componentsFolder, themeFolder, event, eventPath) {
   const source = join(componentsFolder, eventPath)
   const setupFileRelativePath = getSetupRelativePath(eventPath)
   const targetPath = join(themeFolder, setupFileRelativePath)
 
-  return updateFile(event, eventPath, source, targetPath)
+  return handleWatcherEvent(event, eventPath, source, targetPath)
 }
 
 /**

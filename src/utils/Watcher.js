@@ -112,7 +112,7 @@ export function getChangeTypeFromFilename(filename) {
   return ChangeType.Asset
 }
 
-export function updateFile(event, eventPath, source, destination) {
+export function handleWatcherEvent(event, eventPath, source, destination) {
   if (['add', 'change'].includes(event)) {
     logWatcherAction(event === 'add' ? `Creating ${eventPath} theme file` : `Updating ${eventPath} theme file`)
     return copyFile(source, destination)

@@ -31,11 +31,15 @@ import {
   getChangeTypeFromFilename,
   getIgnorePatterns,
   getWatcher,
-  updateFile,
+  handleWatcherEvent,
   watch
 } from '../../../utils/Watcher.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
-import { generateIndexTemplate, installSetupFiles, updateSetupFile } from '../../../utils/SetupFilesUtils.js'
+import {
+  generateIndexTemplate,
+  installSetupFiles,
+  handleSetupFileWatcherEvent
+} from '../../../utils/SetupFilesUtils.js'
 import { saveFile } from '../../../utils/FileUtils.js'
 
 /** @type {string} **/
@@ -192,7 +196,7 @@ export default class Dev extends BaseCommand {
       if (Session.changeType === ChangeType.SetupFiles) {
         const componentsFolder = cwd()
         const devFolder = join(componentsFolder, DEV_FOLDER_NAME)
-        await updateSetupFile(componentsFolder, devFolder, event, eventPath)
+        await handleSetupFileWatcherEvent(componentsFolder, devFolder, event, eventPath)
       }
     }
 
@@ -308,7 +312,7 @@ export default class Dev extends BaseCommand {
    */
   static async watchTheme(themePath, ignorePatterns, collectionRootFolder) {
     const watcher = getWatcher(themePath, ignorePatterns)
-    const onThemeWatchEvent = await this.updateThemeFile.bind(this, themePath, collectionRootFolder)
+    const onThemeWatchEvent = await this.handleThemeFileWatcherEvent.bind(this, themePath, collectionRootFolder)
 
     return watch(watcher, onThemeWatchEvent)
   }
@@ -321,10 +325,10 @@ export default class Dev extends BaseCommand {
    * @param {string} eventPath Watcher Event Path
    * @return {Promise<void>}
    */
-  static async updateThemeFile(themePath, collectionPath, event, eventPath) {
+  static async handleThemeFileWatcherEvent(themePath, collectionPath, event, eventPath) {
     const source = join(themePath, eventPath)
     const destination = join(collectionPath, DEV_FOLDER_NAME, eventPath)
 
-    return updateFile(event, eventPath, source, destination)
+    return handleWatcherEvent(event, eventPath, source, destination)
   }
 }
