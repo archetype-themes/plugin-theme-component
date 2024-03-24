@@ -7,6 +7,7 @@ import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME } from '../config/Components.j
 import { handleWatcherEvent } from './Watcher.js'
 import { JSON_EXTENSION } from './ComponentFilesUtils.js'
 import { ucFirst } from './SyntaxUtils.js'
+import { saveFile } from './FileUtils.js'
 
 const setupFolderCue = join(sep, SETUP_FOLDER_NAME, sep)
 const templatesFolderCue = join(sep, TEMPLATES_FOLDER_NAME, sep)
@@ -23,11 +24,11 @@ function getSetupRelativePath(filePath) {
 
 /**
  * Initial Installation Of Setup Files
- * @param {string} installFolder
  * @param {Component[]} components
+ * @param {string} installFolder
  * @return {Promise<void[]>}
  */
-export async function installSetupFiles(installFolder, components) {
+export async function installSetupFiles(components, installFolder) {
   const copyPromises = []
   components.forEach((component) => {
     component.files.setupFiles.forEach((setupFile) => {
@@ -97,4 +98,16 @@ export function generateIndexTemplate(components) {
 ${templateBody}
 </div>
 `
+}
+
+/**
+ * Write Index Template
+ * @param {Component[]} components
+ * @param {string} themeFolder
+ * @returns {Promise<void>}
+ */
+export async function createIndexTemplate(components, themeFolder) {
+  const indexTemplateContents = generateIndexTemplate(components)
+  const indexTemplatePath = join(themeFolder, TEMPLATES_FOLDER_NAME, 'index.liquid')
+  return saveFile(indexTemplatePath, indexTemplateContents)
 }

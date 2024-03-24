@@ -8,12 +8,7 @@ import { Args, Flags } from '@oclif/core'
 import Build from './build.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
-import {
-  ASSETS_FOLDER_NAME,
-  COLLECTION_TYPE_NAME,
-  SNIPPETS_FOLDER_NAME,
-  TEMPLATES_FOLDER_NAME
-} from '../../../config/Components.js'
+import { ASSETS_FOLDER_NAME, COLLECTION_TYPE_NAME, SNIPPETS_FOLDER_NAME } from '../../../config/Components.js'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
@@ -35,12 +30,7 @@ import {
   watch
 } from '../../../utils/Watcher.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
-import {
-  generateIndexTemplate,
-  installSetupFiles,
-  handleSetupFileWatcherEvent
-} from '../../../utils/SetupFilesUtils.js'
-import { saveFile } from '../../../utils/FileUtils.js'
+import { installSetupFiles, handleSetupFileWatcherEvent, createIndexTemplate } from '../../../utils/SetupFilesUtils.js'
 
 /** @type {string} **/
 const THEME_FLAG_NAME = 'theme-path'
@@ -99,6 +89,10 @@ export default class Dev extends BaseCommand {
   // Enables limitless args entry
   static strict = false
 
+  /**
+   * Run theme:component:dev command
+   * @returns {Promise<Awaited<unknown>[]|Collection|module:models/Collection|void>}
+   */
   async run() {
     const { argv, flags, metadata } = await this.parse(Dev)
     BaseCommand.setUxOutputLevel(flags)
@@ -115,12 +109,9 @@ export default class Dev extends BaseCommand {
 
     const collection = await Dev.exploreComponent(Session.themePath, collectionName, Session.components)
 
-    if (Session.firstRun && flags[SETUP_FLAG_NAME]) {
+    if (Session.firstRun && Session.setupFiles) {
       const installFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
-      await installSetupFiles(installFolder, collection.components)
-      const indexTemplateContents = generateIndexTemplate(collection.allComponents)
-      const indexTemplatePath = join(installFolder, TEMPLATES_FOLDER_NAME, 'index.liquid')
-      await saveFile(indexTemplatePath, indexTemplateContents)
+      await installSetupFiles(collection.components, installFolder)
     }
 
     // Start watcher and shopify theme dev processes
@@ -223,6 +214,12 @@ export default class Dev extends BaseCommand {
 
     await CollectionInstaller.install(theme, collection)
 
+    if (
+      Session.setupFiles &&
+      (Session.firstRun || [ChangeType.Liquid, ChangeType.SetupFiles].includes(Session.changeType))
+    ) {
+      await createIndexTemplate(collection.components, theme.rootFolder)
+    }
     logChildItem('Install Complete')
 
     return collection
