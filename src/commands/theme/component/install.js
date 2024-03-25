@@ -3,11 +3,7 @@ import { Args, Flags, ux } from '@oclif/core'
 
 // Internal Dependencies
 import Build from './build.js'
-import {
-  BaseCommand,
-  COMPONENT_ARG_NAME,
-  LOCALES_FLAG_NAME
-} from '../../../config/baseCommand.js'
+import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import { THEME_TYPE_NAME } from '../../../config/Components.js'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'
@@ -16,11 +12,9 @@ import Session from '../../../models/static/Session.js'
 import Timer from '../../../models/Timer.js'
 import CollectionUtils from '../../../utils/CollectionUtils.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
-import {
-  getPathFromFlagOrTomlValue,
-  getValuesFromArgvOrToml
-} from '../../../utils/SessionUtils.js'
+import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
+import { getCurrentTime } from '../../../utils/DateUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -50,8 +44,7 @@ export default class Install extends BaseCommand {
       helpValue: '<path-or-github-url>',
       char: 'l',
       default: 'https://github.com/archetype-themes/locales.git',
-      defaultHelp:
-        'Path to the publicly shared locales repository form Archetype Themes'
+      defaultHelp: 'Path to the publicly shared locales repository form Archetype Themes'
     })
   }
 
@@ -68,10 +61,7 @@ export default class Install extends BaseCommand {
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
 
-    let collection = await CollectionFactory.fromInstallCommand(
-      Session.componentsPath,
-      Session.components
-    )
+    let collection = await CollectionFactory.fromInstallCommand(Session.componentsPath, Session.components)
 
     // Install it locally if the source is a URL
     if (isRepoUrl(collection.source)) {
@@ -97,38 +87,18 @@ export default class Install extends BaseCommand {
     await Build.buildCollection(collection)
     await Build.deployCollection(collection)
     // Install and time it!
-    ux.info(
-      `Installing the ${collection.name} Collection for the ${theme.name} Theme.`
-    )
+    ux.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
     const installStartTime = new Timer()
     await CollectionInstaller.install(theme, collection)
-    ux.info(
-      `${collection.name}: Install Complete in ${installStartTime.now()} seconds`
-    )
-    ux.info(
-      `${collection.name}: Build & Install Completed in ${startTime.now()} seconds\n`
-    )
+    ux.info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)
+    ux.info(`${collection.name}: Build & Install Completed in ${startTime.now()} seconds at ${getCurrentTime()}\n`)
     return Promise.resolve(collection)
   }
 
   static async setSessionValues(argv, flags, metadata, tomlConfig) {
     Session.callerType = THEME_TYPE_NAME
-    Session.components = getValuesFromArgvOrToml(
-      COMPONENT_ARG_NAME,
-      argv,
-      tomlConfig
-    )
-    Session.componentsPath = await getPathFromFlagOrTomlValue(
-      COMPONENTS_FLAG_NAME,
-      flags,
-      metadata,
-      tomlConfig
-    )
-    Session.localesPath = await getPathFromFlagOrTomlValue(
-      LOCALES_FLAG_NAME,
-      flags,
-      metadata,
-      tomlConfig
-    )
+    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
+    Session.componentsPath = await getPathFromFlagOrTomlValue(COMPONENTS_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
   }
 }

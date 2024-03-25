@@ -12,12 +12,7 @@ import ComponentFactory from '../../../factory/ComponentFactory.js'
 import Timer from '../../../models/Timer.js'
 import Snippet from '../../../models/Snippet.js'
 import CollectionUtils from '../../../utils/CollectionUtils.js'
-import {
-  logChildItem,
-  logChildMessage,
-  logSpacer,
-  logTitleItem
-} from '../../../utils/LoggerUtils.js'
+import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
 import { plural } from '../../../utils/SyntaxUtils.js'
 
 class Build extends BaseCommand {
@@ -35,18 +30,14 @@ class Build extends BaseCommand {
 
     // Initialize Individual Components
     collection.components = await Promise.all(
-      collection.components.map((component) =>
-        ComponentFactory.initializeComponent(component)
-      )
+      collection.components.map((component) => ComponentFactory.initializeComponent(component))
     )
 
     // Create Embedded Snippets Skeleton from Components
     collection.snippets = this.createEmbeddedSnippets(collection.components)
     // Initialize Embedded Snippets
     collection.snippets = await Promise.all(
-      collection.snippets.map((snippet) =>
-        ComponentFactory.initializeComponent(snippet)
-      )
+      collection.snippets.map((snippet) => ComponentFactory.initializeComponent(snippet))
     )
 
     const allComponents = collection.allComponents
@@ -59,28 +50,19 @@ class Build extends BaseCommand {
     // Filter Out Components When Applicable
     if (collection.componentNames?.length) {
       // for each component, get tree item names
-      const componentNamesToBuild = CollectionUtils.getComponentNamesToBuild(
-        allComponents,
-        collection.componentNames
-      )
+      const componentNamesToBuild = CollectionUtils.getComponentNamesToBuild(allComponents, collection.componentNames)
 
       logChildItem(
         `Packaging the following component${plural(collection.componentNames)}: ${collection.componentNames.join(', ')}`
       )
 
-      collection.components = collection.components.filter((component) =>
-        componentNamesToBuild.has(component.name)
-      )
-      collection.snippets = collection.snippets.filter((snippet) =>
-        componentNamesToBuild.has(snippet.name)
-      )
+      collection.components = collection.components.filter((component) => componentNamesToBuild.has(component.name))
+      collection.snippets = collection.snippets.filter((snippet) => componentNamesToBuild.has(snippet.name))
     }
 
     // Throw an Error when No Components are found
     if (collection.components.length + collection.snippets.length === 0) {
-      throw new InternalError(
-        `No matching components found for [${collection.componentNames.join(',')}]`
-      )
+      throw new InternalError(`No matching components found for [${collection.componentNames.join(',')}]`)
     }
 
     logChildItem(`Initialization complete (${initStartTime.now()} seconds)`)
@@ -97,16 +79,8 @@ class Build extends BaseCommand {
 
     // Build Components
     ;[collection.components, collection.snippets] = await Promise.all([
-      Promise.all(
-        collection.components.map((component) =>
-          ComponentBuilder.build(component, collection.rootFolder)
-        )
-      ),
-      Promise.all(
-        collection.snippets.map((snippet) =>
-          SnippetBuilder.build(snippet, collection.rootFolder)
-        )
-      )
+      Promise.all(collection.components.map((component) => ComponentBuilder.build(component, collection.rootFolder))),
+      Promise.all(collection.snippets.map((snippet) => SnippetBuilder.build(snippet, collection.rootFolder)))
     ])
 
     logChildItem(`Build complete (${buildStartTime.now()} seconds)`)
@@ -122,9 +96,7 @@ class Build extends BaseCommand {
     logChildMessage()
     logChildMessage(`${collection.name}/`)
 
-    let filteredComponents = collection.components.filter((component) =>
-      component.name.startsWith('section')
-    )
+    let filteredComponents = collection.components.filter((component) => component.name.startsWith('section'))
     if (!filteredComponents.length > 0) {
       filteredComponents = collection.components
     }
@@ -142,9 +114,7 @@ class Build extends BaseCommand {
     logTitleItem('Building Collection')
     const collectionStartTime = new Timer()
     collection = await CollectionBuilder.build(collection)
-    logChildItem(
-      `Collection Build complete (${collectionStartTime.now()} seconds)`
-    )
+    logChildItem(`Collection Build complete (${collectionStartTime.now()} seconds)`)
     logSpacer()
 
     // Total Timer Output
@@ -159,16 +129,11 @@ class Build extends BaseCommand {
    * @returns {Snippet[]}
    */
   static createEmbeddedSnippets(components) {
-    const filteredComponents = components.filter(
-      (component) => component.files?.snippetFiles
-    )
+    const filteredComponents = components.filter((component) => component.files?.snippetFiles)
 
     return filteredComponents
       .map((component) =>
-        component.files.snippetFiles.map(
-          (snippetFile) =>
-            new Snippet(parse(snippetFile).name, dirname(snippetFile))
-        )
+        component.files.snippetFiles.map((snippetFile) => new Snippet(parse(snippetFile).name, dirname(snippetFile)))
       )
       .flat()
   }
@@ -182,15 +147,11 @@ class Build extends BaseCommand {
     for (const topComponent of topComponents) {
       if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
         for (const snippetName of topComponent.snippetNames) {
-          const snippet = availableComponents.find(
-            (component) => component.name === snippetName
-          )
+          const snippet = availableComponents.find((component) => component.name === snippetName)
           if (snippet !== undefined) {
             topComponent.snippets.push(snippet)
           } else {
-            ux.error(
-              `Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`
-            )
+            ux.error(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
           }
         }
       }
@@ -215,9 +176,7 @@ class Build extends BaseCommand {
     logChildMessage(`${prefix}${ascii} ${component.name}`)
 
     // Removing icons from the list
-    const filteredSnippets = component.snippets.filter(
-      (component) => !component.isSvg()
-    )
+    const filteredSnippets = component.snippets.filter((component) => !component.isSvg())
     if (filteredSnippets.length) {
       grid.push(!last)
       for (const [i, snippet] of filteredSnippets.entries()) {

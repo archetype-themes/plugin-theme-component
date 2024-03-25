@@ -31,6 +31,7 @@ import {
 } from '../../../utils/Watcher.js'
 import { isRepoUrl } from '../../../utils/WebUtils.js'
 import { installSetupFiles, handleSetupFileWatcherEvent, createIndexTemplate } from '../../../utils/SetupFilesUtils.js'
+import { getCurrentTime } from '../../../utils/DateUtils.js'
 
 /** @type {string} **/
 const THEME_FLAG_NAME = 'theme-path'
@@ -220,7 +221,8 @@ export default class Dev extends BaseCommand {
     ) {
       await createIndexTemplate(collection.components, theme.rootFolder)
     }
-    logChildItem('Install Complete')
+
+    logChildItem(`Install Complete at ${getCurrentTime()}`)
 
     return collection
   }
