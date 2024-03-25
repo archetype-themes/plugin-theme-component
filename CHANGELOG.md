@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.1.2] = 2024-03-20
+## [3.2.0] - 2024-03-25
+
+### Added
+
+- Dev command: setup-files flag is now functional. Setup files are copied in the theme folder (#322)
+- Dev command: Displays time of day upon completion (#367)
+- Install command: Displays time of day upon completion (#367)
+
+## [3.1.2] - 2024-03-20
 
 ### Fixed
 
@@ -16,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Obsolete pino logger dependencies
 
-## [3.1.1] = 2024-03-19
+## [3.1.1] - 2024-03-19
 
 ### Fixed
 
@@ -28,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Obsolete vitest dependency
 - Obsolete vitest config file
 
-## [3.1.0] = 2024-03-14
+## [3.1.0] - 2024-03-14
 
 ### Added
 
@@ -38,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - partial builds on watch events instead of full builds
 
-## [3.0.0] = 2024-03-08
+## [3.0.0] - 2024-03-08
 
 ### Added
 
