@@ -19,6 +19,9 @@ class ComponentFiles {
   packageJson
 
   /** @type {string[]} **/
+  setupFiles = []
+
+  /** @type {string[]} **/
   snippetFiles = []
 
   /** @type {string[]} **/

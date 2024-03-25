@@ -34,8 +34,13 @@ export const LOCALES_INSTALL_FOLDER = '.locales'
 export const SECTIONS_FOLDER_NAME = 'sections'
 
 /** @type {string} **/
+export const SETUP_FOLDER_NAME = 'setup'
+
+/** @type {string} **/
 export const SNIPPETS_FOLDER_NAME = 'snippets'
 
+/** @type {string} **/
+export const TEMPLATES_FOLDER_NAME = 'templates'
 /******************/
 /**  FILE NAMES  **/
 /******************/

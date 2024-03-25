@@ -1,14 +1,5 @@
 // External Dependencies
-import {
-  access,
-  constants,
-  copyFile,
-  cp,
-  mkdir,
-  readdir,
-  readFile,
-  writeFile
-} from 'node:fs/promises'
+import { access, constants, copyFile, cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { basename, join, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
@@ -17,14 +8,7 @@ import { ux } from '@oclif/core'
 import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 
 /** @type {string[]} **/
-const EXCLUDED_FOLDERS = [
-  BUILD_FOLDER_NAME,
-  DEV_FOLDER_NAME,
-  'node_modules',
-  '.yarn',
-  '.idea',
-  '.git'
-]
+const EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
 
 /** @type {Object} **/
 const FILE_ENCODING_OPTION = { encoding: 'utf8' }
@@ -44,9 +28,7 @@ export function convertToComponentRelativePath(absolutePath) {
  * @return {Promise<Awaited<void>[]>}
  */
 export async function copy(files) {
-  const copyPromises = Object.entries(files).map(([sourceFile, destination]) =>
-    copyFile(sourceFile, destination)
-  )
+  const copyPromises = Object.entries(files).map(([sourceFile, destination]) => copyFile(sourceFile, destination))
 
   return Promise.all(copyPromises)
 }
@@ -90,11 +72,7 @@ export async function copyFilesToFolder(files, targetFolder) {
  * @param {CopyFolderOptions} [options]
  * @return {Promise<Awaited<void>[]>}
  */
-export async function copyFolder(
-  sourceFolder,
-  targetFolder,
-  options = { recursive: false }
-) {
+export async function copyFolder(sourceFolder, targetFolder, options = { recursive: false }) {
   const fileOperations = []
   ux.debug(
     `Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `
@@ -103,37 +81,23 @@ export async function copyFolder(
 
   // Create Target Folder if it does not exist
   if (!(await exists(targetFolder))) {
-    ux.debug(
-      `copyFolder: Target Folder "${targetFolder}" not found. Attempting to create it.`
-    )
+    ux.debug(`copyFolder: Target Folder "${targetFolder}" not found. Attempting to create it.`)
     await mkdir(targetFolder, { recursive: true })
   }
 
   for (const dirent of folderContent) {
     if (dirent.isFile()) {
       const sourceFile = join(sourceFolder, dirent.name)
-      const targetFileName = options.rename
-        ? dirent.name.replace(options.rename[0], options.rename[1])
-        : dirent.name
+      const targetFileName = options.rename ? dirent.name.replace(options.rename[0], options.rename[1]) : dirent.name
       const targetFile = join(targetFolder, targetFileName)
       if (options.jsTemplateVariables) {
-        fileOperations.push(
-          processJsTemplateStringFile(
-            sourceFile,
-            targetFile,
-            options.jsTemplateVariables
-          )
-        )
+        fileOperations.push(processJsTemplateStringFile(sourceFile, targetFile, options.jsTemplateVariables))
       } else {
-        fileOperations.push(
-          cp(sourceFile, targetFile, { preserveTimestamps: true })
-        )
+        fileOperations.push(cp(sourceFile, targetFile, { preserveTimestamps: true }))
       }
     } else if (dirent.isDirectory() && options.recursive) {
       const newTargetFolder = join(targetFolder, dirent.name)
-      fileOperations.push(
-        cp(join(sourceFolder, dirent.name), newTargetFolder, options)
-      )
+      fileOperations.push(cp(join(sourceFolder, dirent.name), newTargetFolder, options))
     }
   }
   return Promise.all(fileOperations)
@@ -270,11 +234,7 @@ export async function isWritable(file) {
  * @param {JsTemplateVariables} jsTemplateVariables
  * @returns {Promise<void>}
  */
-export async function processJsTemplateStringFile(
-  sourceFile,
-  targetFile,
-  jsTemplateVariables
-) {
+export async function processJsTemplateStringFile(sourceFile, targetFile, jsTemplateVariables) {
   ux.debug(`Processing JS Template String file ${sourceFile}`)
   // Read the file's content
   const data = await readFile(sourceFile, 'utf8')
@@ -308,9 +268,7 @@ export async function searchFile(path, filename, recursive = false) {
     for (const entry of entries) {
       if (entry.isDirectory()) {
         if (recursive && !EXCLUDED_FOLDERS.includes(entry.name)) {
-          files = files.concat(
-            await searchFile(join(path, entry.name), filename, recursive)
-          )
+          files = files.concat(await searchFile(join(path, entry.name), filename, recursive))
         }
       } else if (entry.name === filename) {
         files.push(join(path, entry.name))
