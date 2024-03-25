@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Dev command: Changed JS assets do not refresh on partial builds
+- Dev command: Changed JS assets do not refresh on partial builds (#373)
 - Tests: We now delete the shopify.theme.toml file from checked-out repos to avoid constant test failure due to invalid custom values overriding defaults.
 
 ### Removed
