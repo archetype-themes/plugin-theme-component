@@ -34,6 +34,20 @@ export async function copy(files) {
 }
 
 /**
+ * Copy File and Create Path when necessary
+ * @param {string} file
+ * @param {string} targetFolder
+ * @returns {Promise<void>}
+ */
+export async function copyFileAndCreatePath(file, targetFolder) {
+  if (!(await exists(dirname(targetFolder)))) {
+    await mkdir(dirname(targetFolder), { recursive: true })
+  }
+
+  return copyFile(file, targetFolder)
+}
+
+/**
  * Copy All Files to a Specified Folder
  * @param {string[]} files
  * @param {string} targetFolder
