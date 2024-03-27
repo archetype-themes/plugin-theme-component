@@ -288,30 +288,21 @@ export async function searchFile(path, filename, recursive = false) {
  * @return {Promise<void>}
  */
 export async function saveFile(file, fileContents) {
-  async function isExists(path) {
-    try {
-      await access(path);
-      return true;
-    } catch {
-      return false;
-    }
-  };
+  ux.trace(`Writing to disk: ${file}`)
 
-  ux.trace(`Writing to disk: ${file}`)  
-  
   if (await isReadable(file)) {
     const destinationContents = await getFileContents(file)
     if (destinationContents !== fileContents) {
-      const exist = await isExists(dirname(file));
+      const exist = await exists(dirname(file))
       if (!exist) {
-        await mkdir(dirname(file), {recursive: true});
+        await mkdir(dirname(file), { recursive: true })
       }
       return writeFile(file, fileContents, FILE_ENCODING_OPTION)
     }
   } else {
-    const exist = await isExists(dirname(file));
+    const exist = await exists(dirname(file))
     if (!exist) {
-      await mkdir(dirname(file), {recursive: true});
+      await mkdir(dirname(file), { recursive: true })
     }
     return writeFile(file, fileContents, FILE_ENCODING_OPTION)
   }

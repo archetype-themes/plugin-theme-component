@@ -1,5 +1,5 @@
 // External Dependencies
-import { access, copyFile, mkdir } from 'node:fs/promises'
+import { copyFile, mkdir } from 'node:fs/promises'
 import { basename, join, sep, dirname } from 'node:path'
 
 // Internal Dependencies
@@ -7,7 +7,7 @@ import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME } from '../config/Components.j
 import { handleWatcherEvent } from './Watcher.js'
 import { JSON_EXTENSION } from './ComponentFilesUtils.js'
 import { ucFirst } from './SyntaxUtils.js'
-import { saveFile } from './FileUtils.js'
+import { exists, saveFile } from './FileUtils.js'
 
 const setupFolderCue = join(sep, SETUP_FOLDER_NAME, sep)
 const templatesFolderCue = join(sep, TEMPLATES_FOLDER_NAME, sep)
@@ -29,21 +29,12 @@ function getSetupRelativePath(filePath) {
  * @return {Promise<void[]>}
  */
 export async function installSetupFiles(components, installFolder) {
-  async function isExists(path) {
-    try {
-      await access(path);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
   async function copyFileAndMakeFolder(setupFile, installPath) {
-    const exist = await isExists(dirname(installPath));
+    const exist = await exists(dirname(installPath))
     if (!exist) {
-      await mkdir(dirname(installPath), {recursive: true});
+      await mkdir(dirname(installPath), { recursive: true })
     }
-    
+
     return copyFile(setupFile, installPath)
   }
 
