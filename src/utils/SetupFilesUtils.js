@@ -1,6 +1,6 @@
 // External Dependencies
-import { copyFile } from 'node:fs/promises'
-import { basename, join, sep } from 'node:path'
+import { access, copyFile, mkdir } from 'node:fs/promises'
+import { basename, join, sep, dirname } from 'node:path'
 
 // Internal Dependencies
 import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME } from '../config/Components.js'
@@ -29,12 +29,30 @@ function getSetupRelativePath(filePath) {
  * @return {Promise<void[]>}
  */
 export async function installSetupFiles(components, installFolder) {
+  async function isExists(path) {
+    try {
+      await access(path);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  async function copyFileAndMakeFolder(setupFile, installPath) {
+    const exist = await isExists(dirname(installPath));
+    if (!exist) {
+      await mkdir(dirname(installPath), {recursive: true});
+    }
+    
+    return copyFile(setupFile, installPath)
+  }
+
   const copyPromises = []
   components.forEach((component) => {
     component.files.setupFiles.forEach((setupFile) => {
       const setupFileRelativePath = getSetupRelativePath(setupFile)
       const installPath = join(installFolder, setupFileRelativePath)
-      copyPromises.push(copyFile(setupFile, installPath))
+      copyPromises.push(copyFileAndMakeFolder(setupFile, installPath))
     })
   })
   return Promise.all(copyPromises)

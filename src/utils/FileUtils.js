@@ -1,6 +1,6 @@
 // External Dependencies
 import { access, constants, copyFile, cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
-import { basename, join, sep } from 'node:path'
+import { basename, dirname, join, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
 
@@ -288,13 +288,31 @@ export async function searchFile(path, filename, recursive = false) {
  * @return {Promise<void>}
  */
 export async function saveFile(file, fileContents) {
-  ux.trace(`Writing to disk: ${file}`)
+  async function isExists(path) {
+    try {
+      await access(path);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  ux.trace(`Writing to disk: ${file}`)  
+  
   if (await isReadable(file)) {
     const destinationContents = await getFileContents(file)
     if (destinationContents !== fileContents) {
+      const exist = await isExists(dirname(file));
+      if (!exist) {
+        await mkdir(dirname(file), {recursive: true});
+      }
       return writeFile(file, fileContents, FILE_ENCODING_OPTION)
     }
   } else {
+    const exist = await isExists(dirname(file));
+    if (!exist) {
+      await mkdir(dirname(file), {recursive: true});
+    }
     return writeFile(file, fileContents, FILE_ENCODING_OPTION)
   }
 }
