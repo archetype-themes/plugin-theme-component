@@ -1,5 +1,4 @@
 // External Dependencies
-import { copyFile } from 'node:fs/promises'
 import { basename, join, sep } from 'node:path'
 
 // Internal Dependencies
@@ -7,7 +6,7 @@ import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME } from '../config/Components.j
 import { handleWatcherEvent } from './Watcher.js'
 import { JSON_EXTENSION } from './ComponentFilesUtils.js'
 import { ucFirst } from './SyntaxUtils.js'
-import { saveFile } from './FileUtils.js'
+import { copyFileAndCreatePath, saveFile } from './FileUtils.js'
 
 const setupFolderCue = join(sep, SETUP_FOLDER_NAME, sep)
 const templatesFolderCue = join(sep, TEMPLATES_FOLDER_NAME, sep)
@@ -34,7 +33,7 @@ export async function installSetupFiles(components, installFolder) {
     component.files.setupFiles.forEach((setupFile) => {
       const setupFileRelativePath = getSetupRelativePath(setupFile)
       const installPath = join(installFolder, setupFileRelativePath)
-      copyPromises.push(copyFile(setupFile, installPath))
+      copyPromises.push(copyFileAndCreatePath(setupFile, installPath))
     })
   })
   return Promise.all(copyPromises)

@@ -103,16 +103,16 @@ export default class Dev extends BaseCommand {
 
     const collectionName = getCurrentWorkingDirectoryName()
 
-    // No watch flag, running once and returning
-    if (!Session.watchMode) {
-      return Dev.exploreComponent(Session.themePath, collectionName, Session.components)
-    }
-
     const collection = await Dev.exploreComponent(Session.themePath, collectionName, Session.components)
 
     if (Session.firstRun && Session.setupFiles) {
       const installFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
       await installSetupFiles(collection.components, installFolder)
+    }
+
+    // No watch flag, running once and returning
+    if (!Session.watchMode) {
+      return collection
     }
 
     // Start watcher and shopify theme dev processes

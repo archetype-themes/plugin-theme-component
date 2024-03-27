@@ -1,6 +1,6 @@
 // External Dependencies
 import { access, constants, copyFile, cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
-import { basename, join, sep } from 'node:path'
+import { basename, dirname, join, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
 
@@ -31,6 +31,20 @@ export async function copy(files) {
   const copyPromises = Object.entries(files).map(([sourceFile, destination]) => copyFile(sourceFile, destination))
 
   return Promise.all(copyPromises)
+}
+
+/**
+ * Copy File and Create Path when necessary
+ * @param {string} file
+ * @param {string} targetFolder
+ * @returns {Promise<void>}
+ */
+export async function copyFileAndCreatePath(file, targetFolder) {
+  if (!(await exists(dirname(targetFolder)))) {
+    await mkdir(dirname(targetFolder), { recursive: true })
+  }
+
+  return copyFile(file, targetFolder)
 }
 
 /**
@@ -289,12 +303,21 @@ export async function searchFile(path, filename, recursive = false) {
  */
 export async function saveFile(file, fileContents) {
   ux.trace(`Writing to disk: ${file}`)
+
   if (await isReadable(file)) {
     const destinationContents = await getFileContents(file)
     if (destinationContents !== fileContents) {
+      const exist = await exists(dirname(file))
+      if (!exist) {
+        await mkdir(dirname(file), { recursive: true })
+      }
       return writeFile(file, fileContents, FILE_ENCODING_OPTION)
     }
   } else {
+    const exist = await exists(dirname(file))
+    if (!exist) {
+      await mkdir(dirname(file), { recursive: true })
+    }
     return writeFile(file, fileContents, FILE_ENCODING_OPTION)
   }
 }
