@@ -39,10 +39,10 @@
   },
   "dependencies": {
     "@iarna/toml": "2.2.5",
-    "@oclif/core": "3.15.1",
+    "@oclif/core": "3.26.0",
     "@shopify/browserslist-config": "^3.0.0",
-    "@shopify/cli-kit": "3.56.0",
-    "@types/node": "18.19.3",
+    "@shopify/cli-kit": "3.58.0",
+    "@types/node": "20.12.2",
     "chokidar": "^3.6.0",
     "deepmerge": "^4.3.1",
     "es-module-lexer": "^1.4.2",
@@ -50,10 +50,10 @@
     "jsdom": "^24.0.0",
     "lodash-es": "^4.17.21",
     "parse-gitignore": "^2.0.0",
-    "picomatch": "^3.0.1",
+    "picomatch": "^4.0.2",
     "postcss": "^8.4.36",
     "postcss-import": "^16.0.1",
-    "postcss-preset-env": "^9.5.2",
+    "postcss-preset-env": "^9.5.3",
     "svgo": "^3.2.0"
   },
   "devDependencies": {
@@ -69,7 +69,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "husky": "^9.0.11",
     "mocha": "^10.3.0",
-    "oclif": "4.0.2",
+    "oclif": "4.7.5",
     "prettier": "3.2.5",
     "shx": "^0.3.4"
   },
