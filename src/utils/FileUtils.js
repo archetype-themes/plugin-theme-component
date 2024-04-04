@@ -335,9 +335,9 @@ export async function saveFile(file, fileContents) {
  * Get Absolute Path
  * This will prepend a relative path with the CWD
  * @param {string} path - Relative or Absolute Path
- * @return {Promise<string>} Absolute Path
+ * @return {string} Absolute Path
  */
-export async function getAbsolutePath(path) {
+export function getAbsolutePath(path) {
   return path.startsWith(sep) ? path : join(cwd(), path)
 }
 

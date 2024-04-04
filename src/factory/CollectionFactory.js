@@ -51,7 +51,7 @@ class CollectionFactory {
       await installComponents(collection.source, collection.rootFolder)
       Session.componentsPath = collection.rootFolder
     } else {
-      collection.rootFolder = await getAbsolutePath(collection.source)
+      collection.rootFolder = getAbsolutePath(collection.source)
       try {
         const packageManifest = await getPackageManifest(collection.rootFolder)
         collection.name = getPackageName(packageManifest)

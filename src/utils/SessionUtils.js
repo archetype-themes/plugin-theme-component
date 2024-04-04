@@ -51,5 +51,5 @@ export function getValuesFromArgvOrToml(key, argv, tomlConfig) {
 export async function getPathFromFlagOrTomlValue(pathName, flags, metadata, tomlConfig) {
   const flagValue = getValueFromFlagOrToml(pathName, flags, metadata, tomlConfig)
 
-  return isGitHubUrl(flagValue) ? flagValue : await getAbsolutePath(flagValue)
+  return isGitHubUrl(flagValue) ? flagValue : getAbsolutePath(flagValue)
 }
