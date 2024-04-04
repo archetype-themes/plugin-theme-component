@@ -19,5 +19,5 @@ export function clone(repository, path) {
 export async function installRepository(url, installPath) {
   const downloadPath = await getRandomTmpFolder()
   clone(url, downloadPath)
-  return copyFolder(downloadPath, installPath)
+  return copyFolder(downloadPath, installPath, { recursive: true })
 }

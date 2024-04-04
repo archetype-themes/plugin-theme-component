@@ -32,6 +32,8 @@ import { isGitHubUrl } from '../../../utils/WebUtils.js'
 import { installSetupFiles, handleSetupFileWatcherEvent, createIndexTemplate } from '../../../utils/SetupFilesUtils.js'
 import { getCurrentTime } from '../../../utils/DateUtils.js'
 import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
+import { rm } from 'node:fs/promises'
+import { exists } from '../../../utils/FileUtils.js'
 
 /** @type {string} **/
 const THEME_FLAG_NAME = 'theme-path'
@@ -183,12 +185,21 @@ export default class Dev extends BaseCommand {
     const devFolder = join(cwd(), DEV_FOLDER_NAME)
 
     if (Session.firstRun) {
+      // Start with a clean slate
+      if (await exists(devFolder)) {
+        await rm(devFolder, { recursive: true })
+      }
+
       // Install Theme Files
       await installThemeFiles(themePath, devFolder)
 
       // Install Locales
       if (isGitHubUrl(Session.localesPath)) {
         const localesInstallPath = getLocalesInstallPath()
+        // Start with a clean slate
+        if (await exists(localesInstallPath)) {
+          await rm(localesInstallPath, { recursive: true })
+        }
         await installLocales(Session.localesPath, localesInstallPath)
         Session.localesPath = localesInstallPath
       }
