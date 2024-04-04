@@ -11,7 +11,7 @@ import InternalError from '../../../errors/InternalError.js'
 import ComponentFactory from '../../../factory/ComponentFactory.js'
 import Timer from '../../../models/Timer.js'
 import Snippet from '../../../models/Snippet.js'
-import CollectionUtils from '../../../utils/CollectionUtils.js'
+import { getComponentNamesToBuild } from '../../../utils/CollectionUtils.js'
 import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
 import { plural } from '../../../utils/SyntaxUtils.js'
 
@@ -50,7 +50,7 @@ class Build extends BaseCommand {
     // Filter Out Components When Applicable
     if (collection.componentNames?.length) {
       // for each component, get tree item names
-      const componentNamesToBuild = CollectionUtils.getComponentNamesToBuild(allComponents, collection.componentNames)
+      const componentNamesToBuild = getComponentNamesToBuild(allComponents, collection.componentNames)
 
       logChildItem(
         `Packaging the following component${plural(collection.componentNames)}: ${collection.componentNames.join(', ')}`

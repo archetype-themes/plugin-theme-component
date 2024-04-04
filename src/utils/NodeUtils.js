@@ -1,6 +1,6 @@
 // External Dependencies
 import { cwd, env, exit } from 'node:process'
-import { dirname, join, sep } from 'node:path'
+import { join, sep } from 'node:path'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
@@ -13,11 +13,7 @@ import InternalError from '../errors/InternalError.js'
  * @param {Error|string} error
  */
 export function exitWithError(error) {
-  if (
-    typeof error === 'string' ||
-    error instanceof String ||
-    isDebugEnabled()
-  ) {
+  if (typeof error === 'string' || error instanceof String || isDebugEnabled()) {
     ux.error(error)
   } else {
     let errorMessage = ''
@@ -48,21 +44,6 @@ export function getCLIRootFolderName() {
 }
 
 /**
- * Get Package Root Folder
- * @return {string}
- */
-export function getPackageRootFolder() {
-  // Generic env variable (should be set by npm and yarn)
-  if (env.npm_package_json) {
-    return dirname(env.npm_package_json)
-  }
-
-  throw new InternalError(
-    'Unable to get Package Root Folder through Environment Variables. Please make sure you are running this CLI from within a Node Package folder.'
-  )
-}
-
-/**
  * Get Node.js package name without the scope
  * @param {Object} [packageManifest] Optional Package Manifest JSON object
  * @return {string}
@@ -74,14 +55,10 @@ export function getPackageName(packageManifest) {
   } else if (env.npm_package_name) {
     packageNameAndScope = env.npm_package_name
   } else {
-    throw new InternalError(
-      'Unavailable NPM Package Name environment variable and/or Package Manifest'
-    )
+    throw new InternalError('Unavailable NPM Package Name environment variable and/or Package Manifest')
   }
 
-  return packageNameAndScope.includes('/')
-    ? packageNameAndScope.split('/')[1]
-    : packageNameAndScope
+  return packageNameAndScope.includes('/') ? packageNameAndScope.split('/')[1] : packageNameAndScope
 }
 
 /**
@@ -119,16 +96,5 @@ export function getPackageScope(packageManifest) {
   } else {
     throw new InternalError('Unavailable NPM Package Name environment variable')
   }
-  return packageNameAndScope.includes('/')
-    ? packageNameAndScope.split('/')[0]
-    : ''
-}
-
-export default {
-  exitWithError,
-  getCurrentWorkingDirectoryName,
-  getCLIRootFolderName,
-  getPackageRootFolder,
-  getPackageName,
-  getPackageScope
+  return packageNameAndScope.includes('/') ? packageNameAndScope.split('/')[0] : ''
 }

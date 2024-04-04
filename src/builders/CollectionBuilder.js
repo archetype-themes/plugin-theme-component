@@ -1,29 +1,20 @@
 // External Dependencies
 import { mkdir, rm } from 'node:fs/promises'
 import { join } from 'node:path'
-import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
-import {
-  LOCALES_FOLDER_NAME,
-  LOCALES_INSTALL_FOLDER
-} from '../config/Components.js'
+import { LOCALES_FOLDER_NAME } from '../config/Components.js'
 import BuildFactory from '../factory/BuildFactory.js'
 import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
-import { install } from '../utils/ExternalComponentUtils.js'
-import {
-  copyFilesToFolder,
-  getFolderFilesRecursively,
-  saveFile
-} from '../utils/FileUtils.js'
+import { copyFilesToFolder, getFolderFilesRecursively, saveFile } from '../utils/FileUtils.js'
 import LocaleUtils from '../utils/LocaleUtils.js'
 import { isDebugEnabled, logChildItem } from '../utils/LoggerUtils.js'
-import { downloadFiles, isRepoUrl, isUrl } from '../utils/WebUtils.js'
+import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
 
 class CollectionBuilder {
@@ -43,16 +34,8 @@ class CollectionBuilder {
     logChildItem(`Collection Build Initialized (${timer.now()} seconds)`)
 
     if (Session.firstRun) {
-      ;[
-        collection.importMapEntries,
-        collection.build.locales,
-        collection.build.styles
-      ] = await Promise.all([
-        this.#buildJavaScript(
-          allComponents,
-          collection.build.importMapFile,
-          collection.rootFolder
-        ),
+      ;[collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
+        this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
         this.#buildLocales(allComponents),
         this.#buildStyles(allComponents, collection.build.stylesheet)
       ])
@@ -69,10 +52,7 @@ class CollectionBuilder {
           collection.build.locales = await this.#buildLocales(allComponents)
           break
         case ChangeType.Stylesheet:
-          collection.build.styles = await this.#buildStyles(
-            allComponents,
-            collection.build.stylesheet
-          )
+          collection.build.styles = await this.#buildStyles(allComponents, collection.build.stylesheet)
           break
       }
     }
@@ -94,17 +74,11 @@ class CollectionBuilder {
     if (jsFiles.length) {
       logChildItem('Running the Import Map Processor')
       const timer = new Timer()
-      const importMapEntries = await JavaScriptProcessor.buildJavaScript(
-        jsFiles,
-        importMapFile,
-        cwd
-      )
+      const importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, importMapFile, cwd)
       logChildItem(`Import Map Processor completed in ${timer.now()} seconds`)
       return importMapEntries
     } else {
-      ux.warn(
-        'No Javascript Files Found. Javascript Build Process Was Skipped.'
-      )
+      ux.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
     }
   }
 
@@ -116,43 +90,17 @@ class CollectionBuilder {
    * @return {Promise<{}>} - A promise that resolves when the locales are built.
    */
   static async #buildLocales(components) {
-    const componentsLiquidCode = components.map(
-      (component) => component.liquidCode
-    )
+    const componentsLiquidCode = components.map((component) => component.liquidCode)
     try {
       logChildItem('Running the Locales Processor')
       const timer = new Timer()
-
-      let localesPath
-      if (isRepoUrl(Session.localesPath)) {
-        const localesInstallPath = join(cwd(), LOCALES_INSTALL_FOLDER)
-        localesPath = localesInstallPath
-        if (Session.firstRun) {
-          await install(Session.localesPath, localesInstallPath, 'Locales DB')
-        }
-      } else {
-        localesPath = Session.localesPath
-      }
-
-      const localeFiles = await getFolderFilesRecursively(
-        join(localesPath, LOCALES_FOLDER_NAME)
-      )
-      const locales = await LocalesProcessor.build(
-        componentsLiquidCode,
-        localeFiles
-      )
+      const localeFiles = await getFolderFilesRecursively(join(Session.localesPath, LOCALES_FOLDER_NAME))
+      const locales = await LocalesProcessor.build(componentsLiquidCode, localeFiles)
       logChildItem(`Locales Processor completed in ${timer.now()} seconds`)
       return locales
     } catch (error) {
-      ux.error(
-        'TIP: For JSON parsing errors, use debug flag to view the name of the file in error',
-        { exit: false }
-      )
-      ux.error(
-        'Error Building Locales: ' + error.stack && isDebugEnabled()
-          ? error.stack
-          : error.message
-      )
+      ux.error('TIP: For JSON parsing errors, use debug flag to view the name of the file in error', { exit: false })
+      ux.error('Error Building Locales: ' + error.stack && isDebugEnabled() ? error.stack : error.message)
     }
   }
 
@@ -170,10 +118,7 @@ class CollectionBuilder {
       logChildItem('Running the Styles Processor')
       const timer = new Timer()
 
-      const styles = await StylesProcessor.buildStylesBundle(
-        mainStylesheets,
-        outputFile
-      )
+      const styles = await StylesProcessor.buildStylesBundle(mainStylesheets, outputFile)
       logChildItem(`Styles Processor completed in ${timer.now()} seconds`)
       return styles
     }
@@ -189,52 +134,31 @@ class CollectionBuilder {
     const promises = []
 
     if (Session.firstRun || Session.changeType === ChangeType.Locale) {
-      const localesWritePromise = LocaleUtils.writeLocales(
-        collection.build.locales,
-        collection.build.localesFolder
-      )
+      const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
       promises.push(localesWritePromise)
     }
 
-    if (
-      collection.build.styles &&
-      (Session.firstRun || Session.changeType === ChangeType.Stylesheet)
-    ) {
-      const stylesheetSavePromise = saveFile(
-        collection.build.stylesheet,
-        collection.build.styles
-      )
+    if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
+      const stylesheetSavePromise = saveFile(collection.build.stylesheet, collection.build.styles)
       promises.push(stylesheetSavePromise)
     }
 
-    if (
-      Session.firstRun ||
-      [ChangeType.Asset, ChangeType.JavaScript].includes(Session.changeType)
-    ) {
+    if (Session.firstRun || [ChangeType.Asset, ChangeType.JavaScript].includes(Session.changeType)) {
       const allAssetFiles = this.#getAssetFiles(allComponents)
-      const copyAssetFilesPromise = copyFilesToFolder(
-        allAssetFiles,
-        collection.build.assetsFolder
-      )
+      const copyAssetFilesPromise = copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
       promises.push(copyAssetFilesPromise)
     }
 
     if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
       const snippetFilesWritePromises = Promise.all(
         allComponents.map((component) =>
-          saveFile(
-            join(collection.build.snippetsFolder, `${component.name}.liquid`),
-            component.build.liquidCode
-          )
+          saveFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)
         )
       )
       promises.push(snippetFilesWritePromises)
     }
 
-    if (
-      collection.importMapEntries?.size &&
-      (Session.firstRun || Session.changeType === ChangeType.JavaScript)
-    ) {
+    if (collection.importMapEntries?.size && (Session.firstRun || Session.changeType === ChangeType.JavaScript)) {
       const deployImportMapFilesPromises = this.#deployImportMapFiles(
         collection.importMapEntries,
         collection.build.assetsFolder
@@ -316,9 +240,7 @@ class CollectionBuilder {
       build.sectionsFolder,
       build.snippetsFolder
     ]
-    const mkdirPromises = buildFolders.map((buildFolder) =>
-      mkdir(buildFolder, { recursive: true })
-    )
+    const mkdirPromises = buildFolders.map((buildFolder) => mkdir(buildFolder, { recursive: true }))
 
     return Promise.all(mkdirPromises)
   }

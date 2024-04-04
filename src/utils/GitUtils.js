@@ -1,13 +1,8 @@
+// External Dependencies
 import { execSync } from 'node:child_process'
 
-/**
- * Cleans the working directory by removing untracked files and directories.
- *
- * @param {string} path - The path of the working directory to clean.
- */
-export function clean(path) {
-  execSync('git clean -f -d --quiet', { cwd: path })
-}
+// Internal Dependencies
+import { copyFolder, getRandomTmpFolder } from './FileUtils.js'
 
 /**
  * Clones a git repository into the specified path.
@@ -21,24 +16,8 @@ export function clone(repository, path) {
   execSync(`git clone ${repository} ${path} --quiet`)
 }
 
-/**
- * Restores the working tree files in the given local repository path.
- *
- * @param {string} path - The path to the local repository.
- * @return {void}
- */
-export function restore(path) {
-  execSync('git restore . --quiet', { cwd: path })
+export async function installRepository(url, installPath) {
+  const downloadPath = await getRandomTmpFolder()
+  clone(url, downloadPath)
+  return copyFolder(downloadPath, installPath)
 }
-
-/**
- * Pulls the latest changes from the remote repository.
- *
- * @param {string} path - The path to the local repository.
- * @return {void}
- */
-export function pull(path) {
-  execSync('git pull --quiet', { cwd: path })
-}
-
-export default { clean, clone, pull, restore }

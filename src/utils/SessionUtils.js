@@ -1,5 +1,5 @@
 import { COMPONENT_ARG_NAME } from '../config/baseCommand.js'
-import { isRepoUrl } from './WebUtils.js'
+import { isGitHubUrl } from './WebUtils.js'
 import { getAbsolutePath } from './FileUtils.js'
 
 /**
@@ -12,11 +12,7 @@ import { getAbsolutePath } from './FileUtils.js'
  * @return {string|boolean}
  */
 export function getValueFromFlagOrToml(key, flags, metadata, tomlConfig) {
-  if (
-    metadata.flags[key]?.setFromDefault &&
-    tomlConfig != null &&
-    Object.hasOwn(tomlConfig, key)
-  ) {
+  if (metadata.flags[key]?.setFromDefault && tomlConfig != null && Object.hasOwn(tomlConfig, key)) {
     return tomlConfig[key]
   } else {
     return flags[key]
@@ -52,18 +48,8 @@ export function getValuesFromArgvOrToml(key, argv, tomlConfig) {
  * @param {ComponentTomlConfig|null} tomlConfig
  * @return {Promise<string>}
  */
-export async function getPathFromFlagOrTomlValue(
-  pathName,
-  flags,
-  metadata,
-  tomlConfig
-) {
-  const flagValue = getValueFromFlagOrToml(
-    pathName,
-    flags,
-    metadata,
-    tomlConfig
-  )
+export async function getPathFromFlagOrTomlValue(pathName, flags, metadata, tomlConfig) {
+  const flagValue = getValueFromFlagOrToml(pathName, flags, metadata, tomlConfig)
 
-  return isRepoUrl(flagValue) ? flagValue : await getAbsolutePath(flagValue)
+  return isGitHubUrl(flagValue) ? flagValue : await getAbsolutePath(flagValue)
 }

@@ -1,51 +1,11 @@
 // External Dependencies
 import { join } from 'node:path'
-import { cwd } from 'node:process'
 
 // Internal Dependencies
 import { exists, getFolders } from './FileUtils.js'
-import { isRepoUrl } from './WebUtils.js'
-import { COLLECTIONS_INSTALL_FOLDER_NAME } from '../config/CLI.js'
 import { COMPONENTS_FOLDER } from '../config/Components.js'
 import FileMissingError from '../errors/FileMissingError.js'
-import InternalError from '../errors/InternalError.js'
 import Component from '../models/Component.js'
-import Session from '../models/static/Session.js'
-
-/**
- * Get Collection Root Folder
- * @param {string} [collectionName] - Required in a multiple Collection environment only
- * @param {string} [collectionSource] - Required in a multiple Collection environment only
- * @returns {Promise<string>|string}
- */
-export async function getRootFolder(collectionName, collectionSource) {
-  if (Session.isCollection()) {
-    return cwd()
-  }
-  if (Session.isTheme()) {
-    if (!collectionName) {
-      throw new InternalError(
-        'Unable to find root collection root folder without the collection name.'
-      )
-    }
-    if (!collectionSource) {
-      throw new InternalError(
-        'Unable to find root collection root folder without the collection source.'
-      )
-    }
-    if (collectionSource) {
-      if (isRepoUrl(collectionSource)) {
-        return join(cwd(), COLLECTIONS_INSTALL_FOLDER_NAME, collectionName)
-      } else {
-        return collectionSource
-      }
-    } else {
-      throw new InternalError(
-        'Collection source is missing from shopify.theme.toml file.'
-      )
-    }
-  }
-}
 
 /**
  * Find Components From package.json files
@@ -71,9 +31,7 @@ function findComponents(componentFolders) {
 async function getComponentFolders(collectionRootFolder) {
   const componentsFolder = join(collectionRootFolder, COMPONENTS_FOLDER)
   if (!(await exists(componentsFolder))) {
-    throw new FileMissingError(
-      `Unable to locate components folder ${componentsFolder}`
-    )
+    throw new FileMissingError(`Unable to locate components folder ${componentsFolder}`)
   }
   return getFolders(join(collectionRootFolder, COMPONENTS_FOLDER))
 }
@@ -89,21 +47,14 @@ export function getComponentNamesToBuild(components, componentNames) {
 
   componentNames.forEach((componentName) => {
     // Find its matching component object
-    const component = components.find(
-      (component) => component.name === componentName
-    )
+    const component = components.find((component) => component.name === componentName)
 
     if (!component) {
-      throw new FileMissingError(
-        `Unable to find the component "${componentName}".`
-      )
+      throw new FileMissingError(`Unable to find the component "${componentName}".`)
     }
 
     // Recursive call applied to snippet names
-    const componentNameTree = this.getComponentNamesToBuild(
-      components,
-      component.snippetNames
-    )
+    const componentNameTree = this.getComponentNamesToBuild(components, component.snippetNames)
     // Merge data with the global Set
     componentsNameTree = new Set([...componentsNameTree, ...componentNameTree])
   })
@@ -112,11 +63,11 @@ export function getComponentNamesToBuild(components, componentNames) {
 }
 
 /**
- *
+ * Init Collection Components
  * @param {module:models/Collection} collection
  * @return {Promise<module:models/Collection>}
  */
-export async function initCollectionFiles(collection) {
+export async function initComponents(collection) {
   // Find .gitignore File
   const gitignoreFile = join(collection.rootFolder, '.gitignore')
   if (await exists(gitignoreFile)) {
@@ -130,10 +81,4 @@ export async function initCollectionFiles(collection) {
   collection.components = findComponents(componentFolders)
 
   return Promise.resolve(collection)
-}
-
-export default {
-  getComponentNamesToBuild,
-  getRootFolder,
-  initCollectionFiles
 }
