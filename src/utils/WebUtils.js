@@ -11,9 +11,7 @@ const URL_REGEX = /^(http:\/\/|https:\/\/|\/\/)/
  * @return {Promise<Awaited<void>[]>}
  */
 export async function downloadFiles(remoteFiles, targetFolder) {
-  const downloadPromises = remoteFiles.map((file) =>
-    downloadFile(file, targetFolder)
-  )
+  const downloadPromises = remoteFiles.map((file) => downloadFile(file, targetFolder))
 
   return Promise.all(downloadPromises)
 }
@@ -33,9 +31,7 @@ export async function downloadFile(remoteFile, targetFolder) {
           data += chunk
         })
         response.on('end', () => {
-          resolve(
-            FileUtils.saveFile(join(targetFolder, basename(remoteFile)), data)
-          )
+          resolve(FileUtils.saveFile(join(targetFolder, basename(remoteFile)), data))
         })
       })
       .on('error', (error) => {
@@ -52,8 +48,6 @@ export function isUrl(possibleUrl) {
   return URL_REGEX.test(possibleUrl)
 }
 
-export function isRepoUrl(possibleRepoUrl) {
+export function isGitHubUrl(possibleRepoUrl) {
   return /github\.com/.test(possibleRepoUrl)
 }
-
-export default { downloadFile, downloadFiles, isRepoUrl, isUrl }

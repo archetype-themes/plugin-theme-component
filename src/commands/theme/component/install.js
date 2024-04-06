@@ -2,19 +2,19 @@
 import { Args, Flags, ux } from '@oclif/core'
 
 // Internal Dependencies
-import Build from './build.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import { THEME_TYPE_NAME } from '../../../config/Components.js'
+import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
+import { getCurrentTime } from '../../../utils/DateUtils.js'
+import Build from './build.js'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
-import ThemeFactory from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
+import ThemeFactory from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
-import CollectionUtils from '../../../utils/CollectionUtils.js'
-import { install } from '../../../utils/ExternalComponentUtils.js'
-import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
-import { isRepoUrl } from '../../../utils/WebUtils.js'
-import { getCurrentTime } from '../../../utils/DateUtils.js'
+import { isGitHubUrl } from '../../../utils/WebUtils.js'
+import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
+import { installLocales } from '../../../utils/ExternalComponentUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -61,14 +61,14 @@ export default class Install extends BaseCommand {
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
 
-    let collection = await CollectionFactory.fromInstallCommand(Session.componentsPath, Session.components)
+    const collection = await CollectionFactory.fromRemotePath(Session.componentsPath, Session.components)
 
-    // Install it locally if the source is a URL
-    if (isRepoUrl(collection.source)) {
-      await install(collection.source, collection.rootFolder, collection.name)
+    // Install Locales locally when we have a GitHub URL
+    if (isGitHubUrl(Session.localesPath)) {
+      const localesInstallPath = getLocalesInstallPath()
+      await installLocales(Session.localesPath, localesInstallPath)
+      Session.localesPath = localesInstallPath
     }
-
-    collection = await CollectionUtils.initCollectionFiles(collection)
 
     await Install.installOne(theme, collection)
   }

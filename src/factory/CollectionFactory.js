@@ -1,69 +1,57 @@
 // External Dependencies
-import { basename } from 'node:path'
-import { ux } from '@oclif/core'
+import { basename, join } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
-import Session from '../models/static/Session.js'
-import CollectionUtils from '../utils/CollectionUtils.js'
+import { initComponents } from '../utils/CollectionUtils.js'
 import { getAbsolutePath } from '../utils/FileUtils.js'
 import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
-import { isRepoUrl } from '../utils/WebUtils.js'
+import { isGitHubUrl } from '../utils/WebUtils.js'
+import { cwd } from 'node:process'
+import { COLLECTIONS_INSTALL_FOLDER_NAME } from '../config/CLI.js'
+import { installComponents } from '../utils/ExternalComponentUtils.js'
+import Session from '../models/static/Session.js'
 
 class CollectionFactory {
   /**
-   * From Collection Build Script
-   * @param {string} collectionName - Collection Name
+   * Create Collection Model From CWD (Current Working Directory)
    * @param {string[]} [componentNames] - List of Components To Bundle With The Collection
-   * @param {string} [collectionSource] - Collection Source Path or URL
    * @return {Promise<module:models/Collection>}
    */
-  static async fromName(collectionName, componentNames, collectionSource) {
+  static async fromCwd(componentNames) {
     const collection = new Collection()
 
-    collection.name = collectionName
-    if (collectionSource) {
-      collection.source = collectionSource
-    }
-    collection.rootFolder = await CollectionUtils.getRootFolder(
-      collectionName,
-      collectionSource
-    )
+    collection.rootFolder = cwd()
+    collection.name = basename(collection.rootFolder)
 
     // Get Component Names and Create Them
     if (componentNames?.length) {
       collection.componentNames = componentNames
-    } else if (Session.isTheme()) {
-      ux.warn(
-        `No component list found for the "${collection.name}" collection; all components will be installed.`
-      )
     }
 
-    return CollectionUtils.initCollectionFiles(collection)
+    return initComponents(collection)
   }
 
   /**
-   *
-   * @param {string} source
-   * @param {string[]|null} componentNames
+   * Create Collection Model From A Remote Path
+   * This will attempt to download a copy of a remote repository if the path is not local
+   * @param {string} remotePath
+   * @param {string[]} [componentNames]
    * @return {module:models/Collection}
    */
-  static async fromInstallCommand(source, componentNames) {
+  static async fromRemotePath(remotePath, componentNames) {
     const collection = new Collection()
-    collection.source = source
+    collection.source = remotePath
     collection.componentNames = componentNames
 
-    if (isRepoUrl(collection.source)) {
-      collection.name = basename(collection.source)
-      if (collection.name.endsWith('.git')) {
-        collection.name = collection.name.slice(0, -4)
-      }
-      collection.rootFolder = await CollectionUtils.getRootFolder(
-        collection.name,
-        collection.source
-      )
+    if (isGitHubUrl(collection.source)) {
+      collection.name = basename(collection.source, '.git')
+      collection.rootFolder = join(cwd(), COLLECTIONS_INSTALL_FOLDER_NAME, collection.name)
+      // Install Components Collection locally and change components path in the Session
+      await installComponents(collection.source, collection.rootFolder)
+      Session.componentsPath = collection.rootFolder
     } else {
-      collection.rootFolder = await getAbsolutePath(collection.source)
+      collection.rootFolder = getAbsolutePath(collection.source)
       try {
         const packageManifest = await getPackageManifest(collection.rootFolder)
         collection.name = getPackageName(packageManifest)
@@ -73,7 +61,7 @@ class CollectionFactory {
       }
     }
 
-    return collection
+    return initComponents(collection)
   }
 }
 

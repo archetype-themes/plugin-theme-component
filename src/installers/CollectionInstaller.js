@@ -30,28 +30,20 @@ class CollectionInstaller {
     // Copy Asset Folder
     if (
       Session.firstRun ||
-      [ChangeType.Asset, ChangeType.JavaScript, ChangeType.Stylesheet].includes(
-        Session.changeType
-      )
+      [ChangeType.Asset, ChangeType.JavaScript, ChangeType.Stylesheet].includes(Session.changeType)
     ) {
-      fileOperations.push(
-        copyFolder(collection.build.assetsFolder, theme.assetsFolder)
-      )
+      fileOperations.push(copyFolder(collection.build.assetsFolder, theme.assetsFolder))
     }
 
     // Copy Snippets Folder
     if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
-      fileOperations.push(
-        copyFolder(collection.build.snippetsFolder, theme.snippetsFolder)
-      )
+      fileOperations.push(copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
     }
 
     // Merge & Install Storefront Locales
     if (Session.firstRun || Session.changeType === ChangeType.Locale) {
       if (collection.build.locales) {
-        fileOperations.push(
-          this.writeLocales(collection.build.locales, theme.localesFolder)
-        )
+        fileOperations.push(this.writeLocales(collection.build.locales, theme.localesFolder))
       }
     }
 
@@ -73,34 +65,22 @@ class CollectionInstaller {
     const injectableAssets = [
       {
         asset: collection.build.javascriptFile,
-        tagTemplate: (filename) =>
-          `<script src="{{ '${filename}' | asset_url }}" async></script>`,
+        tagTemplate: (filename) => `<script src="{{ '${filename}' | asset_url }}" async></script>`,
         loggerMessage: 'Source Collection Javascript file %s found.'
       },
       {
         asset: collection.build.stylesheet,
-        tagTemplate: (filename) =>
-          `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
+        tagTemplate: (filename) => `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
         loggerMessage: 'Source Collection Stylesheet file %s found.',
-        nameModifier: (name) =>
-          name.endsWith(LIQUID_EXTENSION)
-            ? name.substring(0, name.lastIndexOf('.'))
-            : name
+        nameModifier: (name) => (name.endsWith(LIQUID_EXTENSION) ? name.substring(0, name.lastIndexOf('.')) : name)
       }
     ]
 
     const injections = []
     const themeLiquidFile = join(theme.rootFolder, 'layout', 'theme.liquid')
-    const themeLiquid = (await isReadable(themeLiquidFile))
-      ? await getFileContents(themeLiquidFile)
-      : ''
+    const themeLiquid = (await isReadable(themeLiquidFile)) ? await getFileContents(themeLiquidFile) : ''
 
-    for (const {
-      asset,
-      tagTemplate,
-      loggerMessage,
-      nameModifier
-    } of injectableAssets) {
+    for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
       if (!asset || !(await exists(asset))) continue
 
       ux.debug(loggerMessage, basename(asset))
@@ -119,16 +99,9 @@ class CollectionInstaller {
     }
 
     if ((await isWritable(themeLiquidFile)) && injections.length > 0) {
-      await this.writeAssetReferencesToThemeLiquidFile(
-        injections,
-        themeLiquid,
-        themeLiquidFile
-      )
+      await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
     } else if (injections.length > 0) {
-      this.injectionFailureWarning(
-        `Theme Liquid file (${themeLiquidFile}) is not writable.`,
-        injections
-      )
+      this.injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
     }
   }
 
@@ -139,19 +112,12 @@ class CollectionInstaller {
    * @param {string} themeLiquidFile
    * @return {Promise<void>}
    */
-  static async writeAssetReferencesToThemeLiquidFile(
-    injections,
-    themeLiquid,
-    themeLiquidFile
-  ) {
+  static async writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile) {
     const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
 
     // Exit if No </head> tag was found
     if (closingHtmlHeadTagCount === 0) {
-      return this.injectionFailureWarning(
-        'Html head tag closure not found in "theme.liquid".',
-        injections
-      )
+      return this.injectionFailureWarning('Html head tag closure not found in "theme.liquid".', injections)
     }
 
     // Exit if Multiple </head> tags were found
@@ -162,13 +128,8 @@ class CollectionInstaller {
       )
     }
 
-    ux.debug(
-      'Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.'
-    )
-    themeLiquid = themeLiquid.replace(
-      '</head>',
-      `${injections.join('\n')}\n</head>`
-    )
+    ux.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
+    themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
 
     await saveFile(themeLiquidFile, themeLiquid)
   }
@@ -213,21 +174,15 @@ You should manually insert these lines inside your "theme.liquid" file:
         const themeLocale = await getJsonFileContents(realTargetFile)
         const mergedLocale = merge(themeLocale, collectionLocale)
 
-        fileOperations.push(
-          saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2))
-        )
+        fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
       } else {
         // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File to determine 'default' status for the locale.
         const defaultLocaleFilename = `${locale}.default.json`
-        const realTargetFile = (await exists(
-          join(themeLocalesPath, defaultLocaleFilename)
-        ))
+        const realTargetFile = (await exists(join(themeLocalesPath, defaultLocaleFilename)))
           ? defaultTargetFile
           : targetFile
 
-        fileOperations.push(
-          saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2))
-        )
+        fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
       }
     }
     return Promise.all(fileOperations)

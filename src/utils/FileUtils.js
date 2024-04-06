@@ -1,11 +1,13 @@
 // External Dependencies
 import { access, constants, copyFile, cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
-import { basename, dirname, join, sep } from 'node:path'
+import { basename, dirname, join, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { tmpdir } from 'node:os'
+import { randomBytes } from 'node:crypto'
 
 /** @type {string[]} **/
 const EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
@@ -109,7 +111,7 @@ export async function copyFolder(sourceFolder, targetFolder, options = { recursi
       } else {
         fileOperations.push(cp(sourceFile, targetFile, { preserveTimestamps: true }))
       }
-    } else if (dirent.isDirectory() && options.recursive) {
+    } else if (dirent.isDirectory() && options.recursive && !EXCLUDED_FOLDERS.includes(dirent.name)) {
       const newTargetFolder = join(targetFolder, dirent.name)
       fileOperations.push(cp(join(sourceFolder, dirent.name), newTargetFolder, options))
     }
@@ -211,6 +213,13 @@ export async function getMergedFilesContent(files) {
     content += `${await getFileContents(file)}\n`
   }
   return content
+}
+
+export async function getRandomTmpFolder() {
+  const tmpRandomFolder = resolve(tmpdir(), 'plugin-theme-component', randomBytes(16).toString('hex'))
+  await mkdir(tmpRandomFolder, { recursive: true })
+
+  return tmpRandomFolder
 }
 
 /**
@@ -324,10 +333,11 @@ export async function saveFile(file, fileContents) {
 
 /**
  * Get Absolute Path
+ * This will prepend a relative path with the CWD
  * @param {string} path - Relative or Absolute Path
- * @return {Promise<string>}
+ * @return {string} Absolute Path
  */
-export async function getAbsolutePath(path) {
+export function getAbsolutePath(path) {
   return path.startsWith(sep) ? path : join(cwd(), path)
 }
 
