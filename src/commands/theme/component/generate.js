@@ -6,23 +6,11 @@ import { Args, ux } from '@oclif/core'
 
 // Internal Dependencies
 import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
-import {
-  COLLECTION_TYPE_NAME,
-  COMPONENT_TYPE_NAME,
-  COMPONENTS_FOLDER
-} from '../../../config/Components.js'
+import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../../config/Components.js'
 import FileAccessError from '../../../errors/FileAccessError.js'
 import Session from '../../../models/static/Session.js'
-import {
-  copyFolder,
-  getFolderFilesRecursively
-} from '../../../utils/FileUtils.js'
-import {
-  getCLIRootFolderName,
-  getPackageManifest,
-  getPackageName,
-  getPackageScope
-} from '../../../utils/NodeUtils.js'
+import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
+import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/NodeUtils.js'
 import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
 import { logSeparator, logSpacer } from '../../../utils/LoggerUtils.js'
 
@@ -70,32 +58,25 @@ export default class Generate extends BaseCommand {
         )
       }
 
-      const cliRootFolder = getCLIRootFolderName()
-      const sourcesPath = join(cliRootFolder, 'resources/component-files')
+      const sourcesPath = join(getCLIRootFolderName(), 'resources/component-files')
 
       const packageManifest = await getPackageManifest()
       const packageScope = getPackageScope(packageManifest)
-      const packageScopeName = packageScope.startsWith('@')
-        ? packageScope.substring(1)
-        : packageScope
+      const packageScopeName = packageScope.startsWith('@') ? packageScope.substring(1) : packageScope
       const packageName = getPackageName(packageManifest)
 
       const copyFolderOptions = {
         recursive: true,
         rename: ['component-name', componentName],
         jsTemplateVariables: {
-          author: packageManifest.author
-            ? packageManifest.author
-            : 'Archetype Themes Limited Partnership',
+          author: packageManifest.author ? packageManifest.author : 'Archetype Themes Limited Partnership',
           collectionName: packageName,
           collectionScope: packageScope,
           componentName,
           componentType: COMPONENT_TYPE_NAME,
           componentFolder: componentPath,
           gitUrl: `https://github.com/${packageScopeName}/${packageName}.git`,
-          license: packageManifest.license
-            ? packageManifest.license
-            : 'UNLICENSED',
+          license: packageManifest.license ? packageManifest.license : 'UNLICENSED',
           packageName: `${packageScope}/${componentName}-${COMPONENT_TYPE_NAME}`
         }
       }
@@ -107,7 +88,7 @@ export default class Generate extends BaseCommand {
       ux.action.stop('complete')
       ux.info('\nThe following files were created:')
       const files = await getFolderFilesRecursively(componentPath)
-      files.map((file) => ux.info(relative(componentPath, file)))
+      files.forEach((file) => ux.info(relative(componentPath, file)))
       logSpacer()
 
       ux.info('Your new component is available at')
@@ -119,10 +100,6 @@ export default class Generate extends BaseCommand {
 
   static async setSessionValues(argv, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
-    Session.components = getValuesFromArgvOrToml(
-      COMPONENT_ARG_NAME,
-      argv,
-      tomlConfig
-    )
+    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
   }
 }
