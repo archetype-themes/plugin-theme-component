@@ -7,7 +7,7 @@ import { getAbsolutePath } from './FileUtils.js'
  * Priority is given to the flag value if both are present
  * @param {string} key
  * @param {Object} flags
- * @param {Metadata} metadata
+ * @param {Object} metadata
  * @param {ComponentTomlConfig|null} tomlConfig
  * @return {string|boolean}
  */
@@ -44,7 +44,7 @@ export function getValuesFromArgvOrToml(key, argv, tomlConfig) {
  * Priority is given to the flag value if both are present
  * @param {string} pathName
  * @param {Object} flags
- * @param {Metadata} metadata
+ * @param {Object} metadata
  * @param {ComponentTomlConfig|null} tomlConfig
  * @return {Promise<string>}
  */
