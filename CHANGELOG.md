@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.2] - 2024-04-14
+
+### Changed
+
+- External explorer repository files are now integrated in the resources folder
+- Reference Theme replaces Explorer as the default Theme
+- Dev Command: The setup-files flag is now exclusive to the explorer files.
+
 ## [3.2.2] - 2024-04-04
 
 ### Changed
@@ -34,7 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Dev command: Changed JS assets do not refresh on partial builds (#373)
-- Tests: We now delete the shopify.theme.toml file from checked-out repos to avoid constant test failure due to invalid custom values overriding defaults.
+- Tests: We now delete the shopify.theme.toml file from checked-out repos to avoid constant test failure due to invalid
+  custom values overriding defaults.
 
 ### Removed
 
