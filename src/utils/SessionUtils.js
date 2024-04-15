@@ -1,4 +1,3 @@
-import { COMPONENT_ARG_NAME } from '../config/baseCommand.js'
 import { isGitHubUrl } from './WebUtils.js'
 import { getAbsolutePath } from './FileUtils.js'
 
@@ -7,7 +6,7 @@ import { getAbsolutePath } from './FileUtils.js'
  * Priority is given to the flag value if both are present
  * @param {string} key
  * @param {Object} flags
- * @param {Metadata} metadata
+ * @param {Object} metadata
  * @param {ComponentTomlConfig|null} tomlConfig
  * @return {string|boolean}
  */
@@ -31,10 +30,8 @@ export function getValuesFromArgvOrToml(key, argv, tomlConfig) {
   if (argv.length) {
     return argv
   }
-  if (tomlConfig != null && Object.hasOwn(tomlConfig, COMPONENT_ARG_NAME)) {
-    return typeof tomlConfig[COMPONENT_ARG_NAME] === 'string'
-      ? [tomlConfig[COMPONENT_ARG_NAME]]
-      : tomlConfig[COMPONENT_ARG_NAME]
+  if (tomlConfig != null && Object.hasOwn(tomlConfig, key)) {
+    return typeof tomlConfig[key] === 'string' ? [tomlConfig[key]] : tomlConfig[key]
   }
   return null
 }
@@ -44,7 +41,7 @@ export function getValuesFromArgvOrToml(key, argv, tomlConfig) {
  * Priority is given to the flag value if both are present
  * @param {string} pathName
  * @param {Object} flags
- * @param {Metadata} metadata
+ * @param {Object} metadata
  * @param {ComponentTomlConfig|null} tomlConfig
  * @return {Promise<string>}
  */

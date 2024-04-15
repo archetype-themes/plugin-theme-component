@@ -2,7 +2,7 @@
 import { spawn } from 'node:child_process'
 import { basename, join, relative } from 'node:path'
 import { cwd } from 'node:process'
-import { Args, Flags } from '@oclif/core'
+import { Args, Flags, ux } from '@oclif/core'
 
 // Internal Dependencies
 import Build from './build.js'
@@ -34,13 +34,14 @@ import { getCurrentTime } from '../../../utils/DateUtils.js'
 import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
 import { rm } from 'node:fs/promises'
 import { exists } from '../../../utils/FileUtils.js'
+import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
 
 /** @type {string} **/
-const THEME_FLAG_NAME = 'theme-path'
+export const THEME_FLAG_NAME = 'theme-path'
 /** @type {string} **/
-const SETUP_FLAG_NAME = 'setup-files'
+export const SETUP_FLAG_NAME = 'setup-files'
 /** @type {string} **/
-const WATCH_FLAG_NAME = 'watch'
+export const WATCH_FLAG_NAME = 'watch'
 
 export default class Dev extends BaseCommand {
   static description = 'Develop using theme components'
@@ -59,7 +60,7 @@ export default class Dev extends BaseCommand {
       helpGroup: 'Path',
       helpValue: '<path-or-github-url>',
       char: 't',
-      default: 'https://github.com/archetype-themes/explorer.git'
+      default: 'https://github.com/archetype-themes/reference-theme.git'
     }),
     [LOCALES_FLAG_NAME]: Flags.string({
       summary: 'Path to your locales data',
@@ -286,13 +287,61 @@ export default class Dev extends BaseCommand {
     })
   }
 
+  /**
+   *
+   * @param {string[]} argv
+   * @param {Object} flags
+   * @param {Object} metadata
+   * @param {Object} tomlConfig
+   * @return {Promise<void>}
+   */
   static async setSessionValues(argv, flags, metadata, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
     Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
-    Session.themePath = await getPathFromFlagOrTomlValue(THEME_FLAG_NAME, flags, metadata, tomlConfig)
     Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
-    Session.setupFiles = getValueFromFlagOrToml(SETUP_FLAG_NAME, flags, metadata, tomlConfig)
     Session.watchMode = getValueFromFlagOrToml(WATCH_FLAG_NAME, flags, metadata, tomlConfig)
+
+    const tomlConfigExits = tomlConfig != null
+    const issetSetupFlag = !!(
+      !metadata.flags[SETUP_FLAG_NAME]?.setFromDefault ||
+      (tomlConfigExits && Object.hasOwn(tomlConfig, SETUP_FLAG_NAME))
+    )
+    const isSetupFlagSetInArgv = !metadata.flags[SETUP_FLAG_NAME]?.setFromDefault
+    const isThemeFlagSetInArgv = !metadata.flags[THEME_FLAG_NAME]?.setFromDefault
+    const isSetupFlagSetInConfig = !!(tomlConfigExits && Object.hasOwn(tomlConfig, SETUP_FLAG_NAME))
+    // const isThemeFlagSetInConfig = !!(tomlConfigExits && Object.hasOwn(tomlConfig, THEME_FLAG_NAME))
+    const issetThemeFlag = !!(
+      !metadata.flags[THEME_FLAG_NAME]?.setFromDefault ||
+      (tomlConfigExits && Object.hasOwn(tomlConfig, THEME_FLAG_NAME))
+    )
+
+    // If the theme flag is set on the command line and the setup flag is set to true in the config file,
+    // the setup flag is set to false since command line args have priority over config file args.
+    // A Warning is issued to explain that the command-line flag takes precedence over toml file flags.
+    if (isThemeFlagSetInArgv && !isSetupFlagSetInArgv && isSetupFlagSetInConfig && tomlConfig[SETUP_FLAG_NAME]) {
+      Session.setupFiles = false
+      ux.warn(
+        'The command-line flags takes precedence over the toml file values. Setup files will be ignored since a theme-path was specified at the command line.'
+      )
+    }
+    // When only a theme path is specified, the setup-files flag default true value will be manually changed to false.
+    else if (issetThemeFlag && !issetSetupFlag) {
+      Session.setupFiles = false
+    } else {
+      Session.setupFiles = getValueFromFlagOrToml(SETUP_FLAG_NAME, flags, metadata, tomlConfig)
+    }
+
+    if (Session.setupFiles) {
+      Session.themePath = join(getCLIRootFolderName(), 'resources/explorer')
+      if (issetThemeFlag && issetSetupFlag) {
+        // A Warning is issued to the user explaining that setup files cannot be used with a theme.
+        ux.warn(
+          'The setup-files flag is not available with a custom theme. The component explorer will be used instead.'
+        )
+      }
+    } else {
+      Session.themePath = await getPathFromFlagOrTomlValue(THEME_FLAG_NAME, flags, metadata, tomlConfig)
+    }
   }
 
   /**
