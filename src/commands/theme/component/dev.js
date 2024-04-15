@@ -37,11 +37,11 @@ import { exists } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
 
 /** @type {string} **/
-const THEME_FLAG_NAME = 'theme-path'
+export const THEME_FLAG_NAME = 'theme-path'
 /** @type {string} **/
-const SETUP_FLAG_NAME = 'setup-files'
+export const SETUP_FLAG_NAME = 'setup-files'
 /** @type {string} **/
-const WATCH_FLAG_NAME = 'watch'
+export const WATCH_FLAG_NAME = 'watch'
 
 export default class Dev extends BaseCommand {
   static description = 'Develop using theme components'
