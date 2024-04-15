@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - External explorer repository files are now integrated in the resources folder
 - Reference Theme replaces Explorer as the default Theme
 - Dev Command: The setup-files flag is now exclusive to the explorer files.
+- Automated husky actions: npm ci replaced with npm i for faster results.
 
 ## [3.2.2] - 2024-04-04
 
