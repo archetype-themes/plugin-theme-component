@@ -19,7 +19,7 @@
     "lint:fix": "npx eslint --fix",
     "prepack": "oclif manifest && oclif readme",
     "prepare": "husky",
-    "pretest": "npm ci && npm run lint && npm run cdc",
+    "pretest": "npm i && npm run lint && npm run cdc",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm publish --dry-run && echo '\nTest Run completed succesfully'",
     "test": "NODE_ENV=test mocha --forbid-only -p false \"test/**/*.test.js\"",
