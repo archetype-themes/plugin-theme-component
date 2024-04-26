@@ -5,8 +5,7 @@ import { basename, join, sep } from 'node:path'
 import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME } from '../config/Components.js'
 import { handleWatcherEvent } from './Watcher.js'
 import { JSON_EXTENSION } from './ComponentFilesUtils.js'
-import { ucFirst } from './SyntaxUtils.js'
-import { copyFileAndCreatePath, saveFile } from './FileUtils.js'
+import { copyFileAndCreatePath, getFileContents, saveFile } from './FileUtils.js'
 
 const setupFolderCue = join(sep, SETUP_FOLDER_NAME, sep)
 const templatesFolderCue = join(sep, TEMPLATES_FOLDER_NAME, sep)
@@ -59,44 +58,36 @@ export async function handleSetupFileWatcherEvent(componentsFolder, themeFolder,
  * Generate Index Liquid Template
  * @param {Component[]} components
  */
-export function generateIndexTemplate(components) {
-  const jsonTemplates = {}
+export function getComponentsListPerCategory(components) {
+  const componentsList = {}
 
   components.forEach((component) => {
     component.files.setupFiles.forEach((setupFile) => {
       if (setupFile.indexOf(templatesFolderCue) !== -1 && setupFile.endsWith(JSON_EXTENSION)) {
         const filename = basename(setupFile, JSON_EXTENSION)
         const category = filename.substring(0, filename.indexOf('.'))
-        if (!jsonTemplates[category]) jsonTemplates[category] = {}
-        jsonTemplates[category][component.name] = filename
+        if (!componentsList[category]) componentsList[category] = {}
+        componentsList[category][component.name] = filename
       }
     })
   })
 
-  let templateBody = ''
-  for (const category in jsonTemplates) {
-    const route = category === 'index' ? 'routes.root_url' : category + '.url'
-
-    if (category !== 'index') templateBody += `\n\t{% if ${category} %}`
-    templateBody += `\n\t<h2>${ucFirst(category)} views</h2>`
-    templateBody += `\n\t\t<ul>`
-    for (const [componentName, templateFile] of Object.entries(jsonTemplates[category])) {
-      templateBody += `\n\t\t\t<li><a href="{{ ${route} }}?view=${templateFile.split('.')[1]}">${componentName}</a></li>`
+  const categories = []
+  const templates = []
+  const names = []
+  for (const category in componentsList) {
+    for (const [componentName, templateFile] of Object.entries(componentsList[category])) {
+      categories.push(category)
+      templates.push(templateFile.split('.')[1])
+      names.push(componentName)
     }
-    templateBody += `\n\t\t</ul>`
-    if (category !== 'index') templateBody += `\n\t{% endif %}`
   }
 
   return `
-{% liquid
-  assign collection = collections['all']
-  assign product = collection.products | last
-%}
-<div className="page-width">
-  <h1>Component Directory</h1>
-${templateBody}
-</div>
-`
+    {% assign component_names = "${names.join(',')}" | split: ',' %}
+    {% assign template_files = "${templates.join(',')}" | split: ',' %}
+    {% assign component_categories = "${categories.join(',')}" | split: ','%}
+  `
 }
 
 /**
@@ -106,7 +97,9 @@ ${templateBody}
  * @returns {Promise<void>}
  */
 export async function createIndexTemplate(components, themeFolder) {
-  const indexTemplateContents = generateIndexTemplate(components)
+  const liquidVars = getComponentsListPerCategory(components)
   const indexTemplatePath = join(themeFolder, TEMPLATES_FOLDER_NAME, 'index.liquid')
-  return saveFile(indexTemplatePath, indexTemplateContents)
+  let indexTemplate = await getFileContents(indexTemplatePath)
+  indexTemplate = indexTemplate.replace('<!-- components-list-vars -->', liquidVars)
+  return saveFile(indexTemplatePath, indexTemplate)
 }

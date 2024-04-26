@@ -1,46 +1,48 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}" dir="{% render 'language-direction' %}">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="">
-    <link rel="canonical" href="{{ canonical_url }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="">
+  <link rel="canonical" href="{{ canonical_url }}">
 
-    <title>{{ shop.name }}</title>
+  <title>{{ shop.name }}</title>
 
-    <meta name="description" content="">
+  <meta name="description" content="">
 
-    <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
 
-    {%- render 'font-preload-link', font: settings.type_heading_font -%}
-    {%- render 'font-preload-link', font: settings.type_body_font -%}
+  {%- render 'font-preload-link', font: settings.type_heading_font -%}
+  {%- render 'font-preload-link', font: settings.type_body_font -%}
 
-    {%- render 'import-map' -%}
-    {%- render 'es-module-shims' -%}
-    {%- render 'is-land' -%}
+  {%- render 'import-map' -%}
+  {%- render 'es-module-shims' -%}
+  {%- render 'is-land' -%}
 
-    {%- render 'font-faces' -%}
-    {%- render 'css-variables' -%}
 
-    {%- style -%}
-      {%- for scheme in settings.color_schemes -%}
-        .color-{{ scheme.id }} {
-          --color-background: {{ scheme.settings.background.rgb }};
-          --color-foreground: {{ scheme.settings.text.rgb }};
+  {%- render 'font-faces' -%}
+  {%- render 'css-variables' -%}
 
-          background-color: rgb(var(--color-background));
-          color: rgb(var(--color-foreground));
-        }
-      {%- endfor -%}
-    {%- endstyle -%}
+  {%- style -%}
+    {%- for scheme in settings.color_schemes -%}
+      .color-{{ scheme.id }} {
+      --color-background: {{ scheme.settings.background.rgb }};
+      --color-foreground: {{ scheme.settings.text.rgb }};
 
-    <script type="module" src="{{ 'theme.js' | asset_url }}"></script>
+      background-color: rgb(var(--color-background));
+      color: rgb(var(--color-foreground));
+      }
+    {%- endfor -%}
+  {%- endstyle -%}
 
-    {{ content_for_header }}
-  </head>
+  <script type="module" src="{{ 'theme.js' | asset_url }}"></script>
 
-  <body>
-    {{ content_for_layout }}
-  </body>
+  {{ content_for_header }}
+
+</head>
+
+<body>
+{{ content_for_layout }}
+</body>
 </html>
