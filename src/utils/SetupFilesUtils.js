@@ -2,7 +2,7 @@
 import { basename, join, sep } from 'node:path'
 
 // Internal Dependencies
-import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME } from '../config/Components.js'
+import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE } from '../config/Components.js'
 import { handleWatcherEvent } from './Watcher.js'
 import { JSON_EXTENSION } from './ComponentFilesUtils.js'
 import { copyFileAndCreatePath, getFileContents, saveFile } from './FileUtils.js'
@@ -98,7 +98,7 @@ export function getComponentsListPerCategory(components) {
  */
 export async function createIndexTemplate(components, themeFolder) {
   const liquidVars = getComponentsListPerCategory(components)
-  const indexTemplatePath = join(themeFolder, TEMPLATES_FOLDER_NAME, 'index.liquid')
+  const indexTemplatePath = join(themeFolder, THEME_INDEX_TEMPLATE_LIQUID_FILE)
   let indexTemplate = await getFileContents(indexTemplatePath)
   indexTemplate = indexTemplate.replace('<!-- components-list-vars -->', liquidVars)
   return saveFile(indexTemplatePath, indexTemplate)

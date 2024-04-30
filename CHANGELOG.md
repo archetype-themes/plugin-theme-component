@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED] - 2024-04-30
+
+### Fixed
+
+- Changing the theme layout file now triggers an update of the components' main CSS file reference
+- Changing the theme index template file with setupFiles enabled now updates the component list
+
 ## [3.2.3] - 2024-04-15
 
 ### Changed
@@ -35,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Dev command: setup-files flag is now functional. Setup files are copied in the theme folder (#322)
+- Dev command: The setup-files flag is now functional. Setup files are copied in the theme folder (#322)
 - Dev command: Displays time of day upon completion (#367)
 - Install command: Displays time of day upon completion (#367)
 

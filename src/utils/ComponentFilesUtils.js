@@ -37,23 +37,15 @@ export async function indexFiles(componentName, folder, filesModel) {
 
   // Validation: Make sure that a liquid file was found
   if (!filesModel.liquidFile) {
-    throw new FileMissingError(
-      `No liquid files file found for the "${componentName}" component`
-    )
+    throw new FileMissingError(`No liquid files file found for the "${componentName}" component`)
   }
 
   if (files) {
-    filesModel.javascriptIndex = JavascriptUtils.findMainJavaScriptFile(
-      files,
-      componentName
-    )
+    filesModel.javascriptIndex = JavascriptUtils.findMainJavaScriptFile(files, componentName)
   }
 
   if (filesModel.stylesheets.length) {
-    filesModel.mainStylesheet = StylesUtils.getMainStyleSheet(
-      filesModel.stylesheets,
-      componentName
-    )
+    filesModel.mainStylesheet = StylesUtils.getMainStyleSheet(filesModel.stylesheets, componentName)
   }
 
   return filesModel
@@ -94,10 +86,7 @@ function filterFiles(files, componentFiles, componentName) {
 
     switch (extension) {
       case LIQUID_EXTENSION:
-        if (
-          filename.split('.')[0] === componentName ||
-          filename === 'index.liquid'
-        ) {
+        if (filename.split('.')[0] === componentName || filename === 'index.liquid') {
           if (componentFiles.liquidFile) {
             throw new InputFileError(
               `Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`
@@ -118,15 +107,11 @@ function filterFiles(files, componentFiles, componentName) {
           break
         }
 
-        ux.debug(
-          `Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`
-        )
+        ux.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
         break
 
       default:
-        ux.debug(
-          `Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`
-        )
+        ux.debug(`Filter Files: Unrecognised file; ignoring ${FileUtils.convertToComponentRelativePath(file)}`)
         break
     }
   }
@@ -141,9 +126,7 @@ function filterFiles(files, componentFiles, componentName) {
  */
 export async function validateFolderAccess(folder, componentName) {
   if (!(await FileUtils.isReadable(folder))) {
-    ux.debug(
-      `Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`
-    )
+    ux.debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
     throw new FileAccessError(
       `Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`
     )

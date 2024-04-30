@@ -6,9 +6,16 @@ import { Args, Flags, ux } from '@oclif/core'
 
 // Internal Dependencies
 import Build from './build.js'
+import BuildFactory from '../../../factory/BuildFactory.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
-import { ASSETS_FOLDER_NAME, COLLECTION_TYPE_NAME, SNIPPETS_FOLDER_NAME } from '../../../config/Components.js'
+import {
+  ASSETS_FOLDER_NAME,
+  COLLECTION_TYPE_NAME,
+  SNIPPETS_FOLDER_NAME,
+  THEME_INDEX_TEMPLATE_LIQUID_FILE,
+  THEME_LAYOUT_FILE
+} from '../../../config/Components.js'
 import CollectionFactory from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
@@ -152,7 +159,7 @@ export default class Dev extends BaseCommand {
       )
       // Ignore all storefront locale files
       ignorePatterns.push(/(^|[/\\])locales(?!.*schema\.json$).*\.json$/)
-      promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder))
+      promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder, Session.components))
       logInitLines.push(`${collection.name}: Watching theme folder for changes`)
     }
 
@@ -210,9 +217,7 @@ export default class Dev extends BaseCommand {
       logWatcherEvent(event, eventPath)
       Session.changeType = getChangeTypeFromFilename(eventPath)
       if (Session.changeType === ChangeType.SetupFiles) {
-        const componentsFolder = cwd()
-        const devFolder = join(componentsFolder, DEV_FOLDER_NAME)
-        await handleSetupFileWatcherEvent(componentsFolder, devFolder, event, eventPath)
+        await handleSetupFileWatcherEvent(cwd(), devFolder, event, eventPath)
       }
     }
 
@@ -243,15 +248,34 @@ export default class Dev extends BaseCommand {
    * Update Theme in .explorer folder on file change
    * @param {string} themePath
    * @param {string} collectionPath Watcher Instance
+   * @param {string[]} componentNames
    * @param {string} event Watcher Event Name
    * @param {string} eventPath Watcher Event Path
    * @return {Promise<void>}
    */
-  static async handleThemeFileWatcherEvent(themePath, collectionPath, event, eventPath) {
+  static async handleThemeFileWatcherEvent(themePath, collectionPath, componentNames, event, eventPath) {
     const source = join(themePath, eventPath)
     const destination = join(collectionPath, DEV_FOLDER_NAME, eventPath)
 
-    return handleWatcherEvent(event, eventPath, source, destination)
+    await handleWatcherEvent(event, eventPath, source, destination)
+
+    if (eventPath === THEME_LAYOUT_FILE) {
+      // Inject references to the Collection's main CSS file in the theme's main liquid file
+      const collection = await CollectionFactory.fromCwd(componentNames)
+      collection.build = BuildFactory.fromCollection(collection)
+      const devFolder = join(cwd(), DEV_FOLDER_NAME)
+      const theme = await fromDevCommand(devFolder)
+      await CollectionInstaller.injectAssetReferences(collection, theme)
+    }
+    console.log(Session.setupFiles)
+    console.log(eventPath)
+    console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
+    if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
+      console.log('OK')
+      const collection = await CollectionFactory.fromCwd(componentNames)
+      await Build.buildCollection(collection)
+      await createIndexTemplate(collection.components, themePath)
+    }
   }
 
   static async runThemeDev(cwd) {
@@ -380,11 +404,17 @@ export default class Dev extends BaseCommand {
    * @param {string} themePath
    * @param {(string|RegExp)[]} ignorePatterns
    * @param {string} collectionRootFolder
+   * @param {string[]} componentNames
    * @return {Promise<FSWatcher>}
    */
-  static async watchTheme(themePath, ignorePatterns, collectionRootFolder) {
+  static async watchTheme(themePath, ignorePatterns, collectionRootFolder, componentNames) {
     const watcher = getWatcher(themePath, ignorePatterns)
-    const onThemeWatchEvent = await this.handleThemeFileWatcherEvent.bind(this, themePath, collectionRootFolder)
+    const onThemeWatchEvent = await this.handleThemeFileWatcherEvent.bind(
+      this,
+      themePath,
+      collectionRootFolder,
+      componentNames
+    )
 
     return watch(watcher, onThemeWatchEvent)
   }
