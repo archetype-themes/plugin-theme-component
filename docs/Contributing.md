@@ -2,69 +2,45 @@
 
 All contributions are welcome. To Contribute, create a branch, commit your code, and create a pull request.
 
-## Install The CLI
+## Install the plugin
 
-First, checkout the code
-from [plugin-theme-component repository](https://github.com/archetype-themes/plugin-theme-component) and make it
-available globally as a linkable local package.
+Make sure you have installed the [shopify CLI](https://shopify.dev/docs/api/shopify-cli) first. Then, checkout the code
+from the [plugin-theme-component repository](https://github.com/archetype-themes/plugin-theme-component) and link your
+local copy to your shopify CLI instance. Here's an example of what that can look like on macOS
 
 ```shell
+# Install shopify CLI on macOS using the oclif methods
+brew tap shopify/shopify
+brew install shopify-cli
 
-# Link your local install of plugin-theme-component
+# Checkout the repository in you projects folder, or any other location of your choice
 cd ~/projects
 git checkout https://github.com/archetype-themes/plugin-theme-component.git
 
-# Make plugin-theme-component available globally as a linkable local package
+# Link your local copy to the shopify CLI
 cd plugin-theme-component
-npm link
+shopify plugins link
 ```
 
-Then install the CLI within a collection and/or a theme as a local folder dependency. Before doing so, you might have to
-remove your standard remote CLI install.
+## Uninstall the plugin
+
+Should you ever need to uninstall the plugin, use these commands
 
 ```shell
-# Link your repository to your shared plugin-theme-component local copy
-cd ~/projects/[collection-repo|theme-repo]
-npm link @archetype-themes/plugin-theme-component
-
-# Alternatively If you are in a theme workspace, you might want to use this command instead
-npm link @archetype-themes/plugin-theme-component --workspace=[worskspace-folder/workspace-name]
-```
-
-**IMPORTANT**
-
-- Please note this does not alter you package.json file, more importantly, your package.json file will always be
-  prioritized when running subsequent `npm install` commands in your `[collection-repo|theme-repo]` folder. Therefore,
-  if `@archetype-themes/plugin-theme-component` is listed as a dependency in you package.json, it will result in an \*
-  \*OVERWRITE\*\* of
-  your previous `npm link @archetype-themes/plugin-theme-component` command and your will need to run it again.
-
-Use the following commands to manage your links:
-
-```shell
-# View current repository's links
-cd ~/projects/[collection-repo-folder | theme-repo-folder]
-npm ls --link
-
-# View your globally linkable repositories
-npm ls --link --global
-
-# Unlink plugin-theme-component from your collection or theme repository
-cd ~/projects/[collection-repo-folder | theme-repo-folder]
-npm unlink @archetype-themes/plugin-theme-component
-
-# Delete the globally available link to your local plugin-theme-component install
+# From the project folder
 cd ~/projects/plugin-theme-component
-npm unlink
+shopify plugins uninstall
 
+# From anywhere
+shopify plugins uninstall plugin-theme-component
 ```
 
 ## Contributing To The CLI's Development
 
-You should consult the [Product Project Board](https://github.com/orgs/archetype-themes/projects/43) in GitHub. You will
-see the cycle planning. Tickets should list upcoming features and backlog.
+You should consult the [Issues](https://github.com/archetype-themes/plugin-theme-component/issues) in GitHub. You will
+see unsolved issues. Feel free to tackle an existing issue, or create a new one if you need to.
 
-Assign yourself a ticket and reach out to us if you have questions. Create a branch for your development. Create a Pull
+Assign yourself an issue and reach out to us if you have questions. Create a branch for your development. Create a Pull
 Request for your code to be merged into the main branch.
 
 ## Code Structure
@@ -77,90 +53,101 @@ Please follow the guidelines listed below.
 .
 ├── README.md
 ├── package.json
-├── bin
-│   ├── run.js   [ component entrypoint ]
-└── src
-    ├── runners        [ component runners ]
-    ├── cli
-    │   └── commands    [ CLI commands ]
-    │   └── flags        [ CLI command flags ]
-    │   └── models      [ CLI models ]
-    ├── errors          [ custom errors ]
-    ├── factory         [ component factories ]
-    ├── generators      [ component generators ]
-    ├── installers      [ component installers ]
-    ├── models          [ component models ]
-    │   └── abstract    [ abstract component models ]
-    ├── processors      [ external processors ]
-    │   └── postcss     [ external postcss processor ]
-    └── utils           [ component utilities ]
-
+├── bin                       [ component plugin entrypoints ]
+│   ├── run.cmd                 [ CMD entrypoint ]
+│   └── run.js                  [ JavaScript entrypoint ]
+├── docs                      [ documentation folder ]
+├── resources                 [ static resources ]
+│   ├── component-files         [ generate component template files ]
+│   └── explorer                [ component explorer files ]
+├── src
+│   ├── builders              [ component builders ]
+│   ├── commands
+│   │   └── theme
+│   │       └── component     [ plugin commands entrypoints ]
+│   ├── config                [ plugin configuration ]
+│   ├── errors                [ plugin custom errors ]
+│   ├── factory               [ component factory methods ]
+│   ├── installers            [ component installers ]
+│   ├── models                [ data object models ]
+│   │   └── abstract            [ abstract data object models ]
+│   ├── processors            [ data transformation for CSS, JavaScript and more ]
+│   └── utils                 [ Utility methods ]
+└── tests                     [ mocha tests ]
 ```
 
-### Phase 1: Bin & CLI Folder
+### bin
 
-CLI stands for Command Line Interface
+Based on oclif CLI's recommended structure, this is the standard entrypoint for a CLI or, in this case, a CLI plugin.
 
-bin/component.js is the CLI's entrypoint
+### docs
 
-The CLI subfolder should only contain files pertaining to Shell execution and management. It should analyze command
-input and call appropriate Factories, Builders and Installers when necessary.
+Contains additional documentation on components and the plugin's structure and build process.
 
-### Phase 2: Factory Folder
+### resources
 
-Factories create Component instances. When creating a Component instance, a Factory should load all necessary data from
-disk expecting a "transformation" for an upcoming Build process.
+Contains static assets used internally when generating a new component or when running the plugin's dev command with
+setup files enabled.
 
-Factories should load items recursively. If you create a Component using the ComponentFactory, it should create
-instances
-and load data from its children Snippet Model using the SnippetFactory through a recursive check.
+
+### src folder
+
+
+
+#### factory
+
+Factories create component instances. When instantiating a component, a factory should load all necessary data from disk
+preparing grounds for the build process.
+
+Factories load direct descendants automatically.
+If you create a Component using the ComponentFactory, it should create instances and load data from its child snippets
+using the SnippetFactory.
 
 - Load all necessary data from disk for upcoming merge and/or transformation done during the Builder step.
 - **SHOULD NOT** transform any data.
 - **SHOULD NOT** install anything inside Themes or modify Themes in any way.
 
-### Phase 3: Builders Folder
+### builders folder
 
 Builders are there to assemble and process file contents to deliver a final product.
 \*This does not relate in any way to the Builder Design Pattern
 
-- Run after Factories have completed Component Model creation.
-- Transform data as necessary using external processors, such as esbuild, sass, post-css
-- Transform and merge data using internal processors, such as liquid code and locales
-- Copy files that do not need transformation to the build folder.
+- Should only be run after factories have completed component data model creation.
+- Transform data as necessary using external processors, such as post-css
+- Transform and merge data using internal processors, such as import-map
+- Copy relevant files that do not need transformation to the build folder.
 - **SHOULD NOT** load data from the disk that needs transformation.
 - **SHOULD NOT** install anything inside Themes or modify Themes in any way.
 
-### Phase 4: Installers Folder
+### installers folder
 
 Installers are meant to install Collection Builds in a Shopify Theme.
 
-- Run after Factories and Builders have completed their tasks.
+- Should only be run after factories and builders have completed their tasks.
 - Copy the necessary final Build files to a Theme.
-- Perform file merge with Theme files when necessary (i.e.: Schema-Locale files)
+- Perform file merge with Theme files when necessary (i.e.: locale files)
 - **SHOULD NOT** load data from the disk that needs transformation.
 - **SHOULD NOT** transform any data.
 
 ### Errors
 
-Contains custom Internal Errors used within the CLI
+Contains custom Internal Errors used within the plugin
 
 ### Generators
 
-CLI **create** commands will invoke Generators to help create components within a Collection.
-Create commands execution will not run Phase 2,3 and 4
+The plugin's **generate** command will invoke generators to help create new components.
 
 ### Models
 
-Data Object models used throughout Phase 2,3 and 4.
+Shared data object models
 
 ### Processors
 
-Processors transform data and should only be called during Phase 3, through Builder methods.
+Processors transform data and should only be called by builders
 
 ### Utils
 
-Various Utility functions organized inside JavaScript Objects as static methods.
+Various utility methods organized by topic.
 
 ## Fixing Bugs
 
