@@ -9,7 +9,7 @@
   },
   "name": "@archetype-themes/plugin-theme-component",
   "type": "module",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "bin": {
     "component": "bin/run.js"
   },
@@ -41,7 +41,7 @@
     "@iarna/toml": "2.2.5",
     "@oclif/core": "3.23.0",
     "@shopify/browserslist-config": "^3.0.0",
-    "@shopify/cli-kit": "3.58.0",
+    "@shopify/cli-kit": "3.59.0",
     "@types/node": "18.19.3",
     "chokidar": "^3.6.0",
     "deepmerge": "^4.3.1",
@@ -53,7 +53,7 @@
     "picomatch": "^3.0.1",
     "postcss": "^8.4.38",
     "postcss-import": "^16.1.0",
-    "postcss-preset-env": "^9.5.5",
+    "postcss-preset-env": "^9.5.9",
     "svgo": "^3.2.0"
   },
   "devDependencies": {
