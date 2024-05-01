@@ -80,6 +80,8 @@
     | last
     | split: '"'
     | first
+    | split: '\u0026'
+    | first
   -%}
 {% endif %}
 <header class="explorer">
@@ -89,7 +91,7 @@
     {% else %}
       <a href="/">Component Directory</a>
       <span style="color: #9A9A9A;">&gt;</span>
-      <span style="text-decoration: underline;">{{ view_name }}</span>
+      {{ view_name }}
     {% endif %}
   </h1>
 </header>
