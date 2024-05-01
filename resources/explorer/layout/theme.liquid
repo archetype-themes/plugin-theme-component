@@ -66,6 +66,25 @@
       text-decoration: none;
       word-wrap: break-word;
     }
+
+    h2.explorer {
+      color: #1A1A1A;
+      font-size: 18px;
+      font-family: Inter, arial, sans-serif;
+      font-weight: 600;
+      line-height: 28px;
+      margin: 2px 0 12px 0;
+    }
+
+
+    section.explorer {
+      display: flex;
+      align-items: flex-start;
+      align-self: stretch;
+      flex: 1 0 0;
+      flex-flow: column wrap;
+      padding: 24px;
+    }
   </style>
 
 
@@ -96,6 +115,19 @@
   </h1>
 </header>
 
-{{ content_for_layout }}
+<section class="explorer">
+  <h2 class="explorer">
+    {%- if view_name == '' or view_name == nil -%}
+      Index
+    {%- else -%}
+      {{ view_name }}
+    {%- endif -%}
+  </h2>
+
+  {{ content_for_layout }}
+
+</section>
+
+
 </body>
 </html>

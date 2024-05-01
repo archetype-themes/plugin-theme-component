@@ -1,23 +1,7 @@
 <style>
-  section.components-index {
-    display: flex;
-    align-items: flex-start;
-    align-self: stretch;
-    flex: 1 0 0;
-    flex-flow: column wrap;
-    padding: 24px;
+  html, body{
+    background: white;
   }
-
-  h2 {
-    color: #1A1A1A;
-    font-size: 18px;
-    font-family: Inter, arial, sans-serif;
-    font-weight: 600;
-    line-height: 28px;
-    margin: 2px 0 0 0;
-  }
-
-
   ul {
     display: flex;
     align-items: flex-start;
@@ -61,8 +45,6 @@
   li a:hover {
     color: #1D211C;
   }
-
-
 </style>
 
 {%- liquid
@@ -72,8 +54,6 @@
 
 <!-- components-list-vars -->
 
-<section class="components-index">
-  <h2>Index</h2>
   <ul>
     {%- for i in (0..component_names.size) -%}
       {%- liquid
@@ -88,4 +68,3 @@
       {%- endif -%}
     {% endfor %}
   </ul>
-</section>
