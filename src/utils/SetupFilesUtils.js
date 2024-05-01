@@ -5,7 +5,7 @@ import { basename, join, sep } from 'node:path'
 import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE } from '../config/Components.js'
 import { handleWatcherEvent } from './Watcher.js'
 import { JSON_EXTENSION } from './ComponentFilesUtils.js'
-import { copyFileAndCreatePath, getFileContents, saveFile } from './FileUtils.js'
+import { copyFileAndCreatePath, getFileContents } from './FileUtils.js'
 
 const setupFolderCue = join(sep, SETUP_FOLDER_NAME, sep)
 const templatesFolderCue = join(sep, TEMPLATES_FOLDER_NAME, sep)
@@ -91,15 +91,14 @@ export function getComponentsListPerCategory(components) {
 }
 
 /**
- * Write Index Template
+ * Build Index Template
  * @param {Component[]} components
  * @param {string} themeFolder
- * @returns {Promise<void>}
+ * @returns {Promise<string>}
  */
-export async function createIndexTemplate(components, themeFolder) {
+export async function buildIndexTemplate(components, themeFolder) {
   const liquidVars = getComponentsListPerCategory(components)
   const indexTemplatePath = join(themeFolder, THEME_INDEX_TEMPLATE_LIQUID_FILE)
-  let indexTemplate = await getFileContents(indexTemplatePath)
-  indexTemplate = indexTemplate.replace('<!-- components-list-vars -->', liquidVars)
-  return saveFile(indexTemplatePath, indexTemplate)
+  const indexTemplate = await getFileContents(indexTemplatePath)
+  return indexTemplate.replace('<!-- components-list-vars -->', liquidVars)
 }

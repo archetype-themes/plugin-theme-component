@@ -1,12 +1,11 @@
 <style>
-
   section.components-index {
     display: flex;
     align-items: flex-start;
     align-self: stretch;
     flex: 1 0 0;
     flex-flow: column wrap;
-    padding: var(--space-6, 24px);
+    padding: 24px;
   }
 
   h2 {
@@ -42,6 +41,8 @@
     background: #F2F3F2;
   }
 
+
+
   li:hover {
     background: #E4E7E4;
   }
@@ -64,16 +65,12 @@
 
 </style>
 
-{% liquid
+{%- liquid
   assign collection = collections['all']
   assign product = collection.products | last
-%}
+-%}
 
 <!-- components-list-vars -->
-
-<header>
-  <h1>Component Directory</h1>
-</header>
 
 <section class="components-index">
   <h2>Index</h2>

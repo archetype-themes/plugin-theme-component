@@ -20,7 +20,6 @@
   {%- render 'es-module-shims' -%}
   {%- render 'is-land' -%}
 
-
   {%- render 'font-faces' -%}
   {%- render 'css-variables' -%}
 
@@ -40,11 +39,6 @@
 
   {{ content_for_header }}
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
     header.explorer {
       margin: 0;
       padding: 14px 16px;
@@ -78,6 +72,28 @@
 </head>
 
 <body>
+
+{%- capture contentForQuerystring -%}{{ content_for_header }}{%- endcapture -%}
+{% if contentForQuerystring contains 'view=' %}
+  {%- assign view_name = contentForQuerystring
+    | split: 'view='
+    | last
+    | split: '"'
+    | first
+  -%}
+{% endif %}
+<header class="explorer">
+  <h1 class="explorer">
+    {% if view_name == '' or view_name == nil %}
+      Component Directory
+    {% else %}
+      <a href="/">Component Directory</a>
+      <span style="color: #9A9A9A;">&gt;</span>
+      <span style="text-decoration: underline;">{{ view_name }}</span>
+    {% endif %}
+  </h1>
+</header>
+
 {{ content_for_layout }}
 </body>
 </html>

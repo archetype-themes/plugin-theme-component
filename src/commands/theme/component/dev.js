@@ -36,11 +36,11 @@ import {
   watch
 } from '../../../utils/Watcher.js'
 import { isGitHubUrl } from '../../../utils/WebUtils.js'
-import { installSetupFiles, handleSetupFileWatcherEvent, createIndexTemplate } from '../../../utils/SetupFilesUtils.js'
+import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } from '../../../utils/SetupFilesUtils.js'
 import { getCurrentTime } from '../../../utils/DateUtils.js'
 import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
 import { rm } from 'node:fs/promises'
-import { exists } from '../../../utils/FileUtils.js'
+import { exists, saveFile } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
 
 /** @type {string} **/
@@ -236,7 +236,8 @@ export default class Dev extends BaseCommand {
       Session.setupFiles &&
       (Session.firstRun || [ChangeType.Liquid, ChangeType.SetupFiles].includes(Session.changeType))
     ) {
-      await createIndexTemplate(collection.components, theme.rootFolder)
+      const indexTemplate = await buildIndexTemplate(collection.components, theme.rootFolder)
+      await saveFile(join(devFolder, THEME_INDEX_TEMPLATE_LIQUID_FILE), indexTemplate)
     }
 
     logChildItem(`Install Complete at ${getCurrentTime()}`)
@@ -271,10 +272,10 @@ export default class Dev extends BaseCommand {
     console.log(eventPath)
     console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
     if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
-      console.log('OK')
       const collection = await CollectionFactory.fromCwd(componentNames)
       await Build.buildCollection(collection)
-      await createIndexTemplate(collection.components, themePath)
+      const indexTemplate = await buildIndexTemplate(collection.components, themePath)
+      await saveFile(join(cwd(), DEV_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE), indexTemplate)
     }
   }
 

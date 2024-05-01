@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changing the theme layout file now triggers an update of the components' main CSS file reference
 - Changing the theme index template file with setupFiles enabled now updates the component list
+- When using setup files, the Index Template is adjusted in the explorer folder instead of in the source folder.
 
 ## [3.2.3] - 2024-04-15
 
