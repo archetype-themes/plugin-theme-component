@@ -1,36 +1,56 @@
-# plugin-theme-component
+# Theme component plugin
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Static Badge](https://img.shields.io/badge/Node.js-v18.12.0-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Shopify CLI plugin for building theme components.
+A Shopify CLI plugin for building theme components.
 
-## Install
+The `plugin-theme-component` repository is a foundational part of the [Archetype Devkit preview](https://github.com/archetype-themes/devkit). It provides commands to create, develop, and install a collection of theme components.
 
-### Requirements
+## Getting Started
 
-**MacOS**
+### Prerequisites
 
-- Please install [Homebrew](https://brew.sh/)
-- Use Homebrew to [install shopify CLI](https://shopify.dev/docs/themes/tools/cli/install#macos)
+You'll need to ensure you have the following installed on your local development machine:
 
-### Link the plugin
+- Latest version of [Node.js](https://nodejs.org/en/download/) and [npm](https://docs.npmjs.com/getting-started) (or another package manager of your choice)
+- [Shopify CLI](https://shopify.dev/docs/themes/tools/cli/install)
 
-- Clone this repo
-- Run `npm ci` in this repository's folder
-- Run `shopify plugins link` to link the plugin
+### Installation
 
-### Update the plugin
+Simply run the following command to install the Shopify CLI plugin:
+```bash
+shopify plugins install plugin-theme-component
+```
 
-- Run `git pull` to update sources
-- Run `npm ci` to update dependencies
+### Uninstalling the plugin
 
-### Unlink the plugin
+If you want to uninstall the plugin from the Shopify CLI, you can run the following command:
+```bash
+shopify plugins uninstall plugin-theme-component
+```
 
-- Run `shopify plugins uninstall plugin-theme-component` to link the plugin
+## Development workflow
 
-# Commands
+All plugin commands are [listed below](#list-of-commands) and you can learn more about [developing themes with components](https://github.com/archetype-themes/devkit/blob/main/1.%20Getting%20Started/d.%20Developing%20themes%20with%20components.md). In simple terms though, the development workflow is typically done in 3 different stages all using the plugin's commands:
+
+### Creating components
+
+You can create a new component with the `shopify theme component generate` command. This will generate a new theme component in the `components` directory with boilerplate code.
+
+### Developing components
+
+When developing a theme component, you have two separate workflows to choose from. You can either develop theme components:
+
+- **Inside the [component explorer](#)**: the `shopify theme component dev` command launches the component explorer and allows you to develop components in isolation.
+- **Inside a [Shopify theme](https://github.com/archetype-themes/reference-theme)**: the `shopify theme component dev --theme-path="../reference-theme"` command allows you to develop your components within the context of a specified theme.
+
+### Installing components
+
+You can install a component (or list of components) with the `shopify theme component install` command. This command is only ran within a [Shopify theme](https://github.com/archetype-themes/reference-theme.git), which then imports the latest changes of your components directly into your theme.
+
+## List of commands
 
 <!-- commands -->
 * [`shopify theme component`](#shopify-theme-component)
@@ -164,3 +184,19 @@ FLAG DESCRIPTIONS
 
 _See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.3/src/commands/theme/component/install.js)_
 <!-- commandsstop -->
+
+## Contributing
+
+Interested in shaping the future of theme development with us? We welcome you to join our community! Your insights and discussions play a crucial role in our continuous improvement. We encourage you to start [discussions](https://github.com/archetype-themes/devkit/discussions), ask questions, and provide feedback on our component approach.
+
+If you notice a bug, or want to contribute to the codebase, feel free to do so in the form of [creating an issue](https://github.com/archetype-themes/plugin-theme-component/issues/new/choose) or [pull request](https://github.com/archetype-themes/plugin-theme-component/pulls).
+
+### Developing the plugin locally
+
+If you already have the plugin installed via npm, you'll need to [uninstall](#uninstalling-the-plugin) the plugin before being able to develop the plugin locally.
+
+Once this is done, follow these list of steps to ensure the Shopify CLI is running the local version of the plugin:
+- `git clone https://github.com/archetype-themes/plugin-theme-component.git`
+- `cd plugin-theme-component`
+- `npm ci`
+- `shopify plugins link`
