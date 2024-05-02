@@ -16,7 +16,7 @@ jobs:
     env:
       GITHUB_ID: ${{ secrets.PERSONAL_ACCESS_ID }}
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
     steps:
       - name: Init Summary
         run: |
@@ -27,8 +27,8 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: latest
-          registry-url: https://npm.pkg.github.com/
+          node-version: 'latest'
+          registry-url: 'https://registry.npmjs.org'
       - name: Check if we have a version change
         run: |
           echo "#### Version Change Check" >> $GITHUB_STEP_SUMMARY
@@ -71,12 +71,12 @@ jobs:
           npm test
           echo "- NPM Tests :heavy_check_mark:" >> $GITHUB_STEP_SUMMARY
       - name: Publish Git Tag
-        if: env.PUBLISH == 'true' && inputs.tag
+        if: env.PUBLISH == 'true'
         run: |
-          git tag ${{ inputs.tag-prefix }}${{ env.LOCAL_SEMVER }}
-          git push origin ${{ inputs.tag-prefix }}${{ env.LOCAL_SEMVER }}
+          git tag v${{ env.LOCAL_SEMVER }}
+          git push origin v${{ env.LOCAL_SEMVER }}
 
-          echo "- New Git Tag ${{ inputs.tag-prefix }}${{ env.LOCAL_SEMVER }} Created :heavy_check_mark:" >> $GITHUB_STEP_SUMMARY
+          echo "- New Git Tag v${{ env.LOCAL_SEMVER }} Created :heavy_check_mark:" >> $GITHUB_STEP_SUMMARY
       - name: Publish package
         if: env.PUBLISH == 'true'
         run: |

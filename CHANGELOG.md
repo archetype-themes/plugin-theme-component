@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dev CMD: Changing the theme index template file with setupFiles enabled now updates the component list
 - Dev CMD: When using setup files, the Index Template is adjusted in the explorer folder instead of in the source folder.
 - Dev CMD: Added missing template routes URL from the explorer setup files index
+- CI/CD: Git automated version tag on version bump is repaired
 
 ### Changed
 
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Install CMD: Default components are now pointing to reference-components instead of components
 - NPM config set to publish to NPM instead or GitHub registry
 - NPM package @archetype-themes package scope removed
+- GitHub Action set to publish to NPM instead or GitHub registry
 
 ### Removed
 
