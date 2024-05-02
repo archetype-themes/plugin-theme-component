@@ -1,46 +1,133 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}" dir="{% render 'language-direction' %}">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="">
-    <link rel="canonical" href="{{ canonical_url }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="">
+  <link rel="canonical" href="{{ canonical_url }}">
 
-    <title>{{ shop.name }}</title>
+  <title>{{ shop.name }}</title>
 
-    <meta name="description" content="">
+  <meta name="description" content="">
 
-    <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
 
-    {%- render 'font-preload-link', font: settings.type_heading_font -%}
-    {%- render 'font-preload-link', font: settings.type_body_font -%}
+  {%- render 'font-preload-link', font: settings.type_heading_font -%}
+  {%- render 'font-preload-link', font: settings.type_body_font -%}
 
-    {%- render 'import-map' -%}
-    {%- render 'es-module-shims' -%}
-    {%- render 'is-land' -%}
+  {%- render 'import-map' -%}
+  {%- render 'es-module-shims' -%}
+  {%- render 'is-land' -%}
 
-    {%- render 'font-faces' -%}
-    {%- render 'css-variables' -%}
+  {%- render 'font-faces' -%}
+  {%- render 'css-variables' -%}
 
-    {%- style -%}
-      {%- for scheme in settings.color_schemes -%}
-        .color-{{ scheme.id }} {
-          --color-background: {{ scheme.settings.background.rgb }};
-          --color-foreground: {{ scheme.settings.text.rgb }};
+  {%- style -%}
+    {%- for scheme in settings.color_schemes -%}
+      .color-{{ scheme.id }} {
+      --color-background: {{ scheme.settings.background.rgb }};
+      --color-foreground: {{ scheme.settings.text.rgb }};
 
-          background-color: rgb(var(--color-background));
-          color: rgb(var(--color-foreground));
-        }
-      {%- endfor -%}
-    {%- endstyle -%}
+      background-color: rgb(var(--color-background));
+      color: rgb(var(--color-foreground));
+      }
+    {%- endfor -%}
+  {%- endstyle -%}
 
-    <script type="module" src="{{ 'theme.js' | asset_url }}"></script>
+  <script type="module" src="{{ 'theme.js' | asset_url }}"></script>
 
-    {{ content_for_header }}
-  </head>
+  {{ content_for_header }}
+  <style>
+    header.explorer {
+      margin: 0;
+      padding: 14px 16px;
+      background: #171916;
+    }
 
-  <body>
-    {{ content_for_layout }}
-  </body>
+    h1.explorer {
+      color: #76D081;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 20px;
+      /*margin: 0;*/
+      word-wrap: break-word;
+    }
+
+    h1.explorer a {
+      color: #9A9A9A;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+      text-decoration: none;
+      word-wrap: break-word;
+    }
+
+    h2.explorer {
+      color: #1A1A1A;
+      font-size: 18px;
+      font-family: Inter, arial, sans-serif;
+      font-weight: 600;
+      line-height: 28px;
+      margin: 2px 0 12px 0;
+    }
+
+
+    section.explorer {
+      display: flex;
+      align-items: flex-start;
+      align-self: stretch;
+      flex: 1 0 0;
+      flex-flow: column wrap;
+      padding: 24px;
+    }
+  </style>
+
+
+</head>
+
+<body>
+
+{%- capture contentForQuerystring -%}{{ content_for_header }}{%- endcapture -%}
+{% if contentForQuerystring contains 'view=' %}
+  {%- assign view_name = contentForQuerystring
+    | split: 'view='
+    | last
+    | split: '"'
+    | first
+    | split: '\u0026'
+    | first
+  -%}
+{% endif %}
+<header class="explorer">
+  <h1 class="explorer">
+    {% if view_name == '' or view_name == nil %}
+      Component Directory
+    {% else %}
+      <a href="/">Component Directory</a>
+      <span style="color: #9A9A9A;">&gt;</span>
+      {{ view_name }}
+    {% endif %}
+  </h1>
+</header>
+
+<section class="explorer">
+  <h2 class="explorer">
+    {%- if view_name == '' or view_name == nil -%}
+      Index
+    {%- else -%}
+      {{ view_name }}
+    {%- endif -%}
+  </h2>
+
+  {{ content_for_layout }}
+
+</section>
+
+
+</body>
 </html>

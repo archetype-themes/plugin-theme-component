@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.4] - 2024-05-01
+
+### Fixed
+
+- Dev CMD: Changing the theme layout file now triggers an update of the components' main CSS file reference
+- Dev CMD: Changing the theme index template file with setupFiles enabled now updates the component list
+- Dev CMD: When using setup files, the Index Template is adjusted in the explorer folder instead of in the source folder.
+- Dev CMD: Added missing template routes URL from the explorer setup files index
+- CI/CD: Git automated version tag on version bump is repaired
+
+### Changed
+
+- Contributing doc moved to root and revised (WIP)
+- Dev CMD: Explorer files UI implementation
+- Install CMD: Default components are now pointing to reference-components instead of components
+- NPM config set to publish to NPM instead or GitHub registry
+- NPM package @archetype-themes package scope removed
+- GitHub Action set to publish to NPM instead or GitHub registry
+
+### Removed
+
+- Outdated docs
+
 ## [3.2.3] - 2024-04-15
 
 ### Changed
@@ -35,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Dev command: setup-files flag is now functional. Setup files are copied in the theme folder (#322)
+- Dev command: The setup-files flag is now functional. Setup files are copied in the theme folder (#322)
 - Dev command: Displays time of day upon completion (#367)
 - Install command: Displays time of day upon completion (#367)
 

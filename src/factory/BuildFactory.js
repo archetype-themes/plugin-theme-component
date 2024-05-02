@@ -28,15 +28,9 @@ class BuildFactory {
     build.sectionsFolder = join(build.rootFolder, SECTIONS_FOLDER_NAME)
     build.snippetsFolder = join(build.rootFolder, SNIPPETS_FOLDER_NAME)
     // Files
-    build.importMapFile = join(
-      build.snippetsFolder,
-      IMPORT_MAP_SNIPPET_FILENAME
-    )
+    build.importMapFile = join(build.snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME)
     build.javascriptFile = join(build.assetsFolder, `${collection.name}.js`)
-    build.stylesheet = join(
-      build.assetsFolder,
-      `${hyphenate(collection.name)}.css`
-    )
+    build.stylesheet = join(build.assetsFolder, `${hyphenate(collection.name)}.css`)
 
     return build
   }

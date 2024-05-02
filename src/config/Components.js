@@ -1,3 +1,5 @@
+import { join } from 'node:path'
+
 /*********************/
 /** COMPONENT TYPES **/
 /*********************/
@@ -47,3 +49,7 @@ export const TEMPLATES_FOLDER_NAME = 'templates'
 
 /** @type {string} **/
 export const IMPORT_MAP_SNIPPET_FILENAME = 'import-map.liquid'
+
+export const THEME_LAYOUT_FILE = 'layout/theme.liquid'
+
+export const THEME_INDEX_TEMPLATE_LIQUID_FILE = join(TEMPLATES_FOLDER_NAME, 'index.liquid')

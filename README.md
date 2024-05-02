@@ -73,7 +73,7 @@ DESCRIPTION
   Theme Component Plugin - By Archetype Themes
 ```
 
-_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.3/src/commands/theme/component/index.js)_
+_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/index.js)_
 
 ## `shopify theme component dev [COMPONENTS]`
 
@@ -123,7 +123,7 @@ FLAG DESCRIPTIONS
     Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.
 ```
 
-_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.3/src/commands/theme/component/dev.js)_
+_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/dev.js)_
 
 ## `shopify theme component generate COMPONENTS`
 
@@ -144,7 +144,7 @@ DESCRIPTION
   Generate canvas files for new components
 ```
 
-_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.3/src/commands/theme/component/generate.js)_
+_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/generate.js)_
 
 ## `shopify theme component install [COMPONENTS]`
 
@@ -158,8 +158,8 @@ ARGUMENTS
   COMPONENTS  Component name(s)
 
 PATH FLAGS
-  -c, --components-path=<path-or-github-url>  [default: https://github.com/archetype-themes/components.git] Path to your
-                                              components
+  -c, --components-path=<path-or-github-url>  [default: https://github.com/archetype-themes/reference-components.git]
+                                              Path to your components
   -l, --locales-path=<path-or-github-url>     [default: https://github.com/archetype-themes/locales.git] Path to your
                                               locales data
 
@@ -182,7 +182,7 @@ FLAG DESCRIPTIONS
     publicly shared locales database.
 ```
 
-_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.3/src/commands/theme/component/install.js)_
+_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/install.js)_
 <!-- commandsstop -->
 
 ## Contributing

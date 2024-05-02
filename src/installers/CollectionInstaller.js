@@ -16,6 +16,7 @@ import {
 import { LIQUID_EXTENSION } from '../utils/ComponentFilesUtils.js'
 import Session from '../models/static/Session.js'
 import { ChangeType } from '../utils/Watcher.js'
+import { THEME_LAYOUT_FILE } from '../config/Components.js'
 
 class CollectionInstaller {
   /**
@@ -64,11 +65,6 @@ class CollectionInstaller {
   static async injectAssetReferences(collection, theme) {
     const injectableAssets = [
       {
-        asset: collection.build.javascriptFile,
-        tagTemplate: (filename) => `<script src="{{ '${filename}' | asset_url }}" async></script>`,
-        loggerMessage: 'Source Collection Javascript file %s found.'
-      },
-      {
         asset: collection.build.stylesheet,
         tagTemplate: (filename) => `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
         loggerMessage: 'Source Collection Stylesheet file %s found.',
@@ -77,7 +73,7 @@ class CollectionInstaller {
     ]
 
     const injections = []
-    const themeLiquidFile = join(theme.rootFolder, 'layout', 'theme.liquid')
+    const themeLiquidFile = join(theme.rootFolder, THEME_LAYOUT_FILE)
     const themeLiquid = (await isReadable(themeLiquidFile)) ? await getFileContents(themeLiquidFile) : ''
 
     for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
