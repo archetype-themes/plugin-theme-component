@@ -1,7 +1,8 @@
 <style>
-  html, body{
+  html, body {
     background: white;
   }
+
   ul {
     display: flex;
     align-items: flex-start;
@@ -24,7 +25,6 @@
     padding: 6px;
     background: #F2F3F2;
   }
-
 
 
   li:hover {
@@ -54,17 +54,58 @@
 
 <!-- components-list-vars -->
 
-  <ul>
-    {%- for i in (0..component_names.size) -%}
-      {%- liquid
-        if component_categories[i] == 'index'
+<ul>
+  {% assign limit = component_names.size | minus: 1 %}
+  {%- for i in (0..limit) -%}
+    {%- liquid
+      case component_categories[i]
+        when '404'
           assign route = routes.root_url
-        elsif component_categories[i] == 'product'
+        when 'article'
+          assign route = article.url
+        when 'blog'
+          assign route = blog.url
+        when 'cart'
+          assign route = routes.cart_url
+        when 'collection'
+          assign sample_collection = collections | first
+          assign route = sample_collection.url
+        when 'customers/account'
+          assign route = routes.account_url
+        when 'customers/activate_account'
+          assign route = routes.account_url
+        when 'customers/addresses'
+          assign route = routes.account_addresses_url
+        when 'customers/login'
+          assign route = routes.account_login_url
+        when 'customers/order'
+          assign route = customer.order_url
+        when 'customers/register'
+          assign route = routes.account_register_url
+        when 'customers/reset_password'
+          assign route = routes.account_recover_url
+        when 'customers/order'
+          assign route = order.order_status_url
+        when 'gift_card'
+          assign route = gift_card.url
+        when 'index'
+          assign route = routes.root_url
+        when 'list-collections'
+          assign route = routes.collections_url
+        when 'page'
+          assign route = page.url
+        when 'password'
+          assign route = routes.root_url
+        when 'product'
           assign route = product.url
-        endif
-      -%}
-      {% if component_categories[i] == 'index' or (component_categories[i] == 'product' and product != nil) %}
-        <li><a href="{{ route }}?view={{ template_files[i] }}">{{ component_names[i] }}</a></li>
-      {%- endif -%}
-    {% endfor %}
-  </ul>
+        when 'search'
+          assign route = search.url
+        else
+          assign route = routes.root_url
+      endcase
+    -%}
+    {% if component_categories[i] != 'product' or (component_categories[i] == 'product' and product != nil) %}
+      <li><a href="{{ route }}?view={{ template_files[i] }}">{{ component_names[i] }}</a></li>
+    {%- endif -%}
+  {% endfor %}
+</ul>

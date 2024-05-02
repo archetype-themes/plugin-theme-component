@@ -158,8 +158,8 @@ ARGUMENTS
   COMPONENTS  Component name(s)
 
 PATH FLAGS
-  -c, --components-path=<path-or-github-url>  [default: https://github.com/archetype-themes/components.git] Path to your
-                                              components
+  -c, --components-path=<path-or-github-url>  [default: https://github.com/archetype-themes/reference-components.git]
+                                              Path to your components
   -l, --locales-path=<path-or-github-url>     [default: https://github.com/archetype-themes/locales.git] Path to your
                                               locales data
 

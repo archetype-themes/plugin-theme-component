@@ -59,29 +59,24 @@ export async function handleSetupFileWatcherEvent(componentsFolder, themeFolder,
  * @param {Component[]} components
  */
 export function getComponentsListPerCategory(components) {
-  const componentsList = {}
+  const categories = []
+  const names = []
+  const templates = []
 
   components.forEach((component) => {
     component.files.setupFiles.forEach((setupFile) => {
-      if (setupFile.indexOf(templatesFolderCue) !== -1 && setupFile.endsWith(JSON_EXTENSION)) {
+      const templateFolderIndex = setupFile.indexOf(templatesFolderCue)
+      if (templateFolderIndex !== -1 && setupFile.endsWith(JSON_EXTENSION)) {
+        const templatePath = setupFile.substring(templateFolderIndex + templatesFolderCue.length)
         const filename = basename(setupFile, JSON_EXTENSION)
-        const category = filename.substring(0, filename.indexOf('.'))
-        if (!componentsList[category]) componentsList[category] = {}
-        componentsList[category][component.name] = filename
+        const category = templatePath.substring(0, templatePath.indexOf('.'))
+
+        categories.push(category)
+        names.push(component.name)
+        templates.push(filename.split('.')[1])
       }
     })
   })
-
-  const categories = []
-  const templates = []
-  const names = []
-  for (const category in componentsList) {
-    for (const [componentName, templateFile] of Object.entries(componentsList[category])) {
-      categories.push(category)
-      templates.push(templateFile.split('.')[1])
-      names.push(componentName)
-    }
-  }
 
   return `
     {% assign component_names = "${names.join(',')}" | split: ',' %}

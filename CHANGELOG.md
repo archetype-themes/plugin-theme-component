@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dev CMD: Changing the theme layout file now triggers an update of the components' main CSS file reference
 - Dev CMD: Changing the theme index template file with setupFiles enabled now updates the component list
 - Dev CMD: When using setup files, the Index Template is adjusted in the explorer folder instead of in the source folder.
+- Dev CMD: Added missing template routes URL from the explorer setup files index
 
 ### Changed
 
