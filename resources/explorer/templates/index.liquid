@@ -111,7 +111,7 @@
       endcase
     -%}
     {% if component_categories[i] != 'product' or (component_categories[i] == 'product' and product != nil) %}
-      <li><a href="{{ route }}?view={{ template_files[i] }}"><span>{{ component_names[i] }}</span><span>&rarr;</space></a></li>
+      <li><a href="{{ route }}?view={{ template_files[i] }}"><span>{{ component_names[i] }}</span><span>&rarr;</span></a></li>
     {%- endif -%}
   {% endfor %}
 </ul>
