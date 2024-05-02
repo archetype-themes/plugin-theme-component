@@ -1,17 +1,21 @@
 {
-  "author": "Archetype Themes Limited Partnership",
+  "name": "plugin-theme-component",
+  "version": "3.2.4",
+  "type": "module",
   "description": "Archetype Theme's Shopify CLI theme component plugin",
   "license": "MIT",
-  "exports": {
-    ".": {
-      "default": "./src/bin/component.js"
-    }
-  },
-  "name": "@archetype-themes/plugin-theme-component",
-  "type": "module",
-  "version": "3.2.4",
+  "author": "Archetype Themes Limited Partnership",
+  "files": [
+    "/bin",
+    "/src",
+    "/oclif.manifest.json"
+  ],
   "bin": {
     "component": "bin/run.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/archetype-themes/plugin-theme-component.git"
   },
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 bin/run.js",
@@ -24,18 +28,6 @@
     "posttest": "npm publish --dry-run && echo '\nTest Run completed succesfully'",
     "test": "NODE_ENV=test mocha --forbid-only -p false \"test/**/*.test.js\"",
     "version": "oclif readme && git add README.md"
-  },
-  "files": [
-    "/bin",
-    "/src",
-    "/oclif.manifest.json"
-  ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/archetype-themes/plugin-theme-component.git"
   },
   "dependencies": {
     "@iarna/toml": "2.2.5",
@@ -76,7 +68,14 @@
   "engines": {
     "node": ">=18.12.0"
   },
-  "engine-strict": true,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "exports": {
+    ".": {
+      "default": "./src/bin/component.js"
+    }
+  },
   "oclif": {
     "commands": "src/commands",
     "bin": "shopify",

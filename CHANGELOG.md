@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Contributing doc moved to root and revised (WIP)
 - Dev CMD: Explorer files UI implementation
 - Install CMD: Default components are now pointing to reference-components instead of components
+- NPM config set to publish to NPM instead or GitHub registry
+- NPM package @archetype-themes package scope removed
 
 ### Removed
 
