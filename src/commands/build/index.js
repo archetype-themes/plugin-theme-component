@@ -3,17 +3,17 @@ import { dirname, parse } from 'node:path'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
-import CollectionBuilder from '../../../builders/CollectionBuilder.js'
-import ComponentBuilder from '../../../builders/ComponentBuilder.js'
-import SnippetBuilder from '../../../builders/SnippetBuilder.js'
-import { BaseCommand } from '../../../config/baseCommand.js'
-import InternalError from '../../../errors/InternalError.js'
-import ComponentFactory from '../../../factory/ComponentFactory.js'
-import Timer from '../../../models/Timer.js'
-import Snippet from '../../../models/Snippet.js'
-import { getComponentNamesToBuild } from '../../../utils/CollectionUtils.js'
-import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
-import { plural } from '../../../utils/SyntaxUtils.js'
+import CollectionBuilder from '../../builders/CollectionBuilder.js'
+import ComponentBuilder from '../../builders/ComponentBuilder.js'
+import SnippetBuilder from '../../builders/SnippetBuilder.js'
+import { BaseCommand } from '../../config/baseCommand.js'
+import InternalError from '../../errors/InternalError.js'
+import ComponentFactory from '../../factory/ComponentFactory.js'
+import Timer from '../../models/Timer.js'
+import Snippet from '../../models/Snippet.js'
+import { getComponentNamesToBuild } from '../../utils/CollectionUtils.js'
+import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../utils/LoggerUtils.js'
+import { plural } from '../../utils/SyntaxUtils.js'
 
 class Build extends BaseCommand {
   static hidden = true // Hide the command from help

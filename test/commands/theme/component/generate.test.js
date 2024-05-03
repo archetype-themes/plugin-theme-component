@@ -13,7 +13,7 @@ describe('generate command', async function () {
   test
     .timeout(10000)
     .stdout()
-    .command(['theme:component:generate', 'section-test'])
+    .command(['generate', 'section-test'])
     .it('runs: component generate section-test', async function (ctx) {
       expect(ctx.stdout).to.contain('Your new component is available at')
     })

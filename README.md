@@ -53,38 +53,20 @@ You can install a component (or list of components) with the `shopify theme comp
 ## List of commands
 
 <!-- commands -->
-* [`component theme component`](#component-theme-component)
-* [`component theme component dev [COMPONENTS]`](#component-theme-component-dev-components)
-* [`component theme component generate COMPONENTS`](#component-theme-component-generate-components)
-* [`component theme component install [COMPONENTS]`](#component-theme-component-install-components)
+* [`component dev [COMPONENTS]`](#component-dev-components)
+* [`component generate COMPONENTS`](#component-generate-components)
+* [`component install [COMPONENTS]`](#component-install-components)
 
-## `component theme component`
-
-Theme Component Plugin - By Archetype Themes
-
-```
-USAGE
-  $ component theme component [-v]
-
-FLAGS
-  -v, --version  Display Plugin Version
-
-DESCRIPTION
-  Theme Component Plugin - By Archetype Themes
-```
-
-_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/index.js)_
-
-## `component theme component dev [COMPONENTS]`
+## `component dev [COMPONENTS]`
 
 Develop using theme components
 
 ```
 USAGE
-  $ component theme component dev [COMPONENTS] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
+  $ component dev [COMPONENTS...] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
 
 ARGUMENTS
-  COMPONENTS  Component name(s)
+  COMPONENTS...  Component name(s)
 
 FLAGS
   -s, --[no-]setup-files  Copy Setup Files
@@ -123,18 +105,18 @@ FLAG DESCRIPTIONS
     Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.
 ```
 
-_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/dev.js)_
+_See code: [src/commands/dev/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/dev/index.js)_
 
-## `component theme component generate COMPONENTS`
+## `component generate COMPONENTS`
 
 Generate canvas files for new components
 
 ```
 USAGE
-  $ component theme component generate COMPONENTS [--debug] [--trace]
+  $ component generate COMPONENTS... [--debug] [--trace]
 
 ARGUMENTS
-  COMPONENTS  Component name(s)
+  COMPONENTS...  Component name(s)
 
 DEBUG FLAGS
   --debug  Debug Mode is more verbose.
@@ -144,18 +126,18 @@ DESCRIPTION
   Generate canvas files for new components
 ```
 
-_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/generate.js)_
+_See code: [src/commands/generate/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/generate/index.js)_
 
-## `component theme component install [COMPONENTS]`
+## `component install [COMPONENTS]`
 
 Install a collection of components
 
 ```
 USAGE
-  $ component theme component install [COMPONENTS] [--debug] [--trace] [-c <value>] [-l <value>]
+  $ component install [COMPONENTS...] [--debug] [--trace] [-c <value>] [-l <value>]
 
 ARGUMENTS
-  COMPONENTS  Component name(s)
+  COMPONENTS...  Component name(s)
 
 PATH FLAGS
   -c, --components-path=<path-or-github-url>  [default: https://github.com/archetype-themes/reference-components.git]
@@ -182,7 +164,7 @@ FLAG DESCRIPTIONS
     publicly shared locales database.
 ```
 
-_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/install.js)_
+_See code: [src/commands/install/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/install/index.js)_
 <!-- commandsstop -->
 
 ## Contributing
