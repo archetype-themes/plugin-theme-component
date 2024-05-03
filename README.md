@@ -53,18 +53,18 @@ You can install a component (or list of components) with the `shopify theme comp
 ## List of commands
 
 <!-- commands -->
-* [`shopify theme component`](#shopify-theme-component)
-* [`shopify theme component dev [COMPONENTS]`](#shopify-theme-component-dev-components)
-* [`shopify theme component generate COMPONENTS`](#shopify-theme-component-generate-components)
-* [`shopify theme component install [COMPONENTS]`](#shopify-theme-component-install-components)
+* [`component theme component`](#component-theme-component)
+* [`component theme component dev [COMPONENTS]`](#component-theme-component-dev-components)
+* [`component theme component generate COMPONENTS`](#component-theme-component-generate-components)
+* [`component theme component install [COMPONENTS]`](#component-theme-component-install-components)
 
-## `shopify theme component`
+## `component theme component`
 
 Theme Component Plugin - By Archetype Themes
 
 ```
 USAGE
-  $ shopify theme component [-v]
+  $ component theme component [-v]
 
 FLAGS
   -v, --version  Display Plugin Version
@@ -75,13 +75,13 @@ DESCRIPTION
 
 _See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/index.js)_
 
-## `shopify theme component dev [COMPONENTS]`
+## `component theme component dev [COMPONENTS]`
 
 Develop using theme components
 
 ```
 USAGE
-  $ shopify theme component dev [COMPONENTS] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
+  $ component theme component dev [COMPONENTS] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
 
 ARGUMENTS
   COMPONENTS  Component name(s)
@@ -125,13 +125,13 @@ FLAG DESCRIPTIONS
 
 _See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/dev.js)_
 
-## `shopify theme component generate COMPONENTS`
+## `component theme component generate COMPONENTS`
 
 Generate canvas files for new components
 
 ```
 USAGE
-  $ shopify theme component generate COMPONENTS [--debug] [--trace]
+  $ component theme component generate COMPONENTS [--debug] [--trace]
 
 ARGUMENTS
   COMPONENTS  Component name(s)
@@ -146,13 +146,13 @@ DESCRIPTION
 
 _See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/theme/component/generate.js)_
 
-## `shopify theme component install [COMPONENTS]`
+## `component theme component install [COMPONENTS]`
 
 Install a collection of components
 
 ```
 USAGE
-  $ shopify theme component install [COMPONENTS] [--debug] [--trace] [-c <value>] [-l <value>]
+  $ component theme component install [COMPONENTS] [--debug] [--trace] [-c <value>] [-l <value>]
 
 ARGUMENTS
   COMPONENTS  Component name(s)

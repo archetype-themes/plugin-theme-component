@@ -77,8 +77,8 @@
     }
   },
   "oclif": {
-    "commands": "src/commands",
-    "bin": "shopify",
+    "commands": "./src/commands/theme/component",
+    "bin": "component",
     "topicSeparator": " "
   }
 }
