@@ -5,14 +5,14 @@ import { cwd } from 'node:process'
 import { Args, ux } from '@oclif/core'
 
 // Internal Dependencies
-import { BaseCommand, COMPONENT_ARG_NAME } from '../../config/baseCommand.js'
-import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../config/Components.js'
-import FileAccessError from '../../errors/FileAccessError.js'
-import Session from '../../models/static/Session.js'
-import { copyFolder, getFolderFilesRecursively } from '../../utils/FileUtils.js'
-import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../utils/NodeUtils.js'
-import { getValuesFromArgvOrToml } from '../../utils/SessionUtils.js'
-import { logSeparator, logSpacer } from '../../utils/LoggerUtils.js'
+import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
+import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../../config/Components.js'
+import FileAccessError from '../../../errors/FileAccessError.js'
+import Session from '../../../models/static/Session.js'
+import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
+import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/NodeUtils.js'
+import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
+import { logSeparator, logSpacer } from '../../../utils/LoggerUtils.js'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate canvas files for new components'

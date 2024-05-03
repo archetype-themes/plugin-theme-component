@@ -7,7 +7,7 @@ import { after, before, describe, it } from 'mocha'
 
 // Internal Dependencies
 import { chDirToDefault, setupComponentsRepo } from '../../../utils.js'
-import Dev, { SETUP_FLAG_NAME, THEME_FLAG_NAME, WATCH_FLAG_NAME } from '../../../../src/commands/dev/index.js'
+import Dev, { SETUP_FLAG_NAME, THEME_FLAG_NAME, WATCH_FLAG_NAME } from '../../../../src/commands/component/dev/index.js'
 import { LOCALES_FLAG_NAME } from '../../../../src/config/baseCommand.js'
 import Session from '../../../../src/models/static/Session.js'
 import { getCLIRootFolderName } from '../../../../src/utils/NodeUtils.js'
@@ -23,7 +23,7 @@ describe('dev command', async function () {
     .timeout(10000)
     .stdout()
     .command([
-      'dev',
+      'component:dev',
       '--no-watch',
       `--theme-path=https://${env.GITHUB_ID}:${env.GITHUB_TOKEN}@github.com/archetype-themes/expanse.git`
     ])

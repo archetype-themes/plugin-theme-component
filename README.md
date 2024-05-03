@@ -53,17 +53,17 @@ You can install a component (or list of components) with the `shopify theme comp
 ## List of commands
 
 <!-- commands -->
-* [`component dev [COMPONENTS]`](#component-dev-components)
-* [`component generate COMPONENTS`](#component-generate-components)
-* [`component install [COMPONENTS]`](#component-install-components)
+* [`archie component dev [COMPONENTS]`](#archie-component-dev-components)
+* [`archie component generate COMPONENTS`](#archie-component-generate-components)
+* [`archie component install [COMPONENTS]`](#archie-component-install-components)
 
-## `component dev [COMPONENTS]`
+## `archie component dev [COMPONENTS]`
 
 Develop using theme components
 
 ```
 USAGE
-  $ component dev [COMPONENTS...] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
+  $ archie component dev [COMPONENTS...] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
 
 ARGUMENTS
   COMPONENTS...  Component name(s)
@@ -105,15 +105,15 @@ FLAG DESCRIPTIONS
     Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.
 ```
 
-_See code: [src/commands/dev/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/dev/index.js)_
+_See code: [src/commands/component/dev/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/component/dev/index.js)_
 
-## `component generate COMPONENTS`
+## `archie component generate COMPONENTS`
 
 Generate canvas files for new components
 
 ```
 USAGE
-  $ component generate COMPONENTS... [--debug] [--trace]
+  $ archie component generate COMPONENTS... [--debug] [--trace]
 
 ARGUMENTS
   COMPONENTS...  Component name(s)
@@ -126,15 +126,15 @@ DESCRIPTION
   Generate canvas files for new components
 ```
 
-_See code: [src/commands/generate/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/generate/index.js)_
+_See code: [src/commands/component/generate/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/component/generate/index.js)_
 
-## `component install [COMPONENTS]`
+## `archie component install [COMPONENTS]`
 
 Install a collection of components
 
 ```
 USAGE
-  $ component install [COMPONENTS...] [--debug] [--trace] [-c <value>] [-l <value>]
+  $ archie component install [COMPONENTS...] [--debug] [--trace] [-c <value>] [-l <value>]
 
 ARGUMENTS
   COMPONENTS...  Component name(s)
@@ -164,7 +164,7 @@ FLAG DESCRIPTIONS
     publicly shared locales database.
 ```
 
-_See code: [src/commands/install/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/install/index.js)_
+_See code: [src/commands/component/install/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.2.4/src/commands/component/install/index.js)_
 <!-- commandsstop -->
 
 ## Contributing

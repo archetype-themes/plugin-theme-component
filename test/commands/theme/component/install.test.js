@@ -14,7 +14,7 @@ describe('install command', function () {
     .timeout(10000)
     .stdout()
     .command([
-      'install',
+      'component:install',
       `--components-path=https://${env.GITHUB_ID}:${env.GITHUB_TOKEN}@github.com/archetype-themes/components.git`
     ])
     .it('runs: component install', function (ctx) {

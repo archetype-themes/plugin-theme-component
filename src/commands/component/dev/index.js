@@ -6,27 +6,27 @@ import { Args, Flags, ux } from '@oclif/core'
 
 // Internal Dependencies
 import Build from '../build/index.js'
-import BuildFactory from '../../factory/BuildFactory.js'
-import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../config/baseCommand.js'
-import { DEV_FOLDER_NAME } from '../../config/CLI.js'
+import BuildFactory from '../../../factory/BuildFactory.js'
+import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
+import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
 import {
   ASSETS_FOLDER_NAME,
   COLLECTION_TYPE_NAME,
   SNIPPETS_FOLDER_NAME,
   THEME_INDEX_TEMPLATE_LIQUID_FILE,
   THEME_LAYOUT_FILE
-} from '../../config/Components.js'
-import CollectionFactory from '../../factory/CollectionFactory.js'
-import { fromDevCommand } from '../../factory/ThemeFactory.js'
-import CollectionInstaller from '../../installers/CollectionInstaller.js'
-import Session from '../../models/static/Session.js'
-import { installLocales, installThemeFiles } from '../../utils/ExternalComponentUtils.js'
-import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../utils/LoggerUtils.js'
+} from '../../../config/Components.js'
+import CollectionFactory from '../../../factory/CollectionFactory.js'
+import { fromDevCommand } from '../../../factory/ThemeFactory.js'
+import CollectionInstaller from '../../../installers/CollectionInstaller.js'
+import Session from '../../../models/static/Session.js'
+import { installLocales, installThemeFiles } from '../../../utils/ExternalComponentUtils.js'
+import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
 import {
   getValuesFromArgvOrToml,
   getValueFromFlagOrToml,
   getPathFromFlagOrTomlValue
-} from '../../utils/SessionUtils.js'
+} from '../../../utils/SessionUtils.js'
 import {
   ChangeType,
   getChangeTypeFromFilename,
@@ -34,14 +34,14 @@ import {
   getWatcher,
   handleWatcherEvent,
   watch
-} from '../../utils/Watcher.js'
-import { isGitHubUrl } from '../../utils/WebUtils.js'
-import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } from '../../utils/SetupFilesUtils.js'
-import { getCurrentTime } from '../../utils/DateUtils.js'
-import { getLocalesInstallPath } from '../../utils/LocaleUtils.js'
+} from '../../../utils/Watcher.js'
+import { isGitHubUrl } from '../../../utils/WebUtils.js'
+import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } from '../../../utils/SetupFilesUtils.js'
+import { getCurrentTime } from '../../../utils/DateUtils.js'
+import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
 import { rm } from 'node:fs/promises'
-import { exists, saveFile } from '../../utils/FileUtils.js'
-import { getCLIRootFolderName } from '../../utils/NodeUtils.js'
+import { exists, saveFile } from '../../../utils/FileUtils.js'
+import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
 
 /** @type {string} **/
 export const THEME_FLAG_NAME = 'theme-path'
