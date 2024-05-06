@@ -8,6 +8,7 @@
   "files": [
     "/bin",
     "/src",
+    "/resources",
     "/oclif.manifest.json"
   ],
   "bin": {
