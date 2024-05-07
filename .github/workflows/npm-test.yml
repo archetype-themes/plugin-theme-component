@@ -20,7 +20,7 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 18.12.0
+          node-version: lts/hydrogen #node v18 LTS
       - name: NPM Clean Install
         run: npm ci
       - name: Test The Release
