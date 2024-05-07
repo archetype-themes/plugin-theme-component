@@ -37,7 +37,7 @@ describe('dev command', async function () {
 })
 
 describe('Dev', () => {
-  describe('#setSessionValues', () => {
+  describe('setSessionValues', () => {
     it('should set session values correctly with default values', async () => {
       const argv = []
       const flags = {

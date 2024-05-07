@@ -21,8 +21,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.12.0
-          cache: 'npm'
-          registry-url: https://npm.pkg.github.com
-          scope: '@archetype-themes'
+      - name: NPM Clean Install
+        run: npm ci
       - name: Test The Release
         run: npm test
