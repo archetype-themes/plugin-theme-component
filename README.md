@@ -62,10 +62,10 @@ Develop using theme components
 
 ```
 USAGE
-  $ shopify theme component dev [COMPONENTS] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
+  $ shopify theme component dev [COMPONENTS...] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
 
 ARGUMENTS
-  COMPONENTS  Component name(s)
+  COMPONENTS...  Component name(s)
 
 FLAGS
   -s, --[no-]setup-files  Copy Setup Files
@@ -112,10 +112,10 @@ Generate canvas files for new components
 
 ```
 USAGE
-  $ shopify theme component generate COMPONENTS [--debug] [--trace]
+  $ shopify theme component generate COMPONENTS... [--debug] [--trace]
 
 ARGUMENTS
-  COMPONENTS  Component name(s)
+  COMPONENTS...  Component name(s)
 
 DEBUG FLAGS
   --debug  Debug Mode is more verbose.
@@ -133,10 +133,10 @@ Install a collection of components
 
 ```
 USAGE
-  $ shopify theme component install [COMPONENTS] [--debug] [--trace] [-c <value>] [-l <value>]
+  $ shopify theme component install [COMPONENTS...] [--debug] [--trace] [-c <value>] [-l <value>]
 
 ARGUMENTS
-  COMPONENTS  Component name(s)
+  COMPONENTS...  Component name(s)
 
 PATH FLAGS
   -c, --components-path=<path-or-github-url>  [default: https://github.com/archetype-themes/reference-components.git]
