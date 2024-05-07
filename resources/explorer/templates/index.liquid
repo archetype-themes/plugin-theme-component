@@ -64,7 +64,10 @@
   {% assign limit = component_names.size | minus: 1 %}
   {%- for i in (0..limit) -%}
     {%- liquid
-      case component_categories[i]
+      assign category = component_categories[i]
+      assign should_display = false
+
+      case category
         when '404'
           assign route = routes.root_url
         when 'article'
@@ -109,12 +112,8 @@
         else
           assign route = routes.root_url
       endcase
-    -%}
 
-    {%- liquid
-      assign should_display = false
-
-      if component_categories[i] != 'product' or product != nil
+      if category != 'product' or product != nil
         assign should_display = true
       endif
     -%}
