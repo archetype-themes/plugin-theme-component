@@ -112,10 +112,9 @@
     -%}
 
     {%- liquid
-      assign category = component_categories[i]
       assign should_display = false
 
-      if category != 'product' or product != nil
+      if component_categories[i] != 'product' or product != nil
         assign should_display = true
       endif
     -%}
