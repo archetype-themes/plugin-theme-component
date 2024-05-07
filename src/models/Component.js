@@ -34,11 +34,7 @@ class Component {
   }
 
   isSvg() {
-    return !!(
-      this.name.startsWith('icon-') ||
-      this.name.endsWith('-svg') ||
-      this.name.endsWith('.svg')
-    )
+    return !!(this.name.startsWith('icon-') || this.name.endsWith('-svg') || this.name.endsWith('.svg'))
   }
 }
 

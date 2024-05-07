@@ -137,3 +137,9 @@ snippets/*/build
 
 #oclif shopify CLI integration
 oclif.manifest.json
+
+# User info data cache
+/user-info.json
+
+# CodeBuddy AI tool data
+/.codebuddy
