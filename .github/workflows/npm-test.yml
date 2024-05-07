@@ -24,4 +24,4 @@ jobs:
       - name: NPM Clean Install
         run: npm ci
       - name: Test The Release
-        run: npx mocha --forbid-only -p false test/commands/theme/components/generate.test.js
+        run: npx mocha --forbid-only -p false test/commands/theme/component/generate.test.js
