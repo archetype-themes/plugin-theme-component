@@ -17,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependencies: Minor updates & Oclif version alignment with Shopify CLI release 3.6.0
 
+## [3.2.5] - 2024-05-06
+
+### Added
+
+- MIT LICENSE for repository
+
+### Changed
+
+- Reformatted some explorer files and replace the original color scheme approach
+
 ## [3.2.4] - 2024-05-01
 
 ### Fixed
