@@ -36,7 +36,7 @@ export default async function (opts) {
     if (user.email) {
       console.log(await apiNewsletterAdd(user))
     } else {
-      console.log('Should you change your mind, you can always subscribe later at\nhttps://dev.archetypethemes.co')
+      console.log('You can always subscribe later at https://dev.archetypethemes.co')
     }
     console.log('----------------------------------------------------------------------------------\n')
   }
