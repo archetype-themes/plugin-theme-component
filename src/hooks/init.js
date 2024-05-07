@@ -7,23 +7,19 @@ import User from '../models/User.js'
 
 /**
  * DevKit CLI Email Registration Prompt
+ * @param {{}} opts
  * @return {Promise<void>}
  */
-export default async function () {
+export default async function (opts) {
   const userInfoSaveFile = join(getCLIRootFolderName(), 'user-info.json')
 
-  if (!(await exists(userInfoSaveFile))) {
+  if (!(await exists(userInfoSaveFile)) && opts.id.startsWith('theme:component')) {
     const user = new User()
 
-    console.log('\n---------------------------------------------------------------')
-    console.log('Thanks for downloading the Archetype Themes’ Component plugin.')
-    console.log(
-      'To be the first in line to know about new DevKit releases and \n' +
-        'upcoming features, we highly recommend that you subscribe\n' +
-        'to our DevKit newsletter, or leave the field empty to opt-out.'
-    )
-    console.log('---------------------------------------------------------------')
-    user.email = await input({ message: 'Enter your email' })
+    console.log('\n----------------------------------------------------------------------------------')
+    console.log('Thanks for downloading the Shopify CLI Theme Component Plugin by Archetype Themes!')
+
+    user.email = await input({ message: 'Share email for updates (leave blank to skip)' })
 
     if (user.email) {
       const userName = await input({ message: 'Enter your name' })
@@ -42,7 +38,7 @@ export default async function () {
     } else {
       console.log('Should you change your mind, you can always subscribe later at\nhttps://dev.archetypethemes.co')
     }
-    console.log('---------------------------------------------------------------\n')
+    console.log('----------------------------------------------------------------------------------\n')
   }
 }
 

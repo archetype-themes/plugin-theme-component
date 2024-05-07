@@ -1,6 +1,6 @@
 {
   "name": "plugin-theme-component",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "type": "module",
   "description": "Archetype Theme's Shopify CLI theme component plugin",
   "license": "MIT",
@@ -25,7 +25,6 @@
     "prepack": "oclif manifest && oclif readme",
     "prepare": "husky",
     "pretest": "npm i && npm run lint && npm run cdc",
-    "postinstall": "./bin/api-newsletter-add.js",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm publish --dry-run && echo '\nTest Run completed succesfully'",
     "test": "NODE_ENV=test mocha --forbid-only -p false \"test/**/*.test.js\"",

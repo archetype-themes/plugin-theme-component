@@ -113,7 +113,7 @@ export async function copyFolder(sourceFolder, targetFolder, options = { recursi
       }
     } else if (dirent.isDirectory() && options.recursive && !EXCLUDED_FOLDERS.includes(dirent.name)) {
       const newTargetFolder = join(targetFolder, dirent.name)
-      fileOperations.push(cp(join(sourceFolder, dirent.name), newTargetFolder, options))
+      fileOperations.push(copyFolder(join(sourceFolder, dirent.name), newTargetFolder, options))
     }
   }
   return Promise.all(fileOperations)
