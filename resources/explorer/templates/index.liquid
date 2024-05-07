@@ -110,8 +110,22 @@
           assign route = routes.root_url
       endcase
     -%}
-    {% if component_categories[i] != 'product' or (component_categories[i] == 'product' and product != nil) %}
-      <li><a href="{{ route }}?view={{ template_files[i] }}"><span>{{ component_names[i] }}</span><span>&rarr;</span></a></li>
+
+    {%- liquid
+      assign category = component_categories[i]
+      assign should_display = false
+
+      if category != 'product' or product != nil
+        assign should_display = true
+      endif
+    -%}
+
+    {% if should_display %}
+      <li>
+        <a href="{{ route }}?view={{ template_files[i] }}">
+          <span>{{ component_names[i] }}</span><span>&rarr;</span>
+        </a>
+      </li>
     {%- endif -%}
   {% endfor %}
 </ul>
