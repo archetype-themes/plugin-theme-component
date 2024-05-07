@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- NPM Install Hook: Request User email for DevKit Newsletter Subscription
-- Oclif Init Hook: Request User email for DevKit Newsletter Subscription
+- NPM Install Hook: Request User email for DevKit Newsletter Subscription #417
+- Oclif Init Hook: Request User email for DevKit Newsletter Subscription #417
 
 ### Changed
 
