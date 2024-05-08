@@ -5,7 +5,7 @@ import { basename } from 'node:path'
 import Collection from '../models/Collection.js'
 import { initComponents } from '../utils/CollectionUtils.js'
 import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
-import { cwd, exit } from 'node:process'
+import { cwd } from 'node:process'
 
 class CollectionFactory {
   /**
@@ -28,7 +28,7 @@ class CollectionFactory {
     const collection = new Collection()
     collection.rootFolder = path
     console.log('CRF', collection.rootFolder)
-    exit(0)
+
     try {
       const packageManifest = await getPackageManifest(collection.rootFolder)
       console.log(packageManifest)
