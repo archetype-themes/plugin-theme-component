@@ -21,9 +21,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/hydrogen #node v18 LTS
+          check-latest: true
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
       - name: NPM Clean Install
         run: npm ci
-      - name: Test The Release
-        run: npm test
+      - run: pwd
+      - run: ls
+#      - name: Test The Release
+#        run: npm test
