@@ -37,7 +37,7 @@ describe('dev command', async function () {
 })
 
 describe('Dev', () => {
-  describe('#setSessionValues', () => {
+  describe('setSessionValues', () => {
     it('should set session values correctly with default values', async () => {
       const argv = []
       const flags = {
@@ -71,7 +71,6 @@ describe('Dev', () => {
       assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
       assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
       assert.strictEqual(Session.setupFiles, Dev.flags[SETUP_FLAG_NAME].default)
-      console.log('CRFN', getCLIRootFolderName())
       assert.strictEqual(Session.themePath, join(getCLIRootFolderName(), 'resources/explorer'))
     })
 

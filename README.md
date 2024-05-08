@@ -54,7 +54,7 @@ DESCRIPTION
   Theme Component Plugin - By Archetype Themes
 ```
 
-_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.0/src/commands/theme/component/index.js)_
+_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.2/src/commands/theme/component/index.js)_
 
 ## `shopify theme component dev [COMPONENTS]`
 
@@ -104,7 +104,7 @@ FLAG DESCRIPTIONS
     Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.
 ```
 
-_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.0/src/commands/theme/component/dev.js)_
+_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.2/src/commands/theme/component/dev.js)_
 
 ## `shopify theme component generate COMPONENTS`
 
@@ -125,7 +125,7 @@ DESCRIPTION
   Generate canvas files for new components
 ```
 
-_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.0/src/commands/theme/component/generate.js)_
+_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.2/src/commands/theme/component/generate.js)_
 
 ## `shopify theme component install [COMPONENTS]`
 
@@ -163,7 +163,7 @@ FLAG DESCRIPTIONS
     publicly shared locales database.
 ```
 
-_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.0/src/commands/theme/component/install.js)_
+_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.2/src/commands/theme/component/install.js)_
 <!-- commandsstop -->
 
 ## Contributing
@@ -176,7 +176,7 @@ If you notice a bug, or want to contribute to the codebase, feel free to do so i
 
 If you already have the plugin installed via npm, you'll need to [uninstall](#uninstalling-the-plugin) the plugin before being able to develop the plugin locally.
 
-Once this is done, follow these list of steps to ensure the Shopify CLI is running the local version of the plugin:
+Once this is done, follow these steps to ensure the Shopify CLI is running the local version of the plugin:
 - `git clone https://github.com/archetype-themes/plugin-theme-component.git`
 - `cd plugin-theme-component`
 - `npm ci`

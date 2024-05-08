@@ -1,6 +1,6 @@
 {
   "name": "plugin-theme-component",
-  "version": "3.3.0",
+  "version": "3.3.2",
   "type": "module",
   "description": "Archetype Theme's Shopify CLI theme component plugin",
   "license": "MIT",
@@ -20,15 +20,14 @@
   },
   "scripts": {
     "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 bin/run.js",
-    "lint": "npx eslint",
-    "lint:fix": "npx eslint --fix",
-    "prepack": "oclif manifest && oclif readme",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "prepare": "husky",
-    "pretest": "npm i && npm run lint && npm run cdc",
-    "postinstall": "./bin/api-newsletter-add.js",
+    "prepack": "oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "npm publish --dry-run && echo '\nTest Run completed succesfully'",
+    "pretest": "npm run cdc",
     "test": "NODE_ENV=test mocha --forbid-only -p false \"test/**/*.test.js\"",
+    "posttest": "npm publish --dry-run && echo '\nTest Run completed succesfully'",
     "version": "oclif readme && git add README.md"
   },
   "dependencies": {
@@ -37,7 +36,7 @@
     "@oclif/core": "3.26.5",
     "@shopify/browserslist-config": "^3.0.0",
     "@shopify/cli-kit": "3.60.0",
-    "@types/node": "18.19.3",
+    "@types/node": "^18.19.32",
     "chokidar": "^3.6.0",
     "deepmerge": "^4.3.1",
     "es-module-lexer": "^1.5.0",
@@ -69,7 +68,7 @@
     "shx": "^0.3.4"
   },
   "engines": {
-    "node": ">=18.12.0"
+    "node": ">=18.20.2"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
