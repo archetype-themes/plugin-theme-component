@@ -20,7 +20,7 @@ import CollectionFactory from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
-import { installLocales, installThemeFiles } from '../../../utils/ExternalComponentUtils.js'
+import { downloadLocales, installThemeFiles } from '../../../utils/ExternalComponentUtils.js'
 import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
 import {
   getValuesFromArgvOrToml,
@@ -38,7 +38,6 @@ import {
 import { isGitHubUrl } from '../../../utils/WebUtils.js'
 import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } from '../../../utils/SetupFilesUtils.js'
 import { getCurrentTime } from '../../../utils/DateUtils.js'
-import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
 import { rm } from 'node:fs/promises'
 import { exists, saveFile } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
@@ -201,15 +200,9 @@ export default class Dev extends BaseCommand {
       // Install Theme Files
       await installThemeFiles(themePath, devFolder)
 
-      // Install Locales
+      // Download Locales
       if (isGitHubUrl(Session.localesPath)) {
-        const localesInstallPath = getLocalesInstallPath()
-        // Start with a clean slate
-        if (await exists(localesInstallPath)) {
-          await rm(localesInstallPath, { recursive: true })
-        }
-        await installLocales(Session.localesPath, localesInstallPath)
-        Session.localesPath = localesInstallPath
+        Session.localesPath = await downloadLocales(Session.localesPath)
       }
     }
 

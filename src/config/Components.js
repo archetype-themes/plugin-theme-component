@@ -30,9 +30,6 @@ export const CONFIG_FOLDER_NAME = 'config'
 export const LOCALES_FOLDER_NAME = 'locales'
 
 /** @type {string} **/
-export const LOCALES_INSTALL_FOLDER = '.locales'
-
-/** @type {string} **/
 export const SECTIONS_FOLDER_NAME = 'sections'
 
 /** @type {string} **/

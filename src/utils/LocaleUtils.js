@@ -2,16 +2,6 @@
 import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { getFileContents, isReadable } from './FileUtils.js'
-import { cwd } from 'node:process'
-import { LOCALES_INSTALL_FOLDER } from '../config/Components.js'
-
-/**
- * Get Locales Install Path
- * @return {string}
- */
-export function getLocalesInstallPath() {
-  return join(cwd(), LOCALES_INSTALL_FOLDER)
-}
 
 /**
  * Write Locales

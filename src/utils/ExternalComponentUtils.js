@@ -1,6 +1,6 @@
 // Internal Dependencies
 import { copyFolder, getAbsolutePath, getFolderFilesRecursively } from './FileUtils.js'
-import { installRepository } from './GitUtils.js'
+import { downloadRepository } from './GitUtils.js'
 import { isGitHubUrl } from './WebUtils.js'
 import Timer from '../models/Timer.js'
 import { logChildItem } from './LoggerUtils.js'
@@ -14,7 +14,8 @@ import { exitWithError } from './NodeUtils.js'
  */
 export async function install(sourcePath, installFolder) {
   if (isGitHubUrl(sourcePath)) {
-    await installRepository(sourcePath, installFolder)
+    const downloadFolder = await downloadRepository(sourcePath)
+    await copyFolder(downloadFolder, installFolder, { recursive: true })
   } else {
     const fullPath = getAbsolutePath(sourcePath)
     await copyFolder(fullPath, installFolder, { recursive: true })
@@ -24,34 +25,34 @@ export async function install(sourcePath, installFolder) {
 }
 
 /**
- * Install Components Locally
+ * Download Components Repo
  * @param {string} sourcePath
- * @param {string} installPath
- * @return {Promise<void>}
+ * @return {Promise<string>}
  */
-export async function installComponents(sourcePath, installPath) {
+export async function downloadComponents(sourcePath) {
+  const timer = new Timer()
+  logChildItem(`Installing Components`)
   try {
-    const timer = new Timer()
-    logChildItem(`Installing Components`)
-    await install(sourcePath, installPath)
+    const downloadFolder = await downloadRepository(sourcePath)
     logChildItem(`Done (${timer.now()} seconds)`)
+    return downloadFolder
   } catch (error) {
     exitWithError('Components Files or Repository Access Error: ' + error.message)
   }
 }
 
 /**
- * Install Locales Locally
+ * Download Locales Repo
  * @param sourcePath
- * @param installPath
- * @return {Promise<void>}
+ * @return {Promise<string>}
  */
-export async function installLocales(sourcePath, installPath) {
+export async function downloadLocales(sourcePath) {
+  const timer = new Timer()
+  logChildItem(`Installing Locales Database`)
   try {
-    const timer = new Timer()
-    logChildItem(`Installing Locales Database`)
-    await install(sourcePath, installPath)
+    const downloadFolder = await downloadRepository(sourcePath)
     logChildItem(`Done (${timer.now()} seconds)`)
+    return downloadFolder
   } catch (error) {
     exitWithError('Locales Files or Repository Access Error: ' + error.message)
   }
@@ -64,12 +65,12 @@ export async function installLocales(sourcePath, installPath) {
  * @return {Promise<void>}
  */
 export async function installThemeFiles(sourcePath, installPath) {
+  const timer = new Timer()
+  logChildItem(`Installing Theme Files`)
   try {
-    const timer = new Timer()
-    logChildItem(`Installing Theme Files`)
     await install(sourcePath, installPath)
-    logChildItem(`Done (${timer.now()} seconds)`)
   } catch (error) {
     exitWithError('Source Theme Files or Repository Access Error: ' + error.message)
   }
+  logChildItem(`Done (${timer.now()} seconds)`)
 }

@@ -1,5 +1,5 @@
 // External Dependencies
-import { access, constants, copyFile, cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { access, constants, copyFile, cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
@@ -80,7 +80,7 @@ export async function copyFilesToFolder(files, targetFolder) {
  *
  * @typedef {Object} CopyFolderOptions
  * @property {boolean} recursive
- * @property {string[]} rename - Rename source file from/to value pair
+ * @property {string[]} rename - Rename source file from/to as a key/value pair
  * @property {JsTemplateVariables} jsTemplateVariables
  *
  * @param {string} sourceFolder
@@ -217,6 +217,9 @@ export async function getMergedFilesContent(files) {
 
 export async function getRandomTmpFolder() {
   const tmpRandomFolder = resolve(tmpdir(), 'plugin-theme-component', randomBytes(16).toString('hex'))
+  if (await exists(tmpRandomFolder)) {
+    await rm(tmpRandomFolder, { recursive: true })
+  }
   await mkdir(tmpRandomFolder, { recursive: true })
 
   return tmpRandomFolder

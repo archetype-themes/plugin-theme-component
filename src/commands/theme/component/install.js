@@ -13,8 +13,7 @@ import Session from '../../../models/static/Session.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
 import { isGitHubUrl } from '../../../utils/WebUtils.js'
-import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
-import { installLocales } from '../../../utils/ExternalComponentUtils.js'
+import { downloadComponents, downloadLocales } from '../../../utils/ExternalComponentUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -61,13 +60,17 @@ export default class Install extends BaseCommand {
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
 
-    const collection = await CollectionFactory.fromRemotePath(Session.componentsPath, Session.components)
+    // Download Components If We Have A GitHub Repo URL
+    if (isGitHubUrl(Session.componentsPath)) {
+      await downloadComponents(Session.componentsPath)
+    }
 
-    // Install Locales locally when we have a GitHub URL
+    // Init Collection
+    const collection = await CollectionFactory.fromPath(Session.componentsPath, Session.components)
+
+    // Download Locales If We Have A GitHub Repo URL
     if (isGitHubUrl(Session.localesPath)) {
-      const localesInstallPath = getLocalesInstallPath()
-      await installLocales(Session.localesPath, localesInstallPath)
-      Session.localesPath = localesInstallPath
+      Session.localesPath = await downloadLocales(Session.localesPath)
     }
 
     await Install.installOne(theme, collection)

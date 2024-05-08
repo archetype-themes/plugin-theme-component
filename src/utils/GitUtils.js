@@ -2,7 +2,7 @@
 import { execSync } from 'node:child_process'
 
 // Internal Dependencies
-import { copyFolder, getRandomTmpFolder } from './FileUtils.js'
+import { getRandomTmpFolder } from './FileUtils.js'
 
 /**
  * Clones a git repository into the specified path.
@@ -16,8 +16,8 @@ export function clone(repository, path) {
   execSync(`git clone ${repository} ${path} --quiet`)
 }
 
-export async function installRepository(url, installPath) {
+export async function downloadRepository(url) {
   const downloadPath = await getRandomTmpFolder()
   clone(url, downloadPath)
-  return copyFolder(downloadPath, installPath, { recursive: true })
+  return downloadPath
 }
