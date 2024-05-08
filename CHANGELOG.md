@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Generate: The component name did not replace the 'component-name' term in the JS file name.
+- Dev: Error when specifying a component name
 
 ### Removed
 

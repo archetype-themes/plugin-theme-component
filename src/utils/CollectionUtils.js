@@ -54,7 +54,7 @@ export function getComponentNamesToBuild(components, componentNames) {
     }
 
     // Recursive call applied to snippet names
-    const componentNameTree = this.getComponentNamesToBuild(components, component.snippetNames)
+    const componentNameTree = getComponentNamesToBuild(components, component.snippetNames)
     // Merge data with the global Set
     componentsNameTree = new Set([...componentsNameTree, ...componentNameTree])
   })
