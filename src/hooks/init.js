@@ -35,8 +35,6 @@ export default async function (opts) {
     await saveFile(join(getCLIRootFolderName(), 'user-info.json'), JSON.stringify(user, null, 2) + '\n')
     if (user.email) {
       console.log(await apiNewsletterAdd(user))
-    } else {
-      console.log('You can always subscribe later at https://dev.archetypethemes.co')
     }
     console.log('----------------------------------------------------------------------------------\n')
   }
