@@ -71,7 +71,6 @@ describe('Dev', () => {
       assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
       assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
       assert.strictEqual(Session.setupFiles, Dev.flags[SETUP_FLAG_NAME].default)
-      console.log('CRFN', getCLIRootFolderName())
       assert.strictEqual(Session.themePath, join(getCLIRootFolderName(), 'resources/explorer'))
     })
 
