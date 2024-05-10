@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.3] - 2024-05-15
 
+### Added
+
+- Generate: Boilerplate test folders and files.
+
+### Changed
+
+- Dependencies: Minor updates
 
 ## [3.3.2] - 2024-05-07
 
@@ -23,15 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - NPM Install Hook: Request User email for DevKit Newsletter Subscription #417
 
-
 ## [3.3.1] - 2024-05-07
 
 ### Fixed
+
 - Liquid syntax error with parenthese in explorer's index template file
 
 ### Removed
-- Reference to favicon component
 
+- Reference to favicon component
 
 ## [3.3.0] - 2024-05-06
 
@@ -60,7 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dev CMD: Changing the theme layout file now triggers an update of the components' main CSS file reference
 - Dev CMD: Changing the theme index template file with setupFiles enabled now updates the component list
-- Dev CMD: When using setup files, the Index Template is adjusted in the explorer folder instead of in the source folder.
+- Dev CMD: When using setup files, the Index Template is adjusted in the explorer folder instead of in the source
+  folder.
 - Dev CMD: Added missing template routes URL from the explorer setup files index
 - CI/CD: Git automated version tag on version bump is repaired
 
