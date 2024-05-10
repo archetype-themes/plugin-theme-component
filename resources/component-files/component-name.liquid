@@ -1,1 +1,15 @@
+{% comment %}
+  ${componentName} ${componentType}
+
+  Accepts:
+  - param1 {number} - Number to ouptput
+
+  Usage:
+  {%- render '${componentName}', param1: 0 -%}
+{% endcomment %}
+
+{%- liquid
+  assign param1 = param1 | default: section.settings.param1 | default: 1
+-%}
+
 <h1>${componentName} ${componentType}</h1>
