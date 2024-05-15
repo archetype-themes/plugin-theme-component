@@ -1,1 +1,1 @@
-// This is the javascript entrypoint for the ${componentName} ${componentType}.
+// JavaScript entrypoint for the ${componentName} ${componentType}.
