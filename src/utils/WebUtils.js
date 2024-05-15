@@ -41,6 +41,35 @@ export async function downloadFile(remoteFile, targetFolder) {
 }
 
 /**
+ * Get URL
+ * @param {string} url
+ * @return {Promise<string>}
+ */
+export async function getUrl(url) {
+  try {
+    return new Promise((resolve, reject) => {
+      https
+        .get(url, (res) => {
+          let data = ''
+
+          res.on('data', (chunk) => {
+            data += chunk
+          })
+
+          res.on('end', () => {
+            resolve(data)
+          })
+        })
+        .on('error', (err) => {
+          reject(err)
+        })
+    })
+  } catch (error) {
+    throw new Error(`Unable to get URL: ${url}\n Error Received: ${error}`)
+  }
+}
+
+/**
  * Check if a string is a URL
  * @param {string} possibleUrl
  */
