@@ -1,5 +1,6 @@
 // External Dependencies
 import { execSync } from 'node:child_process'
+import { basename } from 'node:path'
 
 // Internal Dependencies
 import { getRandomTmpFolder } from './FileUtils.js'
@@ -20,6 +21,15 @@ export async function downloadRepository(url) {
   const downloadPath = await getRandomTmpFolder()
   clone(url, downloadPath)
   return downloadPath
+}
+
+/**
+ * Extract Repository Name From A GitHub URL
+ * @param {string} repoUrl
+ * @return {string}
+ */
+export function getRepoNameFromGitHubUrl(repoUrl) {
+  return basename(repoUrl, '.git')
 }
 
 /**

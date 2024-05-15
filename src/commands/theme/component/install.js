@@ -1,4 +1,5 @@
 // External Dependencies
+import { basename } from 'node:path'
 import { Args, Flags, ux } from '@oclif/core'
 
 // Internal Dependencies
@@ -12,7 +13,7 @@ import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
-import { isGitHubUrl, getRepoNameFromUrl } from '../../../utils/GitUtils.js'
+import { isGitHubUrl, getRepoNameFromGitHubUrl } from '../../../utils/GitUtils.js'
 import { downloadComponents, downloadLocales } from '../../../utils/ExternalComponentUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
@@ -61,12 +62,16 @@ export default class Install extends BaseCommand {
     const theme = ThemeFactory.fromThemeInstallCommand()
 
     // Download Components If We Have A GitHub Repo URL
+    let collectionName
     if (isGitHubUrl(Session.componentsPath)) {
-      await downloadComponents(Session.componentsPath)
+      collectionName = getRepoNameFromGitHubUrl(Session.componentsPath)
+      Session.componentsPath = await downloadComponents(Session.componentsPath)
+    } else {
+      collectionName = basename(Session.componentsPath)
     }
 
     // Init Collection
-    const collection = await CollectionFactory.fromPath(Session.componentsPath, Session.components)
+    const collection = await CollectionFactory.fromPath(collectionName, Session.componentsPath, Session.components)
 
     // Download Locales If We Have A GitHub Repo URL
     if (isGitHubUrl(Session.localesPath)) {
