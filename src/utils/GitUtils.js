@@ -21,3 +21,12 @@ export async function downloadRepository(url) {
   clone(url, downloadPath)
   return downloadPath
 }
+
+/**
+ * Test a string to see if it contains a GitHub URL
+ * @param {string} possibleRepoUrl
+ * @return {boolean}
+ */
+export function isGitHubUrl(possibleRepoUrl) {
+  return /github\.com/.test(possibleRepoUrl)
+}

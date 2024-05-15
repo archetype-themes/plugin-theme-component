@@ -76,7 +76,3 @@ export async function getUrl(url) {
 export function isUrl(possibleUrl) {
   return URL_REGEX.test(possibleUrl)
 }
-
-export function isGitHubUrl(possibleRepoUrl) {
-  return /github\.com/.test(possibleRepoUrl)
-}

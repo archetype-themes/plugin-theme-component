@@ -1,7 +1,6 @@
 // Internal Dependencies
 import { copyFolder, getAbsolutePath, getFolderFilesRecursively } from './FileUtils.js'
-import { downloadRepository } from './GitUtils.js'
-import { isGitHubUrl } from './WebUtils.js'
+import { downloadRepository, isGitHubUrl } from './GitUtils.js'
 import Timer from '../models/Timer.js'
 import { logChildItem } from './LoggerUtils.js'
 import { exitWithError } from './NodeUtils.js'

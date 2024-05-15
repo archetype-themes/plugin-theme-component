@@ -1,4 +1,4 @@
-import { isGitHubUrl } from './WebUtils.js'
+import { isGitHubUrl } from './GitUtils.js'
 import { getAbsolutePath } from './FileUtils.js'
 
 /**

@@ -35,7 +35,7 @@ import {
   handleWatcherEvent,
   watch
 } from '../../../utils/Watcher.js'
-import { isGitHubUrl } from '../../../utils/WebUtils.js'
+import { isGitHubUrl } from '../../../utils/GitUtils.js'
 import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } from '../../../utils/SetupFilesUtils.js'
 import { getCurrentTime } from '../../../utils/DateUtils.js'
 import { rm } from 'node:fs/promises'

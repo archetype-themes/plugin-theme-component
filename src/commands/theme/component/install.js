@@ -12,7 +12,7 @@ import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
-import { isGitHubUrl } from '../../../utils/WebUtils.js'
+import { isGitHubUrl, getRepoNameFromUrl } from '../../../utils/GitUtils.js'
 import { downloadComponents, downloadLocales } from '../../../utils/ExternalComponentUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
