@@ -1,5 +1,11 @@
+// External Dependencies
+import { rm } from 'node:fs/promises'
+import { resolve } from 'node:path'
+
+// Internal Dependencies
+import { exists, getAbsolutePath } from './FileUtils.js'
 import { isGitHubUrl } from './GitUtils.js'
-import { getAbsolutePath } from './FileUtils.js'
+import { CONFIG_FILE_NAME } from '../config/CLI.js'
 
 /**
  * Get a Value From flags or tomlConfig
@@ -49,4 +55,11 @@ export async function getPathFromFlagOrTomlValue(pathName, flags, metadata, toml
   const flagValue = getValueFromFlagOrToml(pathName, flags, metadata, tomlConfig)
 
   return isGitHubUrl(flagValue) ? flagValue : getAbsolutePath(flagValue)
+}
+
+export async function deleteTomlConfigFile(path) {
+  const shopifyTomlConfigFile = resolve(path, CONFIG_FILE_NAME)
+  if (await exists(shopifyTomlConfigFile)) {
+    await rm(shopifyTomlConfigFile)
+  }
 }
