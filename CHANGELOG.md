@@ -9,11 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Install path for external components is now systems tmp folders instead of .collections or .locales folders
-- GitUtils: git clone now validates that we have auth for private repos and automatically adds basic https auth when
-  needed from env vars
+- Install path for external components is now systems temp folders instead of .collections or .locales folders
+- GitUtils: git clone now validates that we have auth information for private repos and automatically adds basic HTTPS
+  auth when needed from env vars
 - GitUtils: Now handles git operations for CLI and tests instead of having two separate processes
 
+### Fixed
+
+- Tests: Tests were failing because of the user email prompt
+- Tests: Tests were failing because of GitHub authentication issues
 
 ## [3.3.3] - 2024-05-15
 

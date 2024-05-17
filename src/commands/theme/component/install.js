@@ -14,7 +14,7 @@ import Session from '../../../models/static/Session.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
 import { isGitHubUrl, getRepoNameFromGitHubUrl } from '../../../utils/GitUtils.js'
-import { setupRepo } from '../../../utils/ExternalComponentUtils.js'
+import { install } from '../../../utils/ExternalComponentUtils.js'
 import { logChildItem } from '../../../utils/LoggerUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
@@ -68,7 +68,7 @@ export default class Install extends BaseCommand {
       const timer = new Timer()
       logChildItem(`Installing Components`)
       collectionName = getRepoNameFromGitHubUrl(Session.componentsPath)
-      Session.componentsPath = await setupRepo(Session.componentsPath)
+      Session.componentsPath = await install(Session.componentsPath)
       logChildItem(`Done (${timer.now()} seconds)`)
     } else {
       collectionName = basename(Session.componentsPath)
@@ -81,7 +81,7 @@ export default class Install extends BaseCommand {
     if (isGitHubUrl(Session.localesPath)) {
       const timer = new Timer()
       logChildItem(`Installing Locales Database`)
-      Session.localesPath = await setupRepo(Session.localesPath)
+      Session.localesPath = await install(Session.localesPath)
       logChildItem(`Done (${timer.now()} seconds)`)
     }
 

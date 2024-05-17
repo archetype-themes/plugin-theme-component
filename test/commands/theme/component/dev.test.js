@@ -1,6 +1,6 @@
 /// External Dependencies
 import assert from 'node:assert'
-import { join, resolve } from 'node:path'
+import { basename, join, resolve } from 'node:path'
 import { chdir, cwd, env } from 'node:process'
 import { expect, test } from '@oclif/test'
 import { config } from 'dotenv'
@@ -10,9 +10,10 @@ import { after, before, describe, it } from 'mocha'
 import Dev, { SETUP_FLAG_NAME, THEME_FLAG_NAME, WATCH_FLAG_NAME } from '../../../../src/commands/theme/component/dev.js'
 import { LOCALES_FLAG_NAME } from '../../../../src/config/baseCommand.js'
 import Session from '../../../../src/models/static/Session.js'
-import { setupRepo } from '../../../../src/utils/ExternalComponentUtils.js'
-import { exists, saveFile } from '../../../../src/utils/FileUtils.js'
+import { install } from '../../../../src/utils/ExternalComponentUtils.js'
+import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/FileUtils.js'
 import { getCLIRootFolderName } from '../../../../src/utils/NodeUtils.js'
+import { mkdir } from 'node:fs/promises'
 
 // Load .env test file
 config({ path: ['.env.test.local', '.env.test'] })
@@ -21,6 +22,7 @@ const workingDirectory = cwd()
 
 describe('Dev Command File', async function () {
   before(async function () {
+    this.timeout(30000)
     const userDataFile = resolve(workingDirectory, 'user-info.json')
     if (!(await exists(userDataFile))) {
       await saveFile(resolve(workingDirectory, 'user-info.json'), '')
@@ -28,14 +30,25 @@ describe('Dev Command File', async function () {
     const componentsRepoUrl = env.COMPONENTS_REPO
       ? env.COMPONENTS_REPO
       : 'https://github.com/archetype-themes/reference-components.git'
-    const componentsInstallPath = await setupRepo(componentsRepoUrl)
+
+    const collectionName = basename(componentsRepoUrl, '.git')
+    const componentsInstallPath = resolve(await getRandomTmpFolder(), collectionName)
+    await mkdir(componentsInstallPath, { recursive: true })
+    await install(componentsRepoUrl, componentsInstallPath)
+
     chdir(componentsInstallPath)
   })
 
+  const devCommand = ['theme:component:dev', '--no-watch']
+
+  if (env.THEME_REPO) {
+    devCommand.push('--theme-path', env.THEME_REPO)
+  }
+
   test
-    .timeout(10000)
+    .timeout(30000)
     .stdout({ print: true })
-    .command(['theme:component:dev', '--no-watch'])
+    .command(devCommand)
     .it('Test That The Dev Command Runs Successfully', async function (ctx) {
       expect(ctx.stdout).to.contain('Install Complete')
     })

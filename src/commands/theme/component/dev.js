@@ -20,7 +20,7 @@ import CollectionFactory from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
-import { installThemeFiles, setupRepo } from '../../../utils/ExternalComponentUtils.js'
+import { install } from '../../../utils/ExternalComponentUtils.js'
 import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
 import {
   getValuesFromArgvOrToml,
@@ -243,14 +243,14 @@ export default class Dev extends BaseCommand {
     // Install Theme Files
     const timer = new Timer()
     logChildItem(`Installing Theme Files From ${basename(themePath, '.git')}`)
-    await installThemeFiles(themePath, devFolder)
+    await install(themePath, devFolder)
     logChildItem(`Done (${timer.now()} seconds)`)
 
     // Download Locales
     if (isGitHubUrl(Session.localesPath)) {
       const timer = new Timer()
       logChildItem(`Installing Locales Database`)
-      Session.localesPath = await setupRepo(Session.localesPath)
+      Session.localesPath = await install(Session.localesPath)
       logChildItem(`Done (${timer.now()} seconds)`)
     }
   }
