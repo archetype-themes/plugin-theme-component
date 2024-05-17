@@ -4,7 +4,6 @@ import { env } from 'node:process'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
-import { getRandomTmpFolder } from './FileUtils.js'
 import { execAsync } from './NodeUtils.js'
 import { addAuthToUrl, hasAuthInUrl } from './WebUtils.js'
 
@@ -34,18 +33,6 @@ export async function clone(repository, path) {
   } catch (e) {
     throw new Error(`Git Remote Repository Clone Error: ${e.message}`)
   }
-}
-
-/**
- * Download Repository
- * @param url
- * @return {Promise<*>}
- */
-export async function downloadRepository(url) {
-  const downloadPath = await getRandomTmpFolder()
-  await clone(url, downloadPath)
-
-  return downloadPath
 }
 
 /**
