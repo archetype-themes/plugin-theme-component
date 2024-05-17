@@ -27,7 +27,7 @@ describe('Install Command File', function () {
 
   test
     .timeout(10000)
-    .stdout()
+    .stdout({ print: true })
     .command(['theme:component:install'])
     .it('Test That The Install Command Runs Successfully', function (ctx) {
       expect(ctx.stdout).to.contain('Install Complete')

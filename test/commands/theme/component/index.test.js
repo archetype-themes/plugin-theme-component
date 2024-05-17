@@ -18,13 +18,13 @@ describe('component command', function () {
     }
   })
   test
-    .stdout()
+    .stdout({ print: true })
     .command(['theme:component'])
     .it('runs: component', function (ctx) {
       expect(ctx.stdout).to.contain('Welcome To The Theme Component Plugin, by Archetype Themes.')
     })
   test
-    .stdout()
+    .stdout({ print: true })
     .command(['theme:component', '-v'])
     .it('runs: component -v', function (ctx) {
       expect(ctx.stdout).to.contain('Shopify CLI Version:')

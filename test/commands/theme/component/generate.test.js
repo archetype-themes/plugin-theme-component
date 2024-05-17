@@ -29,7 +29,7 @@ describe('Generate Command File', async function () {
 
   test
     .timeout(10000)
-    .stdout()
+    .stdout({ print: true })
     .command(['theme:component:generate', 'section-test'])
     .it('Test That The Generate Command Runs Successfully', async function (ctx) {
       expect(ctx.stdout).to.contain('Your new component is available at')
