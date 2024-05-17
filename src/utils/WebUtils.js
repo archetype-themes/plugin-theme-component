@@ -1,6 +1,9 @@
-import https from 'node:https'
+// External Dependencies
 import { join, basename } from 'node:path'
-import FileUtils from './FileUtils.js'
+import { ux } from '@oclif/core'
+
+// Internal Dependencies
+import { saveFile } from './FileUtils.js'
 
 const URL_REGEX = /^(http:\/\/|https:\/\/|\/\/)/
 
@@ -23,49 +26,51 @@ export async function downloadFiles(remoteFiles, targetFolder) {
  * @return {Promise<void>}
  */
 export async function downloadFile(remoteFile, targetFolder) {
-  return new Promise((resolve, reject) => {
-    https
-      .get(remoteFile, (response) => {
-        let data = ''
-        response.on('data', (chunk) => {
-          data += chunk
-        })
-        response.on('end', () => {
-          resolve(FileUtils.saveFile(join(targetFolder, basename(remoteFile)), data))
-        })
-      })
-      .on('error', (error) => {
-        reject(error)
-      })
-  })
+  const response = await fetch(remoteFile)
+
+  if (!response.ok) {
+    throw new Error(
+      `Unable to download file "${remoteFile}"\n Received HTTP Error Code:${response.status} - ${response.statusText}`
+    )
+  }
+
+  const data = await response.text()
+  await saveFile(join(targetFolder, basename(remoteFile)), data)
 }
 
 /**
- * Get URL
- * @param {string} url
- * @return {Promise<string>}
+ * Add HTTP Basic Auth to URL
+ * @param {string} urlString
+ * @param {string} username
+ * @param {string} password
+ * @return {string}
  */
-export async function getUrl(url) {
+export function addAuthToUrl(urlString, username, password) {
   try {
-    return new Promise((resolve, reject) => {
-      https
-        .get(url, (res) => {
-          let data = ''
+    const parsedUrl = new URL(urlString)
 
-          res.on('data', (chunk) => {
-            data += chunk
-          })
+    // Ajouter les informations d'authentification à l'URL
+    parsedUrl.username = username
+    parsedUrl.password = password
 
-          res.on('end', () => {
-            resolve(data)
-          })
-        })
-        .on('error', (err) => {
-          reject(err)
-        })
-    })
+    return parsedUrl.toString()
   } catch (error) {
-    throw new Error(`Unable to get URL: ${url}\n Error Received: ${error}`)
+    throw new Error(`WebUtils:addAuthToUrl => Unable to parse URL \n\tURL: "${urlString}"\n\tError: ${error}`)
+  }
+}
+
+/**
+ * Test to see if the URL provided has http basic auth credentials in it
+ * @param {string} url
+ * @return {boolean}
+ */
+export function hasAuthInUrl(url) {
+  try {
+    const parsedUrl = new URL(url)
+    return Boolean(parsedUrl.username && parsedUrl.password)
+  } catch (error) {
+    ux.debug(`Error checking the following URL for HTTP Basic Auth Parameters: ${url}\n ${error}`)
+    return false
   }
 }
 
