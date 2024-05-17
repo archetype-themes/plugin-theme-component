@@ -1,13 +1,11 @@
 // External Dependencies
 import { exec } from 'node:child_process'
-import { cwd, env, exit } from 'node:process'
+import { cwd, env } from 'node:process'
 import { join, sep } from 'node:path'
 import { promisify } from 'node:util'
-import { ux } from '@oclif/core'
 
 // Internal Dependencies
-import FileUtils from './FileUtils.js'
-import { isDebugEnabled } from './LoggerUtils.js'
+import { getJsonFileContents } from './FileUtils.js'
 import InternalError from '../errors/InternalError.js'
 
 /**
@@ -18,26 +16,6 @@ import InternalError from '../errors/InternalError.js'
  * @return {Promise<{ stdout: string, stderr: string }>}
  */
 export const execAsync = promisify(exec)
-
-/**
- * Exit with Error
- * @param {Error|string} error
- */
-export function exitWithError(error) {
-  if (typeof error === 'string' || error instanceof String || isDebugEnabled()) {
-    ux.error(error)
-  } else {
-    let errorMessage = ''
-    if (error.name && error.name.toLowerCase() !== 'error') {
-      errorMessage = `${error.name}: `
-    }
-    if (error.message) {
-      errorMessage += error.message
-    }
-    ux.error(errorMessage)
-  }
-  exit(1)
-}
 
 export function getCurrentWorkingDirectoryName() {
   const currentWorkingDirectory = cwd()
@@ -90,7 +68,7 @@ export async function getPackageManifest(path) {
     packageJsonFile = env.npm_package_json
   }
 
-  return await FileUtils.getJsonFileContents(packageJsonFile)
+  return await getJsonFileContents(packageJsonFile)
 }
 
 /**

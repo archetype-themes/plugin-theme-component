@@ -25,17 +25,6 @@ export function convertToComponentRelativePath(absolutePath) {
 }
 
 /**
- * Copy Files from an associative array
- * @param {Object.<string, string>} files
- * @return {Promise<Awaited<void>[]>}
- */
-export async function copy(files) {
-  const copyPromises = Object.entries(files).map(([sourceFile, destination]) => copyFile(sourceFile, destination))
-
-  return Promise.all(copyPromises)
-}
-
-/**
  * Copy File and Create Path when necessary
  * @param {string} file
  * @param {string} targetFolder
@@ -202,20 +191,6 @@ export async function getJsonFileContents(file) {
 }
 
 /**
- * Merge Files contents and return it
- * @param {string[]} files
- * @returns {Promise<string>}
- */
-export async function getMergedFilesContent(files) {
-  let content = ''
-
-  for (const file of files) {
-    content += `${await getFileContents(file)}\n`
-  }
-  return content
-}
-
-/**
  * Get a random temporary folder
  * @return {Promise<string>}
  */
@@ -283,35 +258,6 @@ export async function processJsTemplateStringFile(sourceFile, targetFile, jsTemp
 }
 
 /**
- * Search for a file in a specified path.
- * @param {string} path
- * @param {string} filename
- * @param {boolean} [recursive]
- * @returns {Promise<string[]>}
- */
-export async function searchFile(path, filename, recursive = false) {
-  let files = []
-
-  try {
-    const entries = await readdir(path, { withFileTypes: true })
-
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        if (recursive && !EXCLUDED_FOLDERS.includes(entry.name)) {
-          files = files.concat(await searchFile(join(path, entry.name), filename, recursive))
-        }
-      } else if (entry.name === filename) {
-        files.push(join(path, entry.name))
-      }
-    }
-  } catch (err) {
-    console.error(`Error reading directory ${path}:`, err)
-  }
-
-  return files
-}
-
-/**
  * Save File
  * @param {string} file
  * @param {string} fileContents
@@ -346,23 +292,4 @@ export async function saveFile(file, fileContents) {
  */
 export function getAbsolutePath(path) {
   return path.startsWith(sep) ? path : join(cwd(), path)
-}
-
-export default {
-  convertToComponentRelativePath,
-  copy,
-  copyFilesToFolder,
-  copyFolder,
-  exists,
-  getAbsolutePath,
-  getFileContents,
-  getFolderFilesRecursively,
-  getFolders,
-  getJsonFileContents,
-  getMergedFilesContent,
-  isReadable,
-  isWritable,
-  processJsTemplateStringFile,
-  saveFile,
-  searchFile
 }

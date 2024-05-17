@@ -1,5 +1,5 @@
 import * as toml from '@iarna/toml'
-import FileUtils from './FileUtils.js'
+import { getFileContents, isReadable } from './FileUtils.js'
 import { CONFIG_FILE_NAME } from '../config/CLI.js'
 
 /**
@@ -16,15 +16,13 @@ import { CONFIG_FILE_NAME } from '../config/CLI.js'
  * @return {Promise<ComponentTomlConfig|null>}
  */
 export async function getTomlConfig() {
-  if (!(await FileUtils.isReadable(CONFIG_FILE_NAME))) {
+  if (!(await isReadable(CONFIG_FILE_NAME))) {
     return null
   }
 
-  const fileContents = await FileUtils.getFileContents(CONFIG_FILE_NAME)
+  const fileContents = await getFileContents(CONFIG_FILE_NAME)
   const normalizedInput = fileContents.replace(/\r\n$/g, '\n')
   const tomlConfig = toml.parse(normalizedInput)
 
   return tomlConfig.component || null
 }
-
-export default { getTomlConfig }
