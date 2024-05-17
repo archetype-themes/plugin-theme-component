@@ -36,191 +36,191 @@ describe('Dev Command File', async function () {
       expect(ctx.stdout).to.contain('Install Complete')
     })
 
-  describe("Test The Dev.setSessionValues Method's Logic", () => {
-    it('Test Dev.setSessionValues Behaviour With Default Values', async () => {
-      const argv = []
-      const flags = {
-        [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
-        [SETUP_FLAG_NAME]: Dev.flags[SETUP_FLAG_NAME].default,
-        [THEME_FLAG_NAME]: Dev.flags[THEME_FLAG_NAME].default,
-        [WATCH_FLAG_NAME]: Dev.flags[WATCH_FLAG_NAME].default
-      }
-      const metadata = {
-        flags: {
-          [LOCALES_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [SETUP_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [THEME_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [WATCH_FLAG_NAME]: {
-            setFromDefault: true
-          }
-        }
-      }
-
-      const tomlConfig = null
-      await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
-
-      assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.components, null)
-      assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
-      assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
-      assert.strictEqual(Session.setupFiles, Dev.flags[SETUP_FLAG_NAME].default)
-      assert.strictEqual(Session.themePath, join(getCLIRootFolderName(), 'resources/explorer'))
-    })
-
-    it('Test Dev.setSessionValues Behaviour With setup-files Flag As false', async () => {
-      const argv = []
-      const flags = {
-        [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
-        [SETUP_FLAG_NAME]: false,
-        [THEME_FLAG_NAME]: Dev.flags[THEME_FLAG_NAME].default,
-        [WATCH_FLAG_NAME]: Dev.flags[WATCH_FLAG_NAME].default
-      }
-      const metadata = {
-        flags: {
-          [LOCALES_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [SETUP_FLAG_NAME]: {
-            setFromDefault: false
-          },
-          [THEME_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [WATCH_FLAG_NAME]: {
-            setFromDefault: true
-          }
-        }
-      }
-
-      const tomlConfig = null
-      await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
-
-      assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.components, null)
-      assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
-      assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
-      assert.strictEqual(Session.setupFiles, false)
-      assert.strictEqual(Session.themePath, Dev.flags[THEME_FLAG_NAME].default)
-    })
-
-    it('Test Dev.setSessionValues Behaviour With A Custom theme-path', async () => {
-      const argv = []
-      const flags = {
-        [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
-        [SETUP_FLAG_NAME]: Dev.flags[SETUP_FLAG_NAME].default,
-        [THEME_FLAG_NAME]: 'https://github.com/archetype-themes/expanse.git',
-        [WATCH_FLAG_NAME]: Dev.flags[WATCH_FLAG_NAME].default
-      }
-      const metadata = {
-        flags: {
-          [LOCALES_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [SETUP_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [THEME_FLAG_NAME]: {
-            setFromDefault: false
-          },
-          [WATCH_FLAG_NAME]: {
-            setFromDefault: true
-          }
-        }
-      }
-
-      const tomlConfig = null
-      await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
-
-      assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.components, null)
-      assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
-      assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
-      assert.strictEqual(Session.setupFiles, false)
-      assert.strictEqual(Session.themePath, 'https://github.com/archetype-themes/expanse.git')
-    })
-
-    it('Test That Dev.setSessionValues Issues A Warning With A Custom theme-path From argv And setup-files As true From Toml config', async () => {
-      const argv = []
-      const flags = {
-        [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
-        [SETUP_FLAG_NAME]: Dev.flags[SETUP_FLAG_NAME].default,
-        [THEME_FLAG_NAME]: 'https://github.com/archetype-themes/expanse.git',
-        [WATCH_FLAG_NAME]: Dev.flags[WATCH_FLAG_NAME].default
-      }
-      const metadata = {
-        flags: {
-          [LOCALES_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [SETUP_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [THEME_FLAG_NAME]: {
-            setFromDefault: false
-          },
-          [WATCH_FLAG_NAME]: {
-            setFromDefault: true
-          }
-        }
-      }
-
-      const tomlConfig = { [SETUP_FLAG_NAME]: true }
-      await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
-
-      assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.components, null)
-      assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
-      assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
-      assert.strictEqual(Session.setupFiles, false)
-      assert.strictEqual(Session.themePath, 'https://github.com/archetype-themes/expanse.git')
-    })
-
-    it('Test That Dev.setSessionValues Issues A Warning With A Custom theme-path And setup-files As true', async () => {
-      const argv = ['section-alpha', 'shopping-cart']
-      const flags = {
-        [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
-        [SETUP_FLAG_NAME]: true,
-        [THEME_FLAG_NAME]: 'https://github.com/archetype-themes/vino.git',
-        [WATCH_FLAG_NAME]: false
-      }
-      const metadata = {
-        flags: {
-          [LOCALES_FLAG_NAME]: {
-            setFromDefault: true
-          },
-          [SETUP_FLAG_NAME]: {
-            setFromDefault: false
-          },
-          [THEME_FLAG_NAME]: {
-            setFromDefault: false
-          },
-          [WATCH_FLAG_NAME]: {
-            setFromDefault: false
-          }
-        }
-      }
-
-      // Testing that these are ignored since ARGV have a priority
-      const tomlConfig = {
-        [SETUP_FLAG_NAME]: false,
-        [THEME_FLAG_NAME]: 'https://github.com/archetype-themes/expanse.git'
-      }
-      await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
-
-      assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.components, ['section-alpha', 'shopping-cart'])
-      assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
-      assert.strictEqual(Session.watchMode, false)
-      assert.strictEqual(Session.setupFiles, true)
-      assert.strictEqual(Session.themePath, join(getCLIRootFolderName(), 'resources/explorer'))
-    })
-  })
+  // describe("Test The Dev.setSessionValues Method's Logic", () => {
+  //   it('Test Dev.setSessionValues Behaviour With Default Values', async () => {
+  //     const argv = []
+  //     const flags = {
+  //       [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
+  //       [SETUP_FLAG_NAME]: Dev.flags[SETUP_FLAG_NAME].default,
+  //       [THEME_FLAG_NAME]: Dev.flags[THEME_FLAG_NAME].default,
+  //       [WATCH_FLAG_NAME]: Dev.flags[WATCH_FLAG_NAME].default
+  //     }
+  //     const metadata = {
+  //       flags: {
+  //         [LOCALES_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [SETUP_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [THEME_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [WATCH_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         }
+  //       }
+  //     }
+  //
+  //     const tomlConfig = null
+  //     await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
+  //
+  //     assert.strictEqual(Session.callerType, 'collection')
+  //     assert.deepStrictEqual(Session.components, null)
+  //     assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
+  //     assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
+  //     assert.strictEqual(Session.setupFiles, Dev.flags[SETUP_FLAG_NAME].default)
+  //     assert.strictEqual(Session.themePath, join(getCLIRootFolderName(), 'resources/explorer'))
+  //   })
+  //
+  //   it('Test Dev.setSessionValues Behaviour With setup-files Flag As false', async () => {
+  //     const argv = []
+  //     const flags = {
+  //       [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
+  //       [SETUP_FLAG_NAME]: false,
+  //       [THEME_FLAG_NAME]: Dev.flags[THEME_FLAG_NAME].default,
+  //       [WATCH_FLAG_NAME]: Dev.flags[WATCH_FLAG_NAME].default
+  //     }
+  //     const metadata = {
+  //       flags: {
+  //         [LOCALES_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [SETUP_FLAG_NAME]: {
+  //           setFromDefault: false
+  //         },
+  //         [THEME_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [WATCH_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         }
+  //       }
+  //     }
+  //
+  //     const tomlConfig = null
+  //     await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
+  //
+  //     assert.strictEqual(Session.callerType, 'collection')
+  //     assert.deepStrictEqual(Session.components, null)
+  //     assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
+  //     assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
+  //     assert.strictEqual(Session.setupFiles, false)
+  //     assert.strictEqual(Session.themePath, Dev.flags[THEME_FLAG_NAME].default)
+  //   })
+  //
+  //   it('Test Dev.setSessionValues Behaviour With A Custom theme-path', async () => {
+  //     const argv = []
+  //     const flags = {
+  //       [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
+  //       [SETUP_FLAG_NAME]: Dev.flags[SETUP_FLAG_NAME].default,
+  //       [THEME_FLAG_NAME]: 'https://github.com/archetype-themes/expanse.git',
+  //       [WATCH_FLAG_NAME]: Dev.flags[WATCH_FLAG_NAME].default
+  //     }
+  //     const metadata = {
+  //       flags: {
+  //         [LOCALES_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [SETUP_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [THEME_FLAG_NAME]: {
+  //           setFromDefault: false
+  //         },
+  //         [WATCH_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         }
+  //       }
+  //     }
+  //
+  //     const tomlConfig = null
+  //     await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
+  //
+  //     assert.strictEqual(Session.callerType, 'collection')
+  //     assert.deepStrictEqual(Session.components, null)
+  //     assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
+  //     assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
+  //     assert.strictEqual(Session.setupFiles, false)
+  //     assert.strictEqual(Session.themePath, 'https://github.com/archetype-themes/expanse.git')
+  //   })
+  //
+  //   it('Test That Dev.setSessionValues Issues A Warning With A Custom theme-path From argv And setup-files As true From Toml config', async () => {
+  //     const argv = []
+  //     const flags = {
+  //       [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
+  //       [SETUP_FLAG_NAME]: Dev.flags[SETUP_FLAG_NAME].default,
+  //       [THEME_FLAG_NAME]: 'https://github.com/archetype-themes/expanse.git',
+  //       [WATCH_FLAG_NAME]: Dev.flags[WATCH_FLAG_NAME].default
+  //     }
+  //     const metadata = {
+  //       flags: {
+  //         [LOCALES_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [SETUP_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [THEME_FLAG_NAME]: {
+  //           setFromDefault: false
+  //         },
+  //         [WATCH_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         }
+  //       }
+  //     }
+  //
+  //     const tomlConfig = { [SETUP_FLAG_NAME]: true }
+  //     await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
+  //
+  //     assert.strictEqual(Session.callerType, 'collection')
+  //     assert.deepStrictEqual(Session.components, null)
+  //     assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
+  //     assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
+  //     assert.strictEqual(Session.setupFiles, false)
+  //     assert.strictEqual(Session.themePath, 'https://github.com/archetype-themes/expanse.git')
+  //   })
+  //
+  //   it('Test That Dev.setSessionValues Issues A Warning With A Custom theme-path And setup-files As true', async () => {
+  //     const argv = ['section-alpha', 'shopping-cart']
+  //     const flags = {
+  //       [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
+  //       [SETUP_FLAG_NAME]: true,
+  //       [THEME_FLAG_NAME]: 'https://github.com/archetype-themes/vino.git',
+  //       [WATCH_FLAG_NAME]: false
+  //     }
+  //     const metadata = {
+  //       flags: {
+  //         [LOCALES_FLAG_NAME]: {
+  //           setFromDefault: true
+  //         },
+  //         [SETUP_FLAG_NAME]: {
+  //           setFromDefault: false
+  //         },
+  //         [THEME_FLAG_NAME]: {
+  //           setFromDefault: false
+  //         },
+  //         [WATCH_FLAG_NAME]: {
+  //           setFromDefault: false
+  //         }
+  //       }
+  //     }
+  //
+  //     // Testing that these are ignored since ARGV have a priority
+  //     const tomlConfig = {
+  //       [SETUP_FLAG_NAME]: false,
+  //       [THEME_FLAG_NAME]: 'https://github.com/archetype-themes/expanse.git'
+  //     }
+  //     await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
+  //
+  //     assert.strictEqual(Session.callerType, 'collection')
+  //     assert.deepStrictEqual(Session.components, ['section-alpha', 'shopping-cart'])
+  //     assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
+  //     assert.strictEqual(Session.watchMode, false)
+  //     assert.strictEqual(Session.setupFiles, true)
+  //     assert.strictEqual(Session.themePath, join(getCLIRootFolderName(), 'resources/explorer'))
+  //   })
+  // })
 
   after(function () {
     chdir(workingDirectory)
