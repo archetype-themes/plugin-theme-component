@@ -95,14 +95,14 @@ export default class Install extends BaseCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async installOne(theme, collection) {
-    ux.info(`Building & Installing the ${collection.name} Collection.`)
+    ux.info(`Building & Installing the ${collection.name}.`)
     const startTime = new Timer()
 
     // Build using the Build Command
     await Build.buildCollection(collection)
     await Build.deployCollection(collection)
     // Install and time it!
-    ux.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
+    ux.info(`Installing ${collection.name} for ${theme.name}.`)
     const installStartTime = new Timer()
     await CollectionInstaller.install(theme, collection)
     ux.info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)
