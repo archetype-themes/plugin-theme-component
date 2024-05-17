@@ -1,11 +1,22 @@
 import { expect, test } from '@oclif/test'
-import { describe } from 'mocha'
+import { before, describe } from 'mocha'
 import { config } from 'dotenv'
+import { resolve } from 'node:path'
+import { exists, saveFile } from '../../../../src/utils/FileUtils.js'
+import { cwd } from 'node:process'
 
 // Load .env test file
 config({ path: ['.env.test.local', '.env.test'] })
 
+const workingDirectory = cwd()
+
 describe('component command', function () {
+  before(async function () {
+    const userDataFile = resolve(workingDirectory, 'user-info.json')
+    if (!(await exists(userDataFile))) {
+      await saveFile(resolve(workingDirectory, 'user-info.json'), '')
+    }
+  })
   test
     .stdout()
     .command(['theme:component'])
