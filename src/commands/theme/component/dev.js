@@ -20,7 +20,7 @@ import CollectionFactory from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
-import { downloadLocales, installThemeFiles } from '../../../utils/ExternalComponentUtils.js'
+import { installThemeFiles, setupRepo } from '../../../utils/ExternalComponentUtils.js'
 import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
 import {
   getValuesFromArgvOrToml,
@@ -41,6 +41,7 @@ import { getCurrentTime } from '../../../utils/DateUtils.js'
 import { rm } from 'node:fs/promises'
 import { exists, saveFile } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
+import Timer from '../../../models/Timer.js'
 
 /** @type {string} **/
 export const THEME_FLAG_NAME = 'theme-path'
@@ -197,13 +198,7 @@ export default class Dev extends BaseCommand {
         await rm(devFolder, { recursive: true })
       }
 
-      // Install Theme Files
-      await installThemeFiles(themePath, devFolder)
-
-      // Download Locales
-      if (isGitHubUrl(Session.localesPath)) {
-        Session.localesPath = await downloadLocales(Session.localesPath)
-      }
+      await this.installDependencies(themePath, devFolder)
     }
 
     if (event && eventPath) {
@@ -236,6 +231,28 @@ export default class Dev extends BaseCommand {
     logChildItem(`Install Complete at ${getCurrentTime()}`)
 
     return collection
+  }
+
+  /**
+   * Install Dependencies
+   * @param {string} themePath
+   * @param {string} devFolder
+   * @return {Promise<void>}
+   */
+  static async installDependencies(themePath, devFolder) {
+    // Install Theme Files
+    const timer = new Timer()
+    logChildItem(`Installing Theme Files`)
+    await installThemeFiles(themePath, devFolder)
+    logChildItem(`Done (${timer.now()} seconds)`)
+
+    // Download Locales
+    if (isGitHubUrl(Session.localesPath)) {
+      const timer = new Timer()
+      logChildItem(`Installing Locales Database`)
+      Session.localesPath = await setupRepo(Session.localesPath)
+      logChildItem(`Done (${timer.now()} seconds)`)
+    }
   }
 
   /**

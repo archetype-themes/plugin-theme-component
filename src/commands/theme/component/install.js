@@ -14,7 +14,8 @@ import Session from '../../../models/static/Session.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
 import { isGitHubUrl, getRepoNameFromGitHubUrl } from '../../../utils/GitUtils.js'
-import { downloadComponents, downloadLocales } from '../../../utils/ExternalComponentUtils.js'
+import { setupRepo } from '../../../utils/ExternalComponentUtils.js'
+import { logChildItem } from '../../../utils/LoggerUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -64,8 +65,11 @@ export default class Install extends BaseCommand {
     // Download Components If We Have A GitHub Repo URL
     let collectionName
     if (isGitHubUrl(Session.componentsPath)) {
+      const timer = new Timer()
+      logChildItem(`Installing Components`)
       collectionName = getRepoNameFromGitHubUrl(Session.componentsPath)
-      Session.componentsPath = await downloadComponents(Session.componentsPath)
+      Session.componentsPath = await setupRepo(Session.componentsPath)
+      logChildItem(`Done (${timer.now()} seconds)`)
     } else {
       collectionName = basename(Session.componentsPath)
     }
@@ -75,7 +79,10 @@ export default class Install extends BaseCommand {
 
     // Download Locales If We Have A GitHub Repo URL
     if (isGitHubUrl(Session.localesPath)) {
-      Session.localesPath = await downloadLocales(Session.localesPath)
+      const timer = new Timer()
+      logChildItem(`Installing Locales Database`)
+      Session.localesPath = await setupRepo(Session.localesPath)
+      logChildItem(`Done (${timer.now()} seconds)`)
     }
 
     await Install.installOne(theme, collection)
