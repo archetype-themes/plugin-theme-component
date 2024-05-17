@@ -29,8 +29,8 @@ describe('Dev Command File', async function () {
   })
 
   test
-    .timeout(10000)
-    .stdout()
+    // .timeout(10000)
+    // .stdout()
     .command(['theme:component:dev', '--no-watch'])
     .it('Test That The Dev Command Runs Successfully', async function (ctx) {
       expect(ctx.stdout).to.contain('Install Complete')
