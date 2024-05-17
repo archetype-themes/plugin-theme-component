@@ -1,14 +1,16 @@
 import { expect, test } from '@oclif/test'
 import { describe } from 'mocha'
+import { config } from 'dotenv'
+
+// Load .env test file
+config({ path: ['.env.test.local', '.env.test'] })
 
 describe('component command', function () {
   test
     .stdout()
     .command(['theme:component'])
     .it('runs: component', function (ctx) {
-      expect(ctx.stdout).to.contain(
-        'Welcome To The Theme Component Plugin, by Archetype Themes.'
-      )
+      expect(ctx.stdout).to.contain('Welcome To The Theme Component Plugin, by Archetype Themes.')
     })
   test
     .stdout()

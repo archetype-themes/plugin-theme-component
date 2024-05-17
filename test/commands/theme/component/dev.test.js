@@ -1,44 +1,43 @@
 /// External Dependencies
 import assert from 'node:assert'
 import { join } from 'node:path'
-import { chdir, env } from 'node:process'
+import { chdir, cwd, env } from 'node:process'
 import { expect, test } from '@oclif/test'
+import { config } from 'dotenv'
 import { after, before, describe, it } from 'mocha'
 
 // Internal Dependencies
-import { chDirToDefault, setupComponentsRepo } from '../../../utils.js'
 import Dev, { SETUP_FLAG_NAME, THEME_FLAG_NAME, WATCH_FLAG_NAME } from '../../../../src/commands/theme/component/dev.js'
 import { LOCALES_FLAG_NAME } from '../../../../src/config/baseCommand.js'
 import Session from '../../../../src/models/static/Session.js'
 import { getCLIRootFolderName } from '../../../../src/utils/NodeUtils.js'
+import { setupRepo } from '../../../../src/utils/ExternalComponentUtils.js'
 
-describe('dev command', async function () {
+// Load .env test file
+config({ path: ['.env.test.local', '.env.test'] })
+
+const workingDirectory = cwd()
+
+describe('Dev Command File', async function () {
   before(async function () {
     this.timeout(10000)
-    const componentsInstallPath = await setupComponentsRepo()
+    const componentsRepoUrl = env.COMPONENTS_REPO
+      ? env.COMPONENTS_REPO
+      : 'https://github.com/archetype-themes/reference-components.git'
+    const componentsInstallPath = await setupRepo(componentsRepoUrl)
     chdir(componentsInstallPath)
   })
 
   test
     .timeout(10000)
     .stdout()
-    .command([
-      'theme:component:dev',
-      '--no-watch',
-      `--theme-path=https://${env.GITHUB_ID}:${env.GITHUB_TOKEN}@github.com/archetype-themes/expanse.git`
-    ])
-    .it('runs: component dev --no-watch', async function (ctx) {
+    .command(['theme:component:dev', '--no-watch'])
+    .it('Test That The Dev Command Runs Successfully', async function (ctx) {
       expect(ctx.stdout).to.contain('Install Complete')
     })
 
-  after(function () {
-    chDirToDefault()
-  })
-})
-
-describe('Dev', () => {
-  describe('setSessionValues', () => {
-    it('should set session values correctly with default values', async () => {
+  describe("Test The Dev.setSessionValues Method's Logic", () => {
+    it('Test Dev.setSessionValues Behaviour With Default Values', async () => {
       const argv = []
       const flags = {
         [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
@@ -74,7 +73,7 @@ describe('Dev', () => {
       assert.strictEqual(Session.themePath, join(getCLIRootFolderName(), 'resources/explorer'))
     })
 
-    it('should set session values correctly with setup-files as false', async () => {
+    it('Test Dev.setSessionValues Behaviour With setup-files Flag As false', async () => {
       const argv = []
       const flags = {
         [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
@@ -110,7 +109,7 @@ describe('Dev', () => {
       assert.strictEqual(Session.themePath, Dev.flags[THEME_FLAG_NAME].default)
     })
 
-    it('should set session values correctly with provided theme-path', async () => {
+    it('Test Dev.setSessionValues Behaviour With A Custom theme-path', async () => {
       const argv = []
       const flags = {
         [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
@@ -146,7 +145,7 @@ describe('Dev', () => {
       assert.strictEqual(Session.themePath, 'https://github.com/archetype-themes/expanse.git')
     })
 
-    it('should set session values correctly with provided theme-path from argv and setup-files as true from config (issues a warning)', async () => {
+    it('Test That Dev.setSessionValues Issues A Warning With A Custom theme-path From argv And setup-files As true From Toml config', async () => {
       const argv = []
       const flags = {
         [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
@@ -182,7 +181,7 @@ describe('Dev', () => {
       assert.strictEqual(Session.themePath, 'https://github.com/archetype-themes/expanse.git')
     })
 
-    it('should set session values correctly with provided theme-path and setup-files, with setup-files as true (issues a warning)', async () => {
+    it('Test That Dev.setSessionValues Issues A Warning With A Custom theme-path And setup-files As true', async () => {
       const argv = ['section-alpha', 'shopping-cart']
       const flags = {
         [LOCALES_FLAG_NAME]: Dev.flags[LOCALES_FLAG_NAME].default,
@@ -221,5 +220,9 @@ describe('Dev', () => {
       assert.strictEqual(Session.setupFiles, true)
       assert.strictEqual(Session.themePath, join(getCLIRootFolderName(), 'resources/explorer'))
     })
+  })
+
+  after(function () {
+    chdir(workingDirectory)
   })
 })

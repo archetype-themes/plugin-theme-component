@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Install path for external components is now systems tmp folders instead of .collections or .locales folders
+- GitUtils: git clone now validates that we have auth for private repos and automatically adds basic https auth when
+  needed from env vars
+- GitUtils: Now handles git operations for CLI and tests instead of having two separate processes
 
 
 ## [3.3.3] - 2024-05-15
@@ -26,8 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Oclif Init Hook: Request User email text updated
-- Oclif Init Hook: Now only triggers on our plugin commands.
+- oclif Init Hook: Request User email text updated
+- oclif Init Hook: Now only triggers on our plugin commands.
 
 ### Fixed
 
@@ -53,11 +56,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - NPM Install Hook: Request User email for DevKit Newsletter Subscription #417
-- Oclif Init Hook: Request User email for DevKit Newsletter Subscription #417
+- oclif Init Hook: Request User email for DevKit Newsletter Subscription #417
 
 ### Changed
 
-- Dependencies: Minor updates & Oclif version alignment with Shopify CLI release 3.6.0
+- Dependencies: Minor updates & oclif version alignment with Shopify CLI release 3.6.0
 
 ## [3.2.5] - 2024-05-06
 
