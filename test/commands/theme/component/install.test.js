@@ -1,27 +1,52 @@
-import { chdir, env } from 'node:process'
+// External Dependencies
+import { chdir, cwd, env } from 'node:process'
 import { expect, test } from '@oclif/test'
 import { after, before, describe } from 'mocha'
-import { chDirToDefault, setupThemeRepo } from '../../../utils.js'
 
-describe('install command', function () {
+// Internal Dependencies
+import { install } from '../../../../src/utils/ExternalComponentUtils.js'
+import { config } from 'dotenv'
+import { basename, resolve } from 'node:path'
+import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/FileUtils.js'
+import { mkdir } from 'node:fs/promises'
+
+// Load .env test file
+config({ path: ['.env.test.local', '.env.test'] })
+
+const workingDirectory = cwd()
+
+describe('Install Command File', function () {
   before(async function () {
-    this.timeout(10000)
-    const themeInstallPath = await setupThemeRepo()
+    this.timeout(30000)
+    const userDataFile = resolve(workingDirectory, 'user-info.json')
+    if (!(await exists(userDataFile))) {
+      await saveFile(resolve(workingDirectory, 'user-info.json'), '')
+    }
+    const themeRepoUrl = env.THEME_REPO ? env.THEME_REPO : 'https://github.com/archetype-themes/reference-theme.git'
+
+    const themeName = basename(themeRepoUrl, '.git')
+    const themeInstallPath = resolve(await getRandomTmpFolder(), themeName)
+    await mkdir(themeInstallPath, { recursive: true })
+    await install(themeRepoUrl, themeInstallPath)
+
     chdir(themeInstallPath)
   })
 
+  const installCommand = ['theme:component:install']
+
+  if (env.COMPONENTS_REPO) {
+    installCommand.push('--components-path', env.COMPONENTS_REPO)
+  }
+
   test
-    .timeout(10000)
-    .stdout()
-    .command([
-      'theme:component:install',
-      `--components-path=https://${env.GITHUB_ID}:${env.GITHUB_TOKEN}@github.com/archetype-themes/components.git`
-    ])
-    .it('runs: component install', function (ctx) {
+    .timeout(30000)
+    .stdout({ print: true })
+    .command(installCommand)
+    .it('Test That The Install Command Runs Successfully', function (ctx) {
       expect(ctx.stdout).to.contain('Install Complete')
     })
 
   after(function () {
-    chDirToDefault()
+    chdir(workingDirectory)
   })
 })

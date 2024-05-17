@@ -1,24 +1,42 @@
-import { chdir } from 'node:process'
+// External Dependencies
+import { chdir, cwd, env } from 'node:process'
 import { expect, test } from '@oclif/test'
 import { after, before, describe } from 'mocha'
-import { chDirToDefault, setupComponentsRepo } from '../../../utils.js'
 
-describe('generate command', async function () {
+// Internal Dependencies
+import { install } from '../../../../src/utils/ExternalComponentUtils.js'
+import { config } from 'dotenv'
+import { resolve } from 'node:path'
+import { exists, saveFile } from '../../../../src/utils/FileUtils.js'
+
+// Load .env test file
+config({ path: ['.env.test.local', '.env.test'] })
+
+const workingDirectory = cwd()
+
+describe('Generate Command File', async function () {
   before(async function () {
-    this.timeout(10000)
-    const componentsInstallPath = await setupComponentsRepo()
+    this.timeout(30000)
+    const userDataFile = resolve(workingDirectory, 'user-info.json')
+    if (!(await exists(userDataFile))) {
+      await saveFile(resolve(workingDirectory, 'user-info.json'), '')
+    }
+    const componentsRepoUrl = env.COMPONENTS_REPO
+      ? env.COMPONENTS_REPO
+      : 'https://github.com/archetype-themes/reference-components.git'
+    const componentsInstallPath = await install(componentsRepoUrl)
     chdir(componentsInstallPath)
   })
 
   test
-    .timeout(10000)
-    .stdout()
+    .timeout(30000)
+    .stdout({ print: true })
     .command(['theme:component:generate', 'section-test'])
-    .it('runs: component generate section-test', async function (ctx) {
+    .it('Test That The Generate Command Runs Successfully', async function (ctx) {
       expect(ctx.stdout).to.contain('Your new component is available at')
     })
 
   after(function () {
-    chDirToDefault()
+    chdir(workingDirectory)
   })
 })

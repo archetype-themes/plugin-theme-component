@@ -1,4 +1,5 @@
 // External Dependencies
+import { basename } from 'node:path'
 import { Args, Flags, ux } from '@oclif/core'
 
 // Internal Dependencies
@@ -12,9 +13,9 @@ import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
-import { isGitHubUrl } from '../../../utils/WebUtils.js'
-import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
-import { installLocales } from '../../../utils/ExternalComponentUtils.js'
+import { isGitHubUrl, getRepoNameFromGitHubUrl } from '../../../utils/GitUtils.js'
+import { install } from '../../../utils/ExternalComponentUtils.js'
+import { logChildItem } from '../../../utils/LoggerUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -61,13 +62,27 @@ export default class Install extends BaseCommand {
     // Creating Theme
     const theme = ThemeFactory.fromThemeInstallCommand()
 
-    const collection = await CollectionFactory.fromRemotePath(Session.componentsPath, Session.components)
+    // Download Components If We Have A GitHub Repo URL
+    let collectionName
+    if (isGitHubUrl(Session.componentsPath)) {
+      const timer = new Timer()
+      logChildItem(`Installing Components`)
+      collectionName = getRepoNameFromGitHubUrl(Session.componentsPath)
+      Session.componentsPath = await install(Session.componentsPath)
+      logChildItem(`Done (${timer.now()} seconds)`)
+    } else {
+      collectionName = basename(Session.componentsPath)
+    }
 
-    // Install Locales locally when we have a GitHub URL
+    // Init Collection
+    const collection = await CollectionFactory.fromPath(collectionName, Session.componentsPath, Session.components)
+
+    // Download Locales If We Have A GitHub Repo URL
     if (isGitHubUrl(Session.localesPath)) {
-      const localesInstallPath = getLocalesInstallPath()
-      await installLocales(Session.localesPath, localesInstallPath)
-      Session.localesPath = localesInstallPath
+      const timer = new Timer()
+      logChildItem(`Installing Locales Database`)
+      Session.localesPath = await install(Session.localesPath)
+      logChildItem(`Done (${timer.now()} seconds)`)
     }
 
     await Install.installOne(theme, collection)
@@ -80,14 +95,14 @@ export default class Install extends BaseCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async installOne(theme, collection) {
-    ux.info(`Building & Installing the ${collection.name} Collection.`)
+    ux.info(`Building & Installing the ${collection.name}.`)
     const startTime = new Timer()
 
     // Build using the Build Command
     await Build.buildCollection(collection)
     await Build.deployCollection(collection)
     // Install and time it!
-    ux.info(`Installing the ${collection.name} Collection for the ${theme.name} Theme.`)
+    ux.info(`Installing ${collection.name} for ${theme.name}.`)
     const installStartTime = new Timer()
     await CollectionInstaller.install(theme, collection)
     ux.info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)

@@ -2,9 +2,6 @@
 export const BUILD_FOLDER_NAME = 'build'
 
 /** @type {string} **/
-export const COLLECTIONS_INSTALL_FOLDER_NAME = '.collections'
-
-/** @type {string} **/
 export const DEV_FOLDER_NAME = '.explorer'
 
 /** @type {string} **/

@@ -1,5 +1,5 @@
 // External Dependencies
-import { access, constants, copyFile, cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { access, constants, copyFile, cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { ux } from '@oclif/core'
@@ -80,7 +80,7 @@ export async function copyFilesToFolder(files, targetFolder) {
  *
  * @typedef {Object} CopyFolderOptions
  * @property {boolean} recursive
- * @property {string[]} rename - Rename source file from/to value pair
+ * @property {string[]} rename - Rename source file from/to as a key/value pair
  * @property {JsTemplateVariables} jsTemplateVariables
  *
  * @param {string} sourceFolder
@@ -215,8 +215,15 @@ export async function getMergedFilesContent(files) {
   return content
 }
 
+/**
+ * Get a random temporary folder
+ * @return {Promise<string>}
+ */
 export async function getRandomTmpFolder() {
   const tmpRandomFolder = resolve(tmpdir(), 'plugin-theme-component', randomBytes(16).toString('hex'))
+  if (await exists(tmpRandomFolder)) {
+    await rm(tmpRandomFolder, { recursive: true })
+  }
   await mkdir(tmpRandomFolder, { recursive: true })
 
   return tmpRandomFolder
@@ -224,7 +231,7 @@ export async function getRandomTmpFolder() {
 
 /**
  * Check if a file is readable
- * @param file
+ * @param {string} file
  * @return {Promise<boolean>}
  */
 export async function isReadable(file) {
@@ -238,7 +245,7 @@ export async function isReadable(file) {
 
 /**
  * Check if a file is writable
- * @param file
+ * @param {string} file
  * @return {Promise<boolean>}
  */
 export async function isWritable(file) {
@@ -251,7 +258,7 @@ export async function isWritable(file) {
 }
 
 /**
- *
+ * Manually interpret JS template strings within a file
  * @param {string} sourceFile
  * @param {string} targetFile
  * @param {JsTemplateVariables} jsTemplateVariables
@@ -305,7 +312,7 @@ export async function searchFile(path, filename, recursive = false) {
 }
 
 /**
- *
+ * Save File
  * @param {string} file
  * @param {string} fileContents
  * @return {Promise<void>}

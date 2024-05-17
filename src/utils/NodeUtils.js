@@ -1,12 +1,23 @@
 // External Dependencies
+import { exec } from 'node:child_process'
 import { cwd, env, exit } from 'node:process'
 import { join, sep } from 'node:path'
+import { promisify } from 'node:util'
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import FileUtils from './FileUtils.js'
 import { isDebugEnabled } from './LoggerUtils.js'
 import InternalError from '../errors/InternalError.js'
+
+/**
+ * exec with promisify
+ * @type function
+ * @param {string} command - Shell command
+ * @param {object} [options] - Command options
+ * @return {Promise<{ stdout: string, stderr: string }>}
+ */
+export const execAsync = promisify(exec)
 
 /**
  * Exit with Error

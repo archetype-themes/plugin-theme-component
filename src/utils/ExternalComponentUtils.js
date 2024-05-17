@@ -1,75 +1,32 @@
 // Internal Dependencies
-import { copyFolder, getAbsolutePath, getFolderFilesRecursively } from './FileUtils.js'
-import { installRepository } from './GitUtils.js'
-import { isGitHubUrl } from './WebUtils.js'
-import Timer from '../models/Timer.js'
-import { logChildItem } from './LoggerUtils.js'
-import { exitWithError } from './NodeUtils.js'
+import { copyFolder, exists, getAbsolutePath, getRandomTmpFolder } from './FileUtils.js'
+import { clone, isGitHubUrl } from './GitUtils.js'
+import { execAsync } from './NodeUtils.js'
+import { deleteTomlConfigFile } from './SessionUtils.js'
+import { resolve } from 'node:path'
 
 /**
  * Install an external component locally
- * @param {string} sourcePath
- * @param {string} installFolder
- * @return {Promise<string[]>}
+ * @param {string} sourcePath - Local source path or remote GitHub URL
+ * @param {string} [installPath] - Local destination path
+ * @return {Promise<string>} - Path to the installed component
  */
-export async function install(sourcePath, installFolder) {
+export async function install(sourcePath, installPath) {
+  if (!installPath) {
+    installPath = await getRandomTmpFolder()
+  }
   if (isGitHubUrl(sourcePath)) {
-    await installRepository(sourcePath, installFolder)
+    await clone(sourcePath, installPath)
   } else {
-    const fullPath = getAbsolutePath(sourcePath)
-    await copyFolder(fullPath, installFolder, { recursive: true })
+    const absoluteSourcePath = getAbsolutePath(sourcePath)
+    await copyFolder(absoluteSourcePath, installPath, { recursive: true })
   }
 
-  return getFolderFilesRecursively(installFolder)
-}
-
-/**
- * Install Components Locally
- * @param {string} sourcePath
- * @param {string} installPath
- * @return {Promise<void>}
- */
-export async function installComponents(sourcePath, installPath) {
-  try {
-    const timer = new Timer()
-    logChildItem(`Installing Components`)
-    await install(sourcePath, installPath)
-    logChildItem(`Done (${timer.now()} seconds)`)
-  } catch (error) {
-    exitWithError('Components Files or Repository Access Error: ' + error.message)
+  // Remove any existing toml config file
+  await deleteTomlConfigFile(installPath)
+  // Install npm dependencies
+  if (await exists(resolve(installPath, 'package.json'))) {
+    await execAsync('npm ci', { cwd: installPath })
   }
-}
-
-/**
- * Install Locales Locally
- * @param sourcePath
- * @param installPath
- * @return {Promise<void>}
- */
-export async function installLocales(sourcePath, installPath) {
-  try {
-    const timer = new Timer()
-    logChildItem(`Installing Locales Database`)
-    await install(sourcePath, installPath)
-    logChildItem(`Done (${timer.now()} seconds)`)
-  } catch (error) {
-    exitWithError('Locales Files or Repository Access Error: ' + error.message)
-  }
-}
-
-/**
- * Install Theme Files Locally
- * @param sourcePath
- * @param installPath
- * @return {Promise<void>}
- */
-export async function installThemeFiles(sourcePath, installPath) {
-  try {
-    const timer = new Timer()
-    logChildItem(`Installing Theme Files`)
-    await install(sourcePath, installPath)
-    logChildItem(`Done (${timer.now()} seconds)`)
-  } catch (error) {
-    exitWithError('Source Theme Files or Repository Access Error: ' + error.message)
-  }
+  return installPath
 }

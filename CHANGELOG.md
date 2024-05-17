@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.4] - 2024-05-17
+
+### Fixed
+
+- Tests: Tests now work around the user email prompt
+- Install: command cache not cleared #428
+
 ## [3.3.3] - 2024-05-15
 
 ### Added
@@ -19,8 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Oclif Init Hook: Request User email text updated
-- Oclif Init Hook: Now only triggers on our plugin commands.
+- oclif Init Hook: Request User email text updated
+- oclif Init Hook: Now only triggers on our plugin commands.
 
 ### Fixed
 
@@ -46,11 +53,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - NPM Install Hook: Request User email for DevKit Newsletter Subscription #417
-- Oclif Init Hook: Request User email for DevKit Newsletter Subscription #417
+- oclif Init Hook: Request User email for DevKit Newsletter Subscription #417
 
 ### Changed
 
-- Dependencies: Minor updates & Oclif version alignment with Shopify CLI release 3.6.0
+- Dependencies: Minor updates & oclif version alignment with Shopify CLI release 3.6.0
 
 ## [3.2.5] - 2024-05-06
 

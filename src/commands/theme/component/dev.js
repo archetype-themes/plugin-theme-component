@@ -20,7 +20,7 @@ import CollectionFactory from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
-import { installLocales, installThemeFiles } from '../../../utils/ExternalComponentUtils.js'
+import { install } from '../../../utils/ExternalComponentUtils.js'
 import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
 import {
   getValuesFromArgvOrToml,
@@ -35,13 +35,13 @@ import {
   handleWatcherEvent,
   watch
 } from '../../../utils/Watcher.js'
-import { isGitHubUrl } from '../../../utils/WebUtils.js'
+import { isGitHubUrl } from '../../../utils/GitUtils.js'
 import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } from '../../../utils/SetupFilesUtils.js'
 import { getCurrentTime } from '../../../utils/DateUtils.js'
-import { getLocalesInstallPath } from '../../../utils/LocaleUtils.js'
 import { rm } from 'node:fs/promises'
 import { exists, saveFile } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
+import Timer from '../../../models/Timer.js'
 
 /** @type {string} **/
 export const THEME_FLAG_NAME = 'theme-path'
@@ -198,19 +198,7 @@ export default class Dev extends BaseCommand {
         await rm(devFolder, { recursive: true })
       }
 
-      // Install Theme Files
-      await installThemeFiles(themePath, devFolder)
-
-      // Install Locales
-      if (isGitHubUrl(Session.localesPath)) {
-        const localesInstallPath = getLocalesInstallPath()
-        // Start with a clean slate
-        if (await exists(localesInstallPath)) {
-          await rm(localesInstallPath, { recursive: true })
-        }
-        await installLocales(Session.localesPath, localesInstallPath)
-        Session.localesPath = localesInstallPath
-      }
+      await this.installDependencies(themePath, devFolder)
     }
 
     if (event && eventPath) {
@@ -243,6 +231,28 @@ export default class Dev extends BaseCommand {
     logChildItem(`Install Complete at ${getCurrentTime()}`)
 
     return collection
+  }
+
+  /**
+   * Install Dependencies
+   * @param {string} themePath
+   * @param {string} devFolder
+   * @return {Promise<void>}
+   */
+  static async installDependencies(themePath, devFolder) {
+    // Install Theme Files
+    const timer = new Timer()
+    logChildItem(`Installing Theme Files From ${basename(themePath, '.git')}`)
+    await install(themePath, devFolder)
+    logChildItem(`Done (${timer.now()} seconds)`)
+
+    // Download Locales
+    if (isGitHubUrl(Session.localesPath)) {
+      const timer = new Timer()
+      logChildItem(`Installing Locales Database`)
+      Session.localesPath = await install(Session.localesPath)
+      logChildItem(`Done (${timer.now()} seconds)`)
+    }
   }
 
   /**
