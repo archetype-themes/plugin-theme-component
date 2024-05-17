@@ -93,7 +93,7 @@ async function isRepoPublic(repoUrl) {
     if ('private' in repoInfo) {
       return !repoInfo.private
     } else if (response.status === 404) {
-      ux.warn(
+      ux.debug(
         `GitUtils:isRepoPublic => The GitHub API call to get repository information for "${username}:${repository}" returned a "404 Not Found" HTTP Status. We will consider the repository as private.`
       )
       return false
