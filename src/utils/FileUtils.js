@@ -215,6 +215,10 @@ export async function getMergedFilesContent(files) {
   return content
 }
 
+/**
+ * Get a random temporary folder
+ * @return {Promise<string>}
+ */
 export async function getRandomTmpFolder() {
   const tmpRandomFolder = resolve(tmpdir(), 'plugin-theme-component', randomBytes(16).toString('hex'))
   if (await exists(tmpRandomFolder)) {
@@ -227,7 +231,7 @@ export async function getRandomTmpFolder() {
 
 /**
  * Check if a file is readable
- * @param file
+ * @param {string} file
  * @return {Promise<boolean>}
  */
 export async function isReadable(file) {
@@ -241,7 +245,7 @@ export async function isReadable(file) {
 
 /**
  * Check if a file is writable
- * @param file
+ * @param {string} file
  * @return {Promise<boolean>}
  */
 export async function isWritable(file) {
@@ -254,7 +258,7 @@ export async function isWritable(file) {
 }
 
 /**
- *
+ * Manually interpret JS template strings within a file
  * @param {string} sourceFile
  * @param {string} targetFile
  * @param {JsTemplateVariables} jsTemplateVariables
@@ -308,7 +312,7 @@ export async function searchFile(path, filename, recursive = false) {
 }
 
 /**
- *
+ * Save File
  * @param {string} file
  * @param {string} fileContents
  * @return {Promise<void>}
