@@ -135,6 +135,7 @@ export async function exists(file) {
  */
 export async function getFileContents(file) {
   ux.trace(`Reading from disk: ${file}`)
+  // noinspection JSValidateTypes
   return readFile(file, FILE_ENCODING_OPTION)
 }
 

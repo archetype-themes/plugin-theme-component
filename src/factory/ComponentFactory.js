@@ -3,7 +3,7 @@ import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import ComponentFiles from '../models/ComponentFiles.js'
-import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
+import { indexFiles } from '../utils/ComponentFilesUtils.js'
 import { getFileContents } from '../utils/FileUtils.js'
 import { getSnippetNames } from '../utils/LiquidUtils.js'
 
@@ -15,7 +15,7 @@ class ComponentFactory {
    */
   static async initializeComponent(component) {
     // Index Snippet Files
-    component.files = await ComponentFilesUtils.indexFiles(component.name, component.rootFolder, new ComponentFiles())
+    component.files = await indexFiles(component.name, component.rootFolder, new ComponentFiles())
 
     // Load Liquid Code
     component.liquidCode = await getFileContents(component.files.liquidFile)

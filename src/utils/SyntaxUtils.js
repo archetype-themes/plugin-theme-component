@@ -7,5 +7,3 @@ export function ucFirst(text) {
   const firstLetter = text.slice(0, 1)
   return firstLetter.toUpperCase() + text.substring(1)
 }
-
-export default { plural, ucFirst }

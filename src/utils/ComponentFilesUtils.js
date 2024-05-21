@@ -29,7 +29,7 @@ export const JSON_EXTENSION = '.json'
  */
 export async function indexFiles(componentName, folder, filesModel) {
   // Validation: make sure the folder is readable.
-  await this.validateFolderAccess(folder, componentName)
+  await validateFolderAccess(folder, componentName)
 
   const files = await getFolderFilesRecursively(folder)
 
@@ -131,9 +131,4 @@ export async function validateFolderAccess(folder, componentName) {
       `Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`
     )
   }
-}
-
-export default {
-  indexFiles,
-  validateFolderAccess
 }

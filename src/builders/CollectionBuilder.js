@@ -12,7 +12,7 @@ import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import { copyFilesToFolder, getFolderFilesRecursively, saveFile } from '../utils/FileUtils.js'
-import LocaleUtils from '../utils/LocaleUtils.js'
+import { writeLocales } from '../utils/LocaleUtils.js'
 import { isDebugEnabled, logChildItem } from '../utils/LoggerUtils.js'
 import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
@@ -134,7 +134,7 @@ class CollectionBuilder {
     const promises = []
 
     if (Session.firstRun || Session.changeType === ChangeType.Locale) {
-      const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
+      const localesWritePromise = writeLocales(collection.build.locales, collection.build.localesFolder)
       promises.push(localesWritePromise)
     }
 

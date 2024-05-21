@@ -133,9 +133,3 @@ export function handleWatcherEvent(event, eventPath, source, destination) {
     ux.error(eventPath)
   }
 }
-
-export default {
-  getWatcher,
-  getChangeTypeFromFilename,
-  watch
-}
