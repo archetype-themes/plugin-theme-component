@@ -26,7 +26,7 @@ export class BaseCommand extends Command {
    */
   async run() {
     const tomlConfig = await getTomlConfig()
-    sessionFactory(this.id, tomlConfig)
+    sessionFactory(tomlConfig)
 
     return tomlConfig
   }
