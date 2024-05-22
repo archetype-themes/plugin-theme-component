@@ -99,7 +99,7 @@ export default class Install extends BaseCommand {
     const startTime = new Timer()
 
     // Build using the Build Command
-    await Build.buildCollection(collection)
+    collection = await Build.buildCollection(collection)
     await Build.deployCollection(collection)
     // Install and time it!
     ux.info(`Installing ${collection.name} for ${theme.name}.`)

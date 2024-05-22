@@ -7,11 +7,8 @@ import CollectionBuilder from '../../../builders/CollectionBuilder.js'
 import ComponentBuilder from '../../../builders/ComponentBuilder.js'
 import SnippetBuilder from '../../../builders/SnippetBuilder.js'
 import { BaseCommand } from '../../../config/baseCommand.js'
-import InternalError from '../../../errors/InternalError.js'
-import ComponentFactory from '../../../factory/ComponentFactory.js'
 import Timer from '../../../models/Timer.js'
 import Snippet from '../../../models/Snippet.js'
-import { getComponentNamesToBuild } from '../../../utils/CollectionUtils.js'
 import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
 import { plural } from '../../../utils/SyntaxUtils.js'
 
@@ -25,48 +22,8 @@ class Build extends BaseCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async buildCollection(collection) {
-    logTitleItem(`Initializing Components for "${collection.name}"`)
+    logTitleItem(`Initializing Components Build for "${collection.name}"`)
     const initStartTime = new Timer()
-
-    // Initialize Individual Components
-    collection.components = await Promise.all(
-      collection.components.map((component) => ComponentFactory.initializeComponent(component))
-    )
-
-    // Create Embedded Snippets Skeleton from Components
-    collection.snippets = this.createEmbeddedSnippets(collection.components)
-    // Initialize Embedded Snippets
-    collection.snippets = await Promise.all(
-      collection.snippets.map((snippet) => ComponentFactory.initializeComponent(snippet))
-    )
-
-    const allComponents = collection.allComponents
-
-    // Display Total Available Count of Components & Snippets
-    logChildItem(
-      `Found ${collection.components.length} component${plural(collection.components)} and  ${collection.snippets.length} snippet${plural(collection.snippets)}.`
-    )
-
-    // Filter Out Components When Applicable
-    if (collection.componentNames?.length) {
-      // for each component, get tree item names
-      const componentNamesToBuild = getComponentNamesToBuild(allComponents, collection.componentNames)
-
-      logChildItem(
-        `Packaging the following component${plural(collection.componentNames)}: ${collection.componentNames.join(', ')}`
-      )
-
-      collection.components = collection.components.filter((component) => componentNamesToBuild.has(component.name))
-      collection.snippets = collection.snippets.filter((snippet) => componentNamesToBuild.has(snippet.name))
-    }
-
-    // Throw an Error when No Components are found
-    if (collection.components.length + collection.snippets.length === 0) {
-      throw new InternalError(`No matching components found for [${collection.componentNames.join(',')}]`)
-    }
-
-    logChildItem(`Initialization complete (${initStartTime.now()} seconds)`)
-    logSpacer()
 
     logTitleItem(
       `Assembling ${collection.components.length} component${plural(collection.components)} and ${collection.snippets.length} snippet${plural(collection.snippets)}.`
@@ -90,8 +47,8 @@ class Build extends BaseCommand {
     const treeStartTime = new Timer()
 
     // Build Component Hierarchy Structure
-    await this.setComponentHierarchy(collection.components, allComponents)
-    await this.setComponentHierarchy(collection.snippets, allComponents)
+    await this.setComponentHierarchy(collection.components, collection.allComponents)
+    await this.setComponentHierarchy(collection.snippets, collection.allComponents)
 
     logChildMessage()
     logChildMessage(`${collection.name}/`)

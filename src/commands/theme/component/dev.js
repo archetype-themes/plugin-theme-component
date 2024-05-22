@@ -210,8 +210,8 @@ export default class Dev extends BaseCommand {
     }
 
     // Build & Deploy Collection
-    const collection = await CollectionFactory.fromCwd(componentNames)
-    await Build.buildCollection(collection)
+    let collection = await CollectionFactory.fromCwd(componentNames)
+    collection = await Build.buildCollection(collection)
     await Build.deployCollection(collection)
 
     const theme = await fromDevCommand(devFolder)
@@ -282,8 +282,8 @@ export default class Dev extends BaseCommand {
     console.log(eventPath)
     console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
     if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
-      const collection = await CollectionFactory.fromCwd(componentNames)
-      await Build.buildCollection(collection)
+      let collection = await CollectionFactory.fromCwd(componentNames)
+      collection = await Build.buildCollection(collection)
       const indexTemplate = await buildIndexTemplate(collection.components, themePath)
       await saveFile(join(cwd(), DEV_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE), indexTemplate)
     }
