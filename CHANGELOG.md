@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- sync/no-sync flag for the dev command enables remote theme sync through shopify theme dev CLI command
+- sync/no-sync flag for the dev command enables remote theme sync through shopify theme dev CLI command #416
 
 ### Changed
 
