@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Replaced the use of the deprecated oclif ux library for logging by internal logging functions
+- Dependencies minor updates
 
 ## [3.3.4] - 2024-05-17
 
