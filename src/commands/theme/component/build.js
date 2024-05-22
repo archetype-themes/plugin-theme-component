@@ -1,5 +1,4 @@
-// Node Dependencies
-import { dirname, parse } from 'node:path'
+// External Dependencies
 import { ux } from '@oclif/core'
 
 // Internal Dependencies
@@ -8,7 +7,6 @@ import ComponentBuilder from '../../../builders/ComponentBuilder.js'
 import SnippetBuilder from '../../../builders/SnippetBuilder.js'
 import { BaseCommand } from '../../../config/baseCommand.js'
 import Timer from '../../../models/Timer.js'
-import Snippet from '../../../models/Snippet.js'
 import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
 import { plural } from '../../../utils/SyntaxUtils.js'
 
@@ -78,21 +76,6 @@ class Build extends BaseCommand {
     logTitleItem(`Build Command Total Time: ${initStartTime.now()} seconds`)
     logSpacer()
     return Promise.resolve(collection)
-  }
-
-  /**
-   * Create Embedded Snippets
-   * @param {Component[]} components
-   * @returns {Snippet[]}
-   */
-  static createEmbeddedSnippets(components) {
-    const filteredComponents = components.filter((component) => component.files?.snippetFiles)
-
-    return filteredComponents
-      .map((component) =>
-        component.files.snippetFiles.map((snippetFile) => new Snippet(parse(snippetFile).name, dirname(snippetFile)))
-      )
-      .flat()
   }
 
   /**

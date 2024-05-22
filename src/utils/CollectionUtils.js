@@ -1,6 +1,8 @@
 // Internal Dependencies
 import FileMissingError from '../errors/FileMissingError.js'
 import ComponentFactory from '../factory/ComponentFactory.js'
+import Snippet from '../models/Snippet.js'
+import { dirname, parse } from 'node:path'
 
 /**
  *
@@ -41,7 +43,22 @@ export async function loadComponents(components) {
 
 export async function loadSnippets(components) {
   // Create Embedded Snippets Skeleton from Components
-  const snippets = this.createEmbeddedSnippets(components)
+  const snippets = createEmbeddedSnippets(components)
   // Initialize Embedded Snippets
   return await Promise.all(snippets.map((snippet) => ComponentFactory.initializeComponent(snippet)))
+}
+
+/**
+ * Create Embedded Snippets
+ * @param {Component[]} components
+ * @returns {Snippet[]}
+ */
+function createEmbeddedSnippets(components) {
+  const filteredComponents = components.filter((component) => component.files?.snippetFiles)
+
+  return filteredComponents
+    .map((component) =>
+      component.files.snippetFiles.map((snippetFile) => new Snippet(parse(snippetFile).name, dirname(snippetFile)))
+    )
+    .flat()
 }
