@@ -2,7 +2,7 @@
 import { spawn } from 'node:child_process'
 import { basename, join, relative } from 'node:path'
 import { cwd } from 'node:process'
-import { Args, Flags, ux } from '@oclif/core'
+import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
 import Build from './build.js'
@@ -21,7 +21,7 @@ import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
-import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit } from '../../../utils/LoggerUtils.js'
+import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit, warn } from '../../../utils/LoggerUtils.js'
 import {
   getValuesFromArgvOrToml,
   getValueFromFlagOrToml,
@@ -49,6 +49,8 @@ export const THEME_FLAG_NAME = 'theme-path'
 export const SETUP_FLAG_NAME = 'setup-files'
 /** @type {string} **/
 export const WATCH_FLAG_NAME = 'watch'
+
+const THEME_SYNC_FLAG_NAME = 'sync'
 
 export default class Dev extends BaseCommand {
   static description = 'Develop using theme components'
@@ -94,6 +96,13 @@ export default class Dev extends BaseCommand {
       char: 'w',
       default: true,
       allowNo: true
+    }),
+    [THEME_SYNC_FLAG_NAME]: Flags.boolean({
+      summary: 'Sync your files through shopify theme dev',
+      description:
+        'This will execute shopify theme dev along with your component dev command. You can customize options for that command in your toml file.',
+      default: true,
+      allowNo: true
     })
   }
 
@@ -106,7 +115,7 @@ export default class Dev extends BaseCommand {
    */
   async run() {
     const { argv, flags, metadata } = await this.parse(Dev)
-    BaseCommand.setUxOutputLevel(flags)
+    BaseCommand.setLogLevel(flags)
     const tomlConfig = await super.run()
 
     await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
@@ -210,8 +219,8 @@ export default class Dev extends BaseCommand {
     }
 
     // Build & Deploy Collection
-    const collection = await CollectionFactory.fromCwd(componentNames)
-    await Build.buildCollection(collection)
+    let collection = await CollectionFactory.fromCwd(componentNames)
+    collection = await Build.buildCollection(collection)
     await Build.deployCollection(collection)
 
     const theme = await fromDevCommand(devFolder)
@@ -282,8 +291,8 @@ export default class Dev extends BaseCommand {
     console.log(eventPath)
     console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
     if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
-      const collection = await CollectionFactory.fromCwd(componentNames)
-      await Build.buildCollection(collection)
+      let collection = await CollectionFactory.fromCwd(componentNames)
+      collection = await Build.buildCollection(collection)
       const indexTemplate = await buildIndexTemplate(collection.components, themePath)
       await saveFile(join(cwd(), DEV_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE), indexTemplate)
     }
@@ -334,6 +343,7 @@ export default class Dev extends BaseCommand {
     Session.callerType = COLLECTION_TYPE_NAME
     Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
     Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.syncMode = getValueFromFlagOrToml(THEME_SYNC_FLAG_NAME, flags, metadata, tomlConfig)
     Session.watchMode = getValueFromFlagOrToml(WATCH_FLAG_NAME, flags, metadata, tomlConfig)
 
     const tomlConfigExits = tomlConfig != null
@@ -355,7 +365,7 @@ export default class Dev extends BaseCommand {
     // A Warning is issued to explain that the command-line flag takes precedence over toml file flags.
     if (isThemeFlagSetInArgv && !isSetupFlagSetInArgv && isSetupFlagSetInConfig && tomlConfig[SETUP_FLAG_NAME]) {
       Session.setupFiles = false
-      ux.warn(
+      warn(
         'The command-line flags takes precedence over the toml file values. Setup files will be ignored since a theme-path was specified at the command line.'
       )
     }
@@ -370,9 +380,7 @@ export default class Dev extends BaseCommand {
       Session.themePath = join(getCLIRootFolderName(), 'resources/explorer')
       if (issetThemeFlag && issetSetupFlag) {
         // A Warning is issued to the user explaining that setup files cannot be used with a theme.
-        ux.warn(
-          'The setup-files flag is not available with a custom theme. The component explorer will be used instead.'
-        )
+        warn('The setup-files flag is not available with a custom theme. The component explorer will be used instead.')
       }
     } else {
       Session.themePath = await getPathFromFlagOrTomlValue(THEME_FLAG_NAME, flags, metadata, tomlConfig)

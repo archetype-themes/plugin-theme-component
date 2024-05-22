@@ -1,17 +1,15 @@
-// External Dependencies
-import { ux } from '@oclif/core'
-
 // Internal Dependencies
-import FileUtils from './FileUtils.js'
+import { convertToComponentRelativePath } from './FileUtils.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
+import { debug } from './LoggerUtils.js'
 
 /**
- * Create Master Stylesheet
+ * Create Main Stylesheet
  * @param stylesheets
  * @return {string}
  */
-export function createMasterStylesheet(stylesheets) {
+export function createMainStylesheet(stylesheets) {
   let masterStylesheetContents = ''
   const processedStylesheets = []
 
@@ -45,19 +43,13 @@ export function findMainStyleSheetFile(styleSheets, componentName) {
   }
 
   if (matches.length === 1) {
-    ux.debug(
-      `Main StyleSheet Found: ${FileUtils.convertToComponentRelativePath(matches[0])}`
-    )
+    debug(`Main StyleSheet Found: ${convertToComponentRelativePath(matches[0])}`)
     return matches[0]
   } else if (matches.length === 0) {
-    throw new FileMissingError(
-      'An index or main StyleSheet file could not be found.'
-    )
+    throw new FileMissingError('An index or main StyleSheet file could not be found.')
   }
-  ux.debug(matches)
-  throw new InputFileError(
-    'Only one index or main StyleSheet file is allowed but multiple matches were found.'
-  )
+
+  throw new InputFileError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
 }
 
 /**
@@ -74,10 +66,4 @@ export function getMainStyleSheet(styleSheets, componentName) {
     // If we have more than one Stylesheet file, try to find a single main/index file (one ring to rule them all)
     return findMainStyleSheetFile(styleSheets, componentName)
   }
-}
-
-export default {
-  createMasterStylesheet,
-  findMainStyleSheetFile,
-  getMainStyleSheet
 }

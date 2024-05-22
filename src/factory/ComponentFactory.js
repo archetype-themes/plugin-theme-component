@@ -1,11 +1,9 @@
-// External Dependencies
-import { ux } from '@oclif/core'
-
 // Internal Dependencies
 import ComponentFiles from '../models/ComponentFiles.js'
-import ComponentFilesUtils from '../utils/ComponentFilesUtils.js'
-import FileUtils from '../utils/FileUtils.js'
-import LiquidUtils from '../utils/LiquidUtils.js'
+import { indexFiles } from '../utils/ComponentFilesUtils.js'
+import { getFileContents } from '../utils/FileUtils.js'
+import { getSnippetNames } from '../utils/LiquidUtils.js'
+import { warn } from '../utils/LoggerUtils.js'
 
 class ComponentFactory {
   /**
@@ -15,23 +13,17 @@ class ComponentFactory {
    */
   static async initializeComponent(component) {
     // Index Snippet Files
-    component.files = await ComponentFilesUtils.indexFiles(
-      component.name,
-      component.rootFolder,
-      new ComponentFiles()
-    )
+    component.files = await indexFiles(component.name, component.rootFolder, new ComponentFiles())
 
     // Load Liquid Code
-    component.liquidCode = await FileUtils.getFileContents(
-      component.files.liquidFile
-    )
+    component.liquidCode = await getFileContents(component.files.liquidFile)
 
     // Find snippet names in render tags
-    component.snippetNames = LiquidUtils.getSnippetNames(component.liquidCode)
+    component.snippetNames = getSnippetNames(component.liquidCode)
 
     // Warn When A Possible Recursive Render Call Is Made
     if (component.snippetNames.includes(component.name)) {
-      ux.warn(
+      warn(
         `The "${component.name}" component is trying to render itself, which could lead to a recursive infinite loop.`
       )
     }

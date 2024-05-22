@@ -28,5 +28,3 @@ export async function writeLocales(locales, localesFolder) {
 
   return Promise.all(promises)
 }
-
-export default { writeLocales }

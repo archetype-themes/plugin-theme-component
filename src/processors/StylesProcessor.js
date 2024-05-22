@@ -5,8 +5,8 @@ import path from 'node:path'
 
 // Internal Imports
 import PostCssProcessor from './styles/PostCssProcessor.js'
-import FileUtils from '../utils/FileUtils.js'
-import StylesUtils from '../utils/StylesUtils.js'
+import { saveFile } from '../utils/FileUtils.js'
+import { createMainStylesheet } from '../utils/StylesUtils.js'
 
 class StylesProcessor {
   /**
@@ -15,20 +15,12 @@ class StylesProcessor {
    * @param {string} outputFile
    * @return {Promise<string>}
    */
-  static async buildStylesBundle(
-    stylesheets,
-    outputFile
-  ) {
+  static async buildStylesBundle(stylesheets, outputFile) {
     const masterStylesheet = path.join(os.tmpdir(), 'masterStylesheet.css')
-    const masterStylesheetContents =
-      StylesUtils.createMasterStylesheet(stylesheets)
+    const masterStylesheetContents = createMainStylesheet(stylesheets)
 
-    await FileUtils.saveFile(masterStylesheet, masterStylesheetContents)
-    const css = await PostCssProcessor.processStyles(
-      masterStylesheetContents,
-      masterStylesheet,
-      outputFile
-    )
+    await saveFile(masterStylesheet, masterStylesheetContents)
+    const css = await PostCssProcessor.processStyles(masterStylesheetContents, masterStylesheet, outputFile)
     await unlink(masterStylesheet)
     return css
   }

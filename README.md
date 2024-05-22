@@ -54,7 +54,7 @@ DESCRIPTION
   Theme Component Plugin - By Archetype Themes
 ```
 
-_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.4/src/commands/theme/component/index.js)_
+_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.4.0/src/commands/theme/component/index.js)_
 
 ## `shopify theme component dev [COMPONENTS]`
 
@@ -62,7 +62,7 @@ Develop using theme components
 
 ```
 USAGE
-  $ shopify theme component dev [COMPONENTS...] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w]
+  $ shopify theme component dev [COMPONENTS...] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w] [--sync]
 
 ARGUMENTS
   COMPONENTS...  Component name(s)
@@ -70,6 +70,7 @@ ARGUMENTS
 FLAGS
   -s, --[no-]setup-files  Copy Setup Files
   -w, --[no-]watch        Watch For Changes
+      --[no-]sync         Sync your files through shopify theme dev
 
 PATH FLAGS
   -l, --locales-path=<path-or-github-url>  [default: https://github.com/archetype-themes/locales.git] Path to your
@@ -102,9 +103,14 @@ FLAG DESCRIPTIONS
   -w, --[no-]watch  Watch For Changes
 
     Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.
+
+  --[no-]sync  Sync your files through shopify theme dev
+
+    This will execute shopify theme dev along with your component dev command. You can customize options for that
+    command in your toml file.
 ```
 
-_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.4/src/commands/theme/component/dev.js)_
+_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.4.0/src/commands/theme/component/dev.js)_
 
 ## `shopify theme component generate COMPONENTS`
 
@@ -125,7 +131,7 @@ DESCRIPTION
   Generate canvas files for new components
 ```
 
-_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.4/src/commands/theme/component/generate.js)_
+_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.4.0/src/commands/theme/component/generate.js)_
 
 ## `shopify theme component install [COMPONENTS]`
 
@@ -163,7 +169,7 @@ FLAG DESCRIPTIONS
     publicly shared locales database.
 ```
 
-_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.3.4/src/commands/theme/component/install.js)_
+_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.4.0/src/commands/theme/component/install.js)_
 <!-- commandsstop -->
 
 ## Contributing

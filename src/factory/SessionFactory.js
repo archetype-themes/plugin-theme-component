@@ -1,15 +1,11 @@
 import Session from '../models/static/Session.js'
 
 /**
- *
- * @param {string} commandId
+ * Session Factory
  * @param {ComponentTomlConfig} tomlConfig
  */
-export function sessionFactory(commandId, tomlConfig) {
-  const commandElements = commandId.split(':')
-
+export function sessionFactory(tomlConfig) {
   Session.config = tomlConfig
-  Session.command = commandElements[commandElements.length - 1]
 
   return Session
 }

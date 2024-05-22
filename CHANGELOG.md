@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2024-05-22
+
+### Added
+
+- sync/no-sync flag for the dev command enables remote theme sync through shopify theme dev CLI command #416
+
+### Changed
+
+- Replaced the use of the deprecated oclif ux library for logging by internal logging functions
+- Dependencies minor updates
+
 ## [3.3.4] - 2024-05-17
 
 ### Fixed
@@ -42,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Liquid syntax error with parenthese in explorer's index template file
+- Liquid syntax error with parentheses in explorer's index template file
 
 ### Removed
 
@@ -520,7 +531,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- feature: The settings schema array is now merged by name key. They were only merged with the theme's data upon
+- feature: The settings schema array now merges by name key. They were only merged with the theme's data upon
   installation before.
 
 ## [1.5.4] - 2023-09-02
@@ -695,8 +706,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Templates for new components
-  - Added 'de', 'it', 'pt-BR' and 'pt-PT' locales
-  - package.json now inherits "author", "license" and package scope from parent monorepo
+  - Added 'de,' 'it,' 'pt-BR' and 'pt-PT' locales
+  - package.json now inherits "author," "license" and package scope from parent monorepo
   - package.json now includes repository information
 - SVG Snippets are now processed through SVGO
 - vitest is now installed as a test framework
@@ -768,7 +779,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation: Modified NPM command examples to use the GitHub Package Repository
 - Documentation: Modified commands to use npx prefix
 - Documentation: Updated limitations, linking to actual issues in the GitHub project.
-- Documentation: Contributing section now details the code structure. All folders and phases of build are now explained.
+- Documentation: The "Contributing" section now details the code structure. All folders and phases of build are now
+  explained.
 - Documentation: Sections and Snippet Components now contain multiple examples of different-size components with
   different file structures and strategies.
 - Documentation: Setup documentation now gives you the option of using nvm or Homebrew to set up Node.js

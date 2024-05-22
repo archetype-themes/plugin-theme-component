@@ -2,7 +2,7 @@ import path from 'node:path'
 import glob from 'fast-glob'
 import picomatch from 'picomatch'
 import { init, parse } from 'es-module-lexer'
-import FileUtils from '../../utils/FileUtils.js'
+import { getFileContents, getJsonFileContents, saveFile } from '../../utils/FileUtils.js'
 import { isUrl } from '../../utils/WebUtils.js'
 
 class ImportMapProcessor {
@@ -16,12 +16,12 @@ class ImportMapProcessor {
    */
   static async build(jsFiles, outputFile, collectionRootFolder) {
     /** @type {{imports: Object<string, string>}} */
-    const importMap = await FileUtils.getJsonFileContents(path.join(collectionRootFolder, this.ImportMapFile))
+    const importMap = await getJsonFileContents(path.join(collectionRootFolder, this.ImportMapFile))
     const importMapEntries = this.resolveImportMapEntries(importMap.imports, collectionRootFolder)
     const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries)
     const sortedBuildEntries = new Map([...buildEntries.entries()].sort())
     const importMapTags = this.generateImportMapTags(sortedBuildEntries)
-    await FileUtils.saveFile(outputFile, importMapTags)
+    await saveFile(outputFile, importMapTags)
     return this.filterBuildEntries(sortedBuildEntries, jsFiles)
   }
 
@@ -99,7 +99,7 @@ class ImportMapProcessor {
    * @param {Map<string, string>} buildEntries
    */
   static async processJsFile(file, importMapEntries, buildEntries) {
-    const fileContents = await FileUtils.getFileContents(file)
+    const fileContents = await getFileContents(file)
     const [imports] = parse(fileContents)
     const promises = []
     for (const element of imports) {

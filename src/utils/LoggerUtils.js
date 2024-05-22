@@ -1,9 +1,9 @@
 // External Dependencies
 import { basename } from 'node:path'
-import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import { ucFirst } from './SyntaxUtils.js'
+import Session from '../models/static/Session.js'
 
 export const Levels = {
   Fatal: 'fatal',
@@ -23,34 +23,34 @@ export const childSpacer = '  ║     '
  * @param {string} message
  */
 export function logTitleItem(message) {
-  ux.info(`${topPrefix}${message}`)
+  info(`${topPrefix}${message}`)
 }
 
 /**
- * Log Child Item
+ * Log Child Item (With Pointer)
  * @param {string} message - Message to display
  */
 export function logChildItem(message) {
-  ux.info(`${childPrefix}${message}`)
+  info(`${childPrefix}${message}`)
+}
+
+/**
+ * Log Child Message Without Pointer
+ * @param {string} [message='']
+ */
+export function logChildMessage(message = '') {
+  info(childSpacer + message)
+}
+
+export function logSeparator() {
+  info('--------------------------------------------------------')
 }
 
 /**
  * Logs an empty line as a spacer element
  */
 export function logSpacer() {
-  ux.info('')
-}
-
-export function logSeparator() {
-  ux.info('--------------------------------------------------------')
-}
-
-/**
- * Log Child Message
- * @param {string} [message='']
- */
-export function logChildMessage(message = '') {
-  ux.info(childSpacer + message)
+  info('')
 }
 
 /**
@@ -62,10 +62,10 @@ export function logWatcherInit(customText) {
     customText = [customText]
   }
   logSpacer()
-  ux.info('--------------------------------------------------------')
-  customText.forEach((initLine) => ux.info(initLine))
-  ux.info('(Ctrl+C to abort)')
-  ux.info('--------------------------------------------------------')
+  info('--------------------------------------------------------')
+  customText.forEach((initLine) => info(initLine))
+  info('(Ctrl+C to abort)')
+  info('--------------------------------------------------------')
   logSpacer()
 }
 
@@ -85,9 +85,9 @@ export function logWatcherEvent(event, eventPath) {
  */
 export function logWatcherAction(action) {
   logSpacer()
-  ux.info('--------------------------------------------------------')
-  ux.info(`${action}`)
-  ux.info('--------------------------------------------------------')
+  info('--------------------------------------------------------')
+  info(`${action}`)
+  info('--------------------------------------------------------')
   logSpacer()
 }
 
@@ -96,6 +96,91 @@ export function logWatcherAction(action) {
  * Returns true when output level is debug or trace.
  * @return {boolean}
  */
-export function isDebugEnabled() {
-  return [Levels.Debug, Levels.Trace].includes(ux.config.outputLevel)
+function isDebugEnabled() {
+  return [Levels.Debug, Levels.Trace].includes(Session.logLevel)
+}
+
+/**
+ * Display A Fatal Error And Quit
+ * @param {string} message Custom Error Message
+ * @param {Error} [e] Error object
+ */
+export function fatal(message, e) {
+  const errorMessage = '\x1b[35mFATAL ERROR:\x1b[0m ' + message
+  if (e) {
+    if (isDebugEnabled()) {
+      console.log(errorMessage, e.stack)
+    } else {
+      console.log(errorMessage, e.message)
+    }
+  } else {
+    console.log(errorMessage)
+  }
+
+  // Exit the program
+  process.exit(1)
+}
+
+/**
+ * Display An Error Message
+ * @param {string} message
+ * @param {Error} [e] Error object
+ */
+export function error(message, e) {
+  if ([Levels.Error, Levels.Warn, Levels.Info, Levels.Debug, Levels.Trace].includes(Session.logLevel)) {
+    const errorMessage = '\x1b[31mERROR:\x1b[0m ' + message
+    if (e) {
+      if (isDebugEnabled()) {
+        console.log(errorMessage, e.stack)
+      } else {
+        console.log(errorMessage, e.message)
+      }
+    } else {
+      console.log(errorMessage)
+    }
+  }
+}
+
+/**
+ * Display A Warning Message
+ * @param {string} message
+ */
+export function warn(message) {
+  if ([Levels.Warn, Levels.Info, Levels.Debug, Levels.Trace].includes(Session.logLevel)) {
+    console.log('\x1b[33mWARNING:\x1b[0m ' + message)
+  }
+}
+
+/**
+ * Display An Informative Message
+ * @param {string} message
+ */
+export function info(message) {
+  if ([Levels.Info, Levels.Debug, Levels.Trace].includes(Session.logLevel)) {
+    if (isDebugEnabled()) {
+      console.log('\x1b[34mINFO:\x1b[0m ' + message)
+    } else {
+      console.log(message)
+    }
+  }
+}
+
+/**
+ * Display A Debug Message
+ * @param {string} message
+ */
+export function debug(message) {
+  if ([Levels.Debug, Levels.Trace].includes(Session.logLevel)) {
+    console.log('\x1b[90mDEBUG:\x1b[0m ' + message)
+  }
+}
+
+/**
+ * Display A Trace Message
+ * @param {string} message
+ */
+export function trace(message) {
+  if (Session.logLevel === Levels.Trace) {
+    console.log('\x1b[37mTRACE:\x1b[0m ' + message)
+  }
 }

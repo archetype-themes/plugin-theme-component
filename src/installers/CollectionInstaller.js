@@ -1,6 +1,5 @@
 // External Dependencies
 import { basename, join } from 'node:path'
-import { ux } from '@oclif/core'
 import merge from 'deepmerge'
 
 // Internal Dependencies
@@ -17,6 +16,7 @@ import { LIQUID_EXTENSION } from '../utils/ComponentFilesUtils.js'
 import Session from '../models/static/Session.js'
 import { ChangeType } from '../utils/Watcher.js'
 import { THEME_LAYOUT_FILE } from '../config/Components.js'
+import { debug, warn } from '../utils/LoggerUtils.js'
 
 class CollectionInstaller {
   /**
@@ -79,13 +79,13 @@ class CollectionInstaller {
     for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
       if (!asset || !(await exists(asset))) continue
 
-      ux.debug(loggerMessage, basename(asset))
+      debug(loggerMessage + ':' + basename(asset))
 
       let assetBasename = basename(asset)
       if (nameModifier) assetBasename = nameModifier(assetBasename)
 
       if (themeLiquid.includes(assetBasename)) {
-        ux.warn(
+        warn(
           `Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`
         )
         continue
@@ -124,14 +124,14 @@ class CollectionInstaller {
       )
     }
 
-    ux.debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
+    debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
     themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
 
     await saveFile(themeLiquidFile, themeLiquid)
   }
 
   static injectionFailureWarning(message, injections) {
-    ux.warn(`
+    warn(`
 **************************************************************************************************
 ${message}
 
@@ -150,7 +150,7 @@ You should manually insert these lines inside your "theme.liquid" file:
    * @return {Promise<Awaited<unknown>[]>}
    */
   static async writeLocales(locales, themeLocalesPath) {
-    ux.debug("Merging Collection Locales with the Theme's Locales")
+    debug("Merging Collection Locales with the Theme's Locales")
     const fileOperations = []
 
     // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })

@@ -2,8 +2,7 @@
 const LIQUID_BLOCK_REGEX = /\{%-?.*?-?%}/gs
 
 /** @type {RegExp} **/
-const LIQUID_COMMENTS_REGEX =
-  /\{%-?\s*comment\s*-?%}[\s\S]*?\{%-?\s*endcomment\s*-?%}/gi
+const LIQUID_COMMENTS_REGEX = /\{%-?\s*comment\s*-?%}[\s\S]*?\{%-?\s*endcomment\s*-?%}/gi
 
 /** @type {RegExp} **/
 const LIQUID_RENDER_REGEX = /\srender\s+'([^']+)'/gs
@@ -29,5 +28,3 @@ export function getSnippetNames(liquidCode) {
 export function stripComments(liquidCode) {
   return liquidCode.replace(LIQUID_COMMENTS_REGEX, '')
 }
-
-export default { getSnippetNames, stripComments }

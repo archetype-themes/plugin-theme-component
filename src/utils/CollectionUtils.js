@@ -1,40 +1,8 @@
-// External Dependencies
-import { join } from 'node:path'
-
 // Internal Dependencies
-import { exists, getFolders } from './FileUtils.js'
-import { COMPONENTS_FOLDER } from '../config/Components.js'
 import FileMissingError from '../errors/FileMissingError.js'
-import Component from '../models/Component.js'
-
-/**
- * Find Components From package.json files
- * @param {string[]} componentFolders
- * @returns {Component[]}
- */
-function findComponents(componentFolders) {
-  const components = []
-
-  for (const componentFolder of componentFolders) {
-    const componentName = componentFolder.split('/').pop()
-    components.push(new Component(componentName, componentFolder))
-  }
-
-  return components
-}
-
-/**
- * Get Collection's Component Folders
- * @param {string} collectionRootFolder
- * @returns {Promise<string[]>}
- */
-async function getComponentFolders(collectionRootFolder) {
-  const componentsFolder = join(collectionRootFolder, COMPONENTS_FOLDER)
-  if (!(await exists(componentsFolder))) {
-    throw new FileMissingError(`Unable to locate components folder ${componentsFolder}`)
-  }
-  return getFolders(join(collectionRootFolder, COMPONENTS_FOLDER))
-}
+import ComponentFactory from '../factory/ComponentFactory.js'
+import Snippet from '../models/Snippet.js'
+import { dirname, parse } from 'node:path'
 
 /**
  *
@@ -42,7 +10,7 @@ async function getComponentFolders(collectionRootFolder) {
  * @param {string[]} componentNames
  * @returns {Set<string>}
  */
-export function getComponentNamesToBuild(components, componentNames) {
+export function validateComponentNames(components, componentNames) {
   let componentsNameTree = new Set(componentNames)
 
   componentNames.forEach((componentName) => {
@@ -54,7 +22,7 @@ export function getComponentNamesToBuild(components, componentNames) {
     }
 
     // Recursive call applied to snippet names
-    const componentNameTree = getComponentNamesToBuild(components, component.snippetNames)
+    const componentNameTree = validateComponentNames(components, component.snippetNames)
     // Merge data with the global Set
     componentsNameTree = new Set([...componentsNameTree, ...componentNameTree])
   })
@@ -63,22 +31,34 @@ export function getComponentNamesToBuild(components, componentNames) {
 }
 
 /**
- * Init Collection Components
- * @param {module:models/Collection} collection
- * @return {Promise<module:models/Collection>}
+ * Build a Collection
+ * @param {Component[]} components Components
+ * @throws InternalError - No components found
+ * @return {Promise<Component[]>} Loaded snippets
  */
-export async function initComponents(collection) {
-  // Find .gitignore File
-  const gitignoreFile = join(collection.rootFolder, '.gitignore')
-  if (await exists(gitignoreFile)) {
-    collection.gitIgnoreFile = gitignoreFile
-  }
+export async function loadComponents(components) {
+  // Initialize Individual Components
+  return await Promise.all(components.map((component) => ComponentFactory.initializeComponent(component)))
+}
 
-  // Find All component Folders
-  const componentFolders = await getComponentFolders(collection.rootFolder)
+export async function loadSnippets(components) {
+  // Create Embedded Snippets Skeleton from Components
+  const snippets = createEmbeddedSnippets(components)
+  // Initialize Embedded Snippets
+  return await Promise.all(snippets.map((snippet) => ComponentFactory.initializeComponent(snippet)))
+}
 
-  // Create Components From components Folders
-  collection.components = findComponents(componentFolders)
+/**
+ * Create Embedded Snippets
+ * @param {Component[]} components
+ * @returns {Snippet[]}
+ */
+function createEmbeddedSnippets(components) {
+  const filteredComponents = components.filter((component) => component.files?.snippetFiles)
 
-  return Promise.resolve(collection)
+  return filteredComponents
+    .map((component) =>
+      component.files.snippetFiles.map((snippetFile) => new Snippet(parse(snippetFile).name, dirname(snippetFile)))
+    )
+    .flat()
 }

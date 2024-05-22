@@ -1,7 +1,6 @@
 // External Dependencies
 import { mkdir, rm } from 'node:fs/promises'
 import { join } from 'node:path'
-import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import { LOCALES_FOLDER_NAME } from '../config/Components.js'
@@ -12,8 +11,8 @@ import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import { copyFilesToFolder, getFolderFilesRecursively, saveFile } from '../utils/FileUtils.js'
-import LocaleUtils from '../utils/LocaleUtils.js'
-import { isDebugEnabled, logChildItem } from '../utils/LoggerUtils.js'
+import { writeLocales } from '../utils/LocaleUtils.js'
+import { error, fatal, logChildItem, warn } from '../utils/LoggerUtils.js'
 import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
 
@@ -78,7 +77,7 @@ class CollectionBuilder {
       logChildItem(`Import Map Processor completed in ${timer.now()} seconds`)
       return importMapEntries
     } else {
-      ux.warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
+      warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
     }
   }
 
@@ -98,9 +97,9 @@ class CollectionBuilder {
       const locales = await LocalesProcessor.build(componentsLiquidCode, localeFiles)
       logChildItem(`Locales Processor completed in ${timer.now()} seconds`)
       return locales
-    } catch (error) {
-      ux.error('TIP: For JSON parsing errors, use debug flag to view the name of the file in error', { exit: false })
-      ux.error('Error Building Locales: ' + error.stack && isDebugEnabled() ? error.stack : error.message)
+    } catch (e) {
+      error('!!!TIP!!! For JSON parsing errors, use debug flag to view the name of the file in error')
+      fatal('Error Building Locales: ', e)
     }
   }
 
@@ -134,7 +133,7 @@ class CollectionBuilder {
     const promises = []
 
     if (Session.firstRun || Session.changeType === ChangeType.Locale) {
-      const localesWritePromise = LocaleUtils.writeLocales(collection.build.locales, collection.build.localesFolder)
+      const localesWritePromise = writeLocales(collection.build.locales, collection.build.localesFolder)
       promises.push(localesWritePromise)
     }
 
