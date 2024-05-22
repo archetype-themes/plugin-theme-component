@@ -34,11 +34,12 @@ export class BaseCommand extends Command {
   }
 
   static setLogLevel(flags) {
-    if (flags.debug) {
-      Session.logLevel = Levels.Debug
-    }
     if (flags.trace) {
       Session.logLevel = Levels.Trace
+    } else if (flags.debug) {
+      Session.logLevel = Levels.Debug
+    } else {
+      Session.logLevel = Levels.Info
     }
   }
 }
