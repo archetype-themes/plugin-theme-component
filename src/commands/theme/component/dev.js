@@ -50,6 +50,8 @@ export const SETUP_FLAG_NAME = 'setup-files'
 /** @type {string} **/
 export const WATCH_FLAG_NAME = 'watch'
 
+const THEME_SYNC_FLAG_NAME = 'sync'
+
 export default class Dev extends BaseCommand {
   static description = 'Develop using theme components'
 
@@ -92,6 +94,14 @@ export default class Dev extends BaseCommand {
       description:
         'Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.',
       char: 'w',
+      default: true,
+      allowNo: true
+    }),
+    [THEME_SYNC_FLAG_NAME]: Flags.boolean({
+      summary: 'Sync your files through shopify theme dev',
+      description:
+        'This will execute shopify theme dev along with your component dev command. You can customize options for that command in your toml file.',
+      helpValue: '<path-or-github-url>',
       default: true,
       allowNo: true
     })
@@ -334,6 +344,7 @@ export default class Dev extends BaseCommand {
     Session.callerType = COLLECTION_TYPE_NAME
     Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
     Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
+    Session.syncMode = getValueFromFlagOrToml(THEME_SYNC_FLAG_NAME, flags, metadata, tomlConfig)
     Session.watchMode = getValueFromFlagOrToml(WATCH_FLAG_NAME, flags, metadata, tomlConfig)
 
     const tomlConfigExits = tomlConfig != null
