@@ -2,7 +2,7 @@
 import { access, constants, mkdir } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 import { cwd } from 'node:process'
-import { Args, ux } from '@oclif/core'
+import { Args } from '@oclif/core'
 
 // Internal Dependencies
 import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
@@ -12,7 +12,7 @@ import Session from '../../../models/static/Session.js'
 import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/NodeUtils.js'
 import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
-import { logSeparator, logSpacer } from '../../../utils/LoggerUtils.js'
+import { info, logChildItem, logSeparator, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate canvas files for new components'
@@ -29,13 +29,13 @@ export default class Generate extends BaseCommand {
 
   async run() {
     const { argv, flags } = await this.parse(Generate)
-    BaseCommand.setUxOutputLevel(flags)
+    BaseCommand.setLogLevel(flags)
     const tomlConfig = await super.run()
 
     await Generate.setSessionValues(argv, tomlConfig)
 
     for (const componentName of Session.components) {
-      ux.action.start(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
+      logTitleItem(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
 
       const componentPath = join(COMPONENTS_FOLDER, componentName)
       const componentAbsolutePath = join(cwd(), componentPath)
@@ -85,14 +85,14 @@ export default class Generate extends BaseCommand {
       await mkdir(componentAbsolutePath)
       await copyFolder(sourcesPath, componentAbsolutePath, copyFolderOptions)
 
-      ux.action.stop('complete')
-      ux.info('\nThe following files were created:')
+      logChildItem('complete')
+      info('\nThe following files were created:')
       const files = await getFolderFilesRecursively(componentPath)
-      files.forEach((file) => ux.info(relative(componentPath, file)))
+      files.forEach((file) => info(relative(componentPath, file)))
       logSpacer()
 
-      ux.info('Your new component is available at')
-      ux.info('./' + componentPath)
+      info('Your new component is available at')
+      info('./' + componentPath)
       logSeparator()
       logSpacer()
     }

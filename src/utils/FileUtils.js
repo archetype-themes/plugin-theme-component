@@ -2,12 +2,12 @@
 import { access, constants, copyFile, cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
-import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
+import { debug, trace } from './LoggerUtils.js'
 
 /** @type {string[]} **/
 const EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
@@ -85,14 +85,14 @@ export async function copyFilesToFolder(files, destinationFolder) {
  */
 export async function copyFolder(sourceFolder, targetFolder, options = { recursive: false }) {
   const fileOperations = []
-  ux.debug(
+  debug(
     `Copying folder contents from "${sourceFolder}" to "${targetFolder}"${options.recursive ? ' recursively' : ''}. `
   )
   const folderContent = await readdir(sourceFolder, { withFileTypes: true })
 
   // Create Target Folder if it does not exist
   if (!(await exists(targetFolder))) {
-    ux.debug(`copyFolder: Target Folder "${targetFolder}" not found. Attempting to create it.`)
+    debug(`copyFolder: Target Folder "${targetFolder}" not found. Attempting to create it.`)
     await mkdir(targetFolder, { recursive: true })
   }
 
@@ -134,7 +134,7 @@ export async function exists(file) {
  * @returns {Promise<string>}
  */
 export async function getFileContents(file) {
-  ux.trace(`Reading from disk: ${file}`)
+  trace(`Reading from disk: ${file}`)
   // noinspection JSValidateTypes
   return readFile(file, FILE_ENCODING_OPTION)
 }
@@ -193,7 +193,7 @@ export async function getFolders(folder, recursive = false) {
  * @returns {Promise<T>}
  */
 export async function getJsonFileContents(file) {
-  ux.debug(`Parsing JSON file "${file}"`)
+  debug(`Parsing JSON file "${file}"`)
   return JSON.parse(await getFileContents(file))
 }
 
@@ -247,7 +247,7 @@ export async function isWritable(file) {
  * @returns {Promise<void>}
  */
 export async function processJsTemplateStringFile(sourceFile, targetFile, jsTemplateVariables) {
-  ux.debug(`Processing JS Template String file ${sourceFile}`)
+  debug(`Processing JS Template String file ${sourceFile}`)
   // Read the file's content
   const data = await readFile(sourceFile, 'utf8')
 
@@ -271,7 +271,7 @@ export async function processJsTemplateStringFile(sourceFile, targetFile, jsTemp
  * @return {Promise<void>}
  */
 export async function saveFile(file, fileContents) {
-  ux.trace(`Writing to disk: ${file}`)
+  trace(`Writing to disk: ${file}`)
 
   if (await isReadable(file)) {
     const destinationContents = await getFileContents(file)

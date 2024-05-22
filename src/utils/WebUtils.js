@@ -1,9 +1,9 @@
 // External Dependencies
 import { join, basename } from 'node:path'
-import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import { saveFile } from './FileUtils.js'
+import { debug } from './LoggerUtils.js'
 
 const URL_REGEX = /^(http:\/\/|https:\/\/|\/\/)/
 
@@ -69,7 +69,7 @@ export function hasAuthInUrl(url) {
     const parsedUrl = new URL(url)
     return Boolean(parsedUrl.username && parsedUrl.password)
   } catch (error) {
-    ux.debug(`Error checking the following URL for HTTP Basic Auth Parameters: ${url}\n ${error}`)
+    debug(`Error checking the following URL for HTTP Basic Auth Parameters: ${url}\n ${error}`)
     return false
   }
 }

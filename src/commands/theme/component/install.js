@@ -1,6 +1,6 @@
 // External Dependencies
 import { basename } from 'node:path'
-import { Args, Flags, ux } from '@oclif/core'
+import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
@@ -15,7 +15,7 @@ import ThemeFactory from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
 import { isGitHubUrl, getRepoNameFromGitHubUrl } from '../../../utils/GitUtils.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
-import { logChildItem } from '../../../utils/LoggerUtils.js'
+import { info, logChildItem } from '../../../utils/LoggerUtils.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -54,7 +54,7 @@ export default class Install extends BaseCommand {
 
   async run() {
     const { argv, flags, metadata } = await this.parse(Install)
-    BaseCommand.setUxOutputLevel(flags)
+    BaseCommand.setLogLevel(flags)
     const tomlConfig = await super.run()
 
     await Install.setSessionValues(argv, flags, metadata, tomlConfig)
@@ -95,18 +95,18 @@ export default class Install extends BaseCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async installOne(theme, collection) {
-    ux.info(`Building & Installing the ${collection.name}.`)
+    info(`Building & Installing the ${collection.name}.`)
     const startTime = new Timer()
 
     // Build using the Build Command
     collection = await Build.buildCollection(collection)
     await Build.deployCollection(collection)
     // Install and time it!
-    ux.info(`Installing ${collection.name} for ${theme.name}.`)
+    info(`Installing ${collection.name} for ${theme.name}.`)
     const installStartTime = new Timer()
     await CollectionInstaller.install(theme, collection)
-    ux.info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)
-    ux.info(`${collection.name}: Build & Install Completed in ${startTime.now()} seconds at ${getCurrentTime()}\n`)
+    info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)
+    info(`${collection.name}: Build & Install Completed in ${startTime.now()} seconds at ${getCurrentTime()}\n`)
     return Promise.resolve(collection)
   }
 

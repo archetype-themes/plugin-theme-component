@@ -1,6 +1,5 @@
 // External Dependencies
 import { basename, dirname, extname, join } from 'node:path'
-import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from './FileUtils.js'
@@ -10,6 +9,7 @@ import { ASSETS_FOLDER_NAME, SETUP_FOLDER_NAME } from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
+import { debug, warn } from './LoggerUtils.js'
 
 /** @type {string[]}  **/
 export const STYLE_EXTENSIONS = ['.css']
@@ -99,7 +99,7 @@ function filterFiles(files, componentFiles, componentName) {
           componentFiles.snippetFiles.push(file)
           break
         }
-        ux.warn(`Ignored liquid file ${filename}`)
+        warn(`Ignored liquid file ${filename}`)
         break
       case JSON_EXTENSION:
         if (filename === 'package.json') {
@@ -107,11 +107,11 @@ function filterFiles(files, componentFiles, componentName) {
           break
         }
 
-        ux.debug(`Filter Files: Unrecognised file; ignoring ${convertToComponentRelativePath(file)}`)
+        debug(`Filter Files: Unrecognised file; ignoring ${convertToComponentRelativePath(file)}`)
         break
 
       default:
-        ux.debug(`Filter Files: Unrecognised file; ignoring ${convertToComponentRelativePath(file)}`)
+        debug(`Filter Files: Unrecognised file; ignoring ${convertToComponentRelativePath(file)}`)
         break
     }
   }
@@ -126,7 +126,7 @@ function filterFiles(files, componentFiles, componentName) {
  */
 export async function validateFolderAccess(folder, componentName) {
   if (!(await isReadable(folder))) {
-    ux.debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
+    debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
     throw new FileAccessError(
       `Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`
     )

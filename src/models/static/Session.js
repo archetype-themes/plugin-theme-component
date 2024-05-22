@@ -1,4 +1,5 @@
 import { COLLECTION_TYPE_NAME, THEME_TYPE_NAME } from '../../config/Components.js'
+import { Levels } from '../../utils/LoggerUtils.js'
 
 class Session {
   /** @type {ComponentTomlConfig} Plugin TOML config  **/
@@ -33,6 +34,9 @@ class Session {
 
   /** @type {boolean} Run "shopify theme dev" in parallel to sync files with a local dev **/
   static syncMode = false
+
+  /** @type {string} **/
+  static logLevel = Levels.Info
 
   /** @type {boolean} Watch for source file changes **/
   static watchMode = false

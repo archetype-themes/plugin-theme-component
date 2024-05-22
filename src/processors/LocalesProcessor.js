@@ -1,11 +1,11 @@
 // External Dependencies
 import { basename } from 'node:path'
-import { ux } from '@oclif/core'
 import { get, set } from 'lodash-es'
 
 // Internal Dependencies
 import { getJsonFileContents } from '../utils/FileUtils.js'
 import { stripComments } from '../utils/LiquidUtils.js'
+import { error, warn } from '../utils/LoggerUtils.js'
 
 const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 
@@ -17,14 +17,10 @@ export default class LocalesProcessor {
    * @returns {Promise<Object>}
    */
   static async build(componentsLiquidCode, localeFiles) {
-    const elements = Array.isArray(componentsLiquidCode)
-      ? componentsLiquidCode
-      : [componentsLiquidCode]
+    const elements = Array.isArray(componentsLiquidCode) ? componentsLiquidCode : [componentsLiquidCode]
 
     const availableLocales = await this.parseLocaleFilesContent(localeFiles)
-    const translationKeys = elements.flatMap((code) =>
-      this.#getTranslationKeys(code)
-    )
+    const translationKeys = elements.flatMap((code) => this.#getTranslationKeys(code))
 
     return this.filterTranslations(availableLocales, translationKeys)
   }
@@ -58,15 +54,11 @@ export default class LocalesProcessor {
       })
     })
 
-    const sortedMissingLocales = [...missingLocales.entries()].sort((a, b) =>
-      a[0].localeCompare(b[0])
-    )
+    const sortedMissingLocales = [...missingLocales.entries()].sort((a, b) => a[0].localeCompare(b[0]))
 
     sortedMissingLocales.forEach(([translationKey, locales]) => {
       locales.forEach((locale) => {
-        ux.warn(
-          `Translation missing "${translationKey}" for the "${locale}" locale.`
-        )
+        warn(`Translation missing "${translationKey}" for the "${locale}" locale.`)
       })
     })
 
@@ -90,9 +82,8 @@ export default class LocalesProcessor {
       if (translationKey.startsWith("'") && translationKey.endsWith("'")) {
         translationKeys.add(translationKey.slice(1, -1))
       } else {
-        ux.error(
-          `Incompatible translation syntax for variable ${translationKey}. You must use the 't' filter at when defining ${translationKey} instead of when using it.`,
-          { exit: false }
+        error(
+          `Incompatible translation syntax for variable ${translationKey}. You must use the 't' filter at when defining ${translationKey} instead of when using it.`
         )
       }
     }
@@ -108,14 +99,13 @@ export default class LocalesProcessor {
   static async parseLocaleFilesContent(localeFiles) {
     const locales = {}
 
-    const localeFileRegex =
-      /^(?<locale>([a-z]{2})(-[a-z]{2})?)(\.default)?\.json$/
+    const localeFileRegex = /^(?<locale>([a-z]{2})(-[a-z]{2})?)(\.default)?\.json$/
 
     for (const file of localeFiles) {
       const fileName = basename(file).toLowerCase()
 
       if (localeFileRegex.test(fileName)) {
-        const locale = fileName.match(localeFileRegex).groups.locale
+        const locale = RegExp(localeFileRegex).exec(fileName).groups.locale
         locales[locale] = await getJsonFileContents(file)
       }
     }

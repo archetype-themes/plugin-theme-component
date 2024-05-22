@@ -1,11 +1,9 @@
-// External Dependencies
-import { ux } from '@oclif/core'
-
 // Internal Dependencies
 import ComponentFiles from '../models/ComponentFiles.js'
 import { indexFiles } from '../utils/ComponentFilesUtils.js'
 import { getFileContents } from '../utils/FileUtils.js'
 import { getSnippetNames } from '../utils/LiquidUtils.js'
+import { warn } from '../utils/LoggerUtils.js'
 
 class ComponentFactory {
   /**
@@ -25,7 +23,7 @@ class ComponentFactory {
 
     // Warn When A Possible Recursive Render Call Is Made
     if (component.snippetNames.includes(component.name)) {
-      ux.warn(
+      warn(
         `The "${component.name}" component is trying to render itself, which could lead to a recursive infinite loop.`
       )
     }

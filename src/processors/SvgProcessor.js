@@ -1,7 +1,9 @@
 // External Dependencies
-import { ux } from '@oclif/core'
 import { JSDOM } from 'jsdom'
 import { loadConfig, optimize } from 'svgo'
+
+// Internal Dependencies
+import { warn } from '../utils/LoggerUtils.js'
 
 class SvgProcessor {
   /** @type {Object} **/
@@ -21,9 +23,7 @@ class SvgProcessor {
     if (!this.#svgoConfigCheck) {
       this.#svgoConfig = await loadConfig(null, cwd)
       if (!this.#svgoConfig) {
-        ux.warn(
-          'SVGO configuration not found. Proceeding with default settings.'
-        )
+        warn('SVGO configuration not found. Proceeding with default settings.')
       }
       this.#svgoConfigCheck = true
     }
@@ -68,9 +68,7 @@ class SvgProcessor {
       svg.parentNode.replaceChild(newSvg, svg)
       return newSvg.outerHTML
     }
-    ux.warn(
-      `No SVG found inside "${svgName}". Source code will be returned as is.`
-    )
+    warn(`No SVG found inside "${svgName}". Source code will be returned as is.`)
     return svgSource
   }
 }

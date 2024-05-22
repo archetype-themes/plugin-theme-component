@@ -1,7 +1,6 @@
 // External Dependencies
 import { copyFile, mkdir, rm } from 'node:fs/promises'
 import { extname, join, sep } from 'node:path'
-import { ux } from '@oclif/core'
 // eslint-disable-next-line no-unused-vars
 import { FSWatcher, watch as chokidarWatch } from 'chokidar'
 import gitignore from 'parse-gitignore'
@@ -10,7 +9,7 @@ import gitignore from 'parse-gitignore'
 import { CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import { SETUP_FOLDER_NAME } from '../config/Components.js'
 import { JSON_EXTENSION, LIQUID_EXTENSION, SCRIPT_EXTENSIONS, STYLE_EXTENSIONS } from './ComponentFilesUtils.js'
-import { logWatcherAction } from './LoggerUtils.js'
+import { debug, error, logWatcherAction } from './LoggerUtils.js'
 
 export const ChangeType = {
   Asset: 'asset',
@@ -71,8 +70,8 @@ export function getWatcher(rootFolder, ignorePatterns) {
     watchOptions.ignored = ignorePatterns
   }
 
-  ux.debug('Chokidar will watch the following files & folders:')
-  targets.forEach((target) => ux.debug(target))
+  debug('Chokidar will watch the following files & folders:')
+  targets.forEach((target) => debug(target))
   return chokidarWatch(targets, watchOptions)
 }
 
@@ -130,6 +129,6 @@ export function handleWatcherEvent(event, eventPath, source, destination) {
     return rm(destination, { recursive: true, force: true })
   }
   if (event === 'error') {
-    ux.error(eventPath)
+    error(eventPath)
   }
 }

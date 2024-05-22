@@ -1,11 +1,11 @@
 // External Dependencies
 import { basename } from 'node:path'
 import { env } from 'node:process'
-import { ux } from '@oclif/core'
 
 // Internal Dependencies
 import { execAsync } from './NodeUtils.js'
 import { addAuthToUrl, hasAuthInUrl } from './WebUtils.js'
+import { debug, error } from './LoggerUtils.js'
 
 const GITHUB_API_URL = 'https://api.github.com/'
 
@@ -21,7 +21,7 @@ export async function clone(repository, path) {
   if (!(await isRepoPublic(repository)) && !hasAuthInUrl(repository)) {
     if (env.GITHUB_ID && env.GITHUB_TOKEN) {
       repository = addAuthToUrl(repository, env.GITHUB_ID, env.GITHUB_TOKEN)
-      ux.debug(`Adding GitHub Auth Credentials From ENV Vars To Repository URL: ${repository}`)
+      debug(`Adding GitHub Auth Credentials From ENV Vars To Repository URL: ${repository}`)
     } else if (!(await isGitHubCliAuthActive())) {
       throw new Error(
         `Unable to clone private GitHub Repository "${repository}". Authentication credentials are unavailable through GitHub CLI or environment variables (GITHUB_ID/GITHUB_TOKEN).`
@@ -80,15 +80,15 @@ async function isRepoPublic(repoUrl) {
     if ('private' in repoInfo) {
       return !repoInfo.private
     } else if (response.status === 404) {
-      ux.debug(
+      debug(
         `GitUtils:isRepoPublic => The GitHub API call to get repository information for "${username}:${repository}" returned a "404 Not Found" HTTP Status. We will consider the repository as private.`
       )
       return false
     }
 
     // Vérifier si le dépôt est public ou privé
-  } catch (error) {
-    console.error('Erreur lors de la vérification du dépôt:', error)
+  } catch (e) {
+    error('Erreur lors de la vérification du dépôt:', e)
     return false
   }
 }

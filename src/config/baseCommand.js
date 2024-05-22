@@ -1,9 +1,11 @@
 // External dependencies
-import { Command, Flags, ux } from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 
 // Internal dependencies
 import { sessionFactory } from '../factory/SessionFactory.js'
 import { getTomlConfig } from '../utils/TomlUtils.js'
+import Session from '../models/static/Session.js'
+import { Levels } from '../utils/LoggerUtils.js'
 
 export const COMPONENT_ARG_NAME = 'components'
 export const LOCALES_FLAG_NAME = 'locales-path'
@@ -31,12 +33,12 @@ export class BaseCommand extends Command {
     return tomlConfig
   }
 
-  static setUxOutputLevel(flags) {
+  static setLogLevel(flags) {
     if (flags.debug) {
-      ux.config.outputLevel = 'debug'
+      Session.logLevel = Levels.Debug
     }
     if (flags.trace) {
-      ux.config.outputLevel = 'trace'
+      Session.logLevel = Levels.Trace
     }
   }
 }

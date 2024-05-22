@@ -1,13 +1,10 @@
-// External Dependencies
-import { ux } from '@oclif/core'
-
 // Internal Dependencies
 import CollectionBuilder from '../../../builders/CollectionBuilder.js'
 import ComponentBuilder from '../../../builders/ComponentBuilder.js'
 import SnippetBuilder from '../../../builders/SnippetBuilder.js'
 import { BaseCommand } from '../../../config/baseCommand.js'
 import Timer from '../../../models/Timer.js'
-import { logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
+import { fatal, logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
 import { plural } from '../../../utils/SyntaxUtils.js'
 
 class Build extends BaseCommand {
@@ -91,7 +88,7 @@ class Build extends BaseCommand {
           if (snippet !== undefined) {
             topComponent.snippets.push(snippet)
           } else {
-            ux.error(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
+            fatal(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
           }
         }
       }
