@@ -1,7 +1,4 @@
-import {
-  COLLECTION_TYPE_NAME,
-  THEME_TYPE_NAME
-} from '../../config/Components.js'
+import { COLLECTION_TYPE_NAME, THEME_TYPE_NAME } from '../../config/Components.js'
 
 class Session {
   /** @type {ComponentTomlConfig} Plugin TOML config  **/
@@ -21,9 +18,6 @@ class Session {
 
   /** @type {string} Path to external components **/
   static componentsPath
-
-  /** @type {string} Command Name  **/
-  static command
 
   /** @type {string} Path to the dev theme **/
   static themePath
