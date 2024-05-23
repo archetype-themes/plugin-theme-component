@@ -15,9 +15,6 @@ class ComponentFiles {
   /** @type {string} **/
   mainStylesheet
 
-  /** @type {string} **/
-  packageJson
-
   /** @type {string[]} **/
   setupFiles = []
 

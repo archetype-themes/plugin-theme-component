@@ -24,97 +24,71 @@ export const JSON_EXTENSION = '.json'
  * Index Component Files
  * @param {string} componentName
  * @param {string} folder
- * @param {ComponentFiles} filesModel
+ * @param {ComponentFiles} componentFiles
  * @return {Promise<ComponentFiles>}
  */
-export async function indexFiles(componentName, folder, filesModel) {
+export async function indexFiles(componentName, folder, componentFiles) {
   // Validation: make sure the folder is readable.
   await validateFolderAccess(folder, componentName)
 
   const files = await getFolderFilesRecursively(folder)
 
-  filterFiles(files, filesModel, componentName)
+  // Sort Component files
+  for (const file of files) {
+    sortComponentFile(file, componentFiles, componentName)
+  }
 
   // Validation: Make sure that a liquid file was found
-  if (!filesModel.liquidFile) {
+  if (!componentFiles.liquidFile) {
     throw new FileMissingError(`No liquid files file found for the "${componentName}" component`)
   }
 
   if (files) {
-    filesModel.javascriptIndex = findMainJavaScriptFile(files, componentName)
+    componentFiles.javascriptIndex = findMainJavaScriptFile(files, componentName)
   }
 
-  if (filesModel.stylesheets.length) {
-    filesModel.mainStylesheet = getMainStyleSheet(filesModel.stylesheets, componentName)
+  if (componentFiles.stylesheets.length) {
+    componentFiles.mainStylesheet = getMainStyleSheet(componentFiles.stylesheets, componentName)
   }
 
-  return filesModel
+  return componentFiles
 }
 
 /**
- * Filter Component Files by Type
- * @param {string[]} files
+ * Sort Component File
+ * @param {string} file
  * @param {ComponentFiles} componentFiles
  * @param {string} componentName
  */
-function filterFiles(files, componentFiles, componentName) {
-  // Categorize files for the build steps
-  for (const file of files) {
-    const extension = extname(file).toLowerCase()
-    const folder = dirname(file).toLowerCase()
-    const filename = basename(file).toLowerCase()
+function sortComponentFile(file, componentFiles, componentName) {
+  const extension = extname(file).toLowerCase()
+  const folder = dirname(file).toLowerCase()
+  const filename = basename(file).toLowerCase()
 
-    if (folder.includes(join(componentName, SETUP_FOLDER_NAME))) {
-      componentFiles.setupFiles.push(file)
-      continue
-    }
-
-    if (folder.endsWith(`/${ASSETS_FOLDER_NAME}`)) {
-      componentFiles.assetFiles.push(file)
-      continue
-    }
-
-    if (STYLE_EXTENSIONS.includes(extension)) {
-      componentFiles.stylesheets.push(file)
-      continue
-    }
-
-    if (SCRIPT_EXTENSIONS.includes(extension)) {
-      componentFiles.javascriptFiles.push(file)
-      continue
-    }
-
-    switch (extension) {
-      case LIQUID_EXTENSION:
-        if (filename.split('.')[0] === componentName || filename === 'index.liquid') {
-          if (componentFiles.liquidFile) {
-            throw new InputFileError(
-              `Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`
-            )
-          }
-          componentFiles.liquidFile = file
-          break
-        }
-        if (folder.endsWith('/snippets')) {
-          componentFiles.snippetFiles.push(file)
-          break
-        }
-        warn(`Ignored liquid file ${filename}`)
-        break
-      case JSON_EXTENSION:
-        if (filename === 'package.json') {
-          componentFiles.packageJson = file
-          break
-        }
-
-        debug(`Filter Files: Unrecognised file; ignoring ${convertToComponentRelativePath(file)}`)
-        break
-
-      default:
-        debug(`Filter Files: Unrecognised file; ignoring ${convertToComponentRelativePath(file)}`)
-        break
+  if (folder.includes(join(componentName, SETUP_FOLDER_NAME))) {
+    componentFiles.setupFiles.push(file)
+  } else if (folder.endsWith(`/${ASSETS_FOLDER_NAME}`)) {
+    componentFiles.assetFiles.push(file)
+  } else if (STYLE_EXTENSIONS.includes(extension)) {
+    componentFiles.stylesheets.push(file)
+  } else if (SCRIPT_EXTENSIONS.includes(extension)) {
+    componentFiles.javascriptFiles.push(file)
+  } else if (extension === LIQUID_EXTENSION) {
+    if (folder.endsWith('/snippets')) {
+      componentFiles.snippetFiles.push(file)
+    } else if (filename.split('.')[0] === componentName || filename === 'index.liquid') {
+      if (componentFiles.liquidFile) {
+        throw new InputFileError(
+          `Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`
+        )
+      }
+      componentFiles.liquidFile = file
+    } else {
+      warn(`Ignored liquid file ${filename}`)
     }
   }
+
+  debug(`Filter Files: Unrecognised file; ignoring ${convertToComponentRelativePath(file)}`)
 }
 
 /**
