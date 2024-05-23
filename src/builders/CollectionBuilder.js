@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 // Internal Dependencies
 import { LOCALES_FOLDER_NAME } from '../config/Components.js'
-import { collectionBuildFactory } from '../factory/BuildFactory.js'
+import { collectionBuildFactory } from '../factory/collectionBuildFactory.js'
 import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
