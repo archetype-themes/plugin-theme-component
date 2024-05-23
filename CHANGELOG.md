@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNPUBLISHED] - 2024-05-23
+
+### Removed
+
+- Removed automated dependabot updates for Node.js packages. We never use it.
+- Removed automated GitHub release data since we use Npm for package publishing.
+
 ## [3.4.0] - 2024-05-22
 
 ### Added
