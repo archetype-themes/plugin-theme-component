@@ -54,9 +54,9 @@ export async function loadSnippets(components) {
  * @returns {Snippet[]}
  */
 function createEmbeddedSnippets(components) {
-  const filteredComponents = components.filter((component) => component.files?.snippetFiles)
+  const componentsWithSnippet = components.filter((component) => component.files?.snippetFiles)
 
-  return filteredComponents
+  return componentsWithSnippet
     .map((component) =>
       component.files.snippetFiles.map((snippetFile) => new Snippet(parse(snippetFile).name, dirname(snippetFile)))
     )
