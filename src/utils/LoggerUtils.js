@@ -23,15 +23,18 @@ export const childSpacer = '  ║     '
  * @param {string} message
  */
 export function logTitleItem(message) {
+  logSpacer()
   info(`${topPrefix}${message}`)
 }
 
 /**
  * Log Child Item (With Pointer)
  * @param {string} message - Message to display
+ * @param {number} [indentTabs] - Number of tabs to indent
  */
-export function logChildItem(message) {
-  info(`${childPrefix}${message}`)
+export function logChildItem(message, indentTabs = 0) {
+  const tabs = '  ║'.repeat(indentTabs)
+  info(`${tabs}${childPrefix}${message}`)
 }
 
 /**

@@ -12,7 +12,7 @@ import Session from '../../../models/static/Session.js'
 import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/NodeUtils.js'
 import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
-import { logChildItem, logSeparator, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
+import { logChildItem, logSeparator, logTitleItem } from '../../../utils/LoggerUtils.js'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate canvas files for new components'
@@ -85,12 +85,10 @@ export default class Generate extends BaseCommand {
       await mkdir(componentAbsolutePath)
       await copyFolder(sourcesPath, componentAbsolutePath, copyFolderOptions)
 
-      logChildItem('complete')
-      logSpacer()
+      logChildItem('Done')
       logTitleItem('The following files were created:')
       const files = await getFolderFilesRecursively(componentPath)
       files.forEach((file) => logChildItem(relative(componentPath, file)))
-      logSpacer()
 
       logTitleItem('Your new component is available at')
       logChildItem('./' + componentPath)

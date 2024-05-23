@@ -249,6 +249,7 @@ export default class Dev extends BaseCommand {
    * @return {Promise<void>}
    */
   static async installDependencies(themePath, devFolder) {
+    logTitleItem('Installing Dependencies')
     // Install Theme Files
     const timer = new Timer()
     logChildItem(`Installing Theme Files From ${basename(themePath, '.git')}`)

@@ -25,12 +25,10 @@ class CollectionBuilder {
   static async build(collection) {
     const allComponents = collection.allComponents
 
-    const timer = new Timer()
     collection.build = BuildFactory.fromCollection(collection)
     if (Session.firstRun) {
       await this.#resetBuildFolders(collection.build)
     }
-    logChildItem(`Collection Build Initialized (${timer.now()} seconds)`)
 
     if (Session.firstRun) {
       ;[collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
@@ -71,10 +69,10 @@ class CollectionBuilder {
     const jsFiles = this.#getJsFiles(components)
 
     if (jsFiles.length) {
-      logChildItem('Running the Import Map Processor')
+      logChildItem('Starting The Import Map Processor', 1)
       const timer = new Timer()
       const importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, importMapFile, cwd)
-      logChildItem(`Import Map Processor completed in ${timer.now()} seconds`)
+      logChildItem(`Import Map Processor Done (${timer.now()} seconds)`, 1)
       return importMapEntries
     } else {
       warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
@@ -91,11 +89,11 @@ class CollectionBuilder {
   static async #buildLocales(components) {
     const componentsLiquidCode = components.map((component) => component.liquidCode)
     try {
-      logChildItem('Running the Locales Processor')
+      logChildItem('Starting The Locales Processor', 1)
       const timer = new Timer()
       const localeFiles = await getFolderFilesRecursively(join(Session.localesPath, LOCALES_FOLDER_NAME))
       const locales = await LocalesProcessor.build(componentsLiquidCode, localeFiles)
-      logChildItem(`Locales Processor completed in ${timer.now()} seconds`)
+      logChildItem(`Locales Processor Done (${timer.now()} seconds)`, 1)
       return locales
     } catch (e) {
       error('!!!TIP!!! For JSON parsing errors, use debug flag to view the name of the file in error')
@@ -114,11 +112,11 @@ class CollectionBuilder {
     const mainStylesheets = this.#getMainStylesheets(components)
 
     if (mainStylesheets.length) {
-      logChildItem('Running the Styles Processor')
+      logChildItem('Starting The Styles Processor', 1)
       const timer = new Timer()
 
       const styles = await StylesProcessor.buildStylesBundle(mainStylesheets, outputFile)
-      logChildItem(`Styles Processor completed in ${timer.now()} seconds`)
+      logChildItem(`Styles Processor Done (${timer.now()} seconds)`, 1)
       return styles
     }
   }
