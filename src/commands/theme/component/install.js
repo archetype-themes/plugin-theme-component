@@ -59,8 +59,13 @@ export default class Install extends BaseCommand {
 
     await Install.setSessionValues(argv, flags, metadata, tomlConfig)
 
-    // Creating Theme
-    const theme = ThemeFactory.fromThemeInstallCommand()
+    // Download Locales If We Have A GitHub Repo URL
+    if (isGitHubUrl(Session.localesPath)) {
+      const timer = new Timer()
+      logChildItem(`Installing Locales Database`)
+      Session.localesPath = await install(Session.localesPath)
+      logChildItem(`Done (${timer.now()} seconds)`)
+    }
 
     // Download Components If We Have A GitHub Repo URL
     let collectionName
@@ -74,16 +79,11 @@ export default class Install extends BaseCommand {
       collectionName = basename(Session.componentsPath)
     }
 
-    // Init Collection
-    const collection = await CollectionFactory.fromPath(collectionName, Session.componentsPath, Session.components)
+    // Create The Theme
+    const theme = ThemeFactory.fromThemeInstallCommand()
 
-    // Download Locales If We Have A GitHub Repo URL
-    if (isGitHubUrl(Session.localesPath)) {
-      const timer = new Timer()
-      logChildItem(`Installing Locales Database`)
-      Session.localesPath = await install(Session.localesPath)
-      logChildItem(`Done (${timer.now()} seconds)`)
-    }
+    // Create The Collection
+    const collection = await CollectionFactory.fromPath(collectionName, Session.componentsPath, Session.components)
 
     await Install.installOne(theme, collection)
   }
