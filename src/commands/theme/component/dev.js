@@ -16,7 +16,7 @@ import {
   THEME_INDEX_TEMPLATE_LIQUID_FILE,
   THEME_LAYOUT_FILE
 } from '../../../config/Components.js'
-import CollectionFactory from '../../../factory/CollectionFactory.js'
+import { collectionFactory } from '../../../factory/CollectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
@@ -42,6 +42,7 @@ import { rm } from 'node:fs/promises'
 import { exists, saveFile } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
 import Timer from '../../../models/Timer.js'
+import { displayComponentTree } from '../../../utils/CollectionUtils.js'
 
 /** @type {string} **/
 export const THEME_FLAG_NAME = 'theme-path'
@@ -219,7 +220,10 @@ export default class Dev extends BaseCommand {
     }
 
     // Build & Deploy Collection
-    let collection = await CollectionFactory.fromCwd(componentNames)
+    let collection = await this.getCollectionFromCwd(componentNames)
+    if (Session.firstRun) {
+      displayComponentTree(collection)
+    }
     collection = await Build.buildCollection(collection)
     await Build.deployCollection(collection)
 
@@ -266,6 +270,15 @@ export default class Dev extends BaseCommand {
   }
 
   /**
+   * Get Collection from Factory using cwd()
+   * @param {string[]} componentNames
+   * @return {Promise<Collection|module:models/Collection>}
+   */
+  static async getCollectionFromCwd(componentNames) {
+    return collectionFactory(basename(cwd()), cwd(), componentNames)
+  }
+
+  /**
    * Update Theme in .explorer folder on file change
    * @param {string} themePath
    * @param {string} collectionPath Watcher Instance
@@ -282,7 +295,7 @@ export default class Dev extends BaseCommand {
 
     if (eventPath === THEME_LAYOUT_FILE) {
       // Inject references to the Collection's main CSS file in the theme's main liquid file
-      const collection = await CollectionFactory.fromCwd(componentNames)
+      const collection = await this.getCollectionFromCwd(componentNames)
       collection.build = BuildFactory.fromCollection(collection)
       const devFolder = join(cwd(), DEV_FOLDER_NAME)
       const theme = await fromDevCommand(devFolder)
@@ -292,7 +305,7 @@ export default class Dev extends BaseCommand {
     console.log(eventPath)
     console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
     if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
-      let collection = await CollectionFactory.fromCwd(componentNames)
+      let collection = await this.getCollectionFromCwd(componentNames)
       collection = await Build.buildCollection(collection)
       const indexTemplate = await buildIndexTemplate(collection.components, themePath)
       await saveFile(join(cwd(), DEV_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE), indexTemplate)

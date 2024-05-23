@@ -4,7 +4,7 @@ import ComponentBuilder from '../../../builders/ComponentBuilder.js'
 import SnippetBuilder from '../../../builders/SnippetBuilder.js'
 import { BaseCommand } from '../../../config/baseCommand.js'
 import Timer from '../../../models/Timer.js'
-import { fatal, logChildItem, logChildMessage, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
+import { logChildItem, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
 import { plural } from '../../../utils/SyntaxUtils.js'
 
 class Build extends BaseCommand {
@@ -17,17 +17,13 @@ class Build extends BaseCommand {
    * @return {Promise<module:models/Collection>}
    */
   static async buildCollection(collection) {
-    logTitleItem(`Initializing Components Build for "${collection.name}"`)
-    const initStartTime = new Timer()
+    logTitleItem(`Building Components For "${collection.name}"`)
+    const buildTimer = new Timer()
 
-    logTitleItem(
-      `Assembling ${collection.components.length} component${plural(collection.components)} and ${collection.snippets.length} snippet${plural(collection.snippets)}.`
+    logChildItem(
+      `Building ${collection.components.length + collection.snippets.length} Individual Component${plural(collection.components)} And Snippet${plural(collection.snippets)} for "${collection.name}"`
     )
-
-    logSpacer()
-
-    logTitleItem(`Building Individual Components for ${collection.name}`)
-    const buildStartTime = new Timer()
+    const individualBuildTimer = new Timer()
 
     // Build Components
     ;[collection.components, collection.snippets] = await Promise.all([
@@ -35,94 +31,18 @@ class Build extends BaseCommand {
       Promise.all(collection.snippets.map((snippet) => SnippetBuilder.build(snippet, collection.rootFolder)))
     ])
 
-    logChildItem(`Build complete (${buildStartTime.now()} seconds)`)
-    logSpacer()
-
-    logTitleItem('Components Tree')
-    const treeStartTime = new Timer()
-
-    // Build Component Hierarchy Structure
-    await this.setComponentHierarchy(collection.components, collection.allComponents)
-    await this.setComponentHierarchy(collection.snippets, collection.allComponents)
-
-    logChildMessage()
-    logChildMessage(`${collection.name}/`)
-
-    let filteredComponents = collection.components.filter((component) => component.name.startsWith('section'))
-    if (!filteredComponents.length > 0) {
-      filteredComponents = collection.components
-    }
-
-    for (const [i, component] of filteredComponents.entries()) {
-      const last = i === filteredComponents.length - 1
-      this.folderTreeLog(component, last)
-    }
-    logChildMessage()
-
-    logChildItem(`Tree complete (${treeStartTime.now()} seconds)`)
-    logSpacer()
+    logChildItem(`Individual Build Done (${individualBuildTimer.now()} seconds)`)
 
     // Build Collection
-    logTitleItem('Building Collection')
-    const collectionStartTime = new Timer()
+    logChildItem('Assembling Components As A Collection')
+    const collectionAssemblyTimer = new Timer()
     collection = await CollectionBuilder.build(collection)
-    logChildItem(`Collection Build complete (${collectionStartTime.now()} seconds)`)
-    logSpacer()
+    logChildItem(`Assembly Done (${collectionAssemblyTimer.now()} seconds)`)
 
     // Total Timer Output
-    logTitleItem(`Build Command Total Time: ${initStartTime.now()} seconds`)
+    logChildItem(`Build Done (${buildTimer.now()} seconds)`)
     logSpacer()
     return Promise.resolve(collection)
-  }
-
-  /**
-   * Attach Child Components
-   * @param {Component[]|Snippet[]} topComponents
-   * @param {(Component|Snippet)[]} availableComponents
-   */
-  static async setComponentHierarchy(topComponents, availableComponents) {
-    for (const topComponent of topComponents) {
-      if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
-        for (const snippetName of topComponent.snippetNames) {
-          const snippet = availableComponents.find((component) => component.name === snippetName)
-          if (snippet !== undefined) {
-            topComponent.snippets.push(snippet)
-          } else {
-            fatal(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * Folder Tree Log
-   * @param {Component|Snippet} component
-   * @param {boolean} [last=false]
-   * @param {Array} [grid=[true]]
-   * @returns {void}
-   */
-  static folderTreeLog(component, last = false, grid = []) {
-    const ascii = last ? '└──' : '├──'
-
-    let prefix = ''
-    grid.forEach((gridItem) => {
-      prefix += gridItem ? '│    ' : '     '
-    })
-
-    logChildMessage(`${prefix}${ascii} ${component.name}`)
-
-    // Removing icons from the list
-    const filteredSnippets = component.snippets.filter((component) => !component.isSvg())
-    if (filteredSnippets.length) {
-      grid.push(!last)
-      for (const [i, snippet] of filteredSnippets.entries()) {
-        const lastChild = i === filteredSnippets.length - 1
-        this.folderTreeLog(snippet, lastChild, grid)
-
-        lastChild && grid.pop()
-      }
-    }
   }
 
   /**

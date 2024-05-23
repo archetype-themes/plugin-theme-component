@@ -8,7 +8,7 @@ import { THEME_TYPE_NAME } from '../../../config/Components.js'
 import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
 import { getCurrentTime } from '../../../utils/DateUtils.js'
 import Build from './build.js'
-import CollectionFactory from '../../../factory/CollectionFactory.js'
+import { collectionFactory } from '../../../factory/CollectionFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import ThemeFactory from '../../../factory/ThemeFactory.js'
@@ -83,7 +83,7 @@ export default class Install extends BaseCommand {
     const theme = ThemeFactory.fromThemeInstallCommand()
 
     // Create The Collection
-    const collection = await CollectionFactory.fromPath(collectionName, Session.componentsPath, Session.components)
+    const collection = await collectionFactory(collectionName, Session.componentsPath, Session.components)
 
     await Install.installOne(theme, collection)
   }

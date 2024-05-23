@@ -1,11 +1,9 @@
 // Internal Dependencies
 import FileMissingError from '../errors/FileMissingError.js'
-import ComponentFactory from '../factory/ComponentFactory.js'
-import Snippet from '../models/Snippet.js'
-import { dirname, parse } from 'node:path'
+import { info, logSpacer, logTitleItem } from './LoggerUtils.js'
 
 /**
- *
+ * Validate Component Names
  * @param {(Component|Snippet)[]} components
  * @param {string[]} componentNames
  * @returns {Set<string>}
@@ -30,35 +28,50 @@ export function validateComponentNames(components, componentNames) {
   return componentsNameTree
 }
 
-/**
- * Build a Collection
- * @param {Component[]} components Components
- * @throws InternalError - No components found
- * @return {Promise<Component[]>} Loaded snippets
- */
-export async function loadComponents(components) {
-  // Initialize Individual Components
-  return await Promise.all(components.map((component) => ComponentFactory.initializeComponent(component)))
+export function displayComponentTree(collection) {
+  logTitleItem('Components Tree')
+
+  logSpacer()
+  info(`${collection.name}/`)
+
+  // Top level is section components only
+  let sectionComponents = collection.components.filter((component) => component.name.startsWith('section'))
+  if (!sectionComponents.length > 0) {
+    sectionComponents = collection.components
+  }
+
+  for (const [i, component] of sectionComponents.entries()) {
+    const last = i === sectionComponents.length - 1
+    folderTreeLog(component, last)
+  }
 }
 
-export async function loadSnippets(components) {
-  // Create Embedded Snippets Skeleton from Components
-  const snippets = createEmbeddedSnippets(components)
-  // Initialize Embedded Snippets
-  return await Promise.all(snippets.map((snippet) => ComponentFactory.initializeComponent(snippet)))
-}
-
 /**
- * Create Embedded Snippets
- * @param {Component[]} components
- * @returns {Snippet[]}
+ * Folder Tree Log
+ * @param {Component|Snippet} component
+ * @param {boolean} [last=false]
+ * @param {Array} [grid=[true]]
+ * @returns {void}
  */
-function createEmbeddedSnippets(components) {
-  const componentsWithSnippet = components.filter((component) => component.files?.snippetFiles)
+function folderTreeLog(component, last = false, grid = []) {
+  const ascii = last ? '└──' : '├──'
 
-  return componentsWithSnippet
-    .map((component) =>
-      component.files.snippetFiles.map((snippetFile) => new Snippet(parse(snippetFile).name, dirname(snippetFile)))
-    )
-    .flat()
+  let prefix = ''
+  grid.forEach((gridItem) => {
+    prefix += gridItem ? '│    ' : '     '
+  })
+
+  info(`${prefix}${ascii} ${component.name}`)
+
+  // Removing icons from the list
+  const filteredSnippets = component.snippets.filter((component) => !component.isSvg())
+  if (filteredSnippets.length) {
+    grid.push(!last)
+    for (const [i, snippet] of filteredSnippets.entries()) {
+      const lastChild = i === filteredSnippets.length - 1
+      folderTreeLog(snippet, lastChild, grid)
+
+      lastChild && grid.pop()
+    }
+  }
 }
