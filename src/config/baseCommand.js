@@ -2,7 +2,6 @@
 import { Command, Flags } from '@oclif/core'
 
 // Internal dependencies
-import { sessionFactory } from '../factory/SessionFactory.js'
 import { getTomlConfig } from '../utils/TomlUtils.js'
 import Session from '../models/static/Session.js'
 import { Levels } from '../utils/LoggerUtils.js'
@@ -28,7 +27,7 @@ export class BaseCommand extends Command {
    */
   async run() {
     const tomlConfig = await getTomlConfig()
-    sessionFactory(tomlConfig)
+    Session.config = tomlConfig
 
     return tomlConfig
   }
