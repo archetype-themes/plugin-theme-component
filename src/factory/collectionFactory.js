@@ -11,7 +11,7 @@ import { exists, getFolders } from '../utils/FileUtils.js'
 import { COMPONENTS_FOLDER } from '../config/Components.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InternalError from '../errors/InternalError.js'
-import { componentFactory } from './ComponentFactory.js'
+import { componentFactory } from './componentFactory.js'
 import { snippetFactory } from './snippetFactory.js'
 
 /**

@@ -6,7 +6,7 @@ import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
 import Build from './build.js'
-import BuildFactory from '../../../factory/BuildFactory.js'
+import { collectionBuildFactory } from '../../../factory/BuildFactory.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
 import {
@@ -16,7 +16,7 @@ import {
   THEME_INDEX_TEMPLATE_LIQUID_FILE,
   THEME_LAYOUT_FILE
 } from '../../../config/Components.js'
-import { collectionFactory } from '../../../factory/CollectionFactory.js'
+import { collectionFactory } from '../../../factory/collectionFactory.js'
 import { fromDevCommand } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
@@ -296,7 +296,7 @@ export default class Dev extends BaseCommand {
     if (eventPath === THEME_LAYOUT_FILE) {
       // Inject references to the Collection's main CSS file in the theme's main liquid file
       const collection = await this.getCollectionFromCwd(componentNames)
-      collection.build = BuildFactory.fromCollection(collection)
+      collection.build = collectionBuildFactory(collection)
       const devFolder = join(cwd(), DEV_FOLDER_NAME)
       const theme = await fromDevCommand(devFolder)
       await CollectionInstaller.injectAssetReferences(collection, theme)

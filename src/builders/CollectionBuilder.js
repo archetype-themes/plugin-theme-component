@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 // Internal Dependencies
 import { LOCALES_FOLDER_NAME } from '../config/Components.js'
-import BuildFactory from '../factory/BuildFactory.js'
+import { collectionBuildFactory } from '../factory/BuildFactory.js'
 import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'
 import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
@@ -25,7 +25,7 @@ class CollectionBuilder {
   static async build(collection) {
     const allComponents = collection.allComponents
 
-    collection.build = BuildFactory.fromCollection(collection)
+    collection.build = collectionBuildFactory(collection)
     if (Session.firstRun) {
       await this.#resetBuildFolders(collection.build)
     }
