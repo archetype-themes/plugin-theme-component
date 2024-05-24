@@ -1,9 +1,9 @@
 // External Dependencies
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
-import { validateComponentNames } from '../utils/CollectionUtils.js'
+import { getCopyrightText, validateComponentNames } from '../utils/CollectionUtils.js'
 import { fatal, logChildItem, logTitleItem } from '../utils/LoggerUtils.js'
 import Timer from '../models/Timer.js'
 import { plural } from '../utils/TextUtils.js'
@@ -13,22 +13,30 @@ import FileMissingError from '../errors/FileMissingError.js'
 import InternalError from '../errors/InternalError.js'
 import { componentFactory } from './componentFactory.js'
 import { snippetFactory } from './snippetFactory.js'
+import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
 
 /**
  * Create Collection Model From A Remote Path
  * This will attempt to download a copy of a remote repository if the path is not local
- * @param {string} name - Collection Name
  * @param {string} path - Collection Path
  * @param {string[]} [componentNames] - Selected Components to Package
  * @return {Promise<module:models/Collection>}
  */
-export async function collectionFactory(name, path, componentNames) {
-  logTitleItem(`Loading Components For "${name}"`)
+export async function collectionFactory(path, componentNames) {
   const initStartTime = new Timer()
 
   const collection = new Collection()
-  collection.name = name
   collection.rootFolder = path
+
+  if (await exists(join(collection.rootFolder, 'package.json'))) {
+    const packageManifest = getPackageManifest(collection.rootFolder)
+    collection.name = getPackageName(packageManifest)
+    collection.copyright = getCopyrightText(packageManifest)
+  } else {
+    collection.name = basename(path)
+  }
+
+  logTitleItem(`Loading "${collection.name}"`)
 
   // Find .gitignore File
   const gitignoreFile = join(collection.rootFolder, '.gitignore')

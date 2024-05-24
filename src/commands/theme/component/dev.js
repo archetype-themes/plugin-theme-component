@@ -275,7 +275,7 @@ export default class Dev extends BaseCommand {
    * @return {Promise<Collection|module:models/Collection>}
    */
   static async getCollectionFromCwd(componentNames) {
-    return collectionFactory(basename(cwd()), cwd(), componentNames)
+    return collectionFactory(cwd(), componentNames)
   }
 
   /**

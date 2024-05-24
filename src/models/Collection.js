@@ -7,6 +7,9 @@ class Collection {
   name
 
   /** @type {string} **/
+  copyright
+
+  /** @type {string} **/
   rootFolder
 
   /** @type {string} **/

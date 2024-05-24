@@ -1,5 +1,4 @@
 // External Dependencies
-import { basename } from 'node:path'
 import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
@@ -13,7 +12,7 @@ import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import { themeFactory } from '../../../factory/themeFactory.js'
 import Timer from '../../../models/Timer.js'
-import { isGitHubUrl, getRepoNameFromGitHubUrl } from '../../../utils/GitUtils.js'
+import { isGitHubUrl } from '../../../utils/GitUtils.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
 import { info, logChildItem } from '../../../utils/LoggerUtils.js'
 import { cwd } from 'node:process'
@@ -69,22 +68,18 @@ export default class Install extends BaseCommand {
     }
 
     // Download Components If We Have A GitHub Repo URL
-    let collectionName
     if (isGitHubUrl(Session.componentsPath)) {
       const timer = new Timer()
       logChildItem(`Installing Components`)
-      collectionName = getRepoNameFromGitHubUrl(Session.componentsPath)
       Session.componentsPath = await install(Session.componentsPath)
       logChildItem(`Done (${timer.now()} seconds)`)
-    } else {
-      collectionName = basename(Session.componentsPath)
     }
 
     // Create The Theme
     const theme = themeFactory(cwd())
 
     // Create The Collection
-    const collection = await collectionFactory(collectionName, Session.componentsPath, Session.components)
+    const collection = await collectionFactory(Session.componentsPath, Session.components)
 
     await Install.installOne(theme, collection)
   }
