@@ -2,7 +2,7 @@
 import { basename } from 'node:path'
 
 // Internal Dependencies
-import { ucFirst } from './SyntaxUtils.js'
+import { ucFirst } from './TextUtils.js'
 import Session from '../models/static/Session.js'
 
 export const Levels = {

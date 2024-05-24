@@ -5,7 +5,7 @@ import SnippetBuilder from '../../../builders/SnippetBuilder.js'
 import { BaseCommand } from '../../../config/baseCommand.js'
 import Timer from '../../../models/Timer.js'
 import { logChildItem, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
-import { plural } from '../../../utils/SyntaxUtils.js'
+import { plural } from '../../../utils/TextUtils.js'
 
 class Build extends BaseCommand {
   static hidden = true // Hide the command from help
