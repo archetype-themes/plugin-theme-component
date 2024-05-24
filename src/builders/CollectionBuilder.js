@@ -33,7 +33,7 @@ class CollectionBuilder {
       ;[collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
         this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
         this.#buildLocales(allComponents),
-        this.#buildStyles(allComponents, collection.build.stylesheet)
+        this.#buildStyles(allComponents, collection.build.stylesheet, collection.copyright)
       ])
     } else {
       switch (Session.changeType) {
@@ -104,16 +104,19 @@ class CollectionBuilder {
    * Builds the styles for the given collection and all components.
    * @param {(Component|Snippet)[]} components - An array containing all the components.
    * @param {string} outputFile - The collection's css bundle file.
+   * @param {string} [copyright] - The collection's Copyright Text
    * @return {Promise<string>} - A promise that resolves when the styles are built.
    */
-  static async #buildStyles(components, outputFile) {
+  static async #buildStyles(components, outputFile, copyright) {
     const mainStylesheets = this.#getMainStylesheets(components)
 
     if (mainStylesheets.length) {
       logChildItem('Starting The Styles Processor', 1)
       const timer = new Timer()
 
-      const styles = await StylesProcessor.buildStylesBundle(mainStylesheets, outputFile)
+      let styles = await StylesProcessor.buildStylesBundle(mainStylesheets, outputFile)
+      styles = getCopyright(FileTypes.Css, copyright) + styles
+      await saveFile(outputFile, styles)
       logChildItem(`Styles Processor Done (${timer.now()} seconds)`, 1)
       return styles
     }
@@ -152,7 +155,7 @@ class CollectionBuilder {
       )
       promises.push(snippetFilesWritePromises)
     }
-
+    console.log(collection.importMapEntries)
     if (collection.importMapEntries?.size && (Session.firstRun || Session.changeType === ChangeType.JavaScript)) {
       const deployImportMapFilesPromises = this.#deployImportMapFiles(
         collection.importMapEntries,

@@ -34,10 +34,10 @@ class Build extends BaseCommand {
     logChildItem(`Individual Build Done (${individualBuildTimer.now()} seconds)`)
 
     // Build Collection
-    logChildItem('Assembling Components As A Collection')
+    logChildItem('Running Processors')
     const collectionAssemblyTimer = new Timer()
-    collection = await CollectionBuilder.build(collection)
-    logChildItem(`Assembly Done (${collectionAssemblyTimer.now()} seconds)`)
+    collection = await CollectionBuilder.runProcessors(collection)
+    logChildItem(`Processors Done (${collectionAssemblyTimer.now()} seconds)`)
 
     // Total Timer Output
     logChildItem(`Build Done (${buildTimer.now()} seconds)`)
