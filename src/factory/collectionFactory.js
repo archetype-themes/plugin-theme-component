@@ -29,7 +29,7 @@ export async function collectionFactory(path, componentNames) {
   collection.rootFolder = path
 
   if (await exists(join(collection.rootFolder, 'package.json'))) {
-    const packageManifest = getPackageManifest(collection.rootFolder)
+    const packageManifest = await getPackageManifest(collection.rootFolder)
     collection.name = getPackageName(packageManifest)
     collection.copyright = getCopyrightText(packageManifest)
   } else {
