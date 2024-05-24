@@ -17,7 +17,7 @@ import {
   THEME_LAYOUT_FILE
 } from '../../../config/Components.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
-import { fromDevCommand } from '../../../factory/ThemeFactory.js'
+import { themeFactory } from '../../../factory/ThemeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
@@ -227,7 +227,7 @@ export default class Dev extends BaseCommand {
     collection = await Build.buildCollection(collection)
     await Build.deployCollection(collection)
 
-    const theme = await fromDevCommand(devFolder)
+    const theme = await themeFactory(devFolder)
 
     logTitleItem(`Installing ${collection.name} Build To ${relative(collection.rootFolder, devFolder)}`)
 
@@ -298,7 +298,7 @@ export default class Dev extends BaseCommand {
       const collection = await this.getCollectionFromCwd(componentNames)
       collection.build = collectionBuildFactory(collection)
       const devFolder = join(cwd(), DEV_FOLDER_NAME)
-      const theme = await fromDevCommand(devFolder)
+      const theme = await themeFactory(devFolder)
       await CollectionInstaller.injectAssetReferences(collection, theme)
     }
     console.log(Session.setupFiles)

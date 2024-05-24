@@ -1,7 +1,7 @@
 // External Dependencies
 import { exec } from 'node:child_process'
 import { cwd, env } from 'node:process'
-import { join, sep } from 'node:path'
+import { join } from 'node:path'
 import { promisify } from 'node:util'
 
 // Internal Dependencies
@@ -16,13 +16,6 @@ import InternalError from '../errors/InternalError.js'
  * @return {Promise<{ stdout: string, stderr: string }>}
  */
 export const execAsync = promisify(exec)
-
-export function getCurrentWorkingDirectoryName() {
-  const currentWorkingDirectory = cwd()
-  const directoryArray = currentWorkingDirectory.split(sep)
-
-  return directoryArray[directoryArray.length - 1]
-}
 
 /**
  * Shortcut to a method to get root folder username

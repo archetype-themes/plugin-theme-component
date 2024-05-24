@@ -11,11 +11,12 @@ import Build from './build.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
-import ThemeFactory from '../../../factory/ThemeFactory.js'
+import { themeFactory } from '../../../factory/ThemeFactory.js'
 import Timer from '../../../models/Timer.js'
 import { isGitHubUrl, getRepoNameFromGitHubUrl } from '../../../utils/GitUtils.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
 import { info, logChildItem } from '../../../utils/LoggerUtils.js'
+import { cwd } from 'node:process'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -80,7 +81,7 @@ export default class Install extends BaseCommand {
     }
 
     // Create The Theme
-    const theme = ThemeFactory.fromThemeInstallCommand()
+    const theme = themeFactory(cwd())
 
     // Create The Collection
     const collection = await collectionFactory(collectionName, Session.componentsPath, Session.components)
