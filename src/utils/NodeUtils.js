@@ -37,7 +37,7 @@ export function getPackageName(packageManifest) {
   } else if (!packageManifest && env.npm_package_name) {
     packageNameAndScope = env.npm_package_name
   } else {
-    throw new InternalError('Unavailable NPM Package Name environment variable and/or Package Manifest')
+    throw new InternalError('Unable To Determine NPM Package Name')
   }
 
   return packageNameAndScope.includes('/') ? packageNameAndScope.split('/')[1] : packageNameAndScope
