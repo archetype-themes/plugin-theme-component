@@ -17,7 +17,7 @@ import {
   THEME_LAYOUT_FILE
 } from '../../../config/Components.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
-import { themeFactory } from '../../../factory/ThemeFactory.js'
+import { themeFactory } from '../../../factory/themeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
