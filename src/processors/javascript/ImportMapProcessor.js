@@ -1,28 +1,36 @@
-import path from 'node:path'
+import path, { join } from 'node:path'
 import glob from 'fast-glob'
 import picomatch from 'picomatch'
 import { init, parse } from 'es-module-lexer'
-import { getFileContents, getJsonFileContents, saveFile } from '../../utils/FileUtils.js'
+import { exists, getFileContents, getJsonFileContents, saveFile } from '../../utils/FileUtils.js'
 import { isUrl } from '../../utils/WebUtils.js'
+import FileMissingError from '../../errors/FileMissingError.js'
 
 class ImportMapProcessor {
   static ImportMapFile = 'importmap.json'
 
   /**
    * Build import map file and return build entries
-   * @param {Set<string>} jsFiles
+   * @param {string[]} jsFiles
    * @param {string} outputFile
    * @param {string} collectionRootFolder
    */
   static async build(jsFiles, outputFile, collectionRootFolder) {
+    const importMapFile = join(collectionRootFolder, this.ImportMapFile)
+    const jsFilesSet = new Set(jsFiles)
+
+    if (!(await exists(importMapFile))) {
+      throw new FileMissingError('ImportMap file not found, unable to process javascript')
+    }
+
     /** @type {{imports: Object<string, string>}} */
-    const importMap = await getJsonFileContents(path.join(collectionRootFolder, this.ImportMapFile))
+    const importMap = await getJsonFileContents(importMapFile)
     const importMapEntries = this.resolveImportMapEntries(importMap.imports, collectionRootFolder)
-    const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries)
+    const buildEntries = await this.resolveBuildEntries(jsFilesSet, importMapEntries)
     const sortedBuildEntries = new Map([...buildEntries.entries()].sort())
     const importMapTags = this.generateImportMapTags(sortedBuildEntries)
     await saveFile(outputFile, importMapTags)
-    return this.filterBuildEntries(sortedBuildEntries, jsFiles)
+    return this.filterBuildEntries(sortedBuildEntries, jsFilesSet)
   }
 
   /**

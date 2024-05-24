@@ -7,7 +7,6 @@ import { LOCALES_FOLDER_NAME } from '../config/Components.js'
 import { collectionBuildFactory } from '../factory/collectionBuildFactory.js'
 import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'
-import JavaScriptProcessor from '../processors/JavaScriptProcessor.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import { copyFilesToFolder, getFolderFilesRecursively, saveFile } from '../utils/FileUtils.js'
@@ -15,6 +14,8 @@ import { writeLocales } from '../utils/LocaleUtils.js'
 import { error, fatal, logChildItem, warn } from '../utils/LoggerUtils.js'
 import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
+import { FileTypes, getCopyright } from '../utils/ComponentFilesUtils.js'
+import ImportMapProcessor from '../processors/javascript/ImportMapProcessor.js'
 
 class CollectionBuilder {
   /**
@@ -22,15 +23,13 @@ class CollectionBuilder {
    * @param {module:models/Collection} collection
    * @return {Promise<module:models/Collection>}
    */
-  static async build(collection) {
+  static async runProcessors(collection) {
     const allComponents = collection.allComponents
 
     collection.build = collectionBuildFactory(collection)
-    if (Session.firstRun) {
-      await this.#resetBuildFolders(collection.build)
-    }
 
     if (Session.firstRun) {
+      await this.#resetBuildFolders(collection.build)
       ;[collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
         this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
         this.#buildLocales(allComponents),
@@ -71,7 +70,7 @@ class CollectionBuilder {
     if (jsFiles.length) {
       logChildItem('Starting The Import Map Processor', 1)
       const timer = new Timer()
-      const importMapEntries = await JavaScriptProcessor.buildJavaScript(jsFiles, importMapFile, cwd)
+      const importMapEntries = await ImportMapProcessor.build(jsFiles, importMapFile, cwd)
       logChildItem(`Import Map Processor Done (${timer.now()} seconds)`, 1)
       return importMapEntries
     } else {
@@ -103,7 +102,6 @@ class CollectionBuilder {
 
   /**
    * Builds the styles for the given collection and all components.
-   *
    * @param {(Component|Snippet)[]} components - An array containing all the components.
    * @param {string} outputFile - The collection's css bundle file.
    * @return {Promise<string>} - A promise that resolves when the styles are built.
