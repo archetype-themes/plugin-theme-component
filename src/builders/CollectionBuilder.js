@@ -74,7 +74,7 @@ class CollectionBuilder {
       logChildItem(`Import Map Processor Done (${timer.now()} seconds)`, 1)
       return importMapEntries
     } else {
-      warn('No Javascript Files Found. Javascript Build Process Was Skipped.')
+      warn('No Javascript Files Found. Import Map Build Process Was Skipped.')
     }
   }
 
