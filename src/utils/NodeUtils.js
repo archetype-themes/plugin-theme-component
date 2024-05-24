@@ -34,7 +34,7 @@ export function getPackageName(packageManifest) {
   let packageNameAndScope
   if (packageManifest?.name) {
     packageNameAndScope = packageManifest.name
-  } else if (env.npm_package_name) {
+  } else if (!packageManifest && env.npm_package_name) {
     packageNameAndScope = env.npm_package_name
   } else {
     throw new InternalError('Unavailable NPM Package Name environment variable and/or Package Manifest')
