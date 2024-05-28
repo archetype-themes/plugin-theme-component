@@ -29,7 +29,7 @@ export function collectionBuildFactory(collection) {
   // Files
   build.importMapFile = join(build.snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME)
   build.javascriptFile = join(build.assetsFolder, `${collection.name}.js`)
-  build.stylesheet = join(build.assetsFolder, `${hyphenate(collection.name)}.css`)
+  build.stylesheet = `${hyphenate(collection.name)}.css`
 
   return build
 }
