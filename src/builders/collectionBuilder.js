@@ -15,7 +15,7 @@ import ImportMapProcessor from '../processors/ImportMapProcessor.js'
 import { plural } from '../utils/TextUtils.js'
 import ComponentBuild from '../models/ComponentBuild.js'
 import SvgProcessor from '../processors/SvgProcessor.js'
-import { getCopyright } from '../utils/copyrightUtils.js'
+import { getCopyright } from '../utils/copyright.js'
 
 /**
  * Execute Collection Build Process

@@ -14,7 +14,7 @@ import InternalError from '../errors/InternalError.js'
 import { componentFactory } from './componentFactory.js'
 import { snippetFactory } from './snippetFactory.js'
 import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
-import { getCopyrightText } from '../utils/copyrightUtils.js'
+import { getCopyrightText } from '../utils/copyright.js'
 
 /**
  * Create Collection Model From A Remote Path
