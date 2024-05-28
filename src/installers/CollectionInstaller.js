@@ -57,6 +57,27 @@ class CollectionInstaller {
   }
 
   /**
+   * Deploy import map files to the assets folder
+   * @param {Map<string, string>} buildEntries
+   * @param {string} assetsFolder
+   * @return {Promise<Awaited<Awaited<void>[]>[]>}
+   */
+  static async #deployImportMapFiles(buildEntries, assetsFolder) {
+    const localFiles = []
+    const remoteFiles = []
+    for (const [, modulePath] of buildEntries) {
+      if (isUrl(modulePath)) {
+        remoteFiles.push(modulePath)
+      } else {
+        localFiles.push(modulePath)
+      }
+    }
+    const copyPromiseAll = copyFilesToFolder(localFiles, assetsFolder)
+    const downloadPromiseAll = downloadFiles(remoteFiles, assetsFolder)
+    return Promise.all([copyPromiseAll, downloadPromiseAll])
+  }
+
+  /**
    * Inject references to the Collection's main CSS and JS files in the theme's main liquid file
    * @param {module:models/Collection} collection
    * @param {import('../models/Theme.js').default} theme
