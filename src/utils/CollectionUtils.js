@@ -1,7 +1,6 @@
 // Internal Dependencies
 import FileMissingError from '../errors/FileMissingError.js'
 import { info, logSpacer, logTitleItem } from './LoggerUtils.js'
-import { getPackageName } from './NodeUtils.js'
 
 /**
  * Validate Component Names
@@ -75,28 +74,4 @@ function folderTreeLog(component, last = false, grid = []) {
       lastChild && grid.pop()
     }
   }
-}
-
-/**
- * Build Copyright Text From Package Manifest Data
- * @param {Object} packageManifest
- * @return {string} Copyright Text
- */
-export function getCopyrightText(packageManifest) {
-  let copyrightText = ''
-
-  copyrightText += getPackageName(packageManifest)
-  if (packageManifest.version) {
-    copyrightText += ` v${packageManifest.version}`
-  }
-
-  copyrightText += ` | Copyright © ${new Date().getFullYear()}`
-
-  if (packageManifest.author) {
-    copyrightText += ` ${packageManifest.author} `
-  }
-
-  copyrightText += packageManifest.license ? ` | "${packageManifest.license}" License` : ' | All Rights Reserved'
-
-  return copyrightText
 }

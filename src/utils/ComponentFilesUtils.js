@@ -10,7 +10,6 @@ import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
 import { debug } from './LoggerUtils.js'
-import InternalError from '../errors/InternalError.js'
 
 /** @type {string[]}  **/
 export const STYLE_EXTENSIONS = ['.css']
@@ -110,22 +109,4 @@ export async function validateFolderAccess(folder, componentName) {
       `Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`
     )
   }
-}
-
-/**
- * Get Component File Copyright
- * @param {string} fileType
- * @param {string} copyright
- **/
-export function getCopyright(fileType, copyright) {
-  if (fileType === FileTypes.Liquid) {
-    copyright = `{% # ${copyright}  %}\n`
-  } else if ([FileTypes.Javascript, FileTypes.Css].includes(fileType)) {
-    copyright = `/* ${copyright} */\n`
-  } else if (fileType === FileTypes.Svg) {
-    copyright = `<!-- ${copyright} -->/\n`
-  } else {
-    throw new InternalError(`Unknown File Type Received ${fileType}. Couldn't render copyright text`)
-  }
-  return copyright
 }
