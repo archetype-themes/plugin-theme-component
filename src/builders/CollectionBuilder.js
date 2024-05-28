@@ -101,16 +101,15 @@ class CollectionBuilder {
   /**
    * Builds the styles for the given collection and all components.
    * @param {string[]} mainStylesheets - Main Stylesheets
-   * @param {string} outputFile - The collection's css bundle file.
    * @param {string} [copyright] - The collection's Copyright Text
    * @returns {Promise<string>} - A promise that resolves when the styles are built.
    */
-  static async #buildStyles(mainStylesheets, outputFile, copyright) {
+  static async #buildStyles(mainStylesheets, copyright) {
     if (mainStylesheets.length) {
       logChildItem('Starting The Styles Processor', 1)
       const timer = new Timer()
 
-      let styles = await PostCSSProcessor.buildStylesBundle(mainStylesheets, outputFile)
+      let styles = await PostCSSProcessor.buildStylesBundle(mainStylesheets)
       styles = getCopyright(FileTypes.Css, copyright) + styles
       await saveFile(outputFile, styles)
       logChildItem(`Styles Processor Done (${timer.now()} seconds)`, 1)
