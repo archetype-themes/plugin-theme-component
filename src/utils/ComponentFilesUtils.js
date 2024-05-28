@@ -3,8 +3,6 @@ import { dirname, extname, join } from 'node:path'
 
 // Internal Dependencies
 import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from './FileUtils.js'
-import { findMainJavaScriptFile } from './JavascriptUtils.js'
-import { getMainStyleSheet } from './StylesUtils.js'
 import { ASSETS_FOLDER_NAME, SETUP_FOLDER_NAME } from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
@@ -55,7 +53,7 @@ export async function indexFiles(componentName, folder, componentFiles) {
   }
 
   if (componentFiles.stylesheets.length) {
-    componentFiles.mainStylesheet = getMainStyleSheet(componentFiles.stylesheets, componentName)
+    componentFiles.mainStylesheet = findMainStyleSheetFile(componentFiles.stylesheets, componentName)
   }
 
   return componentFiles
@@ -108,5 +106,56 @@ export async function validateFolderAccess(folder, componentName) {
     throw new FileAccessError(
       `Unable to access the "${componentName}" component on disk. Tips: Is it spelled properly? Is the collection installed?`
     )
+  }
+}
+
+/**
+ * Finds the main or index JavaScript file within the provided file list
+ * @param {string[]} files
+ * @param {string} componentName
+ * @returns {string | undefined}
+ */
+export function findMainJavaScriptFile(files, componentName) {
+  const regex = new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
+  const mainJavaScriptFile = files.find((file) => regex.test(file))
+
+  if (!mainJavaScriptFile) {
+    return undefined
+  }
+
+  debug(`JavaScript Entrypoint found: ${convertToComponentRelativePath(mainJavaScriptFile)}`)
+
+  return mainJavaScriptFile
+}
+
+/**
+ * Find the Main StyleSheet within the provided file list
+ * @param {string[]} styleSheets
+ * @param {string} componentName
+ * @returns {string}
+ * @throws Error
+ */
+export function findMainStyleSheetFile(styleSheets, componentName) {
+  // If there's only 1 Stylesheet file, take it!
+  if (styleSheets.length === 1) {
+    return styleSheets[0]
+  } else {
+    const regex = new RegExp(`[/\\\\]((?:index|main|${componentName}).css)$`, 'i')
+    const matches = []
+    for (const styleSheet of styleSheets) {
+      const match = RegExp(regex).exec(styleSheet)
+      if (match) {
+        matches.push(match.input)
+      }
+    }
+
+    if (matches.length === 1) {
+      debug(`Main StyleSheet Found: ${convertToComponentRelativePath(matches[0])}`)
+      return matches[0]
+    } else if (matches.length === 0) {
+      throw new FileMissingError('An index or main StyleSheet file could not be found.')
+    }
+
+    throw new InputFileError('Only one index or main StyleSheet file is allowed but multiple matches were found.')
   }
 }
