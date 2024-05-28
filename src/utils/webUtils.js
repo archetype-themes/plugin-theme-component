@@ -3,7 +3,7 @@ import { join, basename } from 'node:path'
 
 // Internal Dependencies
 import { saveFile } from './FileUtils.js'
-import { debug } from './LoggerUtils.js'
+import { debug } from './logger.js'
 
 const URL_REGEX = /^(http:\/\/|https:\/\/|\/\/)/
 

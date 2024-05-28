@@ -15,7 +15,7 @@ import {
   SETUP_FOLDER_NAME,
   STYLE_EXTENSIONS
 } from '../config/constants.js'
-import { debug, error, logWatcherAction } from './LoggerUtils.js'
+import { debug, error, logWatcherAction } from './logger.js'
 
 export const ChangeType = {
   Asset: 'asset',

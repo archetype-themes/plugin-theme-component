@@ -12,7 +12,7 @@ import Session from '../../../models/static/Session.js'
 import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/nodeUtils.js'
 import { getValuesFromArgvOrToml } from '../../../utils/sessionUtils.js'
-import { logChildItem, logSeparator, logTitleItem } from '../../../utils/LoggerUtils.js'
+import { logChildItem, logSeparator, logTitleItem } from '../../../utils/logger.js'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate canvas files for new components'

@@ -3,7 +3,7 @@ import { JSDOM } from 'jsdom'
 import { loadConfig, optimize } from 'svgo'
 
 // Internal Dependencies
-import { warn } from '../utils/LoggerUtils.js'
+import { warn } from '../utils/logger.js'
 
 class SvgProcessor {
   /** @type {Object} **/

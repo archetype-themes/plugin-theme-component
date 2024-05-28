@@ -2,7 +2,7 @@
 import { componentFilesFactory } from './componentFilesFactory.js'
 import { getFileContents } from '../utils/FileUtils.js'
 import { getSnippetNames } from '../utils/LiquidUtils.js'
-import { warn } from '../utils/LoggerUtils.js'
+import { warn } from '../utils/logger.js'
 import Component from '../models/Component.js'
 
 /**

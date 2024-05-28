@@ -4,7 +4,7 @@ import { basename, join } from 'node:path'
 // Internal Dependencies
 import Collection from '../models/Collection.js'
 import { validateComponentNames } from '../utils/collectionUtils.js'
-import { fatal, logChildItem, logTitleItem } from '../utils/LoggerUtils.js'
+import { fatal, logChildItem, logTitleItem } from '../utils/logger.js'
 import Timer from '../models/Timer.js'
 import { plural } from '../utils/textUtils.js'
 import { exists, getFolders } from '../utils/FileUtils.js'

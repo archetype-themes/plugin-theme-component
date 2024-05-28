@@ -2,7 +2,7 @@ import Snippet from '../models/Snippet.js'
 import { dirname, parse } from 'node:path'
 import { getFileContents } from '../utils/FileUtils.js'
 import ComponentFiles from '../models/ComponentFiles.js'
-import { error } from '../utils/LoggerUtils.js'
+import { error } from '../utils/logger.js'
 import { getSnippetNames } from '../utils/LiquidUtils.js'
 
 /**

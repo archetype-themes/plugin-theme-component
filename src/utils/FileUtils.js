@@ -6,7 +6,7 @@ import { cwd } from 'node:process'
 // Internal Dependencies
 import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
-import { debug, trace } from './LoggerUtils.js'
+import { debug, trace } from './logger.js'
 import { DEV_FOLDER_NAME } from '../config/constants.js'
 
 /** @type {string[]} **/

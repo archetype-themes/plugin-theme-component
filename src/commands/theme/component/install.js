@@ -13,7 +13,7 @@ import { themeFactory } from '../../../factory/themeFactory.js'
 import Timer from '../../../models/Timer.js'
 import { isGitHubUrl } from '../../../utils/GitUtils.js'
 import { install } from '../../../utils/externalComponents.js'
-import { info, logChildItem } from '../../../utils/LoggerUtils.js'
+import { info, logChildItem } from '../../../utils/logger.js'
 import { cwd } from 'node:process'
 import { collectionBuilder } from '../../../builders/collectionBuilder.js'
 

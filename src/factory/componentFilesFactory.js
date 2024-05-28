@@ -13,7 +13,7 @@ import {
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
-import { debug } from '../utils/LoggerUtils.js'
+import { debug } from '../utils/logger.js'
 import ComponentFiles from '../models/ComponentFiles.js'
 
 /**

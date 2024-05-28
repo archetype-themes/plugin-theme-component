@@ -1,6 +1,6 @@
 // Internal Dependencies
 import FileMissingError from '../errors/FileMissingError.js'
-import { info, logSpacer, logTitleItem } from './LoggerUtils.js'
+import { info, logSpacer, logTitleItem } from './logger.js'
 
 /**
  * Validate Component Names
