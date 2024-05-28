@@ -4,7 +4,7 @@ import merge from 'deepmerge'
 
 // Internal Dependencies
 import {
-  copyFolder,
+  copyFilesToFolder,
   exists,
   getFileContents,
   getJsonFileContents,
@@ -17,6 +17,7 @@ import Session from '../models/static/Session.js'
 import { ChangeType } from '../utils/Watcher.js'
 import { THEME_LAYOUT_FILE } from '../config/Components.js'
 import { debug, warn } from '../utils/LoggerUtils.js'
+import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 
 class CollectionInstaller {
   /**
@@ -28,17 +29,44 @@ class CollectionInstaller {
   static async install(theme, collection) {
     const fileOperations = []
 
-    // Copy Asset Folder
-    if (
-      Session.firstRun ||
-      [ChangeType.Asset, ChangeType.JavaScript, ChangeType.Stylesheet].includes(Session.changeType)
-    ) {
-      fileOperations.push(copyFolder(collection.build.assetsFolder, theme.assetsFolder))
+    // Install CSS Build
+    if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
+      const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
+      const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
+      fileOperations.push(stylesheetSavePromise)
     }
 
-    // Copy Snippets Folder
+    // Install Static Assets
+    if (Session.firstRun || ChangeType.Asset === Session.changeType) {
+      const copyAssetFilesPromise = copyFilesToFolder(collection.assetFiles, theme.assetsFolder)
+      fileOperations.push(copyAssetFilesPromise)
+    }
+
+    // Install JavaScript Files With The Import-Map
+    if (Session.firstRun || Session.changeType === ChangeType.JavaScript) {
+      if (collection.build.importMap.entries?.size) {
+        const deployImportMapFilesPromises = this.#deployImportMapFiles(
+          collection.build.importMap.entries,
+          theme.assetsFolder
+        )
+        fileOperations.push(deployImportMapFilesPromises)
+      }
+      if (collection.build.importMap.tags) {
+        fileOperations.push(saveFile(join(theme.snippetsFolder, 'import-map.liquid'), collection.build.importMap.tags))
+      }
+
+      const copyJsFilesPromise = copyFilesToFolder(collection.jsFiles, theme.assetsFolder)
+      fileOperations.push(copyJsFilesPromise)
+    }
+
+    // Install Snippets From Liquid Code Build
     if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
-      fileOperations.push(copyFolder(collection.build.snippetsFolder, theme.snippetsFolder))
+      const snippetFilesWritePromises = Promise.all(
+        collection.allComponents.map((component) =>
+          saveFile(join(theme.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)
+        )
+      )
+      fileOperations.push(snippetFilesWritePromises)
     }
 
     // Merge & Install Storefront Locales
@@ -48,8 +76,8 @@ class CollectionInstaller {
       }
     }
 
+    // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
     if (Session.firstRun) {
-      // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
       fileOperations.push(this.injectAssetReferences(collection, theme))
     }
 
