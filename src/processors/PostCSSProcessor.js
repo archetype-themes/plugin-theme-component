@@ -4,7 +4,7 @@ import postcssImport from 'postcss-import'
 import postcssPresetEnv from 'postcss-preset-env'
 import browsers from '@shopify/browserslist-config'
 
-class StylesProcessor {
+class PostCSSProcessor {
   /**
    * Create Styles Bundle
    * @param {string[]} stylesheets
@@ -60,4 +60,4 @@ class StylesProcessor {
   }
 }
 
-export default StylesProcessor
+export default PostCSSProcessor

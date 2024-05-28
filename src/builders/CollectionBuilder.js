@@ -11,6 +11,7 @@ import LocalesProcessor from '../processors/LocalesProcessor.js'
 import StylesProcessor from '../processors/StylesProcessor.js'
 import { copyFilesToFolder, getFolderFilesRecursively, saveFile } from '../utils/FileUtils.js'
 import { writeLocales } from '../utils/LocaleUtils.js'
+import PostCSSProcessor from '../processors/PostCSSProcessor.js'
 import { error, fatal, logChildItem, warn } from '../utils/LoggerUtils.js'
 import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
@@ -114,7 +115,7 @@ class CollectionBuilder {
       logChildItem('Starting The Styles Processor', 1)
       const timer = new Timer()
 
-      let styles = await StylesProcessor.buildStylesBundle(mainStylesheets, outputFile)
+      let styles = await PostCSSProcessor.buildStylesBundle(mainStylesheets, outputFile)
       styles = getCopyright(FileTypes.Css, copyright) + styles
       await saveFile(outputFile, styles)
       logChildItem(`Styles Processor Done (${timer.now()} seconds)`, 1)
