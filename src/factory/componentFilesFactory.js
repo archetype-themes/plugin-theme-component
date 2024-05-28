@@ -1,15 +1,14 @@
 // External Dependencies
-import { dirname, extname, join } from 'node:path'
+import { dirname, join } from 'node:path'
 
 // Internal Dependencies
-import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from '../utils/fileUtils.js'
 import {
-  ASSETS_FOLDER_NAME,
-  LIQUID_EXTENSION,
-  SCRIPT_EXTENSIONS,
-  SETUP_FOLDER_NAME,
-  STYLE_EXTENSIONS
-} from '../config/constants.js'
+  convertToComponentRelativePath,
+  getFileType,
+  getFolderFilesRecursively,
+  isReadable
+} from '../utils/fileUtils.js'
+import { ASSETS_FOLDER_NAME, FileTypes, SETUP_FOLDER_NAME } from '../config/constants.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
@@ -57,18 +56,18 @@ export async function componentFilesFactory(componentName, folder) {
  * @param {string} componentName
  */
 function sortComponentFile(file, componentFiles, componentName) {
-  const extension = extname(file).toLowerCase()
+  const fileType = getFileType(file)
   const folder = dirname(file).toLowerCase()
 
   if (folder.includes(join(componentName, SETUP_FOLDER_NAME))) {
     componentFiles.setupFiles.push(file)
-  } else if (SCRIPT_EXTENSIONS.includes(extension)) {
+  } else if (fileType === FileTypes.Javascript) {
     componentFiles.javascriptFiles.push(file)
   } else if (folder.endsWith(`/${ASSETS_FOLDER_NAME}`)) {
     componentFiles.assetFiles.push(file)
-  } else if (STYLE_EXTENSIONS.includes(extension)) {
+  } else if (fileType === FileTypes.Css) {
     componentFiles.stylesheets.push(file)
-  } else if (extension === LIQUID_EXTENSION) {
+  } else if (fileType === FileTypes.Liquid) {
     if (folder.endsWith('/snippets')) {
       componentFiles.snippetFiles.push(file)
     } else {

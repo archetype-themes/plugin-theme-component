@@ -61,14 +61,19 @@ export const THEME_INDEX_TEMPLATE_LIQUID_FILE = join(TEMPLATES_FOLDER_NAME, 'ind
 /**  FILE EXTENSIONS  **/
 /***********************/
 
-/** @type {string[]}  **/
-export const STYLE_EXTENSIONS = ['.css']
-/** @type {string[]}  **/
-export const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
-/** @type {string}  **/
-export const LIQUID_EXTENSION = '.liquid'
 /** @type {string}  **/
 export const JSON_EXTENSION = '.json'
+
+/** @type {string}  **/
+export const LIQUID_EXTENSION = '.liquid'
+
+/** @type {string[]}  **/
+export const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
+
+/** @type {string[]}  **/
+export const STYLE_EXTENSIONS = ['.css']
+
+export const SVG_EXTENSION = '.svg'
 
 /**
  * File Types Enum

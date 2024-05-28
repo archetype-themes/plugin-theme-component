@@ -13,7 +13,7 @@ export function getCopyright(fileType, copyright) {
   } else if ([FileTypes.Javascript, FileTypes.Css].includes(fileType)) {
     copyright = `/* ${copyright} */\n`
   } else if (fileType === FileTypes.Svg) {
-    copyright = `<!-- ${copyright} -->/\n`
+    copyright = `<!-- ${copyright} -->\n`
   } else {
     throw new InternalError(`Unknown File Type Received ${fileType}. Couldn't render copyright text`)
   }

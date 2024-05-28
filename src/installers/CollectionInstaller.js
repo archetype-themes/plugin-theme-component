@@ -1,4 +1,5 @@
 // External Dependencies
+import { cp } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import merge from 'deepmerge'
 
@@ -7,6 +8,7 @@ import {
   copyFilesToFolder,
   exists,
   getFileContents,
+  getFileType,
   getJsonFileContents,
   isReadable,
   isWritable,
@@ -17,6 +19,7 @@ import { ChangeType } from '../utils/Watcher.js'
 import { IMPORT_MAP_SNIPPET_FILENAME, LIQUID_EXTENSION, THEME_LAYOUT_FILE } from '../config/constants.js'
 import { debug, warn } from '../utils/logger.js'
 import { downloadFiles, isUrl } from '../utils/webUtils.js'
+import { getCopyright } from '../utils/copyright.js'
 
 class CollectionInstaller {
   /**
@@ -37,11 +40,12 @@ class CollectionInstaller {
 
     // Install Static Assets
     if (Session.firstRun || ChangeType.Asset === Session.changeType) {
-      const copyAssetFilesPromise = copyFilesToFolder(collection.assetFiles, theme.assetsFolder)
-      fileOperations.push(copyAssetFilesPromise)
+      for (const assetFile of collection.assetFiles) {
+        fileOperations.push(this.#installFile(assetFile, theme.assetsFolder, collection.copyright))
+      }
     }
 
-    // Install JavaScript Files With The Import-Map
+    // Install JavaScript Files With The ImportMap
     if (Session.firstRun || Session.changeType === ChangeType.JavaScript) {
       if (collection.build.importMap.entries?.size) {
         const deployImportMapFilesPromises = this.#deployImportMapFiles(
@@ -56,8 +60,9 @@ class CollectionInstaller {
         )
       }
 
-      const copyJsFilesPromise = copyFilesToFolder(collection.jsFiles, theme.assetsFolder)
-      fileOperations.push(copyJsFilesPromise)
+      for (const jsFile of collection.jsFiles) {
+        fileOperations.push(this.#installFile(jsFile, theme.assetsFolder, collection.copyright))
+      }
     }
 
     // Install Snippets From Liquid Code Build
@@ -232,6 +237,37 @@ You should manually insert these lines inside your "theme.liquid" file:
       }
     }
     return Promise.all(fileOperations)
+  }
+
+  static async #installFile(sourceFile, targetFolder, copyrightText) {
+    const fileBasename = basename(sourceFile)
+    const fileType = getFileType(sourceFile)
+    const targetFile = join(targetFolder, fileBasename)
+    const targetFileExists = await exists(targetFile)
+
+    let sourceFileContents
+    // Only fetch the data if we need to
+    if (fileType !== null || targetFileExists) {
+      sourceFileContents = await getFileContents(sourceFile)
+    }
+
+    if (fileType !== null) {
+      const copyright = getCopyright(fileType, copyrightText)
+      sourceFileContents = copyright + sourceFileContents
+    }
+
+    if (targetFileExists) {
+      const targetFileContents = await getFileContents(targetFile)
+      if (targetFileContents !== sourceFileContents) {
+        await saveFile(targetFile, sourceFileContents)
+      } else {
+        debug(`Ignored installing "${fileBasename}" file since its contents are identical to the current version`)
+      }
+    } else if (fileType !== null) {
+      await saveFile(targetFile, sourceFileContents)
+    } else {
+      await cp(sourceFile, targetFile, { preserveTimestamps: true })
+    }
   }
 }
 
