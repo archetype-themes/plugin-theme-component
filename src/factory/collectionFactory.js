@@ -3,7 +3,7 @@ import { basename, join } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
-import { validateComponentNames } from '../utils/CollectionUtils.js'
+import { validateComponentNames } from '../utils/collectionUtils.js'
 import { fatal, logChildItem, logTitleItem } from '../utils/LoggerUtils.js'
 import Timer from '../models/Timer.js'
 import { plural } from '../utils/TextUtils.js'
