@@ -8,8 +8,8 @@ import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import PostCSSProcessor from '../processors/PostCSSProcessor.js'
+import { getFolderFilesRecursively } from '../utils/FileUtils.js'
 import { error, fatal, logChildItem, warn } from '../utils/LoggerUtils.js'
-import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
 import { FileTypes, getCopyright } from '../utils/ComponentFilesUtils.js'
 import ImportMapProcessor from '../processors/javascript/ImportMapProcessor.js'
@@ -21,24 +21,19 @@ class CollectionBuilder {
    * @returns {Promise<module:models/Collection>}
    */
   static async runProcessors(collection) {
-    const allComponents = collection.allComponents
-
     collection.build = collectionBuildFactory(collection)
 
     if (Session.firstRun) {
-      await this.#resetBuildFolders(collection.build)
-      ;[collection.importMapEntries, collection.build.locales, collection.build.styles] = await Promise.all([
-        this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
-        this.#buildLocales(allComponents),
-        this.#buildStyles(allComponents, collection.build.stylesheet, collection.copyright)
+      ;[collection.build.importMap, collection.build.locales, collection.build.styles] = await Promise.all([
+        this.#buildJavaScript(collection.jsIndexes, collection.build.importMapFile, collection.rootFolder),
         this.#buildLocales(collection.liquidCode),
-        this.#buildStyles(collection.mainStylesheets, collection.build.stylesheet, collection.copyright)
+        this.#buildStyles(collection.mainStylesheets, collection.copyright)
       ])
     } else {
       switch (Session.changeType) {
         case ChangeType.JavaScript:
-          collection.importMapEntries = await this.#buildJavaScript(
-            allComponents,
+          collection.build.importMap = await this.#buildJavaScript(
+            collection.jsIndexes,
             collection.build.importMapFile,
             collection.rootFolder
           )
@@ -57,21 +52,18 @@ class CollectionBuilder {
 
   /**
    * Builds JavaScript files for the given collection and components.
-   *
-   * @param {(Component|Snippet)[]} components - An array of all components.
+   * @param {string[]} jsFiles - JavaScript Files
    * @param {string} importMapFile - The collection's import map file.
    * @param {string} cwd - The working directory.
-   * @return {Promise<Map<string, string>>} - A promise that resolves when the JavaScript files have been built.
+   * @returns {Promise<{entries: Map<string, string>, tags: Map<string,string>}>}
    */
-  static async #buildJavaScript(components, importMapFile, cwd) {
-    const jsFiles = this.#getJsFiles(components)
-
+  static async #buildJavaScript(jsFiles, importMapFile, cwd) {
     if (jsFiles.length) {
       logChildItem('Starting The Import Map Processor', 1)
       const timer = new Timer()
-      const importMapEntries = await ImportMapProcessor.build(jsFiles, importMapFile, cwd)
+      const importMap = await ImportMapProcessor.build(jsFiles, importMapFile, cwd)
       logChildItem(`Import Map Processor Done (${timer.now()} seconds)`, 1)
-      return importMapEntries
+      return importMap
     } else {
       warn('No Javascript Files Found. Import Map Build Process Was Skipped.')
     }
