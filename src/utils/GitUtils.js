@@ -4,7 +4,7 @@ import { env } from 'node:process'
 
 // Internal Dependencies
 import { execAsync } from './NodeUtils.js'
-import { addAuthToUrl, hasAuthInUrl } from './WebUtils.js'
+import { addAuthToUrl, hasAuthInUrl } from './webUtils.js'
 import { debug, error } from './LoggerUtils.js'
 
 const GITHUB_API_URL = 'https://api.github.com/'

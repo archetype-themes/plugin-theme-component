@@ -3,7 +3,7 @@ import glob from 'fast-glob'
 import picomatch from 'picomatch'
 import { init, parse } from 'es-module-lexer'
 import { exists, getFileContents, getJsonFileContents } from '../utils/FileUtils.js'
-import { isUrl } from '../utils/WebUtils.js'
+import { isUrl } from '../utils/webUtils.js'
 import FileMissingError from '../errors/FileMissingError.js'
 
 class ImportMapProcessor {
