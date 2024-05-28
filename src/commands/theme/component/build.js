@@ -27,8 +27,14 @@ class Build extends BaseCommand {
 
     // Build Components Individually
     ;[collection.components, collection.snippets] = await Promise.all([
-      Promise.all(collection.components.map((component) => ComponentBuilder.build(component, collection.rootFolder))),
-      Promise.all(collection.snippets.map((snippet) => SnippetBuilder.build(snippet, collection.rootFolder)))
+      Promise.all(
+        collection.components.map((component) =>
+          ComponentBuilder.build(component, collection.rootFolder, collection.copyright)
+        )
+      ),
+      Promise.all(
+        collection.snippets.map((snippet) => SnippetBuilder.build(snippet, collection.rootFolder, collection.copyright))
+      )
     ])
 
     logChildItem(`Individual Build Done (${individualBuildTimer.now()} seconds)`)

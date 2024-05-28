@@ -96,7 +96,7 @@ export function getCopyrightText(packageManifest) {
     copyrightText += ` ${packageManifest.author} `
   }
 
-  copyrightText += packageManifest.license ? ` Under "${packageManifest.license}" License` : ' All Rights Reserved'
+  copyrightText += packageManifest.license ? `\nUnder "${packageManifest.license}" License` : '\n All Rights Reserved'
 
   return copyrightText
 }
