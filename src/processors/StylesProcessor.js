@@ -1,28 +1,62 @@
-// Node.js internal imports
-import { unlink } from 'node:fs/promises'
-import os from 'node:os'
-import path from 'node:path'
-
 // Internal Imports
-import PostCssProcessor from './styles/PostCssProcessor.js'
-import { saveFile } from '../utils/FileUtils.js'
-import { createMainStylesheet } from '../utils/StylesUtils.js'
+import postcss from 'postcss'
+import postcssImport from 'postcss-import'
+import postcssPresetEnv from 'postcss-preset-env'
+import browsers from '@shopify/browserslist-config'
 
 class StylesProcessor {
   /**
    * Create Styles Bundle
    * @param {string[]} stylesheets
-   * @param {string} outputFile
    * @return {Promise<string>}
    */
-  static async buildStylesBundle(stylesheets, outputFile) {
-    const masterStylesheet = path.join(os.tmpdir(), 'masterStylesheet.css')
-    const masterStylesheetContents = createMainStylesheet(stylesheets)
+  static async buildStylesBundle(stylesheets) {
+    const mainStylesheet = this.createMainStylesheet(stylesheets)
 
-    await saveFile(masterStylesheet, masterStylesheetContents)
-    const css = await PostCssProcessor.processStyles(masterStylesheetContents, masterStylesheet, outputFile)
-    await unlink(masterStylesheet)
-    return css
+    return this.processStyles(mainStylesheet)
+  }
+
+  /**
+   * Process Styles with PostCSS and its plugins
+   * @param {string} styles
+   * @return {Promise<string>}
+   */
+  static async processStyles(styles) {
+    const processor = postcss([
+      postcssImport(),
+      postcssPresetEnv({
+        stage: 2,
+        browsers,
+        features: {
+          'nesting-rules': true
+        }
+      })
+    ])
+
+    const result = await processor.process(styles, { map: false })
+
+    return result.css
+  }
+
+  /**
+   * Create Main Stylesheet
+   * @param stylesheets
+   * @return {string}
+   */
+  static createMainStylesheet(stylesheets) {
+    let masterStylesheetContents = ''
+    const processedStylesheets = []
+
+    for (const stylesheet of stylesheets) {
+      // When building a Collection, multiple Components might include the same snippet;
+      // Therefore, we check for duplicates
+      if (!processedStylesheets.includes(stylesheet)) {
+        masterStylesheetContents += `@import '${stylesheet}';\n`
+        processedStylesheets.push(stylesheet)
+      }
+    }
+
+    return masterStylesheetContents
   }
 }
 
