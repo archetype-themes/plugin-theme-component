@@ -1,5 +1,4 @@
 // Internal Dependencies
-import ComponentFiles from '../models/ComponentFiles.js'
 import { componentFilesFactory } from './componentFilesFactory.js'
 import { getFileContents } from '../utils/FileUtils.js'
 import { getSnippetNames } from '../utils/LiquidUtils.js'
@@ -17,7 +16,7 @@ export async function componentFactory(componentName, componentFolder) {
   component.name = componentName
   component.rootFolder = componentFolder
   // Index Snippet Files
-  component.files = await componentFilesFactory(component.name, component.rootFolder, new ComponentFiles())
+  component.files = await componentFilesFactory(component.name, component.rootFolder)
 
   // Load Liquid Code
   component.liquidCode = await getFileContents(component.files.liquidFile)

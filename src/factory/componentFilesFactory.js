@@ -14,20 +14,21 @@ import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
 import { debug } from '../utils/LoggerUtils.js'
+import ComponentFiles from '../models/ComponentFiles.js'
 
 /**
  * Index Component Files
  * @param {string} componentName
  * @param {string} folder
- * @param {ComponentFiles} componentFiles
  * @return {Promise<ComponentFiles>}
  */
-export async function componentFilesFactory(componentName, folder, componentFiles) {
+export async function componentFilesFactory(componentName, folder) {
   // Validation: make sure the folder is readable.
   await validateFolderAccess(folder, componentName)
 
   const files = await getFolderFilesRecursively(folder)
 
+  const componentFiles = new ComponentFiles()
   // Sort Component files
   for (const file of files) {
     sortComponentFile(file, componentFiles, componentName)
