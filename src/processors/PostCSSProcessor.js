@@ -33,7 +33,7 @@ class PostCSSProcessor {
       })
     ])
 
-    const result = await processor.process(styles, { map: false })
+    const result = await processor.process(styles, { from: undefined, map: false })
 
     return result.css
   }
