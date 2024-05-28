@@ -2,7 +2,7 @@
 import { Command, Flags } from '@oclif/core'
 
 // Internal dependencies
-import { getTomlConfig } from '../utils/TomlUtils.js'
+import { getTomlConfig } from '../utils/tomlConfig.js'
 import Session from '../models/static/Session.js'
 import { Levels } from '../utils/LoggerUtils.js'
 
