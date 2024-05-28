@@ -2,7 +2,7 @@ import path, { join } from 'node:path'
 import glob from 'fast-glob'
 import picomatch from 'picomatch'
 import { init, parse } from 'es-module-lexer'
-import { exists, getFileContents, getJsonFileContents } from '../utils/FileUtils.js'
+import { exists, getFileContents, getJsonFileContents } from '../utils/fileUtils.js'
 import { isUrl } from '../utils/webUtils.js'
 import FileMissingError from '../errors/FileMissingError.js'
 

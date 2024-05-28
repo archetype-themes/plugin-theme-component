@@ -7,7 +7,7 @@ import { after, before, describe } from 'mocha'
 import { install } from '../../../../src/utils/externalComponents.js'
 import { config } from 'dotenv'
 import { basename, resolve } from 'node:path'
-import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/FileUtils.js'
+import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/fileUtils.js'
 import { mkdir } from 'node:fs/promises'
 
 // Load .env test file

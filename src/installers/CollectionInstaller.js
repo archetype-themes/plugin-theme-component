@@ -11,7 +11,7 @@ import {
   isReadable,
   isWritable,
   saveFile
-} from '../utils/FileUtils.js'
+} from '../utils/fileUtils.js'
 import Session from '../models/static/Session.js'
 import { ChangeType } from '../utils/Watcher.js'
 import { IMPORT_MAP_SNIPPET_FILENAME, LIQUID_EXTENSION, THEME_LAYOUT_FILE } from '../config/constants.js'

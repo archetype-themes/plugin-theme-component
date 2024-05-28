@@ -1,6 +1,6 @@
 import Snippet from '../models/Snippet.js'
 import { dirname, parse } from 'node:path'
-import { getFileContents } from '../utils/FileUtils.js'
+import { getFileContents } from '../utils/fileUtils.js'
 import ComponentFiles from '../models/ComponentFiles.js'
 import { error } from '../utils/logger.js'
 import { getSnippetNames } from '../utils/liquidUtils.js'

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { promisify } from 'node:util'
 
 // Internal Dependencies
-import { getJsonFileContents } from './FileUtils.js'
+import { getJsonFileContents } from './fileUtils.js'
 import InternalError from '../errors/InternalError.js'
 
 /**

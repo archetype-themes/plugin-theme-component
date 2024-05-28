@@ -2,7 +2,7 @@ import { expect, test } from '@oclif/test'
 import { before, describe } from 'mocha'
 import { config } from 'dotenv'
 import { resolve } from 'node:path'
-import { exists, saveFile } from '../../../../src/utils/FileUtils.js'
+import { exists, saveFile } from '../../../../src/utils/fileUtils.js'
 import { cwd } from 'node:process'
 
 // Load .env test file

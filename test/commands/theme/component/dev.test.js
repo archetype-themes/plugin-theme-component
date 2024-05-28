@@ -11,7 +11,7 @@ import Dev, { SETUP_FLAG_NAME, THEME_FLAG_NAME, WATCH_FLAG_NAME } from '../../..
 import { LOCALES_FLAG_NAME } from '../../../../src/config/baseCommand.js'
 import Session from '../../../../src/models/static/Session.js'
 import { install } from '../../../../src/utils/externalComponents.js'
-import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/FileUtils.js'
+import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/fileUtils.js'
 import { getCLIRootFolderName } from '../../../../src/utils/nodeUtils.js'
 import { mkdir } from 'node:fs/promises'
 

@@ -2,7 +2,7 @@
 import { dirname, extname, join } from 'node:path'
 
 // Internal Dependencies
-import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from '../utils/FileUtils.js'
+import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from '../utils/fileUtils.js'
 import {
   ASSETS_FOLDER_NAME,
   LIQUID_EXTENSION,

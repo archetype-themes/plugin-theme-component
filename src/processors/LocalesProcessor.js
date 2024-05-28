@@ -3,7 +3,7 @@ import { basename } from 'node:path'
 import { get, set } from 'lodash-es'
 
 // Internal Dependencies
-import { getJsonFileContents } from '../utils/FileUtils.js'
+import { getJsonFileContents } from '../utils/fileUtils.js'
 import { stripComments } from '../utils/liquidUtils.js'
 import { error, warn } from '../utils/logger.js'
 

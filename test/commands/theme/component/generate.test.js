@@ -7,7 +7,7 @@ import { after, before, describe } from 'mocha'
 import { install } from '../../../../src/utils/externalComponents.js'
 import { config } from 'dotenv'
 import { resolve } from 'node:path'
-import { exists, saveFile } from '../../../../src/utils/FileUtils.js'
+import { exists, saveFile } from '../../../../src/utils/fileUtils.js'
 
 // Load .env test file
 config({ path: ['.env.test.local', '.env.test'] })

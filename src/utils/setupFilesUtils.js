@@ -9,7 +9,7 @@ import {
   THEME_INDEX_TEMPLATE_LIQUID_FILE
 } from '../config/constants.js'
 import { handleWatcherEvent } from './Watcher.js'
-import { copyFileAndCreatePath, getFileContents } from './FileUtils.js'
+import { copyFileAndCreatePath, getFileContents } from './fileUtils.js'
 
 const setupFolderCue = join(sep, SETUP_FOLDER_NAME, sep)
 const templatesFolderCue = join(sep, TEMPLATES_FOLDER_NAME, sep)
