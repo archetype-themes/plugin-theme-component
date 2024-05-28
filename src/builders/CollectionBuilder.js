@@ -1,5 +1,4 @@
 // External Dependencies
-import { mkdir, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 
 // Internal Dependencies
@@ -117,51 +116,6 @@ class CollectionBuilder {
   }
 
   /**
-   * Deploy Collection To Folder
-   * @param {module:models/Collection} collection
-   * @return {Promise<Awaited<void>[]>}
-   */
-  static async deployToBuildFolder(collection) {
-    const allComponents = collection.allComponents
-    const promises = []
-
-    if (Session.firstRun || Session.changeType === ChangeType.Locale) {
-      const localesWritePromise = writeLocales(collection.build.locales, collection.build.localesFolder)
-      promises.push(localesWritePromise)
-    }
-
-    if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
-      const stylesheetSavePromise = saveFile(collection.build.stylesheet, collection.build.styles)
-      promises.push(stylesheetSavePromise)
-    }
-
-    if (Session.firstRun || [ChangeType.Asset, ChangeType.JavaScript].includes(Session.changeType)) {
-      const allAssetFiles = this.#getAssetFiles(allComponents)
-      const copyAssetFilesPromise = copyFilesToFolder(allAssetFiles, collection.build.assetsFolder)
-      promises.push(copyAssetFilesPromise)
-    }
-
-    if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
-      const snippetFilesWritePromises = Promise.all(
-        allComponents.map((component) =>
-          saveFile(join(collection.build.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)
-        )
-      )
-      promises.push(snippetFilesWritePromises)
-    }
-    console.log(collection.importMapEntries)
-    if (collection.importMapEntries?.size && (Session.firstRun || Session.changeType === ChangeType.JavaScript)) {
-      const deployImportMapFilesPromises = this.#deployImportMapFiles(
-        collection.importMapEntries,
-        collection.build.assetsFolder
-      )
-      promises.push(deployImportMapFilesPromises)
-    }
-
-    return Promise.all(promises)
-  }
-
-  /**
    * Deploy import map files to the assets folder
    * @param {Map<string, string>} buildEntries
    * @param {string} assetsFolder
@@ -180,28 +134,6 @@ class CollectionBuilder {
     const copyPromiseAll = copyFilesToFolder(localFiles, assetsFolder)
     const downloadPromiseAll = downloadFiles(remoteFiles, assetsFolder)
     return Promise.all([copyPromiseAll, downloadPromiseAll])
-  }
-
-
-  /**
-   * Reset Collection Build Folders
-   * @param {CollectionBuild} build
-   * @return {Promise<Awaited<unknown>[]>}
-   */
-  static async #resetBuildFolders(build) {
-    await rm(build.rootFolder, { force: true, recursive: true })
-    await mkdir(build.rootFolder, { recursive: true })
-
-    const buildFolders = [
-      build.assetsFolder,
-      build.configFolder,
-      build.localesFolder,
-      build.sectionsFolder,
-      build.snippetsFolder
-    ]
-    const mkdirPromises = buildFolders.map((buildFolder) => mkdir(buildFolder, { recursive: true }))
-
-    return Promise.all(mkdirPromises)
   }
 }
 
