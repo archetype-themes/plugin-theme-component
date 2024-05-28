@@ -10,7 +10,7 @@ class CollectionBuild extends ComponentBuild {
   /** @type {string} **/
   rootFolder
 
-  /** @type {{entries: Map<string, string>, tags: Map<string,string>}} **/
+  /** @type {{entries: Map<string, string>, tags:string}} **/
   importMap
 
   /** @type {string} **/

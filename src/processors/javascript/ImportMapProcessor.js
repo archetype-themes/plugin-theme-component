@@ -13,7 +13,7 @@ class ImportMapProcessor {
    * Build import map file and return build entries
    * @param {string[]} jsFiles
    * @param {string} collectionRootFolder
-   * @returns {Promise<{entries: Map<string, string>, tags: Map<string,string>}>}
+   * @returns {Promise<{entries: Map<string, string>, tags: string}>}
    */
   static async build(jsFiles, collectionRootFolder) {
     const importMapFile = join(collectionRootFolder, this.ImportMapFile)
@@ -131,6 +131,7 @@ class ImportMapProcessor {
   /**
    * Generate import map tags
    * @param {Map<string, string>} buildEntries
+   * @returns {string}
    */
   static generateImportMapTags(buildEntries) {
     const entriesWithAssetUrl = this.getEntriesWithAssetUrl(buildEntries)

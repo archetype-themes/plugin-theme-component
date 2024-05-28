@@ -50,7 +50,7 @@ class CollectionBuilder {
    * Builds JavaScript files for the given collection and components.
    * @param {string[]} jsFiles - JavaScript Files
    * @param {string} cwd - The working directory.
-   * @returns {Promise<{entries: Map<string, string>, tags: Map<string,string>}>}
+   * @returns {Promise<{entries: Map<string, string>, tags: string}>}
    */
   static async #buildJavaScript(jsFiles, cwd) {
     if (jsFiles.length) {
