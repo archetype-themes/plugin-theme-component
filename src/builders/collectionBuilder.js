@@ -11,11 +11,12 @@ import PostCSSProcessor from '../processors/PostCSSProcessor.js'
 import { getFolderFilesRecursively } from '../utils/FileUtils.js'
 import { error, fatal, logChildItem, logSpacer, logTitleItem, warn } from '../utils/LoggerUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
-import { FileTypes, getCopyright } from '../utils/ComponentFilesUtils.js'
+import { FileTypes } from '../utils/ComponentFilesUtils.js'
 import ImportMapProcessor from '../processors/javascript/ImportMapProcessor.js'
 import { plural } from '../utils/TextUtils.js'
 import ComponentBuild from '../models/ComponentBuild.js'
 import SvgProcessor from '../processors/SvgProcessor.js'
+import { getCopyright } from '../utils/copyrightUtils.js'
 
 /**
  * Execute Collection Build Process

@@ -3,7 +3,7 @@ import { basename, join } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
-import { getCopyrightText, validateComponentNames } from '../utils/CollectionUtils.js'
+import { validateComponentNames } from '../utils/CollectionUtils.js'
 import { fatal, logChildItem, logTitleItem } from '../utils/LoggerUtils.js'
 import Timer from '../models/Timer.js'
 import { plural } from '../utils/TextUtils.js'
@@ -14,6 +14,7 @@ import InternalError from '../errors/InternalError.js'
 import { componentFactory } from './componentFactory.js'
 import { snippetFactory } from './snippetFactory.js'
 import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
+import { getCopyrightText } from '../utils/copyrightUtils.js'
 
 /**
  * Create Collection Model From A Remote Path
