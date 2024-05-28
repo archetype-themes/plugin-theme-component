@@ -25,18 +25,14 @@ class CollectionBuilder {
 
     if (Session.firstRun) {
       ;[collection.build.importMap, collection.build.locales, collection.build.styles] = await Promise.all([
-        this.#buildJavaScript(collection.jsIndexes, collection.build.importMapFile, collection.rootFolder),
+        this.#buildJavaScript(collection.jsIndexes, collection.rootFolder),
         this.#buildLocales(collection.liquidCode),
         this.#buildStyles(collection.mainStylesheets, collection.copyright)
       ])
     } else {
       switch (Session.changeType) {
         case ChangeType.JavaScript:
-          collection.build.importMap = await this.#buildJavaScript(
-            collection.jsIndexes,
-            collection.build.importMapFile,
-            collection.rootFolder
-          )
+          collection.build.importMap = await this.#buildJavaScript(collection.jsIndexes, collection.rootFolder)
           break
         case ChangeType.Locale:
           collection.build.locales = await this.#buildLocales(collection.liquidCode)
@@ -53,15 +49,14 @@ class CollectionBuilder {
   /**
    * Builds JavaScript files for the given collection and components.
    * @param {string[]} jsFiles - JavaScript Files
-   * @param {string} importMapFile - The collection's import map file.
    * @param {string} cwd - The working directory.
    * @returns {Promise<{entries: Map<string, string>, tags: Map<string,string>}>}
    */
-  static async #buildJavaScript(jsFiles, importMapFile, cwd) {
+  static async #buildJavaScript(jsFiles, cwd) {
     if (jsFiles.length) {
       logChildItem('Starting The Import Map Processor', 1)
       const timer = new Timer()
-      const importMap = await ImportMapProcessor.build(jsFiles, importMapFile, cwd)
+      const importMap = await ImportMapProcessor.build(jsFiles, cwd)
       logChildItem(`Import Map Processor Done (${timer.now()} seconds)`, 1)
       return importMap
     } else {

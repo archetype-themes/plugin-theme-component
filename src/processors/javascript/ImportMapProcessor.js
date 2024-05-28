@@ -12,11 +12,10 @@ class ImportMapProcessor {
   /**
    * Build import map file and return build entries
    * @param {string[]} jsFiles
-   * @param {string} outputFile
    * @param {string} collectionRootFolder
    * @returns {Promise<{entries: Map<string, string>, tags: Map<string,string>}>}
    */
-  static async build(jsFiles, outputFile, collectionRootFolder) {
+  static async build(jsFiles, collectionRootFolder) {
     const importMapFile = join(collectionRootFolder, this.ImportMapFile)
     const jsFilesSet = new Set(jsFiles)
 
