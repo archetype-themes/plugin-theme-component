@@ -2,12 +2,12 @@
 import { dirname, extname, join } from 'node:path'
 
 // Internal Dependencies
-import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from './FileUtils.js'
+import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from '../utils/FileUtils.js'
 import { ASSETS_FOLDER_NAME, SETUP_FOLDER_NAME } from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
-import { debug } from './LoggerUtils.js'
+import { debug } from '../utils/LoggerUtils.js'
 
 /** @type {string[]}  **/
 export const STYLE_EXTENSIONS = ['.css']

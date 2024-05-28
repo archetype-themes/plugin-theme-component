@@ -1,6 +1,6 @@
 // Internal Dependencies
 import ComponentFiles from '../models/ComponentFiles.js'
-import { componentFilesFactory } from '../utils/componentFilesFactory.js'
+import { componentFilesFactory } from './componentFilesFactory.js'
 import { getFileContents } from '../utils/FileUtils.js'
 import { getSnippetNames } from '../utils/LiquidUtils.js'
 import { warn } from '../utils/LoggerUtils.js'

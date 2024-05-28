@@ -12,7 +12,7 @@ import {
   isWritable,
   saveFile
 } from '../utils/FileUtils.js'
-import { LIQUID_EXTENSION } from '../utils/componentFilesFactory.js'
+import { LIQUID_EXTENSION } from '../factory/componentFilesFactory.js'
 import Session from '../models/static/Session.js'
 import { ChangeType } from '../utils/Watcher.js'
 import { THEME_LAYOUT_FILE } from '../config/Components.js'
