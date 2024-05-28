@@ -186,39 +186,6 @@ class CollectionBuilder {
     return Promise.all([copyPromiseAll, downloadPromiseAll])
   }
 
-  /**
-   * Retrieves asset files from an array of Component or Snippet objects.
-   *
-   * @param {(Component|Snippet)[]} components - An array of components or snippets.
-   * @return {string[]} - An array of asset files.
-   */
-  static #getAssetFiles(components) {
-    return components
-      .filter((component) => component.files.assetFiles?.length)
-      .flatMap((component) => component.files.assetFiles)
-  }
-
-  /**
-   * Get Collection JavaScript Files
-   * @param {(Component|Snippet)[]} components
-   * @return {string[]}
-   */
-  static #getJsFiles(components) {
-    return components
-      .filter((component) => component.files.javascriptIndex)
-      .map((component) => component.files.javascriptIndex)
-  }
-
-  /**
-   * Get Main Stylesheets from all components and snippets
-   * @param {(Component|Snippet)[]} components
-   * @return {string[]}
-   */
-  static #getMainStylesheets(components) {
-    return components
-      .filter((component) => component.files.mainStylesheet)
-      .map((component) => component.files.mainStylesheet)
-  }
 
   /**
    * Reset Collection Build Folders
