@@ -32,7 +32,7 @@ export const FileTypes = {
  * @param {ComponentFiles} componentFiles
  * @return {Promise<ComponentFiles>}
  */
-export async function indexFiles(componentName, folder, componentFiles) {
+export async function componentFilesFactory(componentName, folder, componentFiles) {
   // Validation: make sure the folder is readable.
   await validateFolderAccess(folder, componentName)
 
@@ -100,7 +100,7 @@ function sortComponentFile(file, componentFiles, componentName) {
  * @return {Promise<void>}
  * @throws FileAccessError
  */
-export async function validateFolderAccess(folder, componentName) {
+async function validateFolderAccess(folder, componentName) {
   if (!(await isReadable(folder))) {
     debug(`Component Factory Abort: ${componentName} was not found at any expected location: "${folder}".`)
     throw new FileAccessError(
@@ -115,7 +115,7 @@ export async function validateFolderAccess(folder, componentName) {
  * @param {string} componentName
  * @returns {string | undefined}
  */
-export function findMainJavaScriptFile(files, componentName) {
+function findMainJavaScriptFile(files, componentName) {
   const regex = new RegExp(`^.+\\/${componentName}\\.(js|mjs)$`)
   const mainJavaScriptFile = files.find((file) => regex.test(file))
 
@@ -135,7 +135,7 @@ export function findMainJavaScriptFile(files, componentName) {
  * @returns {string}
  * @throws Error
  */
-export function findMainStyleSheetFile(styleSheets, componentName) {
+function findMainStyleSheetFile(styleSheets, componentName) {
   // If there's only 1 Stylesheet file, take it!
   if (styleSheets.length === 1) {
     return styleSheets[0]
