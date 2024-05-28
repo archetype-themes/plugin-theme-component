@@ -6,7 +6,6 @@ import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../con
 import { THEME_TYPE_NAME } from '../../../config/Components.js'
 import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
 import { getCurrentTime } from '../../../utils/DateUtils.js'
-import Build from './build.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
@@ -16,6 +15,7 @@ import { isGitHubUrl } from '../../../utils/GitUtils.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
 import { info, logChildItem } from '../../../utils/LoggerUtils.js'
 import { cwd } from 'node:process'
+import CollectionBuilder from '../../../builders/CollectionBuilder.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -95,7 +95,7 @@ export default class Install extends BaseCommand {
     const startTime = new Timer()
 
     // Build using the Build Command
-    collection = await Build.buildCollection(collection)
+    collection = await CollectionBuilder.run(collection)
 
     // Install and time it!
     info(`Installing ${collection.name} for ${theme.name}.`)

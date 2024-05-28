@@ -9,12 +9,55 @@ import Session from '../models/static/Session.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import PostCSSProcessor from '../processors/PostCSSProcessor.js'
 import { getFolderFilesRecursively } from '../utils/FileUtils.js'
-import { error, fatal, logChildItem, warn } from '../utils/LoggerUtils.js'
+import { error, fatal, logChildItem, logSpacer, logTitleItem, warn } from '../utils/LoggerUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
 import { FileTypes, getCopyright } from '../utils/ComponentFilesUtils.js'
 import ImportMapProcessor from '../processors/javascript/ImportMapProcessor.js'
+import { plural } from '../utils/TextUtils.js'
+import ComponentBuild from '../models/ComponentBuild.js'
+import SvgProcessor from '../processors/SvgProcessor.js'
 
 class CollectionBuilder {
+  /**
+   * Execute Collection Build Process
+   * @param collection
+   * @returns {Promise<Awaited<Collection|module:models/Collection>>}
+   */
+  static async run(collection) {
+    logTitleItem(`Building Components For "${collection.name}"`)
+    const buildTimer = new Timer()
+
+    logChildItem(
+      `Building ${collection.components.length + collection.snippets.length} Individual Component${plural(collection.components)} And Snippet${plural(collection.snippets)} for "${collection.name}"`
+    )
+    const individualBuildTimer = new Timer()
+
+    // Build Components Individually
+    ;[collection.components, collection.snippets] = await Promise.all([
+      Promise.all(
+        collection.components.map((component) =>
+          this.buildComponent(component, collection.rootFolder, collection.copyright)
+        )
+      ),
+      Promise.all(
+        collection.snippets.map((snippet) => this.buildComponent(snippet, collection.rootFolder, collection.copyright))
+      )
+    ])
+
+    logChildItem(`Individual Build Done (${individualBuildTimer.now()} seconds)`)
+
+    // Build Collection
+    logChildItem('Running Processors')
+    const collectionAssemblyTimer = new Timer()
+    collection = await this.runProcessors(collection)
+    logChildItem(`Processors Done (${collectionAssemblyTimer.now()} seconds)`)
+
+    // Total Timer Output
+    logChildItem(`Build Done (${buildTimer.now()} seconds)`)
+    logSpacer()
+    return Promise.resolve(collection)
+  }
+
   /**
    * Build Collection
    * @param {module:models/Collection} collection
@@ -44,6 +87,37 @@ class CollectionBuilder {
     }
 
     return collection
+  }
+
+  /**
+   * Build An Individual Component
+   * @param {Component} component
+   * @param {string} collectionRootFolder
+   * @param {string} [copyright] copyright Text
+   * @returns {Promise<Component>}
+   */
+  static async buildComponent(component, collectionRootFolder, copyright) {
+    // Create the component build model
+    component.build = new ComponentBuild()
+
+    // Build Liquid Code
+    if (component.isSvg()) {
+      component.build.liquidCode = await SvgProcessor.buildSvg(
+        component.name,
+        component.liquidCode,
+        collectionRootFolder
+      )
+      if (copyright) {
+        component.build.liquidCode = getCopyright(FileTypes.Svg, copyright) + component.build.liquidCode
+      }
+    } else {
+      component.build.liquidCode = component.liquidCode
+      if (copyright) {
+        component.build.liquidCode = getCopyright(FileTypes.Liquid, copyright) + component.build.liquidCode
+      }
+    }
+
+    return component
   }
 
   /**
