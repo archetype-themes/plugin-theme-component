@@ -1,5 +1,5 @@
 // External Dependencies
-import { basename, dirname, extname, join } from 'node:path'
+import { dirname, extname, join } from 'node:path'
 
 // Internal Dependencies
 import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from './FileUtils.js'
@@ -9,7 +9,7 @@ import { ASSETS_FOLDER_NAME, SETUP_FOLDER_NAME } from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
-import { debug, warn } from './LoggerUtils.js'
+import { debug } from './LoggerUtils.js'
 import InternalError from '../errors/InternalError.js'
 
 /** @type {string[]}  **/
@@ -71,28 +71,25 @@ export async function indexFiles(componentName, folder, componentFiles) {
 function sortComponentFile(file, componentFiles, componentName) {
   const extension = extname(file).toLowerCase()
   const folder = dirname(file).toLowerCase()
-  const filename = basename(file).toLowerCase()
 
   if (folder.includes(join(componentName, SETUP_FOLDER_NAME))) {
     componentFiles.setupFiles.push(file)
+  } else if (SCRIPT_EXTENSIONS.includes(extension)) {
+    componentFiles.javascriptFiles.push(file)
   } else if (folder.endsWith(`/${ASSETS_FOLDER_NAME}`)) {
     componentFiles.assetFiles.push(file)
   } else if (STYLE_EXTENSIONS.includes(extension)) {
     componentFiles.stylesheets.push(file)
-  } else if (SCRIPT_EXTENSIONS.includes(extension)) {
-    componentFiles.javascriptFiles.push(file)
   } else if (extension === LIQUID_EXTENSION) {
     if (folder.endsWith('/snippets')) {
       componentFiles.snippetFiles.push(file)
-    } else if (filename.split('.')[0] === componentName || filename === 'index.liquid') {
+    } else {
       if (componentFiles.liquidFile) {
         throw new InputFileError(
           `Two main liquid files found for the same component ${componentFiles.liquidFile} and ${file}`
         )
       }
       componentFiles.liquidFile = file
-    } else {
-      warn(`Ignored liquid file ${filename}`)
     }
   }
 
