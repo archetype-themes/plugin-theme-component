@@ -15,7 +15,7 @@ import { isGitHubUrl } from '../../../utils/GitUtils.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
 import { info, logChildItem } from '../../../utils/LoggerUtils.js'
 import { cwd } from 'node:process'
-import CollectionBuilder from '../../../builders/CollectionBuilder.js'
+import { collectionBuilder } from '../../../builders/CollectionBuilder.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -95,7 +95,7 @@ export default class Install extends BaseCommand {
     const startTime = new Timer()
 
     // Build using the Build Command
-    collection = await CollectionBuilder.run(collection)
+    collection = await collectionBuilder(collection)
 
     // Install and time it!
     info(`Installing ${collection.name} for ${theme.name}.`)
