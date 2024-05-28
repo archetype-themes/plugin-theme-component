@@ -14,12 +14,6 @@ class CollectionBuild extends ComponentBuild {
   importMap
 
   /** @type {string} **/
-  importMapFile
-
-  /** @type {string} **/
-  snippetsFolder
-
-  /** @type {string} **/
   styles
 
   /** @type {string} **/
