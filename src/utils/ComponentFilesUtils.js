@@ -119,11 +119,11 @@ export async function validateFolderAccess(folder, componentName) {
  **/
 export function getCopyright(fileType, copyright) {
   if (fileType === FileTypes.Liquid) {
-    copyright = `{% comment %}\n${copyright}\n{% endcomment %}\n`
+    copyright = `{% # ${copyright}  %}\n`
   } else if ([FileTypes.Javascript, FileTypes.Css].includes(fileType)) {
-    copyright = `/**\n${copyright}\n**/\n`
+    copyright = `/* ${copyright} */\n`
   } else if (fileType === FileTypes.Svg) {
-    copyright = `<!--\n${copyright}\n-->/\n`
+    copyright = `<!-- ${copyright} -->/\n`
   } else {
     throw new InternalError(`Unknown File Type Received ${fileType}. Couldn't render copyright text`)
   }

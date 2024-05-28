@@ -90,13 +90,13 @@ export function getCopyrightText(packageManifest) {
     copyrightText += ` v${packageManifest.version}`
   }
 
-  copyrightText += `\nCopyright © ${new Date().getFullYear()}`
+  copyrightText += ` | Copyright © ${new Date().getFullYear()}`
 
   if (packageManifest.author) {
     copyrightText += ` ${packageManifest.author} `
   }
 
-  copyrightText += packageManifest.license ? `\nUnder "${packageManifest.license}" License` : '\n All Rights Reserved'
+  copyrightText += packageManifest.license ? ` | "${packageManifest.license}" License` : ' | All Rights Reserved'
 
   return copyrightText
 }
