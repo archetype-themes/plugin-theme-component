@@ -27,9 +27,6 @@ class Collection {
   /** @type {Snippet[]} **/
   snippets
 
-  /** @type {Map<string, string> | undefined} **/
-  importMapEntries
-
   /**
    * Get all components and snippets in a single array
    * @return {(Component|Snippet)[]}
