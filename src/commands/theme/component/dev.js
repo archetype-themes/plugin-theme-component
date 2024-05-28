@@ -7,10 +7,10 @@ import { Args, Flags } from '@oclif/core'
 // Internal Dependencies
 import { collectionBuildFactory } from '../../../factory/collectionBuildFactory.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
-import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
 import {
   ASSETS_FOLDER_NAME,
   COLLECTION_TYPE_NAME,
+  DEV_FOLDER_NAME,
   SNIPPETS_FOLDER_NAME,
   THEME_INDEX_TEMPLATE_LIQUID_FILE,
   THEME_LAYOUT_FILE

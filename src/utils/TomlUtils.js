@@ -1,6 +1,7 @@
 import * as toml from '@iarna/toml'
 import { getFileContents, isReadable } from './FileUtils.js'
-import { CONFIG_FILE_NAME } from '../config/CLI.js'
+
+import { CONFIG_FILE_NAME } from '../config/Components.js'
 
 /**
  * @typedef {Object} ComponentTomlConfig

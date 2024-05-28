@@ -6,8 +6,9 @@ import { FSWatcher, watch as chokidarWatch } from 'chokidar'
 import gitignore from 'parse-gitignore'
 
 // Internal Dependencies
-import { CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import {
+  CONFIG_FILE_NAME,
+  DEV_FOLDER_NAME,
   JSON_EXTENSION,
   LIQUID_EXTENSION,
   SCRIPT_EXTENSIONS,

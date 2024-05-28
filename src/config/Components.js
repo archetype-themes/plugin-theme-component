@@ -27,6 +27,9 @@ export const COMPONENTS_FOLDER = 'components'
 export const CONFIG_FOLDER_NAME = 'config'
 
 /** @type {string} **/
+export const DEV_FOLDER_NAME = '.explorer'
+
+/** @type {string} **/
 export const LOCALES_FOLDER_NAME = 'locales'
 
 /** @type {string} **/
@@ -43,6 +46,9 @@ export const TEMPLATES_FOLDER_NAME = 'templates'
 /******************/
 /**  FILE NAMES  **/
 /******************/
+
+/** @type {string} **/
+export const CONFIG_FILE_NAME = 'shopify.theme.toml'
 
 /** @type {string} **/
 export const IMPORT_MAP_SNIPPET_FILENAME = 'import-map.liquid'

@@ -5,7 +5,8 @@ import { resolve } from 'node:path'
 // Internal Dependencies
 import { exists, getAbsolutePath } from './FileUtils.js'
 import { isGitHubUrl } from './GitUtils.js'
-import { CONFIG_FILE_NAME } from '../config/CLI.js'
+
+import { CONFIG_FILE_NAME } from '../config/Components.js'
 
 /**
  * Get a Value From flags or tomlConfig

@@ -4,10 +4,10 @@ import { basename, dirname, join, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
 
 // Internal Dependencies
-import { DEV_FOLDER_NAME } from '../config/CLI.js'
 import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
 import { debug, trace } from './LoggerUtils.js'
+import { DEV_FOLDER_NAME } from '../config/Components.js'
 
 /** @type {string[]} **/
 const EXCLUDED_FOLDERS = [DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
