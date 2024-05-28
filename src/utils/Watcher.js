@@ -7,13 +7,13 @@ import gitignore from 'parse-gitignore'
 
 // Internal Dependencies
 import { CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
-import { SETUP_FOLDER_NAME } from '../config/Components.js'
 import {
   JSON_EXTENSION,
   LIQUID_EXTENSION,
   SCRIPT_EXTENSIONS,
+  SETUP_FOLDER_NAME,
   STYLE_EXTENSIONS
-} from '../factory/componentFilesFactory.js'
+} from '../config/Components.js'
 import { debug, error, logWatcherAction } from './LoggerUtils.js'
 
 export const ChangeType = {

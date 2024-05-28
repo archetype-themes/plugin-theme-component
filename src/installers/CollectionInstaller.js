@@ -12,10 +12,9 @@ import {
   isWritable,
   saveFile
 } from '../utils/FileUtils.js'
-import { LIQUID_EXTENSION } from '../factory/componentFilesFactory.js'
 import Session from '../models/static/Session.js'
 import { ChangeType } from '../utils/Watcher.js'
-import { THEME_LAYOUT_FILE } from '../config/Components.js'
+import { IMPORT_MAP_SNIPPET_FILENAME, LIQUID_EXTENSION, THEME_LAYOUT_FILE } from '../config/Components.js'
 import { debug, warn } from '../utils/LoggerUtils.js'
 import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 
@@ -52,7 +51,9 @@ class CollectionInstaller {
         fileOperations.push(deployImportMapFilesPromises)
       }
       if (collection.build.importMap.tags) {
-        fileOperations.push(saveFile(join(theme.snippetsFolder, 'import-map.liquid'), collection.build.importMap.tags))
+        fileOperations.push(
+          saveFile(join(theme.snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME), collection.build.importMap.tags)
+        )
       }
 
       const copyJsFilesPromise = copyFilesToFolder(collection.jsFiles, theme.assetsFolder)

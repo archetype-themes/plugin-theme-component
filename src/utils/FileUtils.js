@@ -4,13 +4,13 @@ import { basename, dirname, join, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
 
 // Internal Dependencies
-import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
+import { DEV_FOLDER_NAME } from '../config/CLI.js'
 import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
 import { debug, trace } from './LoggerUtils.js'
 
 /** @type {string[]} **/
-const EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
+const EXCLUDED_FOLDERS = [DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
 
 /** @type {Object} **/
 const FILE_ENCODING_OPTION = { encoding: 'utf8' }

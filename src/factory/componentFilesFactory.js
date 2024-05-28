@@ -3,27 +3,17 @@ import { dirname, extname, join } from 'node:path'
 
 // Internal Dependencies
 import { convertToComponentRelativePath, getFolderFilesRecursively, isReadable } from '../utils/FileUtils.js'
-import { ASSETS_FOLDER_NAME, SETUP_FOLDER_NAME } from '../config/Components.js'
+import {
+  ASSETS_FOLDER_NAME,
+  LIQUID_EXTENSION,
+  SCRIPT_EXTENSIONS,
+  SETUP_FOLDER_NAME,
+  STYLE_EXTENSIONS
+} from '../config/Components.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'
 import { debug } from '../utils/LoggerUtils.js'
-
-/** @type {string[]}  **/
-export const STYLE_EXTENSIONS = ['.css']
-/** @type {string[]}  **/
-export const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
-/** @type {string}  **/
-export const LIQUID_EXTENSION = '.liquid'
-/** @type {string}  **/
-export const JSON_EXTENSION = '.json'
-
-export const FileTypes = {
-  Css: 'css',
-  Javascript: 'javascript',
-  Liquid: 'liquid',
-  Svg: 'svg'
-}
 
 /**
  * Index Component Files

@@ -50,3 +50,27 @@ export const IMPORT_MAP_SNIPPET_FILENAME = 'import-map.liquid'
 export const THEME_LAYOUT_FILE = 'layout/theme.liquid'
 
 export const THEME_INDEX_TEMPLATE_LIQUID_FILE = join(TEMPLATES_FOLDER_NAME, 'index.liquid')
+
+/***********************/
+/**  FILE EXTENSIONS  **/
+/***********************/
+
+/** @type {string[]}  **/
+export const STYLE_EXTENSIONS = ['.css']
+/** @type {string[]}  **/
+export const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
+/** @type {string}  **/
+export const LIQUID_EXTENSION = '.liquid'
+/** @type {string}  **/
+export const JSON_EXTENSION = '.json'
+
+/**
+ * File Types Enum
+ * @type {{Liquid: string, Css: string, Svg: string, Javascript: string}}
+ */
+export const FileTypes = {
+  Css: 'css',
+  Javascript: 'javascript',
+  Liquid: 'liquid',
+  Svg: 'svg'
+}

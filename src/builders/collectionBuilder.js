@@ -2,7 +2,7 @@
 import { join } from 'node:path'
 
 // Internal Dependencies
-import { LOCALES_FOLDER_NAME } from '../config/Components.js'
+import { FileTypes, LOCALES_FOLDER_NAME } from '../config/Components.js'
 import { collectionBuildFactory } from '../factory/collectionBuildFactory.js'
 import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'
@@ -11,7 +11,6 @@ import PostCSSProcessor from '../processors/PostCSSProcessor.js'
 import { getFolderFilesRecursively } from '../utils/FileUtils.js'
 import { error, fatal, logChildItem, logSpacer, logTitleItem, warn } from '../utils/LoggerUtils.js'
 import { ChangeType } from '../utils/Watcher.js'
-import { FileTypes } from '../factory/componentFilesFactory.js'
 import ImportMapProcessor from '../processors/javascript/ImportMapProcessor.js'
 import { plural } from '../utils/TextUtils.js'
 import ComponentBuild from '../models/ComponentBuild.js'
