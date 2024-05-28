@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 
 // Internal Dependencies
 import { exists, getAbsolutePath } from './FileUtils.js'
-import { isGitHubUrl } from './GitUtils.js'
+import { isGitHubUrl } from './gitUtils.js'
 
 import { CONFIG_FILE_NAME } from '../config/constants.js'
 
