@@ -2,25 +2,16 @@ import ComponentBuild from './ComponentBuild.js'
 
 class CollectionBuild extends ComponentBuild {
   /** @type {string} **/
-  assetsFolder
-
-  /** @type {string} **/
   configFolder
-
-  /** @type {string} **/
-  javascriptFile
 
   /** @type {Object} **/
   locales
 
   /** @type {string} **/
-  localesFolder
-
-  /** @type {string} **/
   rootFolder
 
-  /** @type {string} **/
-  sectionsFolder
+  /** @type {{entries: Map<string, string>, tags: Map<string,string>}} **/
+  importMap
 
   /** @type {string} **/
   importMapFile
