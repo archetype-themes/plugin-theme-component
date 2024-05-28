@@ -19,7 +19,7 @@ class CollectionBuilder {
   /**
    * Build Collection
    * @param {module:models/Collection} collection
-   * @return {Promise<module:models/Collection>}
+   * @returns {Promise<module:models/Collection>}
    */
   static async runProcessors(collection) {
     const allComponents = collection.allComponents
@@ -32,6 +32,8 @@ class CollectionBuilder {
         this.#buildJavaScript(allComponents, collection.build.importMapFile, collection.rootFolder),
         this.#buildLocales(allComponents),
         this.#buildStyles(allComponents, collection.build.stylesheet, collection.copyright)
+        this.#buildLocales(collection.liquidCode),
+        this.#buildStyles(collection.mainStylesheets, collection.build.stylesheet, collection.copyright)
       ])
     } else {
       switch (Session.changeType) {
@@ -43,10 +45,10 @@ class CollectionBuilder {
           )
           break
         case ChangeType.Locale:
-          collection.build.locales = await this.#buildLocales(allComponents)
+          collection.build.locales = await this.#buildLocales(collection.liquidCode)
           break
         case ChangeType.Stylesheet:
-          collection.build.styles = await this.#buildStyles(allComponents, collection.build.stylesheet)
+          collection.build.styles = await this.#buildStyles(collection.mainStylesheets, collection.build.stylesheet)
           break
       }
     }
@@ -78,18 +80,16 @@ class CollectionBuilder {
 
   /**
    * Builds locales for the given collection and all components.
-   *
-   * @param {(Component|Snippet)[]} components - All components to extract liquid code from.
-   * @throws Error When build is in error
-   * @return {Promise<{}>} - A promise that resolves when the locales are built.
+   * @param {string[]} liquidCodeExcerpts - Liquid code excerpts to scan for translation tag use
+   * @throws Error When build fails
+   * @returns {Promise<{}>} - A promise that resolves when the locales' build is complete
    */
-  static async #buildLocales(components) {
-    const componentsLiquidCode = components.map((component) => component.liquidCode)
+  static async #buildLocales(liquidCodeExcerpts) {
     try {
       logChildItem('Starting The Locales Processor', 1)
       const timer = new Timer()
       const localeFiles = await getFolderFilesRecursively(join(Session.localesPath, LOCALES_FOLDER_NAME))
-      const locales = await LocalesProcessor.build(componentsLiquidCode, localeFiles)
+      const locales = await LocalesProcessor.build(liquidCodeExcerpts, localeFiles)
       logChildItem(`Locales Processor Done (${timer.now()} seconds)`, 1)
       return locales
     } catch (e) {
@@ -100,14 +100,12 @@ class CollectionBuilder {
 
   /**
    * Builds the styles for the given collection and all components.
-   * @param {(Component|Snippet)[]} components - An array containing all the components.
+   * @param {string[]} mainStylesheets - Main Stylesheets
    * @param {string} outputFile - The collection's css bundle file.
    * @param {string} [copyright] - The collection's Copyright Text
-   * @return {Promise<string>} - A promise that resolves when the styles are built.
+   * @returns {Promise<string>} - A promise that resolves when the styles are built.
    */
-  static async #buildStyles(components, outputFile, copyright) {
-    const mainStylesheets = this.#getMainStylesheets(components)
-
+  static async #buildStyles(mainStylesheets, outputFile, copyright) {
     if (mainStylesheets.length) {
       logChildItem('Starting The Styles Processor', 1)
       const timer = new Timer()
