@@ -1,4 +1,4 @@
-import { getPackageName } from './NodeUtils.js'
+import { getPackageName } from './nodeUtils.js'
 import InternalError from '../errors/InternalError.js'
 import { FileTypes } from '../config/constants.js'
 

@@ -3,7 +3,7 @@ import { basename } from 'node:path'
 import { env } from 'node:process'
 
 // Internal Dependencies
-import { execAsync } from './NodeUtils.js'
+import { execAsync } from './nodeUtils.js'
 import { addAuthToUrl, hasAuthInUrl } from './webUtils.js'
 import { debug, error } from './LoggerUtils.js'
 

@@ -1,7 +1,7 @@
 // Internal Dependencies
 import { copyFolder, exists, getAbsolutePath, getRandomTmpFolder } from './FileUtils.js'
 import { clone, isGitHubUrl } from './GitUtils.js'
-import { execAsync } from './NodeUtils.js'
+import { execAsync } from './nodeUtils.js'
 import { deleteTomlConfigFile } from './sessionUtils.js'
 import { resolve } from 'node:path'
 

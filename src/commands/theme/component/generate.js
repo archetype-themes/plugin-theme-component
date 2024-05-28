@@ -10,7 +10,7 @@ import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '..
 import FileAccessError from '../../../errors/FileAccessError.js'
 import Session from '../../../models/static/Session.js'
 import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
-import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/NodeUtils.js'
+import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/nodeUtils.js'
 import { getValuesFromArgvOrToml } from '../../../utils/sessionUtils.js'
 import { logChildItem, logSeparator, logTitleItem } from '../../../utils/LoggerUtils.js'
 

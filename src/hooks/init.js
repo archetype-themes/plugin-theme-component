@@ -1,6 +1,6 @@
 import { input } from '@inquirer/prompts'
 
-import { getCLIRootFolderName } from '../utils/NodeUtils.js'
+import { getCLIRootFolderName } from '../utils/nodeUtils.js'
 import { exists, saveFile } from '../utils/FileUtils.js'
 import { join } from 'node:path'
 import User from '../models/User.js'

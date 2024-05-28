@@ -39,7 +39,7 @@ import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } fr
 import { getCurrentTime } from '../../../utils/dateUtils.js'
 import { rm } from 'node:fs/promises'
 import { exists, saveFile } from '../../../utils/FileUtils.js'
-import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
+import { getCLIRootFolderName } from '../../../utils/nodeUtils.js'
 import Timer from '../../../models/Timer.js'
 import { displayComponentTree } from '../../../utils/collectionUtils.js'
 import { collectionBuilder } from '../../../builders/collectionBuilder.js'

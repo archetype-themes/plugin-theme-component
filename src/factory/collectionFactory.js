@@ -13,7 +13,7 @@ import FileMissingError from '../errors/FileMissingError.js'
 import InternalError from '../errors/InternalError.js'
 import { componentFactory } from './componentFactory.js'
 import { snippetFactory } from './snippetFactory.js'
-import { getPackageManifest, getPackageName } from '../utils/NodeUtils.js'
+import { getPackageManifest, getPackageName } from '../utils/nodeUtils.js'
 import { getCopyrightText } from '../utils/copyright.js'
 
 /**

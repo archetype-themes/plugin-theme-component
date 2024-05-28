@@ -12,7 +12,7 @@ import { LOCALES_FLAG_NAME } from '../../../../src/config/baseCommand.js'
 import Session from '../../../../src/models/static/Session.js'
 import { install } from '../../../../src/utils/externalComponents.js'
 import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/FileUtils.js'
-import { getCLIRootFolderName } from '../../../../src/utils/NodeUtils.js'
+import { getCLIRootFolderName } from '../../../../src/utils/nodeUtils.js'
 import { mkdir } from 'node:fs/promises'
 
 // Load .env test file
