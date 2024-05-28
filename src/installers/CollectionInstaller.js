@@ -14,7 +14,7 @@ import {
 } from '../utils/FileUtils.js'
 import Session from '../models/static/Session.js'
 import { ChangeType } from '../utils/Watcher.js'
-import { IMPORT_MAP_SNIPPET_FILENAME, LIQUID_EXTENSION, THEME_LAYOUT_FILE } from '../config/Components.js'
+import { IMPORT_MAP_SNIPPET_FILENAME, LIQUID_EXTENSION, THEME_LAYOUT_FILE } from '../config/constants.js'
 import { debug, warn } from '../utils/LoggerUtils.js'
 import { downloadFiles, isUrl } from '../utils/WebUtils.js'
 

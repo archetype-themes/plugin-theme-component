@@ -14,7 +14,7 @@ import {
   SCRIPT_EXTENSIONS,
   SETUP_FOLDER_NAME,
   STYLE_EXTENSIONS
-} from '../config/Components.js'
+} from '../config/constants.js'
 import { debug, error, logWatcherAction } from './LoggerUtils.js'
 
 export const ChangeType = {

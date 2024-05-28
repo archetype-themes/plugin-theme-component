@@ -6,7 +6,7 @@ import { Args } from '@oclif/core'
 
 // Internal Dependencies
 import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
-import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../../config/Components.js'
+import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../../config/constants.js'
 import FileAccessError from '../../../errors/FileAccessError.js'
 import Session from '../../../models/static/Session.js'
 import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'

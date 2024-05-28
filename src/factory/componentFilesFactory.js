@@ -9,7 +9,7 @@ import {
   SCRIPT_EXTENSIONS,
   SETUP_FOLDER_NAME,
   STYLE_EXTENSIONS
-} from '../config/Components.js'
+} from '../config/constants.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
 import InputFileError from '../errors/InputFileError.js'

@@ -1,6 +1,6 @@
 import { getPackageName } from './NodeUtils.js'
 import InternalError from '../errors/InternalError.js'
-import { FileTypes } from '../config/Components.js'
+import { FileTypes } from '../config/constants.js'
 
 /**
  * Get Component File Copyright

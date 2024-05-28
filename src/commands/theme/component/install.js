@@ -3,7 +3,7 @@ import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
-import { THEME_TYPE_NAME } from '../../../config/Components.js'
+import { THEME_TYPE_NAME } from '../../../config/constants.js'
 import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
 import { getCurrentTime } from '../../../utils/DateUtils.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'

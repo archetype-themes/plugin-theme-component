@@ -7,7 +7,7 @@ import {
   SETUP_FOLDER_NAME,
   TEMPLATES_FOLDER_NAME,
   THEME_INDEX_TEMPLATE_LIQUID_FILE
-} from '../config/Components.js'
+} from '../config/constants.js'
 import { handleWatcherEvent } from './Watcher.js'
 import { copyFileAndCreatePath, getFileContents } from './FileUtils.js'
 

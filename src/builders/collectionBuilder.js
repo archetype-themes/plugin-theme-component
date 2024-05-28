@@ -2,7 +2,7 @@
 import { join } from 'node:path'
 
 // Internal Dependencies
-import { FileTypes, LOCALES_FOLDER_NAME } from '../config/Components.js'
+import { FileTypes, LOCALES_FOLDER_NAME } from '../config/constants.js'
 import { collectionBuildFactory } from '../factory/collectionBuildFactory.js'
 import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'

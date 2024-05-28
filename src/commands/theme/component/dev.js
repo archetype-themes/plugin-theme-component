@@ -14,7 +14,7 @@ import {
   SNIPPETS_FOLDER_NAME,
   THEME_INDEX_TEMPLATE_LIQUID_FILE,
   THEME_LAYOUT_FILE
-} from '../../../config/Components.js'
+} from '../../../config/constants.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
 import { themeFactory } from '../../../factory/themeFactory.js'
 import CollectionInstaller from '../../../installers/CollectionInstaller.js'

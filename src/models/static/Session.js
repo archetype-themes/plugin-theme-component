@@ -1,4 +1,4 @@
-import { COLLECTION_TYPE_NAME, THEME_TYPE_NAME } from '../../config/Components.js'
+import { COLLECTION_TYPE_NAME, THEME_TYPE_NAME } from '../../config/constants.js'
 
 class Session {
   /** @type {ComponentTomlConfig} Plugin TOML config  **/

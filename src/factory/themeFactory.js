@@ -8,7 +8,7 @@ import {
   LOCALES_FOLDER_NAME,
   SECTIONS_FOLDER_NAME,
   SNIPPETS_FOLDER_NAME
-} from '../config/Components.js'
+} from '../config/constants.js'
 import Theme from '../models/Theme.js'
 
 /**
