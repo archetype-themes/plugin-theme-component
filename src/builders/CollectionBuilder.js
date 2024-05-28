@@ -111,7 +111,6 @@ class CollectionBuilder {
 
       let styles = await PostCSSProcessor.buildStylesBundle(mainStylesheets)
       styles = getCopyright(FileTypes.Css, copyright) + styles
-      await saveFile(outputFile, styles)
       logChildItem(`Styles Processor Done (${timer.now()} seconds)`, 1)
       return styles
     }
