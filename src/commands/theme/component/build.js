@@ -44,20 +44,6 @@ class Build extends BaseCommand {
     logSpacer()
     return Promise.resolve(collection)
   }
-
-  /**
-   * Deploy Collection
-   * @param {module:models/Collection} collection
-   * @returns {Promise<void>}
-   */
-  static async deployCollection(collection) {
-    // Deploy Collection To Disk
-    logTitleItem('Writing Collection Build To Disk')
-    const timer = new Timer()
-    await CollectionBuilder.deployToBuildFolder(collection)
-    logChildItem(`Build Deployment Complete (${timer.now()} seconds)`)
-    logSpacer()
-  }
 }
 
 export default Build

@@ -225,7 +225,6 @@ export default class Dev extends BaseCommand {
       displayComponentTree(collection)
     }
     collection = await Build.buildCollection(collection)
-    await Build.deployCollection(collection)
 
     const theme = await themeFactory(devFolder)
 
