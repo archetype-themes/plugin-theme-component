@@ -25,7 +25,7 @@ import {
   getValuesFromArgvOrToml,
   getValueFromFlagOrToml,
   getPathFromFlagOrTomlValue
-} from '../../../utils/SessionUtils.js'
+} from '../../../utils/sessionUtils.js'
 import {
   ChangeType,
   getChangeTypeFromFilename,

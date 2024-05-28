@@ -11,7 +11,7 @@ import FileAccessError from '../../../errors/FileAccessError.js'
 import Session from '../../../models/static/Session.js'
 import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/NodeUtils.js'
-import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
+import { getValuesFromArgvOrToml } from '../../../utils/sessionUtils.js'
 import { logChildItem, logSeparator, logTitleItem } from '../../../utils/LoggerUtils.js'
 
 export default class Generate extends BaseCommand {
