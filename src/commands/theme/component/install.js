@@ -15,7 +15,7 @@ import { isGitHubUrl } from '../../../utils/GitUtils.js'
 import { install } from '../../../utils/ExternalComponentUtils.js'
 import { info, logChildItem } from '../../../utils/LoggerUtils.js'
 import { cwd } from 'node:process'
-import { collectionBuilder } from '../../../builders/CollectionBuilder.js'
+import { collectionBuilder } from '../../../builders/collectionBuilder.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {

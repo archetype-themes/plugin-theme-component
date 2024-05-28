@@ -42,7 +42,7 @@ import { exists, saveFile } from '../../../utils/FileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
 import Timer from '../../../models/Timer.js'
 import { displayComponentTree } from '../../../utils/CollectionUtils.js'
-import { collectionBuilder } from '../../../builders/CollectionBuilder.js'
+import { collectionBuilder } from '../../../builders/collectionBuilder.js'
 
 /** @type {string} **/
 export const THEME_FLAG_NAME = 'theme-path'
