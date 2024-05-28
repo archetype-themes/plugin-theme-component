@@ -177,6 +177,7 @@ class ImportMapProcessor {
    * Filter build entries by excluding component JS entry points
    * @param {Map<string, string>} buildEntries
    * @param {Set<string>} jsFiles
+   * @returns {Map<string, string>}
    */
   static filterBuildEntries(buildEntries, jsFiles) {
     /** @type {Map<string, string>} */
