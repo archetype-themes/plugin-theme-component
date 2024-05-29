@@ -106,8 +106,8 @@ FLAG DESCRIPTIONS
 
   --[no-]sync  Sync your files through shopify theme dev
 
-    This will execute shopify theme dev along with your component dev command. You can customize options for that
-    command in your toml file.
+    This will execute `shopify theme dev --path .explorer` along with your component dev command. You can customize
+    options for that command in your toml file.
 ```
 
 _See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.5.0/src/commands/theme/component/dev.js)_
