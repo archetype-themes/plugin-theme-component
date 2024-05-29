@@ -22,7 +22,7 @@ import { getCopyright } from '../utils/copyright.js'
  * @param collection
  * @returns {Promise<Awaited<Collection|module:models/Collection>>}
  */
-export async function collectionBuilder(collection) {
+export async function buildCollection(collection) {
   logTitleItem(`Building Components For "${collection.name}"`)
   const buildTimer = new Timer()
 

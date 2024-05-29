@@ -42,7 +42,7 @@ import { exists, saveFile } from '../../../utils/fileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/nodeUtils.js'
 import Timer from '../../../models/Timer.js'
 import { displayComponentTree } from '../../../utils/collectionUtils.js'
-import { collectionBuilder } from '../../../builders/collectionBuilder.js'
+import { buildCollection } from '../../../builders/collectionBuilder.js'
 
 /** @type {string} **/
 export const THEME_FLAG_NAME = 'theme-path'
@@ -224,7 +224,7 @@ export default class Dev extends BaseCommand {
     if (Session.firstRun) {
       displayComponentTree(collection)
     }
-    collection = await collectionBuilder(collection)
+    collection = await buildCollection(collection)
 
     const theme = await themeFactory(devFolder)
 
@@ -305,7 +305,7 @@ export default class Dev extends BaseCommand {
     console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
     if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
       let collection = await this.getCollectionFromCwd(componentNames)
-      collection = await collectionBuilder(collection)
+      collection = await buildCollection(collection)
       const indexTemplate = await buildIndexTemplate(collection.components, themePath)
       await saveFile(join(cwd(), DEV_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE), indexTemplate)
     }
