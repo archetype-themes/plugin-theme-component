@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Copyright Notice added to component files upon installation to a theme
+- Copyright Notice added to component files upon installation to a theme #332
 
 ### Changed
 
