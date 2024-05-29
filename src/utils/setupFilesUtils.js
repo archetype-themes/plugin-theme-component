@@ -1,11 +1,16 @@
 // External Dependencies
-import { basename, join, sep } from 'node:path'
+import { basename, dirname, join, sep } from 'node:path'
 
 // Internal Dependencies
-import { SETUP_FOLDER_NAME, TEMPLATES_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE } from '../config/Components.js'
+import {
+  JSON_EXTENSION,
+  SETUP_FOLDER_NAME,
+  TEMPLATES_FOLDER_NAME,
+  THEME_INDEX_TEMPLATE_LIQUID_FILE
+} from '../config/constants.js'
 import { handleWatcherEvent } from './Watcher.js'
-import { JSON_EXTENSION } from './ComponentFilesUtils.js'
-import { copyFileAndCreatePath, getFileContents } from './FileUtils.js'
+import { getFileContents } from './fileUtils.js'
+import { installFile } from '../installers/collectionInstaller.js'
 
 const setupFolderCue = join(sep, SETUP_FOLDER_NAME, sep)
 const templatesFolderCue = join(sep, TEMPLATES_FOLDER_NAME, sep)
@@ -24,15 +29,17 @@ function getSetupRelativePath(filePath) {
  * Initial Installation Of Setup Files
  * @param {Component[]} components
  * @param {string} installFolder
+ * @param {string} copyrightText
  * @return {Promise<void[]>}
  */
-export async function installSetupFiles(components, installFolder) {
+export async function installSetupFiles(components, installFolder, copyrightText) {
   const copyPromises = []
   components.forEach((component) => {
     component.files.setupFiles.forEach((setupFile) => {
-      const setupFileRelativePath = getSetupRelativePath(setupFile)
+      const setupFileRelativePath = dirname(getSetupRelativePath(setupFile))
       const installPath = join(installFolder, setupFileRelativePath)
-      copyPromises.push(copyFileAndCreatePath(setupFile, installPath))
+
+      copyPromises.push(installFile(setupFile, installPath, copyrightText))
     })
   })
   return Promise.all(copyPromises)

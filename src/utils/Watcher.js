@@ -6,10 +6,16 @@ import { FSWatcher, watch as chokidarWatch } from 'chokidar'
 import gitignore from 'parse-gitignore'
 
 // Internal Dependencies
-import { CONFIG_FILE_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
-import { SETUP_FOLDER_NAME } from '../config/Components.js'
-import { JSON_EXTENSION, LIQUID_EXTENSION, SCRIPT_EXTENSIONS, STYLE_EXTENSIONS } from './ComponentFilesUtils.js'
-import { debug, error, logWatcherAction } from './LoggerUtils.js'
+import {
+  CONFIG_FILE_NAME,
+  DEV_FOLDER_NAME,
+  JSON_EXTENSION,
+  LIQUID_EXTENSION,
+  SCRIPT_EXTENSIONS,
+  SETUP_FOLDER_NAME,
+  STYLE_EXTENSIONS
+} from '../config/constants.js'
+import { debug, error, logWatcherAction } from './logger.js'
 
 export const ChangeType = {
   Asset: 'asset',

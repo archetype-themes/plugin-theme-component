@@ -1,11 +1,11 @@
 // External Dependencies
 import { exec } from 'node:child_process'
 import { cwd, env } from 'node:process'
-import { join, sep } from 'node:path'
+import { join } from 'node:path'
 import { promisify } from 'node:util'
 
 // Internal Dependencies
-import { getJsonFileContents } from './FileUtils.js'
+import { getJsonFileContents } from './fileUtils.js'
 import InternalError from '../errors/InternalError.js'
 
 /**
@@ -16,13 +16,6 @@ import InternalError from '../errors/InternalError.js'
  * @return {Promise<{ stdout: string, stderr: string }>}
  */
 export const execAsync = promisify(exec)
-
-export function getCurrentWorkingDirectoryName() {
-  const currentWorkingDirectory = cwd()
-  const directoryArray = currentWorkingDirectory.split(sep)
-
-  return directoryArray[directoryArray.length - 1]
-}
 
 /**
  * Shortcut to a method to get root folder username
@@ -41,10 +34,10 @@ export function getPackageName(packageManifest) {
   let packageNameAndScope
   if (packageManifest?.name) {
     packageNameAndScope = packageManifest.name
-  } else if (env.npm_package_name) {
+  } else if (!packageManifest && env.npm_package_name) {
     packageNameAndScope = env.npm_package_name
   } else {
-    throw new InternalError('Unavailable NPM Package Name environment variable and/or Package Manifest')
+    throw new InternalError('Unable To Determine NPM Package Name')
   }
 
   return packageNameAndScope.includes('/') ? packageNameAndScope.split('/')[1] : packageNameAndScope

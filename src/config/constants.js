@@ -27,6 +27,9 @@ export const COMPONENTS_FOLDER = 'components'
 export const CONFIG_FOLDER_NAME = 'config'
 
 /** @type {string} **/
+export const DEV_FOLDER_NAME = '.explorer'
+
+/** @type {string} **/
 export const LOCALES_FOLDER_NAME = 'locales'
 
 /** @type {string} **/
@@ -45,8 +48,40 @@ export const TEMPLATES_FOLDER_NAME = 'templates'
 /******************/
 
 /** @type {string} **/
+export const CONFIG_FILE_NAME = 'shopify.theme.toml'
+
+/** @type {string} **/
 export const IMPORT_MAP_SNIPPET_FILENAME = 'import-map.liquid'
 
 export const THEME_LAYOUT_FILE = 'layout/theme.liquid'
 
 export const THEME_INDEX_TEMPLATE_LIQUID_FILE = join(TEMPLATES_FOLDER_NAME, 'index.liquid')
+
+/***********************/
+/**  FILE EXTENSIONS  **/
+/***********************/
+
+/** @type {string}  **/
+export const JSON_EXTENSION = '.json'
+
+/** @type {string}  **/
+export const LIQUID_EXTENSION = '.liquid'
+
+/** @type {string[]}  **/
+export const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
+
+/** @type {string[]}  **/
+export const STYLE_EXTENSIONS = ['.css']
+
+export const SVG_EXTENSION = '.svg'
+
+/**
+ * File Types Enum
+ * @type {{Liquid: string, Css: string, Svg: string, Javascript: string}}
+ */
+export const FileTypes = {
+  Css: 'css',
+  Javascript: 'javascript',
+  Liquid: 'liquid',
+  Svg: 'svg'
+}

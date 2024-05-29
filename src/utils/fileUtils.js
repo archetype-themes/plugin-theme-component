@@ -1,16 +1,23 @@
 // External Dependencies
 import { access, constants, copyFile, cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { basename, dirname, join, resolve, sep } from 'node:path'
+import { basename, dirname, extname, join, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
 
 // Internal Dependencies
-import { BUILD_FOLDER_NAME, DEV_FOLDER_NAME } from '../config/CLI.js'
 import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
-import { debug, trace } from './LoggerUtils.js'
+import { debug, trace } from './logger.js'
+import {
+  DEV_FOLDER_NAME,
+  FileTypes,
+  LIQUID_EXTENSION,
+  SCRIPT_EXTENSIONS,
+  STYLE_EXTENSIONS,
+  SVG_EXTENSION
+} from '../config/constants.js'
 
 /** @type {string[]} **/
-const EXCLUDED_FOLDERS = [BUILD_FOLDER_NAME, DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
+const EXCLUDED_FOLDERS = [DEV_FOLDER_NAME, 'node_modules', '.yarn', '.idea', '.git']
 
 /** @type {Object} **/
 const FILE_ENCODING_OPTION = { encoding: 'utf8' }
@@ -299,4 +306,21 @@ export async function saveFile(file, fileContents) {
  */
 export function getAbsolutePath(path) {
   return path.startsWith(sep) ? path : join(cwd(), path)
+}
+
+export function getFileType(filename) {
+  const extension = extname(filename).toLowerCase()
+  if (SCRIPT_EXTENSIONS.includes(extension)) {
+    return FileTypes.Javascript
+  }
+  if (STYLE_EXTENSIONS.includes(extension)) {
+    return FileTypes.Css
+  }
+  if (extension === LIQUID_EXTENSION) {
+    return FileTypes.Liquid
+  }
+  if (extension === SVG_EXTENSION) {
+    return FileTypes.Svg
+  }
+  return null
 }

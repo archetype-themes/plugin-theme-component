@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2024-05-29
+
+### Added
+
+- Copyright Notice added to component files upon installation to a theme #332
+
+### Changed
+
+- The Sync Flag text was updated to indicate that we use '--path .explorer'
+- The build process does not write to disk anymore, only install does
+- Dependencies: Minor updates
+-
+### Removed
+
+- Automated Dependabot updates for Node.js packages were removed. We never use it.
+- Automated GitHub release data was removed since we use Npm for package publishing.
+- Removed the unused build command and the use of the build folder
+
 ## [3.4.0] - 2024-05-22
 
 ### Added

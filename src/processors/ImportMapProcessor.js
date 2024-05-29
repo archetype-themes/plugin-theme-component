@@ -1,28 +1,37 @@
-import path from 'node:path'
+import path, { join } from 'node:path'
 import glob from 'fast-glob'
 import picomatch from 'picomatch'
 import { init, parse } from 'es-module-lexer'
-import { getFileContents, getJsonFileContents, saveFile } from '../../utils/FileUtils.js'
-import { isUrl } from '../../utils/WebUtils.js'
+import { exists, getFileContents, getJsonFileContents } from '../utils/fileUtils.js'
+import { isUrl } from '../utils/webUtils.js'
+import FileMissingError from '../errors/FileMissingError.js'
 
 class ImportMapProcessor {
   static ImportMapFile = 'importmap.json'
 
   /**
    * Build import map file and return build entries
-   * @param {Set<string>} jsFiles
-   * @param {string} outputFile
+   * @param {string[]} jsFiles
    * @param {string} collectionRootFolder
+   * @returns {Promise<{entries: Map<string, string>, tags: string}>}
    */
-  static async build(jsFiles, outputFile, collectionRootFolder) {
+  static async build(jsFiles, collectionRootFolder) {
+    const importMapFile = join(collectionRootFolder, this.ImportMapFile)
+    const jsFilesSet = new Set(jsFiles)
+
+    if (!(await exists(importMapFile))) {
+      throw new FileMissingError('ImportMap file not found, unable to process javascript')
+    }
+
+    const importMap = {}
     /** @type {{imports: Object<string, string>}} */
-    const importMap = await getJsonFileContents(path.join(collectionRootFolder, this.ImportMapFile))
-    const importMapEntries = this.resolveImportMapEntries(importMap.imports, collectionRootFolder)
-    const buildEntries = await this.resolveBuildEntries(jsFiles, importMapEntries)
+    const importMapJson = await getJsonFileContents(importMapFile)
+    const importMapEntries = this.resolveImportMapEntries(importMapJson.imports, collectionRootFolder)
+    const buildEntries = await this.resolveBuildEntries(jsFilesSet, importMapEntries)
     const sortedBuildEntries = new Map([...buildEntries.entries()].sort())
-    const importMapTags = this.generateImportMapTags(sortedBuildEntries)
-    await saveFile(outputFile, importMapTags)
-    return this.filterBuildEntries(sortedBuildEntries, jsFiles)
+    importMap.tags = this.generateImportMapTags(sortedBuildEntries)
+    importMap.entries = this.filterBuildEntries(sortedBuildEntries, jsFilesSet)
+    return importMap
   }
 
   /**
@@ -122,6 +131,7 @@ class ImportMapProcessor {
   /**
    * Generate import map tags
    * @param {Map<string, string>} buildEntries
+   * @returns {string}
    */
   static generateImportMapTags(buildEntries) {
     const entriesWithAssetUrl = this.getEntriesWithAssetUrl(buildEntries)
@@ -169,6 +179,7 @@ class ImportMapProcessor {
    * Filter build entries by excluding component JS entry points
    * @param {Map<string, string>} buildEntries
    * @param {Set<string>} jsFiles
+   * @returns {Map<string, string>}
    */
   static filterBuildEntries(buildEntries, jsFiles) {
     /** @type {Map<string, string>} */

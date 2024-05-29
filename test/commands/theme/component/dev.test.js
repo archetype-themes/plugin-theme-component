@@ -10,9 +10,9 @@ import { after, before, describe, it } from 'mocha'
 import Dev, { SETUP_FLAG_NAME, THEME_FLAG_NAME, WATCH_FLAG_NAME } from '../../../../src/commands/theme/component/dev.js'
 import { LOCALES_FLAG_NAME } from '../../../../src/config/baseCommand.js'
 import Session from '../../../../src/models/static/Session.js'
-import { install } from '../../../../src/utils/ExternalComponentUtils.js'
-import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/FileUtils.js'
-import { getCLIRootFolderName } from '../../../../src/utils/NodeUtils.js'
+import { install } from '../../../../src/utils/externalComponents.js'
+import { exists, getRandomTmpFolder, saveFile } from '../../../../src/utils/fileUtils.js'
+import { getCLIRootFolderName } from '../../../../src/utils/nodeUtils.js'
 import { mkdir } from 'node:fs/promises'
 
 // Load .env test file

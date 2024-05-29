@@ -3,9 +3,10 @@ import { rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 // Internal Dependencies
-import { exists, getAbsolutePath } from './FileUtils.js'
-import { isGitHubUrl } from './GitUtils.js'
-import { CONFIG_FILE_NAME } from '../config/CLI.js'
+import { exists, getAbsolutePath } from './fileUtils.js'
+import { isGitHubUrl } from './gitUtils.js'
+
+import { CONFIG_FILE_NAME } from '../config/constants.js'
 
 /**
  * Get a Value From flags or tomlConfig

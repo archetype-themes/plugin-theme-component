@@ -5,28 +5,27 @@ import { cwd } from 'node:process'
 import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
-import Build from './build.js'
-import BuildFactory from '../../../factory/BuildFactory.js'
+import { collectionBuildFactory } from '../../../factory/collectionBuildFactory.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
-import { DEV_FOLDER_NAME } from '../../../config/CLI.js'
 import {
   ASSETS_FOLDER_NAME,
   COLLECTION_TYPE_NAME,
+  DEV_FOLDER_NAME,
   SNIPPETS_FOLDER_NAME,
   THEME_INDEX_TEMPLATE_LIQUID_FILE,
   THEME_LAYOUT_FILE
-} from '../../../config/Components.js'
-import CollectionFactory from '../../../factory/CollectionFactory.js'
-import { fromDevCommand } from '../../../factory/ThemeFactory.js'
-import CollectionInstaller from '../../../installers/CollectionInstaller.js'
+} from '../../../config/constants.js'
+import { collectionFactory } from '../../../factory/collectionFactory.js'
+import { themeFactory } from '../../../factory/themeFactory.js'
+import { injectAssetReferences, installCollection } from '../../../installers/collectionInstaller.js'
 import Session from '../../../models/static/Session.js'
-import { install } from '../../../utils/ExternalComponentUtils.js'
-import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit, warn } from '../../../utils/LoggerUtils.js'
+import { install } from '../../../utils/externalComponents.js'
+import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit, warn } from '../../../utils/logger.js'
 import {
   getValuesFromArgvOrToml,
   getValueFromFlagOrToml,
   getPathFromFlagOrTomlValue
-} from '../../../utils/SessionUtils.js'
+} from '../../../utils/sessionUtils.js'
 import {
   ChangeType,
   getChangeTypeFromFilename,
@@ -35,13 +34,15 @@ import {
   handleWatcherEvent,
   watch
 } from '../../../utils/Watcher.js'
-import { isGitHubUrl } from '../../../utils/GitUtils.js'
-import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } from '../../../utils/SetupFilesUtils.js'
-import { getCurrentTime } from '../../../utils/DateUtils.js'
+import { isGitHubUrl } from '../../../utils/gitUtils.js'
+import { installSetupFiles, handleSetupFileWatcherEvent, buildIndexTemplate } from '../../../utils/setupFilesUtils.js'
+import { getCurrentTime } from '../../../utils/dateUtils.js'
 import { rm } from 'node:fs/promises'
-import { exists, saveFile } from '../../../utils/FileUtils.js'
-import { getCLIRootFolderName } from '../../../utils/NodeUtils.js'
+import { exists, saveFile } from '../../../utils/fileUtils.js'
+import { getCLIRootFolderName } from '../../../utils/nodeUtils.js'
 import Timer from '../../../models/Timer.js'
+import { displayComponentTree } from '../../../utils/collectionUtils.js'
+import { buildCollection } from '../../../builders/collectionBuilder.js'
 
 /** @type {string} **/
 export const THEME_FLAG_NAME = 'theme-path'
@@ -100,7 +101,7 @@ export default class Dev extends BaseCommand {
     [THEME_SYNC_FLAG_NAME]: Flags.boolean({
       summary: 'Sync your files through shopify theme dev',
       description:
-        'This will execute shopify theme dev along with your component dev command. You can customize options for that command in your toml file.',
+        'This will execute `shopify theme dev --path .explorer` along with your component dev command. You can customize options for that command in your toml file.',
       default: true,
       allowNo: true
     })
@@ -124,7 +125,7 @@ export default class Dev extends BaseCommand {
 
     if (Session.firstRun && Session.setupFiles) {
       const installFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
-      await installSetupFiles(collection.components, installFolder)
+      await installSetupFiles(collection.components, installFolder, collection.copyright)
     }
 
     // No watch flag, running once and returning
@@ -178,10 +179,10 @@ export default class Dev extends BaseCommand {
       logInitLines.push(`${collection.name}: Watching locales folder for changes`)
     }
 
-    // Run "shopify theme dev" -- unused at the moment due to config challenges
+    // Run "shopify theme dev"
     if (Session.syncMode) {
       promises.push(Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME)))
-      logInitLines.push(`${collection.name}: Starting \`shopify theme dev\` process in parallel`)
+      logInitLines.push(`${collection.name}: Starting \`shopify theme dev --path .explorer\` process in parallel`)
     }
 
     logWatcherInit(logInitLines)
@@ -219,15 +220,17 @@ export default class Dev extends BaseCommand {
     }
 
     // Build & Deploy Collection
-    let collection = await CollectionFactory.fromCwd(componentNames)
-    collection = await Build.buildCollection(collection)
-    await Build.deployCollection(collection)
+    let collection = await this.getCollectionFromCwd(componentNames)
+    if (Session.firstRun) {
+      displayComponentTree(collection)
+    }
+    collection = await buildCollection(collection)
 
-    const theme = await fromDevCommand(devFolder)
+    const theme = await themeFactory(devFolder)
 
     logTitleItem(`Installing ${collection.name} Build To ${relative(collection.rootFolder, devFolder)}`)
 
-    await CollectionInstaller.install(theme, collection)
+    await installCollection(collection, theme)
 
     if (
       Session.setupFiles &&
@@ -249,6 +252,7 @@ export default class Dev extends BaseCommand {
    * @return {Promise<void>}
    */
   static async installDependencies(themePath, devFolder) {
+    logTitleItem('Installing Dependencies')
     // Install Theme Files
     const timer = new Timer()
     logChildItem(`Installing Theme Files From ${basename(themePath, '.git')}`)
@@ -262,6 +266,15 @@ export default class Dev extends BaseCommand {
       Session.localesPath = await install(Session.localesPath)
       logChildItem(`Done (${timer.now()} seconds)`)
     }
+  }
+
+  /**
+   * Get Collection from Factory using cwd()
+   * @param {string[]} componentNames
+   * @return {Promise<Collection|module:models/Collection>}
+   */
+  static async getCollectionFromCwd(componentNames) {
+    return collectionFactory(cwd(), componentNames)
   }
 
   /**
@@ -281,18 +294,18 @@ export default class Dev extends BaseCommand {
 
     if (eventPath === THEME_LAYOUT_FILE) {
       // Inject references to the Collection's main CSS file in the theme's main liquid file
-      const collection = await CollectionFactory.fromCwd(componentNames)
-      collection.build = BuildFactory.fromCollection(collection)
+      const collection = await this.getCollectionFromCwd(componentNames)
+      collection.build = collectionBuildFactory(collection)
       const devFolder = join(cwd(), DEV_FOLDER_NAME)
-      const theme = await fromDevCommand(devFolder)
-      await CollectionInstaller.injectAssetReferences(collection, theme)
+      const theme = await themeFactory(devFolder)
+      await injectAssetReferences(collection, theme)
     }
     console.log(Session.setupFiles)
     console.log(eventPath)
     console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
     if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
-      let collection = await CollectionFactory.fromCwd(componentNames)
-      collection = await Build.buildCollection(collection)
+      let collection = await this.getCollectionFromCwd(componentNames)
+      collection = await buildCollection(collection)
       const indexTemplate = await buildIndexTemplate(collection.components, themePath)
       await saveFile(join(cwd(), DEV_FOLDER_NAME, THEME_INDEX_TEMPLATE_LIQUID_FILE), indexTemplate)
     }

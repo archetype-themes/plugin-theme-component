@@ -3,9 +3,9 @@ import { basename } from 'node:path'
 import { get, set } from 'lodash-es'
 
 // Internal Dependencies
-import { getJsonFileContents } from '../utils/FileUtils.js'
-import { stripComments } from '../utils/LiquidUtils.js'
-import { error, warn } from '../utils/LoggerUtils.js'
+import { getJsonFileContents } from '../utils/fileUtils.js'
+import { stripComments } from '../utils/liquidUtils.js'
+import { error, warn } from '../utils/logger.js'
 
 const TRANSLATION_KEYS_REGEX = /\s(\S+)\s*\|\s*t:?\s/g
 

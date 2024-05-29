@@ -6,13 +6,13 @@ import { Args } from '@oclif/core'
 
 // Internal Dependencies
 import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
-import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../../config/Components.js'
+import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../../config/constants.js'
 import FileAccessError from '../../../errors/FileAccessError.js'
 import Session from '../../../models/static/Session.js'
-import { copyFolder, getFolderFilesRecursively } from '../../../utils/FileUtils.js'
-import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/NodeUtils.js'
-import { getValuesFromArgvOrToml } from '../../../utils/SessionUtils.js'
-import { logChildItem, logSeparator, logSpacer, logTitleItem } from '../../../utils/LoggerUtils.js'
+import { copyFolder, getFolderFilesRecursively } from '../../../utils/fileUtils.js'
+import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/nodeUtils.js'
+import { getValuesFromArgvOrToml } from '../../../utils/sessionUtils.js'
+import { logChildItem, logSeparator, logTitleItem } from '../../../utils/logger.js'
 
 export default class Generate extends BaseCommand {
   static description = 'Generate canvas files for new components'
@@ -85,12 +85,10 @@ export default class Generate extends BaseCommand {
       await mkdir(componentAbsolutePath)
       await copyFolder(sourcesPath, componentAbsolutePath, copyFolderOptions)
 
-      logChildItem('complete')
-      logSpacer()
+      logChildItem('Done')
       logTitleItem('The following files were created:')
       const files = await getFolderFilesRecursively(componentPath)
       files.forEach((file) => logChildItem(relative(componentPath, file)))
-      logSpacer()
 
       logTitleItem('Your new component is available at')
       logChildItem('./' + componentPath)
