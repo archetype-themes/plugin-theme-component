@@ -101,7 +101,7 @@ export default class Dev extends BaseCommand {
     [THEME_SYNC_FLAG_NAME]: Flags.boolean({
       summary: 'Sync your files through shopify theme dev',
       description:
-        'This will execute shopify theme dev along with your component dev command. You can customize options for that command in your toml file.',
+        'This will execute `shopify theme dev --path .explorer` along with your component dev command. You can customize options for that command in your toml file.',
       default: true,
       allowNo: true
     })
@@ -125,7 +125,7 @@ export default class Dev extends BaseCommand {
 
     if (Session.firstRun && Session.setupFiles) {
       const installFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
-      await installSetupFiles(collection.components, installFolder)
+      await installSetupFiles(collection.components, installFolder, collection.copyright)
     }
 
     // No watch flag, running once and returning
@@ -179,10 +179,10 @@ export default class Dev extends BaseCommand {
       logInitLines.push(`${collection.name}: Watching locales folder for changes`)
     }
 
-    // Run "shopify theme dev" -- unused at the moment due to config challenges
+    // Run "shopify theme dev"
     if (Session.syncMode) {
       promises.push(Dev.runThemeDev(join(collection.rootFolder, DEV_FOLDER_NAME)))
-      logInitLines.push(`${collection.name}: Starting \`shopify theme dev\` process in parallel`)
+      logInitLines.push(`${collection.name}: Starting \`shopify theme dev --path .explorer\` process in parallel`)
     }
 
     logWatcherInit(logInitLines)

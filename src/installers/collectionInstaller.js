@@ -144,7 +144,7 @@ You should manually insert these lines inside your "theme.liquid" file:
  * @param {string} copyrightText
  * @returns {Promise<void>}
  */
-async function installFile(sourceFile, targetFolder, copyrightText) {
+export async function installFile(sourceFile, targetFolder, copyrightText) {
   const fileBasename = basename(sourceFile)
   const fileType = getFileType(sourceFile)
   const targetFile = join(targetFolder, fileBasename)
