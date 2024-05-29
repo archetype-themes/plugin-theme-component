@@ -56,7 +56,7 @@ export async function installCollection(collection, theme) {
     )
   }
 
-  // Install Snippets From Liquid Code Build
+  // Install All Components As Snippets From Their Liquid Code Build
   if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
     const snippetFilesWritePromises = Promise.all(
       collection.allComponents.map((component) =>
@@ -66,11 +66,9 @@ export async function installCollection(collection, theme) {
     fileOperations.push(snippetFilesWritePromises)
   }
 
-  // Merge & Install Storefront Locales
-  if (Session.firstRun || Session.changeType === ChangeType.Locale) {
-    if (collection.build.locales) {
-      fileOperations.push(installLocales(collection.build.locales, theme.localesFolder))
-    }
+  // Install Storefront Locales
+  if (collection.build.locales && (Session.firstRun || Session.changeType === ChangeType.Locale)) {
+    fileOperations.push(installLocales(collection.build.locales, theme.localesFolder))
   }
 
   // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
@@ -166,14 +164,14 @@ async function installFile(sourceFile, targetFolder, copyrightText) {
   if (targetFileExists) {
     const targetFileContents = await getFileContents(targetFile)
     if (targetFileContents !== sourceFileContents) {
-      await saveFile(targetFile, sourceFileContents)
+      return saveFile(targetFile, sourceFileContents)
     } else {
       debug(`Ignored installing "${fileBasename}" file since its contents are identical to the current version`)
     }
   } else if (fileType !== null) {
-    await saveFile(targetFile, sourceFileContents)
+    return saveFile(targetFile, sourceFileContents)
   } else {
-    await cp(sourceFile, targetFile, { preserveTimestamps: true })
+    return cp(sourceFile, targetFile, { preserveTimestamps: true })
   }
 }
 
@@ -197,12 +195,12 @@ async function installImportMapFiles(buildEntries, assetsFolder, copyrightText) 
 
   const downloadPromiseAll = downloadFiles(remoteFiles, assetsFolder)
 
-  const copyPromises = []
+  const fileOperations = []
   for (const assetFile of localFiles) {
-    copyPromises.push(installFile(assetFile, assetsFolder, copyrightText))
+    fileOperations.push(installFile(assetFile, assetsFolder, copyrightText))
   }
 
-  return Promise.all([copyPromises, downloadPromiseAll])
+  return Promise.all([fileOperations, downloadPromiseAll])
 }
 
 /**
@@ -212,7 +210,7 @@ async function installImportMapFiles(buildEntries, assetsFolder, copyrightText) 
  * @param {string} assetsFolder - Assets Install Folder
  * @param {string} snippetsFolder - Snippets Install Folder
  * @param {string} copyrightText - Copyright Text
- * @returns {Promise<void>}
+ * @returns {Promise<Awaited<void>[]>}
  */
 async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippetsFolder, copyrightText) {
   const fileOperations = []
@@ -226,7 +224,7 @@ async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippets
   for (const jsFile of jsFiles) {
     fileOperations.push(installFile(jsFile, assetsFolder, copyrightText))
   }
-  return fileOperations
+  return Promise.all(fileOperations)
 }
 
 /**
