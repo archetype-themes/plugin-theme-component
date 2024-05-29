@@ -17,7 +17,7 @@ import {
 } from '../../../config/constants.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
 import { themeFactory } from '../../../factory/themeFactory.js'
-import { injectAssetReferences, installCollection } from '../../../installers/CollectionInstaller.js'
+import { injectAssetReferences, installCollection } from '../../../installers/collectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import { install } from '../../../utils/externalComponents.js'
 import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit, warn } from '../../../utils/logger.js'
