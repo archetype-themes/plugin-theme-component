@@ -19,8 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -
 ### Removed
 
-- Removed automated dependabot updates for Node.js packages. We never use it.
-- Removed automated GitHub release data since we use Npm for package publishing.
+- Automated Dependabot updates for Node.js packages were removed. We never use it.
+- Automated GitHub release data was removed since we use Npm for package publishing.
 - Removed the unused build command and the use of the build folder
 
 ## [3.4.0] - 2024-05-22
