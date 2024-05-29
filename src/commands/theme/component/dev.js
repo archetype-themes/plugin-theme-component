@@ -230,7 +230,7 @@ export default class Dev extends BaseCommand {
 
     logTitleItem(`Installing ${collection.name} Build To ${relative(collection.rootFolder, devFolder)}`)
 
-    await installCollection(theme, collection)
+    await installCollection(collection, theme)
 
     if (
       Session.setupFiles &&

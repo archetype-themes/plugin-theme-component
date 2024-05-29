@@ -100,7 +100,7 @@ export default class Install extends BaseCommand {
     // Install and time it!
     info(`Installing ${collection.name} for ${theme.name}.`)
     const installStartTime = new Timer()
-    await installCollection(theme, collection)
+    await installCollection(collection, theme)
     info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)
     info(`${collection.name}: Build & Install Completed in ${startTime.now()} seconds at ${getCurrentTime()}\n`)
     return Promise.resolve(collection)

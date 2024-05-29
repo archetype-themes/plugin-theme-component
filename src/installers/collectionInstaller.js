@@ -22,11 +22,11 @@ import { getCopyright } from '../utils/copyright.js'
 
 /**
  * Install Collection Within a Theme
- * @param {import('../models/Theme.js').default} theme
  * @param {module:models/Collection} collection
+ * @param {import('../models/Theme.js').default} theme
  * @return {Promise<Awaited<unknown>[]>}
  */
-export async function installCollection(theme, collection) {
+export async function installCollection(collection, theme) {
   const fileOperations = []
 
   // Install CSS Build
