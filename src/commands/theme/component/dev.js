@@ -17,7 +17,7 @@ import {
 } from '../../../config/constants.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
 import { themeFactory } from '../../../factory/themeFactory.js'
-import CollectionInstaller from '../../../installers/CollectionInstaller.js'
+import { injectAssetReferences, installCollection } from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import { install } from '../../../utils/externalComponents.js'
 import { logChildItem, logTitleItem, logWatcherEvent, logWatcherInit, warn } from '../../../utils/logger.js'
@@ -230,7 +230,7 @@ export default class Dev extends BaseCommand {
 
     logTitleItem(`Installing ${collection.name} Build To ${relative(collection.rootFolder, devFolder)}`)
 
-    await CollectionInstaller.install(theme, collection)
+    await installCollection(theme, collection)
 
     if (
       Session.setupFiles &&
@@ -298,7 +298,7 @@ export default class Dev extends BaseCommand {
       collection.build = collectionBuildFactory(collection)
       const devFolder = join(cwd(), DEV_FOLDER_NAME)
       const theme = await themeFactory(devFolder)
-      await CollectionInstaller.injectAssetReferences(collection, theme)
+      await injectAssetReferences(collection, theme)
     }
     console.log(Session.setupFiles)
     console.log(eventPath)

@@ -7,7 +7,7 @@ import { THEME_TYPE_NAME } from '../../../config/constants.js'
 import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/sessionUtils.js'
 import { getCurrentTime } from '../../../utils/dateUtils.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
-import CollectionInstaller from '../../../installers/CollectionInstaller.js'
+import { installCollection } from '../../../installers/CollectionInstaller.js'
 import Session from '../../../models/static/Session.js'
 import { themeFactory } from '../../../factory/themeFactory.js'
 import Timer from '../../../models/Timer.js'
@@ -100,7 +100,7 @@ export default class Install extends BaseCommand {
     // Install and time it!
     info(`Installing ${collection.name} for ${theme.name}.`)
     const installStartTime = new Timer()
-    await CollectionInstaller.install(theme, collection)
+    await installCollection(theme, collection)
     info(`${collection.name}: Install Complete in ${installStartTime.now()} seconds`)
     info(`${collection.name}: Build & Install Completed in ${startTime.now()} seconds at ${getCurrentTime()}\n`)
     return Promise.resolve(collection)

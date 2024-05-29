@@ -1,11 +1,10 @@
 // External Dependencies
 import { cp } from 'node:fs/promises'
-import { basename, join } from 'node:path'
+import path, { basename, join } from 'node:path'
 import merge from 'deepmerge'
 
 // Internal Dependencies
 import {
-  copyFilesToFolder,
   exists,
   getFileContents,
   getFileType,
@@ -21,172 +20,114 @@ import { debug, warn } from '../utils/logger.js'
 import { downloadFiles, isUrl } from '../utils/webUtils.js'
 import { getCopyright } from '../utils/copyright.js'
 
-class CollectionInstaller {
-  /**
-   * Install Collection Within a Theme
-   * @param {import('../models/Theme.js').default} theme
-   * @param {module:models/Collection} collection
-   * @return {Promise<Awaited<unknown>[]>}
-   */
-  static async install(theme, collection) {
-    const fileOperations = []
+/**
+ * Install Collection Within a Theme
+ * @param {import('../models/Theme.js').default} theme
+ * @param {module:models/Collection} collection
+ * @return {Promise<Awaited<unknown>[]>}
+ */
+export async function installCollection(theme, collection) {
+  const fileOperations = []
 
-    // Install CSS Build
-    if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
-      const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
-      const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
-      fileOperations.push(stylesheetSavePromise)
+  // Install CSS Build
+  if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
+    const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
+    const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
+    fileOperations.push(stylesheetSavePromise)
+  }
+
+  // Install Static Assets
+  if (Session.firstRun || ChangeType.Asset === Session.changeType) {
+    for (const assetFile of collection.assetFiles) {
+      fileOperations.push(installFile(assetFile, theme.assetsFolder, collection.copyright))
     }
+  }
 
-    // Install Static Assets
-    if (Session.firstRun || ChangeType.Asset === Session.changeType) {
-      for (const assetFile of collection.assetFiles) {
-        fileOperations.push(this.#installFile(assetFile, theme.assetsFolder, collection.copyright))
-      }
-    }
-
-    // Install JavaScript Files With The ImportMap
-    if (Session.firstRun || Session.changeType === ChangeType.JavaScript) {
-      if (collection.build.importMap.entries?.size) {
-        const deployImportMapFilesPromises = this.#deployImportMapFiles(
-          collection.build.importMap.entries,
-          theme.assetsFolder
-        )
-        fileOperations.push(deployImportMapFilesPromises)
-      }
-      if (collection.build.importMap.tags) {
-        fileOperations.push(
-          saveFile(join(theme.snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME), collection.build.importMap.tags)
-        )
-      }
-
-      for (const jsFile of collection.jsFiles) {
-        fileOperations.push(this.#installFile(jsFile, theme.assetsFolder, collection.copyright))
-      }
-    }
-
-    // Install Snippets From Liquid Code Build
-    if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
-      const snippetFilesWritePromises = Promise.all(
-        collection.allComponents.map((component) =>
-          saveFile(join(theme.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)
-        )
+  // Install JavaScript Files With The ImportMap
+  if (Session.firstRun || Session.changeType === ChangeType.JavaScript) {
+    fileOperations.push(
+      installJavascriptFiles(
+        collection.jsFiles,
+        collection.build.importMap,
+        theme.assetsFolder,
+        theme.snippetsFolder,
+        collection.copyright
       )
-      fileOperations.push(snippetFilesWritePromises)
-    }
-
-    // Merge & Install Storefront Locales
-    if (Session.firstRun || Session.changeType === ChangeType.Locale) {
-      if (collection.build.locales) {
-        fileOperations.push(this.writeLocales(collection.build.locales, theme.localesFolder))
-      }
-    }
-
-    // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
-    if (Session.firstRun) {
-      fileOperations.push(this.injectAssetReferences(collection, theme))
-    }
-
-    return Promise.all(fileOperations)
+    )
   }
 
-  /**
-   * Deploy import map files to the assets folder
-   * @param {Map<string, string>} buildEntries
-   * @param {string} assetsFolder
-   * @return {Promise<Awaited<Awaited<void>[]>[]>}
-   */
-  static async #deployImportMapFiles(buildEntries, assetsFolder) {
-    const localFiles = []
-    const remoteFiles = []
-    for (const [, modulePath] of buildEntries) {
-      if (isUrl(modulePath)) {
-        remoteFiles.push(modulePath)
-      } else {
-        localFiles.push(modulePath)
-      }
-    }
-    const copyPromiseAll = copyFilesToFolder(localFiles, assetsFolder)
-    const downloadPromiseAll = downloadFiles(remoteFiles, assetsFolder)
-    return Promise.all([copyPromiseAll, downloadPromiseAll])
-  }
-
-  /**
-   * Inject references to the Collection's main CSS and JS files in the theme's main liquid file
-   * @param {module:models/Collection} collection
-   * @param {import('../models/Theme.js').default} theme
-   * @return {Promise<void>}
-   */
-  static async injectAssetReferences(collection, theme) {
-    const injectableAssets = [
-      {
-        asset: collection.build.stylesheet,
-        tagTemplate: (filename) => `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
-        loggerMessage: 'Source Collection Stylesheet file %s found.',
-        nameModifier: (name) => (name.endsWith(LIQUID_EXTENSION) ? name.substring(0, name.lastIndexOf('.')) : name)
-      }
-    ]
-
-    const injections = []
-    const themeLiquidFile = join(theme.rootFolder, THEME_LAYOUT_FILE)
-    const themeLiquid = (await isReadable(themeLiquidFile)) ? await getFileContents(themeLiquidFile) : ''
-
-    for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
-      if (!asset || !(await exists(asset))) continue
-
-      debug(loggerMessage + ':' + basename(asset))
-
-      let assetBasename = basename(asset)
-      if (nameModifier) assetBasename = nameModifier(assetBasename)
-
-      if (themeLiquid.includes(assetBasename)) {
-        warn(
-          `Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`
-        )
-        continue
-      }
-
-      injections.push(tagTemplate(assetBasename))
-    }
-
-    if ((await isWritable(themeLiquidFile)) && injections.length > 0) {
-      await this.writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
-    } else if (injections.length > 0) {
-      this.injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
-    }
-  }
-
-  /**
-   * Write Asset References to Theme Liquid File
-   * @param {string[]} injections
-   * @param {string} themeLiquid
-   * @param {string} themeLiquidFile
-   * @return {Promise<void>}
-   */
-  static async writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile) {
-    const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
-
-    // Exit if No </head> tag was found
-    if (closingHtmlHeadTagCount === 0) {
-      return this.injectionFailureWarning('Html head tag closure not found in "theme.liquid".', injections)
-    }
-
-    // Exit if Multiple </head> tags were found
-    if (closingHtmlHeadTagCount > 1) {
-      return this.injectionFailureWarning(
-        `${closingHtmlHeadTagCount} instances of Html head tag closure found in "theme.liquid". It should only be present once.`,
-        injections
+  // Install Snippets From Liquid Code Build
+  if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
+    const snippetFilesWritePromises = Promise.all(
+      collection.allComponents.map((component) =>
+        saveFile(join(theme.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)
       )
-    }
-
-    debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
-    themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
-
-    await saveFile(themeLiquidFile, themeLiquid)
+    )
+    fileOperations.push(snippetFilesWritePromises)
   }
 
-  static injectionFailureWarning(message, injections) {
-    warn(`
+  // Merge & Install Storefront Locales
+  if (Session.firstRun || Session.changeType === ChangeType.Locale) {
+    if (collection.build.locales) {
+      fileOperations.push(installLocales(collection.build.locales, theme.localesFolder))
+    }
+  }
+
+  // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
+  if (Session.firstRun) {
+    fileOperations.push(injectAssetReferences(collection, theme))
+  }
+
+  return Promise.all(fileOperations)
+}
+
+/**
+ * Inject references to the Collection's main CSS and JS files in the theme's main liquid file
+ * @param {module:models/Collection} collection
+ * @param {import('../models/Theme.js').default} theme
+ * @return {Promise<void>}
+ */
+export async function injectAssetReferences(collection, theme) {
+  const injectableAssets = [
+    {
+      asset: collection.build.stylesheet,
+      tagTemplate: (filename) => `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
+      loggerMessage: 'Source Collection Stylesheet file %s found.',
+      nameModifier: (name) => (name.endsWith(LIQUID_EXTENSION) ? name.substring(0, name.lastIndexOf('.')) : name)
+    }
+  ]
+
+  const injections = []
+  const themeLiquidFile = join(theme.rootFolder, THEME_LAYOUT_FILE)
+  const themeLiquid = (await isReadable(themeLiquidFile)) ? await getFileContents(themeLiquidFile) : ''
+
+  for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
+    if (!asset || !(await exists(asset))) continue
+
+    debug(loggerMessage + ':' + basename(asset))
+
+    let assetBasename = basename(asset)
+    if (nameModifier) assetBasename = nameModifier(assetBasename)
+
+    if (themeLiquid.includes(assetBasename)) {
+      warn(
+        `Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`
+      )
+      continue
+    }
+
+    injections.push(tagTemplate(assetBasename))
+  }
+
+  if ((await isWritable(themeLiquidFile)) && injections.length > 0) {
+    await writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
+  } else if (injections.length > 0) {
+    injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
+  }
+}
+
+function injectionFailureWarning(message, injections) {
+  warn(`
 **************************************************************************************************
 ${message}
 
@@ -196,79 +137,175 @@ You should manually insert these lines inside your "theme.liquid" file:
  >>> ${injections.join('\n >>> ')}
 
 **************************************************************************************************`)
+}
+
+/**
+ * Install File And Prepend Copyright
+ * @param {string} sourceFile
+ * @param {string} targetFolder
+ * @param {string} copyrightText
+ * @returns {Promise<void>}
+ */
+async function installFile(sourceFile, targetFolder, copyrightText) {
+  const fileBasename = basename(sourceFile)
+  const fileType = getFileType(sourceFile)
+  const targetFile = join(targetFolder, fileBasename)
+  const targetFileExists = await exists(targetFile)
+
+  let sourceFileContents
+  // Only fetch the data if we need to
+  if (fileType !== null || targetFileExists) {
+    sourceFileContents = await getFileContents(sourceFile)
   }
 
-  /**
-   * Write Locales, merging them atop of the theme's Locales
-   * @param {Object} locales
-   * @param {string} themeLocalesPath
-   * @return {Promise<Awaited<unknown>[]>}
-   */
-  static async writeLocales(locales, themeLocalesPath) {
-    debug("Merging Collection Locales with the Theme's Locales")
-    const fileOperations = []
-
-    // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
-    for (const locale of Object.keys(locales)) {
-      const localeFilename = `${locale}.json`
-
-      const defaultLocaleFilename = `${locale}.default.json`
-
-      const targetFile = join(themeLocalesPath, localeFilename)
-      const defaultTargetFile = join(themeLocalesPath, defaultLocaleFilename)
-
-      const targetFileExists = await exists(targetFile)
-      const defaultTargetFileExists = await exists(defaultTargetFile)
-      const collectionLocale = locales[locale]
-      if (targetFileExists || defaultTargetFileExists) {
-        const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
-        const themeLocale = await getJsonFileContents(realTargetFile)
-        const mergedLocale = merge(themeLocale, collectionLocale)
-
-        fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
-      } else {
-        // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File to determine 'default' status for the locale.
-        const defaultLocaleFilename = `${locale}.default.json`
-        const realTargetFile = (await exists(join(themeLocalesPath, defaultLocaleFilename)))
-          ? defaultTargetFile
-          : targetFile
-
-        fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
-      }
-    }
-    return Promise.all(fileOperations)
+  if (copyrightText && fileType !== null && !isFileInVendorFolder(sourceFile)) {
+    const copyright = getCopyright(fileType, copyrightText)
+    sourceFileContents = copyright + sourceFileContents
   }
 
-  static async #installFile(sourceFile, targetFolder, copyrightText) {
-    const fileBasename = basename(sourceFile)
-    const fileType = getFileType(sourceFile)
-    const targetFile = join(targetFolder, fileBasename)
-    const targetFileExists = await exists(targetFile)
-
-    let sourceFileContents
-    // Only fetch the data if we need to
-    if (fileType !== null || targetFileExists) {
-      sourceFileContents = await getFileContents(sourceFile)
-    }
-
-    if (fileType !== null) {
-      const copyright = getCopyright(fileType, copyrightText)
-      sourceFileContents = copyright + sourceFileContents
-    }
-
-    if (targetFileExists) {
-      const targetFileContents = await getFileContents(targetFile)
-      if (targetFileContents !== sourceFileContents) {
-        await saveFile(targetFile, sourceFileContents)
-      } else {
-        debug(`Ignored installing "${fileBasename}" file since its contents are identical to the current version`)
-      }
-    } else if (fileType !== null) {
+  if (targetFileExists) {
+    const targetFileContents = await getFileContents(targetFile)
+    if (targetFileContents !== sourceFileContents) {
       await saveFile(targetFile, sourceFileContents)
     } else {
-      await cp(sourceFile, targetFile, { preserveTimestamps: true })
+      debug(`Ignored installing "${fileBasename}" file since its contents are identical to the current version`)
     }
+  } else if (fileType !== null) {
+    await saveFile(targetFile, sourceFileContents)
+  } else {
+    await cp(sourceFile, targetFile, { preserveTimestamps: true })
   }
 }
 
-export default CollectionInstaller
+/**
+ * Install import map files to the assets folder
+ * @param {Map<string, string>} buildEntries - ImportMap Build Entries
+ * @param {string} assetsFolder - Assets Install Folder
+ * @param {string} copyrightText - Copyright Text
+ * @return {Promise<Awaited<Awaited<void>[]>[]>}
+ */
+async function installImportMapFiles(buildEntries, assetsFolder, copyrightText) {
+  const localFiles = []
+  const remoteFiles = []
+  for (const [, modulePath] of buildEntries) {
+    if (isUrl(modulePath)) {
+      remoteFiles.push(modulePath)
+    } else {
+      localFiles.push(modulePath)
+    }
+  }
+
+  const downloadPromiseAll = downloadFiles(remoteFiles, assetsFolder)
+
+  const copyPromises = []
+  for (const assetFile of localFiles) {
+    copyPromises.push(installFile(assetFile, assetsFolder, copyrightText))
+  }
+
+  return Promise.all([copyPromises, downloadPromiseAll])
+}
+
+/**
+ * Install Javascript Files
+ * @param {string[]} jsFiles - Full path to Components' JS Files
+ * @param importMap - ImportMap Build
+ * @param {string} assetsFolder - Assets Install Folder
+ * @param {string} snippetsFolder - Snippets Install Folder
+ * @param {string} copyrightText - Copyright Text
+ * @returns {Promise<void>}
+ */
+async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippetsFolder, copyrightText) {
+  const fileOperations = []
+  if (importMap.entries?.size) {
+    fileOperations.push(installImportMapFiles(importMap.entries, assetsFolder, copyrightText))
+  }
+  if (importMap.tags) {
+    fileOperations.push(saveFile(join(snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME), importMap.tags))
+  }
+
+  for (const jsFile of jsFiles) {
+    fileOperations.push(installFile(jsFile, assetsFolder, copyrightText))
+  }
+  return fileOperations
+}
+
+/**
+ * Write Locales, merging them atop of the theme's Locales
+ * @param {Object} locales
+ * @param {string} themeLocalesPath
+ * @return {Promise<Awaited<unknown>[]>}
+ */
+async function installLocales(locales, themeLocalesPath) {
+  debug("Merging Collection Locales with the Theme's Locales")
+  const fileOperations = []
+
+  // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
+  for (const locale of Object.keys(locales)) {
+    const localeFilename = `${locale}.json`
+
+    const defaultLocaleFilename = `${locale}.default.json`
+
+    const targetFile = join(themeLocalesPath, localeFilename)
+    const defaultTargetFile = join(themeLocalesPath, defaultLocaleFilename)
+
+    const targetFileExists = await exists(targetFile)
+    const defaultTargetFileExists = await exists(defaultTargetFile)
+    const collectionLocale = locales[locale]
+    if (targetFileExists || defaultTargetFileExists) {
+      const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
+      const themeLocale = await getJsonFileContents(realTargetFile)
+      const mergedLocale = merge(themeLocale, collectionLocale)
+
+      fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
+    } else {
+      // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File to determine 'default' status for the locale.
+      const defaultLocaleFilename = `${locale}.default.json`
+      const realTargetFile = (await exists(join(themeLocalesPath, defaultLocaleFilename)))
+        ? defaultTargetFile
+        : targetFile
+
+      fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
+    }
+  }
+  return Promise.all(fileOperations)
+}
+
+/**
+ * Validates If The File Is In The Vendor(s) Folder
+ * @param {string} filePath
+ * @returns {boolean}
+ */
+function isFileInVendorFolder(filePath) {
+  const parts = path.parse(filePath)
+  const folder = parts.dir.split(path.sep).pop()
+  return folder === 'vendor' || folder === 'vendors'
+}
+
+/**
+ * Write Asset References to Theme Liquid File
+ * @param {string[]} injections
+ * @param {string} themeLiquid
+ * @param {string} themeLiquidFile
+ * @return {Promise<void>}
+ */
+async function writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile) {
+  const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
+
+  // Exit if No </head> tag was found
+  if (closingHtmlHeadTagCount === 0) {
+    return injectionFailureWarning('Html head tag closure not found in "theme.liquid".', injections)
+  }
+
+  // Exit if Multiple </head> tags were found
+  if (closingHtmlHeadTagCount > 1) {
+    return injectionFailureWarning(
+      `${closingHtmlHeadTagCount} instances of Html head tag closure found in "theme.liquid". It should only be present once.`,
+      injections
+    )
+  }
+
+  debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
+  themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
+
+  await saveFile(themeLiquidFile, themeLiquid)
+}
