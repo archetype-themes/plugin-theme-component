@@ -15,10 +15,11 @@ import {
 } from '../utils/fileUtils.js'
 import Session from '../models/static/Session.js'
 import { ChangeType } from '../utils/Watcher.js'
-import { IMPORT_MAP_SNIPPET_FILENAME, LIQUID_EXTENSION, THEME_LAYOUT_FILE } from '../config/constants.js'
+import { IMPORT_MAP_SNIPPET_FILENAME, THEME_LAYOUT_FILE } from '../config/constants.js'
 import { debug, warn } from '../utils/logger.js'
 import { downloadFiles, isUrl } from '../utils/webUtils.js'
 import { getCopyright } from '../utils/copyright.js'
+import FileAccessError from '../errors/FileAccessError.js'
 
 /**
  * Install Collection Within a Theme
@@ -34,6 +35,7 @@ export async function installCollection(collection, theme) {
     const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
     const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
     fileOperations.push(stylesheetSavePromise)
+    fileOperations.push(injectAssetReferences(stylesheet, theme))
   }
 
   // Install Static Assets
@@ -71,70 +73,7 @@ export async function installCollection(collection, theme) {
     fileOperations.push(installLocales(collection.build.locales, theme.localesFolder))
   }
 
-  // Inject references to the Collection's main CSS and JS files in the theme's main liquid file
-  if (Session.firstRun) {
-    fileOperations.push(injectAssetReferences(collection, theme))
-  }
-
   return Promise.all(fileOperations)
-}
-
-/**
- * Inject references to the Collection's main CSS and JS files in the theme's main liquid file
- * @param {module:models/Collection} collection
- * @param {import('../models/Theme.js').default} theme
- * @return {Promise<void>}
- */
-export async function injectAssetReferences(collection, theme) {
-  const injectableAssets = [
-    {
-      asset: collection.build.stylesheet,
-      tagTemplate: (filename) => `<link type="text/css" href="{{ '${filename}' | asset_url }}" rel="stylesheet">`,
-      loggerMessage: 'Source Collection Stylesheet file %s found.',
-      nameModifier: (name) => (name.endsWith(LIQUID_EXTENSION) ? name.substring(0, name.lastIndexOf('.')) : name)
-    }
-  ]
-
-  const injections = []
-  const themeLiquidFile = join(theme.rootFolder, THEME_LAYOUT_FILE)
-  const themeLiquid = (await isReadable(themeLiquidFile)) ? await getFileContents(themeLiquidFile) : ''
-
-  for (const { asset, tagTemplate, loggerMessage, nameModifier } of injectableAssets) {
-    if (!asset || !(await exists(asset))) continue
-
-    debug(loggerMessage + ':' + basename(asset))
-
-    let assetBasename = basename(asset)
-    if (nameModifier) assetBasename = nameModifier(assetBasename)
-
-    if (themeLiquid.includes(assetBasename)) {
-      warn(
-        `Html "script" tag injection unavailable: A conflictual reference to ${assetBasename} is already present within the theme.liquid file.`
-      )
-      continue
-    }
-
-    injections.push(tagTemplate(assetBasename))
-  }
-
-  if ((await isWritable(themeLiquidFile)) && injections.length > 0) {
-    await writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile)
-  } else if (injections.length > 0) {
-    injectionFailureWarning(`Theme Liquid file (${themeLiquidFile}) is not writable.`, injections)
-  }
-}
-
-function injectionFailureWarning(message, injections) {
-  warn(`
-**************************************************************************************************
-${message}
-
-References to collection stylesheet and javaScript file will not be inserted automatically.
-You should manually insert these lines inside your "theme.liquid" file:
-
- >>> ${injections.join('\n >>> ')}
-
-**************************************************************************************************`)
 }
 
 /**
@@ -269,6 +208,49 @@ async function installLocales(locales, themeLocalesPath) {
 }
 
 /**
+ * Inject references to the Collection's main CSS and JS files in the theme's main liquid file
+ * @param {string} stylesheet
+ * @param {import('../models/Theme.js').default} theme
+ * @return {Promise<void>}
+ */
+export async function injectAssetReferences(stylesheet, theme) {
+  const stylesheetBasename = basename(stylesheet)
+
+  const themeLiquidFile = join(theme.rootFolder, THEME_LAYOUT_FILE)
+  let themeLiquid = (await isReadable(themeLiquidFile)) ? await getFileContents(themeLiquidFile) : ''
+
+  if (themeLiquid.includes(stylesheetBasename)) {
+    warn(
+      `Html "script" tag injection unavailable: A conflictual reference to ${stylesheetBasename} is already present within the theme.liquid file.`
+    )
+  }
+
+  if (!(await isWritable(themeLiquidFile))) {
+    throw new FileAccessError(`Theme Liquid file (${themeLiquidFile}) is not writable.`)
+  }
+
+  const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
+
+  // Exit if No </head> tag was found
+  if (closingHtmlHeadTagCount === 0) {
+    throw new Error('Injection Error: Html head tag closure not found in "theme.liquid".')
+  }
+
+  // Exit if Multiple </head> tags were found
+  if (closingHtmlHeadTagCount > 1) {
+    throw new Error(
+      `Injection Error: ${closingHtmlHeadTagCount} instances of Html head tag closure found in "theme.liquid". It should only be present once.`
+    )
+  }
+
+  debug('Injecting theme.liquid file with Collection Stylesheet file references.')
+  const tagTemplate = `<link type="text/css" href="{{ '${stylesheetBasename}' | asset_url }}" rel="stylesheet">`
+  themeLiquid = themeLiquid.replace('</head>', `${tagTemplate}\n</head>`)
+
+  return saveFile(themeLiquidFile, themeLiquid)
+}
+
+/**
  * Validates If The File Is In The Vendor(s) Folder
  * @param {string} filePath
  * @returns {boolean}
@@ -277,33 +259,4 @@ function isFileInVendorFolder(filePath) {
   const parts = path.parse(filePath)
   const folder = parts.dir.split(path.sep).pop()
   return folder === 'vendor' || folder === 'vendors'
-}
-
-/**
- * Write Asset References to Theme Liquid File
- * @param {string[]} injections
- * @param {string} themeLiquid
- * @param {string} themeLiquidFile
- * @return {Promise<void>}
- */
-async function writeAssetReferencesToThemeLiquidFile(injections, themeLiquid, themeLiquidFile) {
-  const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
-
-  // Exit if No </head> tag was found
-  if (closingHtmlHeadTagCount === 0) {
-    return injectionFailureWarning('Html head tag closure not found in "theme.liquid".', injections)
-  }
-
-  // Exit if Multiple </head> tags were found
-  if (closingHtmlHeadTagCount > 1) {
-    return injectionFailureWarning(
-      `${closingHtmlHeadTagCount} instances of Html head tag closure found in "theme.liquid". It should only be present once.`,
-      injections
-    )
-  }
-
-  debug('Injecting theme.liquid file with Collection Stylesheet and/or JavaScript file references.')
-  themeLiquid = themeLiquid.replace('</head>', `${injections.join('\n')}\n</head>`)
-
-  await saveFile(themeLiquidFile, themeLiquid)
 }
