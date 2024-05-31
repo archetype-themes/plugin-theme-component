@@ -40,7 +40,7 @@ export async function installCollection(collection, theme) {
   // Install CSS Build
   if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
     const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
-    if (!exclusions.includes(stylesheet)) {
+    if (!exclusions || !exclusions.includes(stylesheet)) {
       const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
       fileOperations.push(stylesheetSavePromise)
       fileOperations.push(injectAssetReferences(stylesheet, theme))
@@ -73,7 +73,7 @@ export async function installCollection(collection, theme) {
     const snippetFilesWritePromises = Promise.all(
       collection.allComponents.map((component) => {
         const targetFile = join(theme.snippetsFolder, `${component.name}.liquid`)
-        return exclusions.includes(targetFile) ? null : saveFile(targetFile, component.build.liquidCode)
+        return !exclusions || !exclusions.includes(targetFile) ? saveFile(targetFile, component.build.liquidCode) : null
       })
     )
     fileOperations.push(snippetFilesWritePromises)
@@ -99,7 +99,7 @@ export async function installFile(sourceFile, targetFolder, copyrightText, exclu
   const fileBasename = basename(sourceFile)
   const fileType = getFileType(sourceFile)
   const targetFile = join(targetFolder, fileBasename)
-  if (!exclusions.includes(targetFile)) {
+  if (!exclusions || !exclusions.includes(targetFile)) {
     const targetFileExists = await exists(targetFile)
 
     let sourceFileContents
@@ -176,7 +176,7 @@ async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippets
   }
   if (importMap.tags) {
     const importMapSnippet = join(snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME)
-    if (!exclusions.includes(importMapSnippet)) {
+    if (!exclusions || !exclusions.includes(importMapSnippet)) {
       fileOperations.push(saveFile(importMapSnippet, importMap.tags))
     }
   }
@@ -212,7 +212,7 @@ async function installLocales(locales, themeLocalesPath, exclusions) {
     const collectionLocale = locales[locale]
     if (targetFileExists || defaultTargetFileExists) {
       const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
-      if (!exclusions.includes(realTargetFile)) {
+      if (!exclusions || !exclusions.includes(realTargetFile)) {
         const themeLocale = await getJsonFileContents(realTargetFile)
         const mergedLocale = merge(themeLocale, collectionLocale)
 
@@ -224,7 +224,7 @@ async function installLocales(locales, themeLocalesPath, exclusions) {
       const realTargetFile = (await exists(join(themeLocalesPath, defaultLocaleFilename)))
         ? defaultTargetFile
         : targetFile
-      if (!exclusions.includes(realTargetFile)) {
+      if (!exclusions || !exclusions.includes(realTargetFile)) {
         fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
       }
     }
