@@ -2,6 +2,7 @@
 import { cp } from 'node:fs/promises'
 import path, { basename, join } from 'node:path'
 import merge from 'deepmerge'
+import fg from 'fast-glob'
 
 // Internal Dependencies
 import {
@@ -30,18 +31,26 @@ import FileAccessError from '../errors/FileAccessError.js'
 export async function installCollection(collection, theme) {
   const fileOperations = []
 
+  let exclusions = []
+  if (Session.config?.exclude) {
+    exclusions = await fg(Session.config.exclude, { cwd: theme.rootFolder, dot: true })
+    exclusions = exclusions.map((filePath) => path.join(theme.rootFolder, filePath))
+  }
+
   // Install CSS Build
   if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
     const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
-    const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
-    fileOperations.push(stylesheetSavePromise)
-    fileOperations.push(injectAssetReferences(stylesheet, theme))
+    if (!exclusions || !exclusions.includes(stylesheet)) {
+      const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
+      fileOperations.push(stylesheetSavePromise)
+      fileOperations.push(injectAssetReferences(stylesheet, theme))
+    }
   }
 
   // Install Static Assets
   if (Session.firstRun || ChangeType.Asset === Session.changeType) {
     for (const assetFile of collection.assetFiles) {
-      fileOperations.push(installFile(assetFile, theme.assetsFolder, collection.copyright))
+      fileOperations.push(installFile(assetFile, theme.assetsFolder, collection.copyright, exclusions))
     }
   }
 
@@ -53,7 +62,8 @@ export async function installCollection(collection, theme) {
         collection.build.importMap,
         theme.assetsFolder,
         theme.snippetsFolder,
-        collection.copyright
+        collection.copyright,
+        exclusions
       )
     )
   }
@@ -61,16 +71,17 @@ export async function installCollection(collection, theme) {
   // Install All Components As Snippets From Their Liquid Code Build
   if (Session.firstRun || Session.changeType === ChangeType.Liquid) {
     const snippetFilesWritePromises = Promise.all(
-      collection.allComponents.map((component) =>
-        saveFile(join(theme.snippetsFolder, `${component.name}.liquid`), component.build.liquidCode)
-      )
+      collection.allComponents.map((component) => {
+        const targetFile = join(theme.snippetsFolder, `${component.name}.liquid`)
+        return !exclusions || !exclusions.includes(targetFile) ? saveFile(targetFile, component.build.liquidCode) : null
+      })
     )
     fileOperations.push(snippetFilesWritePromises)
   }
 
   // Install Storefront Locales
   if (collection.build.locales && (Session.firstRun || Session.changeType === ChangeType.Locale)) {
-    fileOperations.push(installLocales(collection.build.locales, theme.localesFolder))
+    fileOperations.push(installLocales(collection.build.locales, theme.localesFolder, exclusions))
   }
 
   return Promise.all(fileOperations)
@@ -81,36 +92,41 @@ export async function installCollection(collection, theme) {
  * @param {string} sourceFile
  * @param {string} targetFolder
  * @param {string} copyrightText
+ * @param {string[]} [exclusions]
  * @returns {Promise<void>}
  */
-export async function installFile(sourceFile, targetFolder, copyrightText) {
+export async function installFile(sourceFile, targetFolder, copyrightText, exclusions) {
   const fileBasename = basename(sourceFile)
   const fileType = getFileType(sourceFile)
   const targetFile = join(targetFolder, fileBasename)
-  const targetFileExists = await exists(targetFile)
+  if (!exclusions || !exclusions.includes(targetFile)) {
+    const targetFileExists = await exists(targetFile)
 
-  let sourceFileContents
-  // Only fetch the data if we need to
-  if (fileType !== null || targetFileExists) {
-    sourceFileContents = await getFileContents(sourceFile)
-  }
+    let sourceFileContents
+    // Only fetch the data if we need to
+    if (fileType !== null || targetFileExists) {
+      sourceFileContents = await getFileContents(sourceFile)
+    }
 
-  if (copyrightText && fileType !== null && !isFileInVendorFolder(sourceFile)) {
-    const copyright = getCopyright(fileType, copyrightText)
-    sourceFileContents = copyright + sourceFileContents
-  }
+    if (copyrightText && fileType !== null && !isFileInVendorFolder(sourceFile)) {
+      const copyright = getCopyright(fileType, copyrightText)
+      sourceFileContents = copyright + sourceFileContents
+    }
 
-  if (targetFileExists) {
-    const targetFileContents = await getFileContents(targetFile)
-    if (targetFileContents !== sourceFileContents) {
+    if (targetFileExists) {
+      const targetFileContents = await getFileContents(targetFile)
+      if (targetFileContents !== sourceFileContents) {
+        return saveFile(targetFile, sourceFileContents)
+      } else {
+        debug(`Ignored installing "${fileBasename}" file since its contents are identical to the current version`)
+      }
+    } else if (fileType !== null) {
       return saveFile(targetFile, sourceFileContents)
     } else {
-      debug(`Ignored installing "${fileBasename}" file since its contents are identical to the current version`)
+      return cp(sourceFile, targetFile, { preserveTimestamps: true })
     }
-  } else if (fileType !== null) {
-    return saveFile(targetFile, sourceFileContents)
   } else {
-    return cp(sourceFile, targetFile, { preserveTimestamps: true })
+    console.log(`EXCLUDED ${targetFile}`)
   }
 }
 
@@ -119,9 +135,10 @@ export async function installFile(sourceFile, targetFolder, copyrightText) {
  * @param {Map<string, string>} buildEntries - ImportMap Build Entries
  * @param {string} assetsFolder - Assets Install Folder
  * @param {string} copyrightText - Copyright Text
+ * @param {string[]} [exclusions] - Files to exclude
  * @return {Promise<Awaited<Awaited<void>[]>[]>}
  */
-async function installImportMapFiles(buildEntries, assetsFolder, copyrightText) {
+async function installImportMapFiles(buildEntries, assetsFolder, copyrightText, exclusions) {
   const localFiles = []
   const remoteFiles = []
   for (const [, modulePath] of buildEntries) {
@@ -136,7 +153,7 @@ async function installImportMapFiles(buildEntries, assetsFolder, copyrightText) 
 
   const fileOperations = []
   for (const assetFile of localFiles) {
-    fileOperations.push(installFile(assetFile, assetsFolder, copyrightText))
+    fileOperations.push(installFile(assetFile, assetsFolder, copyrightText, exclusions))
   }
 
   return Promise.all([fileOperations, downloadPromiseAll])
@@ -149,19 +166,23 @@ async function installImportMapFiles(buildEntries, assetsFolder, copyrightText) 
  * @param {string} assetsFolder - Assets Install Folder
  * @param {string} snippetsFolder - Snippets Install Folder
  * @param {string} copyrightText - Copyright Text
+ * @param {string[]} [exclusions] - Excluded files
  * @returns {Promise<Awaited<void>[]>}
  */
-async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippetsFolder, copyrightText) {
+async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippetsFolder, copyrightText, exclusions) {
   const fileOperations = []
   if (importMap.entries?.size) {
-    fileOperations.push(installImportMapFiles(importMap.entries, assetsFolder, copyrightText))
+    fileOperations.push(installImportMapFiles(importMap.entries, assetsFolder, copyrightText, exclusions))
   }
   if (importMap.tags) {
-    fileOperations.push(saveFile(join(snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME), importMap.tags))
+    const importMapSnippet = join(snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME)
+    if (!exclusions || !exclusions.includes(importMapSnippet)) {
+      fileOperations.push(saveFile(importMapSnippet, importMap.tags))
+    }
   }
 
   for (const jsFile of jsFiles) {
-    fileOperations.push(installFile(jsFile, assetsFolder, copyrightText))
+    fileOperations.push(installFile(jsFile, assetsFolder, copyrightText, exclusions))
   }
   return Promise.all(fileOperations)
 }
@@ -170,9 +191,10 @@ async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippets
  * Write Locales, merging them atop of the theme's Locales
  * @param {Object} locales
  * @param {string} themeLocalesPath
+ * @param {string[]} exclusions
  * @return {Promise<Awaited<unknown>[]>}
  */
-async function installLocales(locales, themeLocalesPath) {
+async function installLocales(locales, themeLocalesPath, exclusions) {
   debug("Merging Collection Locales with the Theme's Locales")
   const fileOperations = []
 
@@ -190,18 +212,21 @@ async function installLocales(locales, themeLocalesPath) {
     const collectionLocale = locales[locale]
     if (targetFileExists || defaultTargetFileExists) {
       const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
-      const themeLocale = await getJsonFileContents(realTargetFile)
-      const mergedLocale = merge(themeLocale, collectionLocale)
+      if (!exclusions || !exclusions.includes(realTargetFile)) {
+        const themeLocale = await getJsonFileContents(realTargetFile)
+        const mergedLocale = merge(themeLocale, collectionLocale)
 
-      fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
+        fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
+      }
     } else {
       // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File to determine 'default' status for the locale.
       const defaultLocaleFilename = `${locale}.default.json`
       const realTargetFile = (await exists(join(themeLocalesPath, defaultLocaleFilename)))
         ? defaultTargetFile
         : targetFile
-
-      fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
+      if (!exclusions || !exclusions.includes(realTargetFile)) {
+        fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
+      }
     }
   }
   return Promise.all(fileOperations)
@@ -223,31 +248,31 @@ export async function injectAssetReferences(stylesheet, theme) {
     warn(
       `Html "script" tag injection unavailable: A conflictual reference to ${stylesheetBasename} is already present within the theme.liquid file.`
     )
+  } else {
+    if (!(await isWritable(themeLiquidFile))) {
+      throw new FileAccessError(`Theme Liquid file (${themeLiquidFile}) is not writable.`)
+    }
+
+    const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
+
+    // Exit if No </head> tag was found
+    if (closingHtmlHeadTagCount === 0) {
+      throw new Error('Injection Error: Html head tag closure not found in "theme.liquid".')
+    }
+
+    // Exit if Multiple </head> tags were found
+    if (closingHtmlHeadTagCount > 1) {
+      throw new Error(
+        `Injection Error: ${closingHtmlHeadTagCount} instances of Html head tag closure found in "theme.liquid". It should only be present once.`
+      )
+    }
+
+    debug('Injecting theme.liquid file with Collection Stylesheet file references.')
+    const tagTemplate = `<link type="text/css" href="{{ '${stylesheetBasename}' | asset_url }}" rel="stylesheet">`
+    themeLiquid = themeLiquid.replace('</head>', `${tagTemplate}\n</head>`)
+
+    return saveFile(themeLiquidFile, themeLiquid)
   }
-
-  if (!(await isWritable(themeLiquidFile))) {
-    throw new FileAccessError(`Theme Liquid file (${themeLiquidFile}) is not writable.`)
-  }
-
-  const closingHtmlHeadTagCount = (/<\/head>/g.exec(themeLiquid) || []).length
-
-  // Exit if No </head> tag was found
-  if (closingHtmlHeadTagCount === 0) {
-    throw new Error('Injection Error: Html head tag closure not found in "theme.liquid".')
-  }
-
-  // Exit if Multiple </head> tags were found
-  if (closingHtmlHeadTagCount > 1) {
-    throw new Error(
-      `Injection Error: ${closingHtmlHeadTagCount} instances of Html head tag closure found in "theme.liquid". It should only be present once.`
-    )
-  }
-
-  debug('Injecting theme.liquid file with Collection Stylesheet file references.')
-  const tagTemplate = `<link type="text/css" href="{{ '${stylesheetBasename}' | asset_url }}" rel="stylesheet">`
-  themeLiquid = themeLiquid.replace('</head>', `${tagTemplate}\n</head>`)
-
-  return saveFile(themeLiquidFile, themeLiquid)
 }
 
 /**

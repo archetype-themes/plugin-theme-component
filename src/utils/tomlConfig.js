@@ -10,6 +10,7 @@ import { CONFIG_FILE_NAME } from '../config/constants.js'
  * @property {string} [locales-path] - Path to the locales repo
  * @property {boolean} [setup-files=true] - Copy Setup Files
  * @property {boolean} [watch=true] - Watch for file changes
+ * @property {string[]} [exclude] - Watch for file changes
  */
 
 /**
