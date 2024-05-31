@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Dev & Install: Exclude toml parameter now allows excluding some files from the component installation
+- Dev & Install: Exclude toml parameter now allows excluding some files from the component installation #312
 
 ### Fixed
 
