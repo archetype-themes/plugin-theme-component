@@ -1,6 +1,6 @@
 // External Dependencies
 import { spawn } from 'node:child_process'
-import { basename, join, relative } from 'node:path'
+import { basename, join, relative, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { Args, Flags } from '@oclif/core'
 
@@ -298,11 +298,10 @@ export default class Dev extends BaseCommand {
       collection.build = collectionBuildFactory(collection)
       const devFolder = join(cwd(), DEV_FOLDER_NAME)
       const theme = await themeFactory(devFolder)
-      await injectAssetReferences(collection, theme)
+      const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
+      await injectAssetReferences(stylesheet, theme)
     }
-    console.log(Session.setupFiles)
-    console.log(eventPath)
-    console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
+
     if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
       let collection = await this.getCollectionFromCwd(componentNames)
       collection = await buildCollection(collection)
@@ -390,7 +389,7 @@ export default class Dev extends BaseCommand {
     }
 
     if (Session.setupFiles) {
-      Session.themePath = join(getCLIRootFolderName(), 'resources/explorer')
+      Session.themePath = join(getCLIRootFolderName(), `resources${sep}explorer`)
       if (issetThemeFlag && issetSetupFlag) {
         // A Warning is issued to the user explaining that setup files cannot be used with a theme.
         warn('The setup-files flag is not available with a custom theme. The component explorer will be used instead.')
