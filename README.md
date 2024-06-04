@@ -62,7 +62,8 @@ Develop using theme components
 
 ```
 USAGE
-  $ shopify theme component dev [COMPONENTS...] [--debug] [--trace] [-t <value>] [-l <value>] [-s] [-w] [--sync]
+  $ shopify theme component dev [COMPONENTS...] [--debug] [--trace] [-t <path-or-github-url>] [-l <path-or-github-url>]
+    [-s] [-w] [--sync]
 
 ARGUMENTS
   COMPONENTS...  Component name(s)
@@ -139,7 +140,8 @@ Install a collection of components
 
 ```
 USAGE
-  $ shopify theme component install [COMPONENTS...] [--debug] [--trace] [-c <value>] [-l <value>]
+  $ shopify theme component install [COMPONENTS...] [--debug] [--trace] [-c <path-or-github-url>] [-l
+  <path-or-github-url>]
 
 ARGUMENTS
   COMPONENTS...  Component name(s)
