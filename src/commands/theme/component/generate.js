@@ -1,6 +1,6 @@
 // External Dependencies
 import { access, constants, mkdir } from 'node:fs/promises'
-import { join, relative } from 'node:path'
+import { join, relative, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { Args } from '@oclif/core'
 
@@ -58,7 +58,7 @@ export default class Generate extends BaseCommand {
         )
       }
 
-      const sourcesPath = join(getCLIRootFolderName(), 'resources/component-files')
+      const sourcesPath = join(getCLIRootFolderName(), `resources${sep}component-files`)
 
       const packageManifest = await getPackageManifest()
       const packageScope = getPackageScope(packageManifest)
@@ -91,7 +91,7 @@ export default class Generate extends BaseCommand {
       files.forEach((file) => logChildItem(relative(componentPath, file)))
 
       logTitleItem('Your new component is available at')
-      logChildItem('./' + componentPath)
+      logChildItem(`.${sep}${componentPath}`)
       logSeparator()
     }
   }

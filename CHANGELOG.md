@@ -5,7 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.6.0] - 2024-05-31
+## [3.6.1] — 2024-06-04
+
+### Changed
+
+- install: copyright insertion ignores anything that contains /vendor/
+- Dependencies: Minor updates
+
+### Fixed
+
+- Removed forgotten console.log statements
+- Windows path resolving (work in progress—untested)
+- dev: Broken Asset injections on watch
+- Incorrect theme name in themeFactory
+
+## [3.6.0] — 2024-05-31
 
 ### Added
 
@@ -15,13 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The components' CSS bundle file reference gets injected even when already present.
 
-## [3.5.1] - 2024-05-30
+## [3.5.1] — 2024-05-30
 
 ### Fixed
 
 - The components' CSS bundle file reference doesn't get injected into theme.liquid
 
-## [3.5.0] - 2024-05-29
+## [3.5.0] — 2024-05-29
 
 ### Added
 
@@ -39,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated GitHub release data was removed since we use Npm for package publishing.
 - Removed the unused build command and the use of the build folder
 
-## [3.4.0] - 2024-05-22
+## [3.4.0] — 2024-05-22
 
 ### Added
 
@@ -50,14 +64,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced the use of the deprecated oclif ux library for logging by internal logging functions
 - Dependencies minor updates
 
-## [3.3.4] - 2024-05-17
+## [3.3.4] — 2024-05-17
 
 ### Fixed
 
 - Tests: Tests now work around the user email prompt
 - Install: command cache not cleared #428
 
-## [3.3.3] - 2024-05-15
+## [3.3.3] — 2024-05-15
 
 ### Added
 
@@ -67,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependencies: Minor updates
 
-## [3.3.2] - 2024-05-07
+## [3.3.2] — 2024-05-07
 
 ### Changed
 
@@ -83,7 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - NPM Install Hook: Request User email for DevKit Newsletter Subscription #417
 
-## [3.3.1] - 2024-05-07
+## [3.3.1] — 2024-05-07
 
 ### Fixed
 
@@ -93,7 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Reference to favicon component
 
-## [3.3.0] - 2024-05-06
+## [3.3.0] — 2024-05-06
 
 ### Added
 
@@ -104,7 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependencies: Minor updates & oclif version alignment with Shopify CLI release 3.6.0
 
-## [3.2.5] - 2024-05-06
+## [3.2.5] — 2024-05-06
 
 ### Added
 
@@ -114,7 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Reformatted some explorer files and replace the original color scheme approach
 
-## [3.2.4] - 2024-05-01
+## [3.2.4] — 2024-05-01
 
 ### Fixed
 
@@ -138,7 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Outdated docs
 
-## [3.2.3] - 2024-04-15
+## [3.2.3] — 2024-04-15
 
 ### Changed
 
@@ -148,13 +162,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated husky actions: npm ci replaced with npm i for faster results.
 - Updated dependencies
 
-## [3.2.2] - 2024-04-04
+## [3.2.2] — 2024-04-04
 
 ### Changed
 
 - Clone repos to temporary folders (#386)
 
-## [3.2.1] - 2024-03-27
+## [3.2.1] — 2024-03-27
 
 ### Fixed
 
@@ -164,7 +178,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Multiple file copy operations now benefit from automated folder creation beforehand
 
-## [3.2.0] - 2024-03-25
+## [3.2.0] — 2024-03-25
 
 ### Added
 
@@ -172,7 +186,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dev command: Displays time of day upon completion (#367)
 - Install command: Displays time of day upon completion (#367)
 
-## [3.1.2] - 2024-03-20
+## [3.1.2] — 2024-03-20
 
 ### Fixed
 
@@ -184,7 +198,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Obsolete pino logger dependencies
 
-## [3.1.1] - 2024-03-19
+## [3.1.1] — 2024-03-19
 
 ### Fixed
 
@@ -196,7 +210,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Obsolete vitest dependency
 - Obsolete vitest config file
 
-## [3.1.0] - 2024-03-14
+## [3.1.0] — 2024-03-14
 
 ### Added
 
@@ -206,7 +220,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - partial builds on watch events instead of full builds
 
-## [3.0.0] - 2024-03-08
+## [3.0.0] — 2024-03-08
 
 ### Added
 
@@ -225,10 +239,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - code: The oclif and Archie commands are now merged under src; the plugins folder is gone.
 - code: model properties are now public, non-transformative getter and setters were removed
 - lint: now using eslint with standard JS and prettier plugin
-- toml config - dev command: The toml config properties were renamed to match the new command flag names.
-- toml config - dev command: The toml config file is now optional.
-- toml config - dev command: The new command flags have priority over toml values
-- toml config - dev command: All config options have default values through command flag default values
+- toml config — dev command: The toml config properties were renamed to match the new command flag names.
+- toml config — dev command: The toml config file is now optional.
+- toml config — dev command: The new command flags have priority over toml values
+- toml config — dev command: All config options have default values through command flag default values
 - logs: replaced pino logs with @oclif/core's ux functions (mocha and pino-pretty didn't play well together)
 
 ### Fixed
@@ -241,19 +255,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Install command: Removed watch option. Use the Dev command's new features instead.
 
-## [2.3.1] - 2024-02-14
+## [2.3.1] — 2024-02-14
 
 ### Fixed
 
 - Stylesheet filename fix https://github.com/archetype-themes/plugin-theme-component/pull/337
 
-## [2.3.0] - 2024-02-01
+## [2.3.0] — 2024-02-01
 
 ### Added
 
 - Opinionated PostCSS Config https://github.com/archetype-themes/plugin-theme-component/pull/328
 
-## [2.2.0] - 2024-02-01
+## [2.2.0] — 2024-02-01
 
 ### Added
 
@@ -266,7 +280,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build Command (obsolete)
 - Generate Command (temporary)
 
-## [2.1.1] - 2024-01-31
+## [2.1.1] — 2024-01-31
 
 ### Added
 
@@ -276,13 +290,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Install functionality fully restored
 
-## [2.1.0] - 2024-01-30
+## [2.1.0] — 2024-01-30
 
 ### Added
 
 - Shopify CLI theme dev is run automatically in sync with our component dev command
 
-## [2.0.4] - 2024-01-30
+## [2.0.4] — 2024-01-30
 
 ### Changed
 
@@ -293,25 +307,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add the omitted watch flag for the oclif install command
 - Add missing trace/debug flags
 
-## [2.0.3] - 2024-01-29
+## [2.0.3] — 2024-01-29
 
 ### Changed
 
 - Moved @types/node dependency for oclif compliance as a dependency
 
-## [2.0.2] - 2024-01-29
+## [2.0.2] — 2024-01-29
 
 ### Added
 
 - Added @types/node dependency for oclif compliance as a dev dependency
 
-## [2.0.1] - 2024-01-29
+## [2.0.1] — 2024-01-29
 
 ### Changed
 
 - License set to MIT to match Shopify CLI license
 
-## [2.0.0] - 2024-01-29
+## [2.0.0] — 2024-01-29
 
 ### Changed
 
@@ -323,25 +337,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Repo paths fix https://github.com/archetype-themes/plugin-theme-component/pull/301
 - Undefined content fix on builds with no styles https://github.com/archetype-themes/plugin-theme-component/pull/309
 
-## [1.9.7] - 2024-01-17
+## [1.9.7] — 2024-01-17
 
 ### Changed
 
 - Update plugin's name https://github.com/archetype-themes/plugin-theme-component/pull/298
 
-## [1.9.6] - 2024-01-16
+## [1.9.6] — 2024-01-16
 
 ### Changed
 
 - Install collections defined via shopify.theme.toml https://github.com/archetype-themes/plugin-theme-component/pull/297
 
-## [1.9.5] - 2024-01-10
+## [1.9.5] — 2024-01-10
 
 ### Changed
 
 - Handle shopify.theme.toml configuration file https://github.com/archetype-themes/plugin-theme-component/pull/291
 
-## [1.9.4] - 2024-01-08
+## [1.9.4] — 2024-01-08
 
 ### Added
 
@@ -351,13 +365,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Process locale files only ([#289](https://github.com/archetype-themes/plugin-theme-component/pull/289))
 
-## [1.9.3] - 2023-12-20
+## [1.9.3] — 2023-12-20
 
 ### Changed
 
 - Create command has been renamed to the generate command
 
-## [1.9.2] - 2023-12-14
+## [1.9.2] — 2023-12-14
 
 ### Changed
 
@@ -369,14 +383,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Execution Time Logs for Styles and JS Processors restored
 - Logger: Pino-Pretty is now displaying items in sync mode instead of async
 
-## [1.9.1] - 2023-12-14
+## [1.9.1] — 2023-12-14
 
 ### Changed
 
 - Timer is a proper object model now instead of a utility class.
 - The package tests now include a check for cyclic redundancy.
 
-## [1.9.0] - 2023-12-14
+## [1.9.0] — 2023-12-14
 
 ### Added
 
@@ -401,13 +415,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unused Sass dependencies
 - Newly unused liquid-html-parser dependency
 
-## [1.8.8] - 2023-11-27
+## [1.8.8] — 2023-11-27
 
 ### Fixed
 
 - Missing Snippet: Improve error message #172
 
-## [1.8.7] - 2023-11-27
+## [1.8.7] — 2023-11-27
 
 ### Fixed
 
@@ -417,56 +431,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated dependencies
 
-## [1.8.6] - 2023-11-26
+## [1.8.6] — 2023-11-26
 
 ### Changed
 
 - Excluded modulepreload tags from the importmap output
 
-## [1.8.5] - 2023-11-24
+## [1.8.5] — 2023-11-24
 
 ### Fixed
 
 - The Git Clean Command burdens shopify theme dev with 100 files deletion and re-uploads
 
-## [1.8.4] - 2023-11-22
+## [1.8.4] — 2023-11-22
 
 ### Changed
 
 - Removed forgotten console.log statement
 
-## [1.8.3] - 2023-11-22
+## [1.8.3] — 2023-11-22
 
 ### Changed
 
 - Improve LiquidParser Error Handling #254
 - Updated dependencies
 
-## [1.8.2] - 2023-11-21
+## [1.8.2] — 2023-11-21
 
 ### Fixed
 
 - Ignore Commented Liquid Code #173
 
-## [1.8.1] - 2023-11-17
+## [1.8.1] — 2023-11-17
 
 ### Added
 
 - Dev Command now also handles the complete collection
 
-## [1.8.0] - 2023-11-16
+## [1.8.0] — 2023-11-16
 
 ### Added
 
 - Dev Command
 
-## [1.7.8] - 2023-11-13
+## [1.7.8] — 2023-11-13
 
 ### Fixed
 
 - Install: Collection name appears as an object
 
-## [1.7.7] - 2023-11-09
+## [1.7.7] — 2023-11-09
 
 ### Fixed
 
@@ -476,25 +490,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Build: Now Throws an Error when No Components are found instead of finishing an empty build.
 
-## [1.7.6] - 2023-11-07
+## [1.7.6] — 2023-11-07
 
 ### Fixed
 
 - Install command is not copying the build files over to the theme.
 
-## [1.7.5] - 2023-11-07
+## [1.7.5] — 2023-11-07
 
 ### Fixed
 
 - Resolve import paths from collectionRootFolder
 
-## [1.7.4] - 2023-11-07
+## [1.7.4] — 2023-11-07
 
 ### Changed
 
 - Added .explorer, bin to ignore patterns so the build does not trigger during watch mode
 
-## [1.7.3] - 2023-11-05
+## [1.7.3] — 2023-11-05
 
 ### Fixed
 
@@ -510,20 +524,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for Section Component Type
 
-## [1.7.2] - 2023-11-01
+## [1.7.2] — 2023-11-01
 
 ### Fixed
 
 - Fixed the computation of gitignore patterns during watch
   mode ([#228](https://github.com/archetype-themes/plugin-theme-component/pull/228))
 
-## [1.7.1] - 2023-10-31
+## [1.7.1] — 2023-10-31
 
 ### Changed
 
 - Refactor Import map processor and add comments
 
-## [1.7.0] - 2023-10-24
+## [1.7.0] — 2023-10-24
 
 ### Added
 
@@ -541,19 +555,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removing Settings Schema support. Settings Schema will stay in the Theme for now.
 
-## [1.6.2] - 2023-10-24
+## [1.6.2] — 2023-10-24
 
 ### Fixed
 
 - Install missing dependencies
 
-## [1.6.1] - 2023-10-24
+## [1.6.1] — 2023-10-24
 
 ### Fixed
 
 - Fixed watch mode ([#215](https://github.com/archetype-themes/plugin-theme-component/issues/215))
 
-## [1.6.0] - 2023-10-12
+## [1.6.0] — 2023-10-12
 
 ### Added
 
@@ -561,14 +575,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI scans all folders for Components, Sections and Snippets; enforced structure is removed
 - Added a trace log level with pino, using silly log level as a proxy with Node.js
 
-## [1.5.5] - 2023-09-02
+## [1.5.5] — 2023-09-02
 
 ### Changed
 
 - feature: The settings schema array now merges by name key. They were only merged with the theme's data upon
   installation before.
 
-## [1.5.4] - 2023-09-02
+## [1.5.4] — 2023-09-02
 
 ### Added
 
@@ -586,13 +600,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - feature: embedding locales into a section structure is now optional and defaults to false.
 
-## [1.5.2] - 2023-08-30
+## [1.5.2] — 2023-08-30
 
 ### Fixed
 
 - bug: When building Collection, section Schema Locales were always used instead of section Storefront Locales
 
-## [1.5.1] - 2023-08-29
+## [1.5.1] — 2023-08-29
 
 ### Fixed
 
@@ -606,7 +620,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - code: Render model and Render Factory were removed. They were originally needed for snippet in-lining.
 
-## [1.5.0] - 2023-08-22
+## [1.5.0] — 2023-08-22
 
 ### Added
 
@@ -621,13 +635,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Resources (component templates) do not use the 'src' folder anymore
 
-## [1.4.7] - 2023-08-14
+## [1.4.7] — 2023-08-14
 
 ### Changed
 
 - Updated templates for section/snippet creation
 
-## [1.4.6] - 2023-08-04
+## [1.4.6] — 2023-08-04
 
 ### Fixed
 
@@ -641,7 +655,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - code: (SonarLint) string.match() replaced with RegExp.exec() for better performance
 - code: (cleanup) Reduced Cognitive complexity and improved clarity for ComponentFilesUtils.filterFiles
 
-## [1.4.5] - 2023-08-01
+## [1.4.5] — 2023-08-01
 
 ### Fixed
 
@@ -652,7 +666,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - NPM: Updated Node.js dependencies
 
-## [1.4.4] - 2023-07-25
+## [1.4.4] — 2023-07-25
 
 ### Changed
 
@@ -664,7 +678,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - bug: Schema Locales Build missing because of a missing await.
 
-## [1.4.3] - 2023-07-17
+## [1.4.3] — 2023-07-17
 
 ### Fixed
 
@@ -675,19 +689,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Section Creation main template file now uses css extension instead of scss
 - NPM: Updated Node.js dependencies
 
-## [1.4.2] - 2023-07-05
+## [1.4.2] — 2023-07-05
 
 ### Changed
 
 - NPM: Updated Node.js dependencies
 
-## [1.4.1] - 2023-07-05
+## [1.4.1] — 2023-07-05
 
 ### Added
 
 - NPM: Dependabot config for automated Node.js package updates
 
-## [1.4.0] - 2023-06-29
+## [1.4.0] — 2023-06-29
 
 ### Added
 
@@ -711,7 +725,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Backup: Install Backup Functionality is removed, it will not be missed.
 
-## [1.3.1] - 2023-06-08
+## [1.3.1] — 2023-06-08
 
 ### Added
 
@@ -735,7 +749,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Locale contents were not loaded for snippets. This closes #79
 
-## [1.3.0] - 2023-06-04
+## [1.3.0] — 2023-06-04
 
 ### Added
 
@@ -756,29 +770,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Sass handling items for mixing sass & postcss. This is not allowed anymore.
 
-## [1.2.3] - 2023-05-19
+## [1.2.3] — 2023-05-19
 
 ### Changed
 
 - External and Shareable Automated Node.js Package Publication
 - CI: Automated Node.js package publishing is now external and can be shared with Next and other repositories.
 
-## [1.2.2] - 2023-05-16 - Automated Node.js package publication
+## [1.2.2] — 2023-05-16 — Automated Node.js package publication
 
 ### Added
 
 - CI: Automated Node.js package publishing upon version change in package.json file.
 
-## [1.2.1] - 2023-05-16 - Error Handling Improvements
+## [1.2.1] — 2023-05-16 — Error Handling Improvements
 
 ### Changed
 
 - Code: Improved error handling by adding multiple custom error classes and using them throughout the code to replace
   use of the generic Node.js Error class.
 
-## [1.2.0] - 2023-05-10 - External PostCSS and ESBuild Configurations
+## [1.2.0] — 2023-05-10 — External PostCSS and ESBuild Configurations
 
-## [1.1.0] - 2023-04-03 - PostCSS Integration Revised and Improved
+## [1.1.0] — 2023-04-03 — PostCSS Integration Revised and Improved
 
 ### Added
 
@@ -788,7 +802,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Styles: PostCSS now uses external config instead of an internal hardcoded one.
 
-## [1.0.7] - 2023-03-13 - External Template Files
+## [1.0.7] — 2023-03-13 — External Template Files
 
 ### Changed
 
@@ -798,7 +812,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation: Updates regarding templates to reflect previous change. We now list the available variables inside the
   templates.
 
-## [1.0.6] - 2023-03-08 - Documentation Additions and Clarifications.
+## [1.0.6] — 2023-03-08 — Documentation Additions and Clarifications.
 
 ### Added
 
@@ -819,13 +833,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   different file structures and strategies.
 - Documentation: Setup documentation now gives you the option of using nvm or Homebrew to set up Node.js
 
-## [1.0.5] - 2023-02-14 - GitHub Packages Integration
+## [1.0.5] — 2023-02-14 — GitHub Packages Integration
 
 ### Added
 
 - CI: A GiHub Action Was Added to Automate the creation of a GitHub Package when creating a new release.
 
-## [1.0.4] - 2023-02-14 - Assets and PostCSS Features
+## [1.0.4] — 2023-02-14 — Assets and PostCSS Features
 
 This release is now integrated with Next and the Expanse theme.
 
@@ -847,13 +861,13 @@ This release is now integrated with Next and the Expanse theme.
 - Code: Circular dependencies removed
 - Backup: Install backup functionality is now optional
 
-## [1.0.3] - 2022-11-22 - Render Tags Regex Improvements
+## [1.0.3] — 2022-11-22 — Render Tags Regex Improvements
 
 ### Added
 
 - Snippets: We now handle tilde in opening and closing liquid tags.
 - Snippets: We now handle all characters possible within quotes instead of just letters.
 
-## [1.0.1] - 2022-10-20 - Initial Release
+## [1.0.1] — 2022-10-20 — Initial Release
 
 Initial Release

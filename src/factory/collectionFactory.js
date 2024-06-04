@@ -1,5 +1,5 @@
 // External Dependencies
-import { basename, join } from 'node:path'
+import { basename, join, sep } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
@@ -93,7 +93,7 @@ async function findComponents(collectionRootFolder) {
   const components = []
 
   for (const componentFolder of componentFolders) {
-    const componentName = componentFolder.split('/').pop()
+    const componentName = componentFolder.split(sep).pop()
     components.push(await componentFactory(componentName, componentFolder))
   }
 

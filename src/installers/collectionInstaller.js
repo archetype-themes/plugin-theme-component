@@ -31,16 +31,13 @@ import FileAccessError from '../errors/FileAccessError.js'
 export async function installCollection(collection, theme) {
   const fileOperations = []
 
-  let exclusions = []
-  if (Session.config?.exclude) {
-    exclusions = await fg(Session.config.exclude, { cwd: theme.rootFolder, dot: true })
-    exclusions = exclusions.map((filePath) => path.join(theme.rootFolder, filePath))
-  }
+  // Compute exclusions relative to the theme path
+  const exclusions = await getExclusions(theme.rootFolder)
 
   // Install CSS Build
   if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
     const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
-    if (!exclusions || !exclusions.includes(stylesheet)) {
+    if (!exclusions?.includes(stylesheet)) {
       const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
       fileOperations.push(stylesheetSavePromise)
       fileOperations.push(injectAssetReferences(stylesheet, theme))
@@ -73,7 +70,7 @@ export async function installCollection(collection, theme) {
     const snippetFilesWritePromises = Promise.all(
       collection.allComponents.map((component) => {
         const targetFile = join(theme.snippetsFolder, `${component.name}.liquid`)
-        return !exclusions || !exclusions.includes(targetFile) ? saveFile(targetFile, component.build.liquidCode) : null
+        return !exclusions?.includes(targetFile) ? saveFile(targetFile, component.build.liquidCode) : null
       })
     )
     fileOperations.push(snippetFilesWritePromises)
@@ -99,20 +96,25 @@ export async function installFile(sourceFile, targetFolder, copyrightText, exclu
   const fileBasename = basename(sourceFile)
   const fileType = getFileType(sourceFile)
   const targetFile = join(targetFolder, fileBasename)
-  if (!exclusions || !exclusions.includes(targetFile)) {
+
+  if (!exclusions?.includes(targetFile)) {
     const targetFileExists = await exists(targetFile)
 
     let sourceFileContents
-    // Only fetch the data if we need to
+    // Only fetch the data when needed
     if (fileType !== null || targetFileExists) {
       sourceFileContents = await getFileContents(sourceFile)
     }
 
-    if (copyrightText && fileType !== null && !isFileInVendorFolder(sourceFile)) {
+    // Filter out vendor files
+    if (copyrightText && fileType !== null && /vendor/gi.exec(sourceFile) !== null) {
       const copyright = getCopyright(fileType, copyrightText)
       sourceFileContents = copyright + sourceFileContents
+    } else {
+      debug(`Install Excluded Vendor File "${targetFile}"`)
     }
 
+    // Compare file contents if the target file exists and only save the file if there is a difference
     if (targetFileExists) {
       const targetFileContents = await getFileContents(targetFile)
       if (targetFileContents !== sourceFileContents) {
@@ -120,13 +122,18 @@ export async function installFile(sourceFile, targetFolder, copyrightText, exclu
       } else {
         debug(`Ignored installing "${fileBasename}" file since its contents are identical to the current version`)
       }
-    } else if (fileType !== null) {
+    }
+    // When the file type is known,
+    // and we have a copyright text, we save the file contents with the added copyright text
+    else if (fileType !== null && copyrightText) {
       return saveFile(targetFile, sourceFileContents)
-    } else {
+    }
+    // When the file type is unknown, we did not apply copyright text and the file can be copied as is
+    else {
       return cp(sourceFile, targetFile, { preserveTimestamps: true })
     }
   } else {
-    console.log(`EXCLUDED ${targetFile}`)
+    debug(`Install Excluded Filtered File "${targetFile}"`)
   }
 }
 
@@ -176,7 +183,7 @@ async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippets
   }
   if (importMap.tags) {
     const importMapSnippet = join(snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME)
-    if (!exclusions || !exclusions.includes(importMapSnippet)) {
+    if (!exclusions?.includes(importMapSnippet)) {
       fileOperations.push(saveFile(importMapSnippet, importMap.tags))
     }
   }
@@ -189,47 +196,73 @@ async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippets
 
 /**
  * Write Locales, merging them atop of the theme's Locales
- * @param {Object} locales
+ * @param {Object} collectionLocales
  * @param {string} themeLocalesPath
  * @param {string[]} exclusions
  * @return {Promise<Awaited<unknown>[]>}
  */
-async function installLocales(locales, themeLocalesPath, exclusions) {
+async function installLocales(collectionLocales, themeLocalesPath, exclusions) {
   debug("Merging Collection Locales with the Theme's Locales")
-  const fileOperations = []
+  const promises = []
 
   // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
-  for (const locale of Object.keys(locales)) {
-    const localeFilename = `${locale}.json`
+  for (const localeKey of Object.keys(collectionLocales)) {
+    promises.push(installLocale(localeKey, collectionLocales[localeKey], themeLocalesPath, exclusions))
+  }
+  return Promise.all(promises)
+}
 
-    const defaultLocaleFilename = `${locale}.default.json`
+/**
+ * Install Locale To Theme
+ * @param {string} localeKey
+ * @param localeValues
+ * @param {string} installPath
+ * @param exclusions
+ * @returns {Promise<void|null>}
+ */
+async function installLocale(localeKey, localeValues, installPath, exclusions) {
+  const localeFilename = `${localeKey}.json`
 
-    const targetFile = join(themeLocalesPath, localeFilename)
-    const defaultTargetFile = join(themeLocalesPath, defaultLocaleFilename)
+  const defaultLocaleFilename = `${localeKey}.default.json`
 
-    const targetFileExists = await exists(targetFile)
-    const defaultTargetFileExists = await exists(defaultTargetFile)
-    const collectionLocale = locales[locale]
-    if (targetFileExists || defaultTargetFileExists) {
-      const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
-      if (!exclusions || !exclusions.includes(realTargetFile)) {
-        const themeLocale = await getJsonFileContents(realTargetFile)
-        const mergedLocale = merge(themeLocale, collectionLocale)
+  const targetFile = join(installPath, localeFilename)
+  const defaultTargetFile = join(installPath, defaultLocaleFilename)
 
-        fileOperations.push(saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2)))
-      }
-    } else {
-      // if No Theme Locale File was found for the current locale, check for a Default Theme Regular Locale File to determine 'default' status for the locale.
-      const defaultLocaleFilename = `${locale}.default.json`
-      const realTargetFile = (await exists(join(themeLocalesPath, defaultLocaleFilename)))
-        ? defaultTargetFile
-        : targetFile
-      if (!exclusions || !exclusions.includes(realTargetFile)) {
-        fileOperations.push(saveFile(realTargetFile, JSON.stringify(collectionLocale, null, 2)))
-      }
+  const targetFileExists = await exists(targetFile)
+  const defaultTargetFileExists = await exists(defaultTargetFile)
+
+  if (targetFileExists || defaultTargetFileExists) {
+    const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
+    if (!exclusions?.includes(realTargetFile)) {
+      const themeLocale = await getJsonFileContents(realTargetFile)
+      const mergedLocale = merge(themeLocale, localeValues)
+
+      return saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2))
+    }
+  } else {
+    // If No Theme Locale File was found for the current locale,
+    // check for a Default Theme Regular Locale File to determine 'default' status for the locale.
+    const defaultLocaleFilename = `${localeKey}.default.json`
+    const realTargetFile = (await exists(join(installPath, defaultLocaleFilename))) ? defaultTargetFile : targetFile
+    if (!exclusions?.includes(realTargetFile)) {
+      return saveFile(realTargetFile, JSON.stringify(localeValues, null, 2))
     }
   }
-  return Promise.all(fileOperations)
+  return null
+}
+
+/**
+ * Get Exclusions
+ * @param {string} targetPath
+ * @returns {Promise<string[]>}
+ */
+async function getExclusions(targetPath) {
+  let exclusions = []
+  if (Session.config?.exclude) {
+    exclusions = await fg(Session.config.exclude, { cwd: targetPath, dot: true })
+    exclusions = exclusions.map((filePath) => path.join(targetPath, filePath))
+  }
+  return exclusions
 }
 
 /**
@@ -273,15 +306,4 @@ export async function injectAssetReferences(stylesheet, theme) {
 
     return saveFile(themeLiquidFile, themeLiquid)
   }
-}
-
-/**
- * Validates If The File Is In The Vendor(s) Folder
- * @param {string} filePath
- * @returns {boolean}
- */
-function isFileInVendorFolder(filePath) {
-  const parts = path.parse(filePath)
-  const folder = parts.dir.split(path.sep).pop()
-  return folder === 'vendor' || folder === 'vendors'
 }

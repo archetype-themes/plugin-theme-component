@@ -3,6 +3,7 @@ import { exec } from 'node:child_process'
 import { cwd, env } from 'node:process'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
+import { fileURLToPath } from 'url'
 
 // Internal Dependencies
 import { getJsonFileContents } from './fileUtils.js'
@@ -22,7 +23,7 @@ export const execAsync = promisify(exec)
  * @returns {string}
  */
 export function getCLIRootFolderName() {
-  return new URL('../../', import.meta.url).pathname
+  return fileURLToPath(new URL('../../', import.meta.url))
 }
 
 /**

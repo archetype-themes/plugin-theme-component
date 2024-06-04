@@ -1,4 +1,4 @@
-import { join } from 'node:path'
+import { join, sep } from 'node:path'
 
 /*********************/
 /** COMPONENT TYPES **/
@@ -53,7 +53,7 @@ export const CONFIG_FILE_NAME = 'shopify.theme.toml'
 /** @type {string} **/
 export const IMPORT_MAP_SNIPPET_FILENAME = 'import-map.liquid'
 
-export const THEME_LAYOUT_FILE = 'layout/theme.liquid'
+export const THEME_LAYOUT_FILE = `layout${sep}theme.liquid`
 
 export const THEME_INDEX_TEMPLATE_LIQUID_FILE = join(TEMPLATES_FOLDER_NAME, 'index.liquid')
 
