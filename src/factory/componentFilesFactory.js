@@ -1,5 +1,5 @@
 // External Dependencies
-import { dirname, join } from 'node:path'
+import { dirname, join, sep } from 'node:path'
 
 // Internal Dependencies
 import {
@@ -68,7 +68,7 @@ function sortComponentFile(file, componentFiles, componentName) {
   } else if (fileType === FileTypes.Css) {
     componentFiles.stylesheets.push(file)
   } else if (fileType === FileTypes.Liquid) {
-    if (folder.endsWith('/snippets')) {
+    if (folder.endsWith(`${sep}snippets`)) {
       componentFiles.snippetFiles.push(file)
     } else {
       if (componentFiles.liquidFile) {

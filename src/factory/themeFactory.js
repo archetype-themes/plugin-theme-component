@@ -21,7 +21,7 @@ export function themeFactory(themePath) {
 
   theme.name = basename(themePath)
   theme.rootFolder = themePath
-  theme.name = theme.assetsFolder = join(theme.rootFolder, ASSETS_FOLDER_NAME)
+  theme.assetsFolder = join(theme.rootFolder, ASSETS_FOLDER_NAME)
   theme.configFolder = join(theme.rootFolder, CONFIG_FOLDER_NAME)
   theme.localesFolder = join(theme.rootFolder, LOCALES_FOLDER_NAME)
   theme.sectionsFolder = join(theme.rootFolder, SECTIONS_FOLDER_NAME)
