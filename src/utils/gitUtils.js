@@ -60,9 +60,7 @@ export function isGitHubUrl(possibleRepoUrl) {
  */
 async function isRepoPublic(repoUrl) {
   try {
-    // console.log(repoUrl)
     const reposUrlInstance = new URL(repoUrl)
-    // console.log(reposUrlInstance)
     let [, username, repository] = reposUrlInstance.pathname.split('/')
 
     if (repository.endsWith('.git')) {
@@ -70,12 +68,8 @@ async function isRepoPublic(repoUrl) {
     }
 
     const apiUrl = `${GITHUB_API_URL}repos/${username}/${repository}`
-
     const response = await fetch(apiUrl, { method: 'GET' })
-    // console.log(response)
-
     const repoInfo = JSON.parse(await response.text())
-    // console.log(repoInfo)
 
     if ('private' in repoInfo) {
       return !repoInfo.private

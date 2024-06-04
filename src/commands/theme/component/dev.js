@@ -300,9 +300,7 @@ export default class Dev extends BaseCommand {
       const theme = await themeFactory(devFolder)
       await injectAssetReferences(collection, theme)
     }
-    console.log(Session.setupFiles)
-    console.log(eventPath)
-    console.log(THEME_INDEX_TEMPLATE_LIQUID_FILE)
+
     if (Session.setupFiles && eventPath === THEME_INDEX_TEMPLATE_LIQUID_FILE) {
       let collection = await this.getCollectionFromCwd(componentNames)
       collection = await buildCollection(collection)
