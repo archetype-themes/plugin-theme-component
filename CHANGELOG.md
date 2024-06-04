@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- install: anything that contains /vendor/, not just the last parent folder, will be ignored for copyright additions
+- install: copyright insertion ignores anything that contains /vendor/
+- Dependencies: Minor updates
 
 ### Fixed
 
