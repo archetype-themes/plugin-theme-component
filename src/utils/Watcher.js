@@ -7,6 +7,7 @@ import gitignore from 'parse-gitignore'
 
 // Internal Dependencies
 import {
+  ASSETS_FOLDER_NAME,
   CONFIG_FILE_NAME,
   DEV_FOLDER_NAME,
   JSON_EXTENSION,
@@ -103,6 +104,11 @@ export function getChangeTypeFromFilename(filename) {
     return ChangeType.SetupFiles
   }
   if (STYLE_EXTENSIONS.includes(extension)) {
+    // If stylesheet is in asset folder just copy it over
+    if (filename.includes(join(sep, ASSETS_FOLDER_NAME, sep))) {
+      return ChangeType.Asset
+    }
+
     return ChangeType.Stylesheet
   }
   if (SCRIPT_EXTENSIONS.includes(extension)) {
