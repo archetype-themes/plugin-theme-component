@@ -3,7 +3,7 @@ import { basename, join, sep } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
-import { validateComponentNames } from '../utils/collectionUtils.js'
+import { getComponentNamesHierarchy } from '../utils/collectionUtils.js'
 import { fatal, logChildItem, logTitleItem } from '../utils/logger.js'
 import Timer from '../models/Timer.js'
 import { plural } from '../utils/textUtils.js'
@@ -56,8 +56,7 @@ export async function collectionFactory(path, componentNames) {
   )
 
   if (componentNames?.length) {
-    collection.componentNames = validateComponentNames(collection.allComponents, componentNames)
-
+    collection.componentNames = getComponentNamesHierarchy(collection.allComponents, componentNames)
     collection.components = filterComponents(collection.components, collection.componentNames)
     collection.snippets = filterSnippets(collection.snippets, collection.componentNames)
 

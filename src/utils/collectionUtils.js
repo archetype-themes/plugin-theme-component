@@ -8,7 +8,7 @@ import { info, logSpacer, logTitleItem } from './logger.js'
  * @param {string[]} componentNames
  * @returns {Set<string>}
  */
-export function validateComponentNames(components, componentNames) {
+export function getComponentNamesHierarchy(components, componentNames) {
   let componentsNameTree = new Set(componentNames)
 
   componentNames.forEach((componentName) => {
@@ -20,7 +20,7 @@ export function validateComponentNames(components, componentNames) {
     }
 
     // Recursive call applied to snippet names
-    const componentNameTree = validateComponentNames(components, component.snippetNames)
+    const componentNameTree = getComponentNamesHierarchy(components, component.snippetNames)
     // Merge data with the global Set
     componentsNameTree = new Set([...componentsNameTree, ...componentNameTree])
   })
