@@ -14,6 +14,9 @@ class Theme {
   /** @type {string} **/
   rootFolder
 
+  /** @type {Section[]} **/
+  sections
+
   /** @type {string} **/
   sectionsFolder
 

@@ -1,5 +1,28 @@
-import Component from './Component.js'
+class Snippet {
+  /** @type {string} **/
+  name
 
-class Snippet extends Component {}
+  /** @type {string} **/
+  file
+
+  /** @type {ComponentBuild} **/
+  build
+
+  /** @type {string} **/
+  liquidCode
+
+  /** @type {Object} **/
+  locales = {}
+
+  /** @type {string[]} **/
+  snippetNames
+
+  /** @type {Snippet[]} **/
+  snippets = []
+
+  isSvg() {
+    return !!(this.name.startsWith('icon-') || this.name.endsWith('-svg') || this.name.endsWith('.svg'))
+  }
+}
 
 export default Snippet
