@@ -1,6 +1,6 @@
 // External Dependencies
 import { access, constants, copyFile, cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { basename, dirname, extname, join, resolve, sep } from 'node:path'
+import { dirname, extname, join, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
 
 // Internal Dependencies
@@ -43,36 +43,6 @@ export async function copyFileAndCreatePath(file, targetFolder) {
   }
 
   return copyFile(file, targetFolder)
-}
-
-/**
- * Copy All Files to a Specified Folder
- * @param {string[]} files
- * @param {string} destinationFolder
- * @return {Promise<Awaited<void>[]>}
- */
-export async function copyFilesToFolder(files, destinationFolder) {
-  // Filter the files that need to be copied
-  const filesToCopy = []
-  for (const source of files) {
-    const destination = join(destinationFolder, basename(source))
-    if (await isReadable(destination)) {
-      const destinationContents = await getFileContents(destination)
-      const fileContents = await getFileContents(source)
-      if (destinationContents !== fileContents) {
-        filesToCopy.push({ source, destination })
-      }
-    } else {
-      filesToCopy.push({ source, destination })
-    }
-  }
-
-  // Queue the copy operations
-  const filesCopyPromises = filesToCopy.map(({ source, destination }) => {
-    return cp(source, destination, { preserveTimestamps: true })
-  })
-
-  return Promise.all(filesCopyPromises)
 }
 
 /**
