@@ -148,18 +148,19 @@ export async function getFileContents(file) {
 
 /**
  * Get directory file listing recursively
- * @param folder
+ * @param {string} folder
+ * @param {boolean} [recursive=false]
  * @returns {Promise<string[]>}
  * @link https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
  */
-export async function getFolderFilesRecursively(folder) {
+export async function getFiles(folder, recursive = false) {
   const entries = await readdir(folder, { withFileTypes: true })
   const files = []
   for (const entry of entries) {
     const absolutePath = join(folder, entry.name)
     if (entry.isDirectory()) {
-      if (!EXCLUDED_FOLDERS.includes(entry.name)) {
-        files.push(...(await getFolderFilesRecursively(absolutePath)))
+      if (recursive && !EXCLUDED_FOLDERS.includes(entry.name)) {
+        files.push(...(await getFiles(absolutePath, recursive)))
       }
     } else {
       files.push(absolutePath)
