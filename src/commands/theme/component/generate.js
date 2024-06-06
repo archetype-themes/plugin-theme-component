@@ -34,7 +34,7 @@ export default class Generate extends BaseCommand {
 
     await Generate.setSessionValues(argv, tomlConfig)
 
-    for (const componentName of Session.components) {
+    for (const componentName of Session.componentNames) {
       logTitleItem(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
 
       const componentPath = join(COMPONENTS_FOLDER, componentName)
@@ -98,6 +98,6 @@ export default class Generate extends BaseCommand {
 
   static async setSessionValues(argv, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
-    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
+    Session.componentNames = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
   }
 }

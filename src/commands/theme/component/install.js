@@ -108,7 +108,7 @@ export default class Install extends BaseCommand {
 
   static async setSessionValues(argv, flags, metadata, tomlConfig) {
     Session.callerType = THEME_TYPE_NAME
-    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
+    Session.componentNames = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
     Session.componentsPath = await getPathFromFlagOrTomlValue(COMPONENTS_FLAG_NAME, flags, metadata, tomlConfig)
     Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
   }
