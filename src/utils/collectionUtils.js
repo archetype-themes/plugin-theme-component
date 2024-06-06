@@ -8,8 +8,8 @@ import { info, logSpacer, logTitleItem } from './logger.js'
  * @param {string[]} componentNames
  * @returns {Set<string>}
  */
-export function getComponentNamesHierarchy(components, componentNames) {
-  let componentsNameTree = new Set(componentNames)
+export function getComponentHierarchyNames(components, componentNames) {
+  let componentHierarchyNames = new Set(componentNames)
 
   componentNames.forEach((componentName) => {
     // Find its matching component object
@@ -20,12 +20,12 @@ export function getComponentNamesHierarchy(components, componentNames) {
     }
 
     // Recursive call applied to snippet names
-    const componentNameTree = getComponentNamesHierarchy(components, component.snippetNames)
+    const childComponentHierarchyNames = getComponentHierarchyNames(components, component.snippetNames)
     // Merge data with the global Set
-    componentsNameTree = new Set([...componentsNameTree, ...componentNameTree])
+    componentHierarchyNames = new Set([...componentHierarchyNames, ...childComponentHierarchyNames])
   })
 
-  return componentsNameTree
+  return componentHierarchyNames
 }
 
 export function displayComponentTree(collection) {
