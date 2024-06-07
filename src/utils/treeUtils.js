@@ -28,7 +28,11 @@ export function getComponentHierarchyNames(components, componentNames) {
   return componentHierarchyNames
 }
 
-export function displayComponentTree(collection) {
+/**
+ * Displays A Collection's Component Tree
+ * @param {module:models/Collection} collection
+ */
+export function displayCollectionTree(collection) {
   logTitleItem('Components Tree')
 
   logSpacer()

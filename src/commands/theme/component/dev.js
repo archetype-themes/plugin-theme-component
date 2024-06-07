@@ -41,7 +41,7 @@ import { rm } from 'node:fs/promises'
 import { exists, saveFile } from '../../../utils/fileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/nodeUtils.js'
 import Timer from '../../../models/Timer.js'
-import { displayComponentTree } from '../../../utils/collectionUtils.js'
+import { displayCollectionTree } from '../../../utils/treeUtils.js'
 import { buildCollection } from '../../../builders/collectionBuilder.js'
 
 /** @type {string} **/
@@ -222,7 +222,7 @@ export default class Dev extends BaseCommand {
     // Build & Deploy Collection
     let collection = await this.getCollectionFromCwd(componentNames)
     if (Session.firstRun) {
-      displayComponentTree(collection)
+      displayCollectionTree(collection)
     }
     collection = await buildCollection(collection)
 

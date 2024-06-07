@@ -3,7 +3,7 @@ import { basename, join, sep } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
-import { getComponentHierarchyNames } from '../utils/collectionUtils.js'
+import { getComponentHierarchyNames } from '../utils/treeUtils.js'
 import { fatal, logChildItem, logTitleItem } from '../utils/logger.js'
 import Timer from '../models/Timer.js'
 import { plural } from '../utils/textUtils.js'
