@@ -45,6 +45,7 @@ class ImportMapProcessor {
     const entries = Object.entries(imports)
     const modulePatterns = this.resolveModulePatterns(entries)
     const files = glob.sync(modulePatterns, {
+      ignore: "**.*.spec.js",
       cwd: collectionRootFolder,
       absolute: true
     })
@@ -89,15 +90,15 @@ class ImportMapProcessor {
     await init
     /** @type {Map<string, string>} */
     const map = new Map()
-    const promises = []
+    // const promises = []
     for (const [moduleSpecifier, modulePath] of importMapEntries) {
-      if (!jsFiles.has(path.resolve(modulePath))) {
-        continue
-      }
+      // if (!jsFiles.has(path.resolve(modulePath))) {
+      //   continue
+      // }
       map.set(moduleSpecifier, modulePath)
-      promises.push(this.processJsFile(modulePath, importMapEntries, map))
+      // promises.push(this.processJsFile(modulePath, importMapEntries, map))
     }
-    await Promise.all(promises)
+    // await Promise.all(promises)
     return map
   }
 
