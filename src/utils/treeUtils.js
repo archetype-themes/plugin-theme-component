@@ -1,6 +1,6 @@
 // Internal Dependencies
 import FileMissingError from '../errors/FileMissingError.js'
-import { info, logSpacer, logTitleItem } from './logger.js'
+import { fatal, info, logSpacer, logTitleItem } from './logger.js'
 
 /**
  * Validate Component Names
@@ -76,6 +76,26 @@ function folderTreeLog(component, last = false, grid = []) {
       folderTreeLog(snippet, lastChild, grid)
 
       lastChild && grid.pop()
+    }
+  }
+}
+
+/**
+ * Attach Child Components
+ * @param {Section[]|Component[]|Snippet[]} topElements
+ * @param {(Component|Snippet)[]} availableComponents
+ */
+export async function setComponentHierarchy(topElements, availableComponents) {
+  for (const topComponent of topElements) {
+    if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
+      for (const snippetName of topComponent.snippetNames) {
+        const snippet = availableComponents.find((component) => component.name === snippetName)
+        if (snippet !== undefined) {
+          topComponent.snippets.push(snippet)
+        } else {
+          fatal(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
+        }
+      }
     }
   }
 }

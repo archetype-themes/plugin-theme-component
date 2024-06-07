@@ -3,8 +3,8 @@ import { basename, join, sep } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
-import { getComponentHierarchyNames } from '../utils/treeUtils.js'
-import { fatal, logChildItem, logTitleItem } from '../utils/logger.js'
+import { getComponentHierarchyNames, setComponentHierarchy } from '../utils/treeUtils.js'
+import { logChildItem, logTitleItem } from '../utils/logger.js'
 import Timer from '../models/Timer.js'
 import { plural } from '../utils/textUtils.js'
 import { exists, getFolders } from '../utils/fileUtils.js'
@@ -147,24 +147,4 @@ function filterComponents(components, componentNames) {
  */
 function filterSnippets(snippets, componentNames) {
   return snippets.filter((snippet) => componentNames.has(snippet.name))
-}
-
-/**
- * Attach Child Components
- * @param {Component[]|Snippet[]} topComponents
- * @param {(Component|Snippet)[]} availableComponents
- */
-async function setComponentHierarchy(topComponents, availableComponents) {
-  for (const topComponent of topComponents) {
-    if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
-      for (const snippetName of topComponent.snippetNames) {
-        const snippet = availableComponents.find((component) => component.name === snippetName)
-        if (snippet !== undefined) {
-          topComponent.snippets.push(snippet)
-        } else {
-          fatal(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
-        }
-      }
-    }
-  }
 }
