@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - install cmd: We now use the new required theme components autodetect feature instead of defaulting to all components
 - Dependencies: Minor updates
+- ImportMap: importmap.json can now handle array values. The values can include glob patterns or ignore patterns
+  starting with "!"
+- ImportMap: Filtering removed — Whatever globs are in the Import Map is what gets output
 
 ### Fixed
 
@@ -62,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The build process does not write to disk anymore, only install does
 - Dependencies: Minor updates
 -
+
 ### Removed
 
 - Automated Dependabot updates for Node.js packages were removed. We never use it.
