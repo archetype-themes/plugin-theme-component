@@ -29,6 +29,26 @@ export function getComponentHierarchyNames(components, componentNames) {
 }
 
 /**
+ * Attach Child Components
+ * @param {Section[]|Component[]|Snippet[]} topElements
+ * @param {(Component|Snippet)[]} availableComponents
+ */
+export async function setComponentHierarchy(topElements, availableComponents) {
+  for (const topComponent of topElements) {
+    if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
+      for (const snippetName of topComponent.snippetNames) {
+        const snippet = availableComponents.find((component) => component.name === snippetName)
+        if (snippet !== undefined) {
+          topComponent.snippets.push(snippet)
+        } else {
+          fatal(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
+        }
+      }
+    }
+  }
+}
+
+/**
  * Displays A Collection's Component Tree
  * @param {module:models/Collection} collection
  */
@@ -47,6 +67,24 @@ export function displayCollectionTree(collection) {
   for (const [i, component] of sectionComponents.entries()) {
     const last = i === sectionComponents.length - 1
     folderTreeLog(component, last)
+  }
+}
+
+/**
+ * Displays A Theme's Component Tree
+ * @param {Theme} theme
+ */
+export function displayThemeTree(theme) {
+  logTitleItem('Theme Sections Tree')
+
+  logSpacer()
+  info(`${theme.name}/`)
+
+  // Top level is section components only
+
+  for (const [i, section] of theme.sections.entries()) {
+    const last = i === theme.sections.length - 1
+    folderTreeLog(section, last)
   }
 }
 
@@ -77,43 +115,5 @@ function folderTreeLog(component, last = false, grid = []) {
 
       lastChild && grid.pop()
     }
-  }
-}
-
-/**
- * Attach Child Components
- * @param {Section[]|Component[]|Snippet[]} topElements
- * @param {(Component|Snippet)[]} availableComponents
- */
-export async function setComponentHierarchy(topElements, availableComponents) {
-  for (const topComponent of topElements) {
-    if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
-      for (const snippetName of topComponent.snippetNames) {
-        const snippet = availableComponents.find((component) => component.name === snippetName)
-        if (snippet !== undefined) {
-          topComponent.snippets.push(snippet)
-        } else {
-          fatal(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
-        }
-      }
-    }
-  }
-}
-
-/**
- * Displays A Theme's Component Tree
- * @param {Theme} theme
- */
-export function displayThemeTree(theme) {
-  logTitleItem('Theme Sections Tree')
-
-  logSpacer()
-  info(`${theme.name}/`)
-
-  // Top level is section components only
-
-  for (const [i, section] of theme.sections.entries()) {
-    const last = i === theme.sections.length - 1
-    folderTreeLog(section, last)
   }
 }
