@@ -1,6 +1,6 @@
 {
   "name": "plugin-theme-component",
-  "version": "3.6.1",
+  "version": "3.7.0",
   "type": "module",
   "description": "Archetype Theme's Shopify CLI theme component plugin",
   "license": "MIT",
@@ -35,7 +35,7 @@
     "@inquirer/prompts": "^5.0.5",
     "@oclif/core": "3.26.5",
     "@shopify/browserslist-config": "^3.0.0",
-    "@shopify/cli-kit": "3.61.0",
+    "@shopify/cli-kit": "3.61.1",
     "@types/node": "^18.19.34",
     "chokidar": "^3.6.0",
     "deepmerge": "^4.3.1",
@@ -64,7 +64,7 @@
     "eslint-plugin-promise": "^6.2.0",
     "mocha": "^10.4.0",
     "oclif": "^4.13.0",
-    "prettier": "^3.3.0",
+    "prettier": "^3.3.1",
     "shx": "^0.3.4"
   },
   "engines": {

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.0] — 2024-06-07
+
+### Added
+
+- Required Theme Components Autodetect: We are now reading a theme's section files to scan for required components #403
+
+### Changed
+
+- install cmd: We now use the new required theme components autodetect feature instead of defaulting to all components #403
+- Dependencies: Minor updates
+- ImportMap: importmap.json can now handle array values. The values can include glob patterns or ignore patterns
+  starting with "!"
+- ImportMap: Filtering removed — Whatever globs are in the Import Map is what gets output
+
+### Fixed
+
+- install cmd: Import Map caused Errors when installing a single component with no Js Files
+
 ## [3.6.1] — 2024-06-04
 
 ### Changed
@@ -47,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The build process does not write to disk anymore, only install does
 - Dependencies: Minor updates
 -
+
 ### Removed
 
 - Automated Dependabot updates for Node.js packages were removed. We never use it.

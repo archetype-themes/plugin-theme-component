@@ -27,10 +27,9 @@ class ImportMapProcessor {
     /** @type {{imports: Object<string, string>}} */
     const importMapJson = await getJsonFileContents(importMapFile)
     const importMapEntries = this.resolveImportMapEntries(importMapJson.imports, collectionRootFolder)
-    const buildEntries = await this.resolveBuildEntries(jsFilesSet, importMapEntries)
-    const sortedBuildEntries = new Map([...buildEntries.entries()].sort())
-    importMap.tags = this.generateImportMapTags(sortedBuildEntries)
-    importMap.entries = this.filterBuildEntries(sortedBuildEntries, jsFilesSet)
+    // TODO Filter importmap entries based on jsFiles passed in. Make sure jsFiles are being sourced from component.liquid files
+    importMap.tags = this.generateImportMapTags(importMapEntries)
+    importMap.entries = this.filterBuildEntries(importMapEntries, jsFilesSet)
     return importMap
   }
 
@@ -43,32 +42,70 @@ class ImportMapProcessor {
     /** @type {Map<string, string>} */
     const map = new Map()
     const entries = Object.entries(imports)
-    const modulePatterns = this.resolveModulePatterns(entries)
-    const files = glob.sync(modulePatterns, {
+    const {includePatterns, ignorePatterns} = this.resolveGlobPatterns(entries)
+    const files = glob.sync(includePatterns, {
+      ignore: ignorePatterns,
       cwd: collectionRootFolder,
       absolute: true
     })
+
     for (const [specifierPattern, modulePattern] of entries) {
       if (isUrl(modulePattern)) {
         map.set(specifierPattern, modulePattern)
         continue
       }
-      const filteredFiles = files.filter((file) =>
-        picomatch.isMatch(file, path.resolve(collectionRootFolder, modulePattern))
+
+    
+
+      const filteredFiles = files.filter((file) => {
+        if (Array.isArray(modulePattern)) {
+          let isMatch = false;
+          modulePattern.forEach(value => {
+              if (!value.startsWith('!')) {
+                isMatch = isMatch || picomatch.isMatch(file, path.resolve(collectionRootFolder, value))
+              } 
+          });
+          return isMatch
+        } else {
+          return picomatch.isMatch(file, path.resolve(collectionRootFolder, modulePattern))
+        }
+      }
+        
       )
       for (const file of filteredFiles) {
         map.set(this.getModuleSpecifier(file, specifierPattern), file)
       }
     }
-    return map
+
+    return new Map([...map.entries()].sort());
   }
 
   /**
-   * Resolve glob patterns from import map entries
-   * @param {[string, string][]} entries
+   * Resolve glob include and ignore patterns from import map entries
+   * @param {[string, string|Array<string>][]} entries
+   * @returns {{ includePatterns: string[], ignorePatterns: string[] }}
    */
-  static resolveModulePatterns(entries) {
-    return entries.map(([, modulePattern]) => modulePattern).filter((modulePattern) => !isUrl(modulePattern))
+  static resolveGlobPatterns(entries) {
+    const includePatterns = [];
+    const ignorePatterns = [];
+
+    entries.forEach(([key, values]) => {
+      if (Array.isArray(values)) {
+        values.forEach(value => {
+          if (!isUrl(value)) {
+            if (value.startsWith('!')) {
+              ignorePatterns.push(value);
+            } else {
+              includePatterns.push(value);
+            }
+          }
+        });
+      } else {
+        includePatterns.push(values);
+      }
+    });
+
+    return { includePatterns, ignorePatterns };
   }
 
   /**
@@ -78,27 +115,6 @@ class ImportMapProcessor {
    */
   static getModuleSpecifier(file, specifierPattern) {
     return specifierPattern.replace(/\*$/, path.parse(file).name)
-  }
-
-  /**
-   * Resolve build entries from component JS entry points
-   * @param {Set<string>} jsFiles
-   * @param {Map<string, string>} importMapEntries
-   */
-  static async resolveBuildEntries(jsFiles, importMapEntries) {
-    await init
-    /** @type {Map<string, string>} */
-    const map = new Map()
-    const promises = []
-    for (const [moduleSpecifier, modulePath] of importMapEntries) {
-      if (!jsFiles.has(path.resolve(modulePath))) {
-        continue
-      }
-      map.set(moduleSpecifier, modulePath)
-      promises.push(this.processJsFile(modulePath, importMapEntries, map))
-    }
-    await Promise.all(promises)
-    return map
   }
 
   /**

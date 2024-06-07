@@ -41,7 +41,7 @@ import { rm } from 'node:fs/promises'
 import { exists, saveFile } from '../../../utils/fileUtils.js'
 import { getCLIRootFolderName } from '../../../utils/nodeUtils.js'
 import Timer from '../../../models/Timer.js'
-import { displayComponentTree } from '../../../utils/collectionUtils.js'
+import { displayCollectionTree } from '../../../utils/treeUtils.js'
 import { buildCollection } from '../../../builders/collectionBuilder.js'
 
 /** @type {string} **/
@@ -121,7 +121,7 @@ export default class Dev extends BaseCommand {
 
     await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
 
-    const collection = await Dev.exploreComponent(Session.themePath, Session.components)
+    const collection = await Dev.exploreComponent(Session.themePath, Session.componentNames)
 
     if (Session.firstRun && Session.setupFiles) {
       const installFolder = join(collection.rootFolder, DEV_FOLDER_NAME)
@@ -144,7 +144,7 @@ export default class Dev extends BaseCommand {
         collection.rootFolder,
         getIgnorePatterns(collection.rootFolder),
         Session.themePath,
-        Session.components
+        Session.componentNames
       )
     )
 
@@ -169,13 +169,13 @@ export default class Dev extends BaseCommand {
       )
       // Ignore all storefront locale files
       ignorePatterns.push(/(^|[/\\])locales(?!.*schema\.json$).*\.json$/)
-      promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder, Session.components))
+      promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder, Session.componentNames))
       logInitLines.push(`${collection.name}: Watching theme folder for changes`)
     }
 
     // Watch Local Locales
     if (!isGitHubUrl(Session.localesPath)) {
-      promises.push(Dev.watchLocales(Session.localesPath, Session.themePath, Session.components))
+      promises.push(Dev.watchLocales(Session.localesPath, Session.themePath, Session.componentNames))
       logInitLines.push(`${collection.name}: Watching locales folder for changes`)
     }
 
@@ -222,7 +222,7 @@ export default class Dev extends BaseCommand {
     // Build & Deploy Collection
     let collection = await this.getCollectionFromCwd(componentNames)
     if (Session.firstRun) {
-      displayComponentTree(collection)
+      displayCollectionTree(collection)
     }
     collection = await buildCollection(collection)
 
@@ -353,7 +353,7 @@ export default class Dev extends BaseCommand {
    */
   static async setSessionValues(argv, flags, metadata, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
-    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
+    Session.componentNames = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
     Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
     Session.syncMode = getValueFromFlagOrToml(THEME_SYNC_FLAG_NAME, flags, metadata, tomlConfig)
     Session.watchMode = getValueFromFlagOrToml(WATCH_FLAG_NAME, flags, metadata, tomlConfig)

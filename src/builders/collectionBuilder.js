@@ -8,7 +8,7 @@ import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'
 import LocalesProcessor from '../processors/LocalesProcessor.js'
 import PostCSSProcessor from '../processors/PostCSSProcessor.js'
-import { getFolderFilesRecursively } from '../utils/fileUtils.js'
+import { getFiles } from '../utils/fileUtils.js'
 import { error, fatal, logChildItem, logSpacer, logTitleItem, warn } from '../utils/logger.js'
 import { ChangeType } from '../utils/Watcher.js'
 import ImportMapProcessor from '../processors/ImportMapProcessor.js'
@@ -141,7 +141,7 @@ async function buildLocales(liquidCodeExcerpts) {
   try {
     logChildItem('Starting The Locales Processor', 1)
     const timer = new Timer()
-    const localeFiles = await getFolderFilesRecursively(join(Session.localesPath, LOCALES_FOLDER_NAME))
+    const localeFiles = await getFiles(join(Session.localesPath, LOCALES_FOLDER_NAME), true)
     const locales = await LocalesProcessor.build(liquidCodeExcerpts, localeFiles)
     logChildItem(`Locales Processor Done (${timer.now()} seconds)`, 1)
     return locales
