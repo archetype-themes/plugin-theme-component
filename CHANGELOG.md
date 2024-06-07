@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - install cmd: We now use the new required theme components autodetect feature instead of defaulting to all components
 - Dependencies: Minor updates
 
+### Fixed
+
+- install cmd: Import Map caused Errors when installing a single component with no Js Files
+
 ## [3.6.1] — 2024-06-04
 
 ### Changed
