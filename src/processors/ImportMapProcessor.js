@@ -45,7 +45,7 @@ class ImportMapProcessor {
     const entries = Object.entries(imports)
     const modulePatterns = this.resolveModulePatterns(entries)
     const files = glob.sync(modulePatterns, {
-      ignore: "**.*.spec.js",
+      ignore: "**/*.spec.js",
       cwd: collectionRootFolder,
       absolute: true
     })
@@ -92,6 +92,7 @@ class ImportMapProcessor {
     const map = new Map()
     // const promises = []
     for (const [moduleSpecifier, modulePath] of importMapEntries) {
+      // TODO 
       // if (!jsFiles.has(path.resolve(modulePath))) {
       //   continue
       // }
