@@ -1,6 +1,7 @@
 // Internal Dependencies
 import FileMissingError from '../errors/FileMissingError.js'
-import { fatal, info, logSpacer, logTitleItem } from './logger.js'
+import { fatal, info, logSpacer, logTitleItem, warn } from './logger.js'
+import Session from '../models/static/Session.js'
 
 /**
  * Validate Component Names
@@ -41,7 +42,16 @@ export async function setComponentHierarchy(topElements, availableComponents) {
         if (snippet !== undefined) {
           topComponent.snippets.push(snippet)
         } else {
-          fatal(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
+          const message = `Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`
+          if (Session.isCollection()) {
+            // When we are playing with a collection, an invalid component name should create a fatal error
+            fatal(message)
+          } else {
+            // When we are playing with a theme,
+            // an unknown component name could be a reference to a theme's internal snippets,
+            // so a warning is enough
+            warn(message)
+          }
         }
       }
     }
