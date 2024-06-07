@@ -109,14 +109,6 @@ class ImportMapProcessor {
   }
 
   /**
-   * Resolve glob ignore patterns from import map entries
-   * @param {[string, string|Array<string>][]} entries
-   */
-  static resolveIgnorePatterns(entries) {
-    return entries.map(([, modulePattern]) => modulePattern).filter((modulePattern) => !isUrl(modulePattern))
-  }
-
-  /**
    * Get the module specifier for a given JS file
    * @param {string} file
    * @param {string} specifierPattern
