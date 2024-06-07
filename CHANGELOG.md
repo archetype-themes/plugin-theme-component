@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - install cmd: We now use the new required theme components autodetect feature instead of defaulting to all components
+- Dependencies: Minor updates
 
 ## [3.6.1] — 2024-06-04
 

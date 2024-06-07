@@ -60,9 +60,7 @@ export async function collectionFactory(path, componentNames) {
     collection.components = filterComponents(collection.components, collection.componentNames)
     collection.snippets = filterSnippets(collection.snippets, collection.componentNames)
 
-    logChildItem(
-      `Packaging the following ${collection.componentNames.size} component${plural(collection.componentNames)}: ${[...collection.componentNames].join(', ')}`
-    )
+    logChildItem(`Packaging ${collection.componentNames.size} component${plural(collection.componentNames)}`)
   }
 
   // Throw an Error when No Components are found
