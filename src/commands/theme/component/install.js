@@ -76,7 +76,7 @@ export default class Install extends BaseCommand {
     }
 
     // Create The Theme
-    const theme = themeFactory(cwd())
+    const theme = await themeFactory(cwd())
 
     // Create The Collection
     const collection = await collectionFactory(Session.componentsPath, Session.components)

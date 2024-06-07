@@ -99,3 +99,21 @@ export async function setComponentHierarchy(topElements, availableComponents) {
     }
   }
 }
+
+/**
+ * Displays A Theme's Component Tree
+ * @param {Theme} theme
+ */
+export function displayThemeTree(theme) {
+  logTitleItem('Theme Sections Tree')
+
+  logSpacer()
+  info(`${theme.name}/`)
+
+  // Top level is section components only
+
+  for (const [i, section] of theme.sections.entries()) {
+    const last = i === theme.sections.length - 1
+    folderTreeLog(section, last)
+  }
+}
