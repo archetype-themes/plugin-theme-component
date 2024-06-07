@@ -22,6 +22,9 @@ class Theme {
 
   /** @type {string} **/
   snippetsFolder
+
+  /** @type {Set<string>} **/
+  snippetNames
 }
 
 export default Theme
