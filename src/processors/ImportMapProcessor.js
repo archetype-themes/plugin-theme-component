@@ -27,10 +27,8 @@ class ImportMapProcessor {
     /** @type {{imports: Object<string, string>}} */
     const importMapJson = await getJsonFileContents(importMapFile)
     const importMapEntries = this.resolveImportMapEntries(importMapJson.imports, collectionRootFolder)
-    const buildEntries = await this.resolveBuildEntries(jsFilesSet, importMapEntries)
-    const sortedBuildEntries = new Map([...buildEntries.entries()].sort())
-    importMap.tags = this.generateImportMapTags(sortedBuildEntries)
-    importMap.entries = this.filterBuildEntries(sortedBuildEntries, jsFilesSet)
+    importMap.tags = this.generateImportMapTags(importMapEntries)
+    importMap.entries = this.filterBuildEntries(importMapEntries, jsFilesSet)
     return importMap
   }
 
@@ -77,7 +75,8 @@ class ImportMapProcessor {
         map.set(this.getModuleSpecifier(file, specifierPattern), file)
       }
     }
-    return map
+
+    return new Map([...map.entries()].sort());
   }
 
   /**
@@ -115,28 +114,6 @@ class ImportMapProcessor {
    */
   static getModuleSpecifier(file, specifierPattern) {
     return specifierPattern.replace(/\*$/, path.parse(file).name)
-  }
-
-  /**
-   * Resolve build entries from component JS entry points
-   * @param {Set<string>} jsFiles
-   * @param {Map<string, string>} importMapEntries
-   */
-  static async resolveBuildEntries(jsFiles, importMapEntries) {
-    await init
-    /** @type {Map<string, string>} */
-    const map = new Map()
-    // const promises = []
-    for (const [moduleSpecifier, modulePath] of importMapEntries) {
-      // TODO 
-      // if (!jsFiles.has(path.resolve(modulePath))) {
-      //   continue
-      // }
-      map.set(moduleSpecifier, modulePath)
-      // promises.push(this.processJsFile(modulePath, importMapEntries, map))
-    }
-    // await Promise.all(promises)
-    return map
   }
 
   /**
