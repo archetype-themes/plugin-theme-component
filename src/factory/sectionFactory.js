@@ -9,7 +9,6 @@ export async function sectionFactory(sectionFile) {
   section.file = sectionFile
   section.liquidCode = await getFileContents(section.file)
   section.snippetNames = getSnippetNames(section.liquidCode)
-  console.log(section.name)
-  console.log(section.snippetNames)
+
   return section
 }

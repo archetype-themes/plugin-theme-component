@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.0] — 2024-06-07
+
+### Added
+
+- Required Theme Components Autodetect: We are now reading a theme's section files to scan for required components #
+
+### Changed
+
+- install cmd: We now use the new required theme components autodetect feature instead of defaulting to all components
+
 ## [3.6.1] — 2024-06-04
 
 ### Changed
