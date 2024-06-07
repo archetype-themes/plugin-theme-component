@@ -11,7 +11,7 @@ import {
 } from '../config/constants.js'
 import Theme from '../models/Theme.js'
 import { sectionFactory } from './sectionFactory.js'
-import { getFiles } from '../utils/fileUtils.js'
+import { exists, getFiles } from '../utils/fileUtils.js'
 
 /**
  * Theme Factory
@@ -29,12 +29,12 @@ export async function themeFactory(themePath) {
   theme.sectionsFolder = join(theme.rootFolder, SECTIONS_FOLDER_NAME)
   theme.snippetsFolder = join(theme.rootFolder, SNIPPETS_FOLDER_NAME)
 
-  const sectionFiles = await getFiles(theme.sectionsFolder)
-
-  const sectionPromises = sectionFiles.map((sectionFile) => sectionFactory(sectionFile))
-  theme.sections = await Promise.all(sectionPromises)
-
-  theme.snippetNames = new Set(theme.sections.flatMap((section) => section.snippetNames))
+  if (await exists(theme.sectionsFolder)) {
+    const sectionFiles = await getFiles(theme.sectionsFolder)
+    const sectionPromises = sectionFiles.map((sectionFile) => sectionFactory(sectionFile))
+    theme.sections = await Promise.all(sectionPromises)
+    theme.snippetNames = new Set(theme.sections.flatMap((section) => section.snippetNames))
+  }
 
   return theme
 }
