@@ -27,6 +27,7 @@ class ImportMapProcessor {
     /** @type {{imports: Object<string, string>}} */
     const importMapJson = await getJsonFileContents(importMapFile)
     const importMapEntries = this.resolveImportMapEntries(importMapJson.imports, collectionRootFolder)
+    // TODO Filter importmap entries based on jsFiles passed in. Make sure jsFiles are being sourced from component.liquid files
     importMap.tags = this.generateImportMapTags(importMapEntries)
     importMap.entries = this.filterBuildEntries(importMapEntries, jsFilesSet)
     return importMap
