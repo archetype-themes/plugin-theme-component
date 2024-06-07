@@ -51,6 +51,9 @@ export async function setComponentHierarchy(topElements, availableComponents) {
             // an unknown component name could be a reference to a theme's internal snippets,
             // so a warning is enough
             warn(message)
+            warn(
+              `If "${snippetName}" is a custom theme snippet, this is expected behaviour. If not, check the components CHANGELOG.md for renamed/removed components.`
+            )
           }
         }
       }
