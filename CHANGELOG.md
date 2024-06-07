@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Required Theme Components Autodetect: We are now reading a theme's section files to scan for required components #
+- Required Theme Components Autodetect: We are now reading a theme's section files to scan for required components #403
 
 ### Changed
 
-- install cmd: We now use the new required theme components autodetect feature instead of defaulting to all components
+- install cmd: We now use the new required theme components autodetect feature instead of defaulting to all components #403
 - Dependencies: Minor updates
 - ImportMap: importmap.json can now handle array values. The values can include glob patterns or ignore patterns
   starting with "!"
