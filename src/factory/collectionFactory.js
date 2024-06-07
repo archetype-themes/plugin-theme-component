@@ -61,7 +61,7 @@ export async function collectionFactory(path, componentNames) {
     collection.snippets = filterSnippets(collection.snippets, collection.componentNames)
 
     logChildItem(
-      `Packaging the following component${plural(collection.componentNames)}: ${[...collection.componentNames].join(', ')}`
+      `Packaging the following ${collection.componentNames.size} component${plural(collection.componentNames)}: ${[...collection.componentNames].join(', ')}`
     )
   }
 
