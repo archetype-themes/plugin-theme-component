@@ -43,19 +43,35 @@ class ImportMapProcessor {
     /** @type {Map<string, string>} */
     const map = new Map()
     const entries = Object.entries(imports)
-    const modulePatterns = this.resolveModulePatterns(entries)
-    const files = glob.sync(modulePatterns, {
-      ignore: "**/*.spec.js",
+    const {includePatterns, ignorePatterns} = this.resolveGlobPatterns(entries)
+    const files = glob.sync(includePatterns, {
+      ignore: ignorePatterns,
       cwd: collectionRootFolder,
       absolute: true
     })
+
     for (const [specifierPattern, modulePattern] of entries) {
       if (isUrl(modulePattern)) {
         map.set(specifierPattern, modulePattern)
         continue
       }
-      const filteredFiles = files.filter((file) =>
-        picomatch.isMatch(file, path.resolve(collectionRootFolder, modulePattern))
+
+    
+
+      const filteredFiles = files.filter((file) => {
+        if (Array.isArray(modulePattern)) {
+          let isMatch = false;
+          modulePattern.forEach(value => {
+              if (!value.startsWith('!')) {
+                isMatch = isMatch || picomatch.isMatch(file, path.resolve(collectionRootFolder, value))
+              } 
+          });
+          return isMatch
+        } else {
+          return picomatch.isMatch(file, path.resolve(collectionRootFolder, modulePattern))
+        }
+      }
+        
       )
       for (const file of filteredFiles) {
         map.set(this.getModuleSpecifier(file, specifierPattern), file)
@@ -65,10 +81,38 @@ class ImportMapProcessor {
   }
 
   /**
-   * Resolve glob patterns from import map entries
-   * @param {[string, string][]} entries
+   * Resolve glob include and ignore patterns from import map entries
+   * @param {[string, string|Array<string>][]} entries
+   * @returns {{ includePatterns: string[], ignorePatterns: string[] }}
    */
-  static resolveModulePatterns(entries) {
+  static resolveGlobPatterns(entries) {
+    const includePatterns = [];
+    const ignorePatterns = [];
+
+    entries.forEach(([key, values]) => {
+      if (Array.isArray(values)) {
+        values.forEach(value => {
+          if (!isUrl(value)) {
+            if (value.startsWith('!')) {
+              ignorePatterns.push(value);
+            } else {
+              includePatterns.push(value);
+            }
+          }
+        });
+      } else {
+        includePatterns.push(values);
+      }
+    });
+
+    return { includePatterns, ignorePatterns };
+  }
+
+  /**
+   * Resolve glob ignore patterns from import map entries
+   * @param {[string, string|Array<string>][]} entries
+   */
+  static resolveIgnorePatterns(entries) {
     return entries.map(([, modulePattern]) => modulePattern).filter((modulePattern) => !isUrl(modulePattern))
   }
 
