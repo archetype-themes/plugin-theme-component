@@ -14,17 +14,11 @@ class Theme {
   /** @type {string} **/
   rootFolder
 
-  /** @type {Section[]} **/
-  sections
-
   /** @type {string} **/
   sectionsFolder
 
   /** @type {string} **/
   snippetsFolder
-
-  /** @type {Set<string>} **/
-  snippetNames
 }
 
 export default Theme

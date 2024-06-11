@@ -2,7 +2,12 @@
 import { dirname, join, sep } from 'node:path'
 
 // Internal Dependencies
-import { convertToComponentRelativePath, getFileType, getFiles, isReadable } from '../utils/fileUtils.js'
+import {
+  convertToComponentRelativePath,
+  getFileType,
+  getFolderFilesRecursively,
+  isReadable
+} from '../utils/fileUtils.js'
 import { ASSETS_FOLDER_NAME, FileTypes, SETUP_FOLDER_NAME } from '../config/constants.js'
 import FileAccessError from '../errors/FileAccessError.js'
 import FileMissingError from '../errors/FileMissingError.js'
@@ -20,7 +25,7 @@ export async function componentFilesFactory(componentName, folder) {
   // Validation: make sure the folder is readable.
   await validateFolderAccess(folder, componentName)
 
-  const files = await getFiles(folder, true)
+  const files = await getFolderFilesRecursively(folder)
 
   const componentFiles = new ComponentFiles()
   // Sort Component files

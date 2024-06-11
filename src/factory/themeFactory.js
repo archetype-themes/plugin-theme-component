@@ -10,15 +10,13 @@ import {
   SNIPPETS_FOLDER_NAME
 } from '../config/constants.js'
 import Theme from '../models/Theme.js'
-import { sectionFactory } from './sectionFactory.js'
-import { exists, getFiles } from '../utils/fileUtils.js'
 
 /**
  * Theme Factory
  * @param {string} themePath
  * @return {Theme}
  */
-export async function themeFactory(themePath) {
+export function themeFactory(themePath) {
   const theme = new Theme()
 
   theme.name = basename(themePath)
@@ -28,13 +26,6 @@ export async function themeFactory(themePath) {
   theme.localesFolder = join(theme.rootFolder, LOCALES_FOLDER_NAME)
   theme.sectionsFolder = join(theme.rootFolder, SECTIONS_FOLDER_NAME)
   theme.snippetsFolder = join(theme.rootFolder, SNIPPETS_FOLDER_NAME)
-
-  if (await exists(theme.sectionsFolder)) {
-    const sectionFiles = await getFiles(theme.sectionsFolder)
-    const sectionPromises = sectionFiles.map((sectionFile) => sectionFactory(sectionFile))
-    theme.sections = await Promise.all(sectionPromises)
-    theme.snippetNames = new Set(theme.sections.flatMap((section) => section.snippetNames))
-  }
 
   return theme
 }

@@ -14,7 +14,7 @@ class Session {
   static collections
 
   /** @type {string[]} Target Component Name **/
-  static componentNames
+  static components
 
   /** @type {string} Path to external components **/
   static componentsPath

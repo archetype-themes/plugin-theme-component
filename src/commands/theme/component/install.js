@@ -1,22 +1,21 @@
 // External Dependencies
-import { cwd } from 'node:process'
 import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
-import { buildCollection } from '../../../builders/collectionBuilder.js'
 import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
 import { THEME_TYPE_NAME } from '../../../config/constants.js'
+import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/sessionUtils.js'
+import { getCurrentTime } from '../../../utils/dateUtils.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
-import { themeFactory } from '../../../factory/themeFactory.js'
 import { installCollection } from '../../../installers/collectionInstaller.js'
 import Session from '../../../models/static/Session.js'
+import { themeFactory } from '../../../factory/themeFactory.js'
 import Timer from '../../../models/Timer.js'
-import { getCurrentTime } from '../../../utils/dateUtils.js'
-import { install } from '../../../utils/externalComponents.js'
 import { isGitHubUrl } from '../../../utils/gitUtils.js'
+import { install } from '../../../utils/externalComponents.js'
 import { info, logChildItem } from '../../../utils/logger.js'
-import { getPathFromFlagOrTomlValue, getValuesFromArgvOrToml } from '../../../utils/sessionUtils.js'
-import { displayCollectionTree, displayThemeTree, setComponentHierarchy } from '../../../utils/treeUtils.js'
+import { cwd } from 'node:process'
+import { buildCollection } from '../../../builders/collectionBuilder.js'
 
 const COMPONENTS_FLAG_NAME = 'components-path'
 export default class Install extends BaseCommand {
@@ -77,19 +76,10 @@ export default class Install extends BaseCommand {
     }
 
     // Create The Theme
-    const theme = await themeFactory(cwd())
+    const theme = themeFactory(cwd())
 
-    const componentNames = Session.componentNames?.length ? Session.componentNames : [...theme.snippetNames]
     // Create The Collection
-    const collection = await collectionFactory(Session.componentsPath, componentNames)
-
-    // If no component names are provided, use theme sections' render names
-    if (!Session.componentNames?.length) {
-      await setComponentHierarchy(theme.sections, collection.allComponents)
-      displayThemeTree(theme)
-    } else {
-      displayCollectionTree(collection)
-    }
+    const collection = await collectionFactory(Session.componentsPath, Session.components)
 
     await Install.installOne(theme, collection)
   }
@@ -118,7 +108,7 @@ export default class Install extends BaseCommand {
 
   static async setSessionValues(argv, flags, metadata, tomlConfig) {
     Session.callerType = THEME_TYPE_NAME
-    Session.componentNames = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
+    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
     Session.componentsPath = await getPathFromFlagOrTomlValue(COMPONENTS_FLAG_NAME, flags, metadata, tomlConfig)
     Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
   }

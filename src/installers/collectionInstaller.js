@@ -178,10 +178,10 @@ async function installImportMapFiles(buildEntries, assetsFolder, copyrightText, 
  */
 async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippetsFolder, copyrightText, exclusions) {
   const fileOperations = []
-  if (importMap?.entries.size) {
+  if (importMap.entries?.size) {
     fileOperations.push(installImportMapFiles(importMap.entries, assetsFolder, copyrightText, exclusions))
   }
-  if (importMap?.tags) {
+  if (importMap.tags) {
     const importMapSnippet = join(snippetsFolder, IMPORT_MAP_SNIPPET_FILENAME)
     if (!exclusions?.includes(importMapSnippet)) {
       fileOperations.push(saveFile(importMapSnippet, importMap.tags))

@@ -9,7 +9,7 @@ import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
 import { COLLECTION_TYPE_NAME, COMPONENT_TYPE_NAME, COMPONENTS_FOLDER } from '../../../config/constants.js'
 import FileAccessError from '../../../errors/FileAccessError.js'
 import Session from '../../../models/static/Session.js'
-import { copyFolder, getFiles } from '../../../utils/fileUtils.js'
+import { copyFolder, getFolderFilesRecursively } from '../../../utils/fileUtils.js'
 import { getCLIRootFolderName, getPackageManifest, getPackageName, getPackageScope } from '../../../utils/nodeUtils.js'
 import { getValuesFromArgvOrToml } from '../../../utils/sessionUtils.js'
 import { logChildItem, logSeparator, logTitleItem } from '../../../utils/logger.js'
@@ -34,7 +34,7 @@ export default class Generate extends BaseCommand {
 
     await Generate.setSessionValues(argv, tomlConfig)
 
-    for (const componentName of Session.componentNames) {
+    for (const componentName of Session.components) {
       logTitleItem(`Generating "${componentName}" ${COMPONENT_TYPE_NAME}`)
 
       const componentPath = join(COMPONENTS_FOLDER, componentName)
@@ -87,7 +87,7 @@ export default class Generate extends BaseCommand {
 
       logChildItem('Done')
       logTitleItem('The following files were created:')
-      const files = await getFiles(componentPath, true)
+      const files = await getFolderFilesRecursively(componentPath)
       files.forEach((file) => logChildItem(relative(componentPath, file)))
 
       logTitleItem('Your new component is available at')
@@ -98,6 +98,6 @@ export default class Generate extends BaseCommand {
 
   static async setSessionValues(argv, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
-    Session.componentNames = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
+    Session.components = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
   }
 }

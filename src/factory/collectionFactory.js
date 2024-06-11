@@ -3,8 +3,8 @@ import { basename, join, sep } from 'node:path'
 
 // Internal Dependencies
 import Collection from '../models/Collection.js'
-import { getComponentHierarchyNames, setComponentHierarchy } from '../utils/treeUtils.js'
-import { logChildItem, logTitleItem } from '../utils/logger.js'
+import { validateComponentNames } from '../utils/collectionUtils.js'
+import { fatal, logChildItem, logTitleItem } from '../utils/logger.js'
 import Timer from '../models/Timer.js'
 import { plural } from '../utils/textUtils.js'
 import { exists, getFolders } from '../utils/fileUtils.js'
@@ -56,11 +56,14 @@ export async function collectionFactory(path, componentNames) {
   )
 
   if (componentNames?.length) {
-    collection.componentNames = getComponentHierarchyNames(collection.allComponents, componentNames)
+    collection.componentNames = validateComponentNames(collection.allComponents, componentNames)
+
     collection.components = filterComponents(collection.components, collection.componentNames)
     collection.snippets = filterSnippets(collection.snippets, collection.componentNames)
 
-    logChildItem(`Packaging ${collection.componentNames.size} component${plural(collection.componentNames)}`)
+    logChildItem(
+      `Packaging the following component${plural(collection.componentNames)}: ${[...collection.componentNames].join(', ')}`
+    )
   }
 
   // Throw an Error when No Components are found
@@ -145,4 +148,24 @@ function filterComponents(components, componentNames) {
  */
 function filterSnippets(snippets, componentNames) {
   return snippets.filter((snippet) => componentNames.has(snippet.name))
+}
+
+/**
+ * Attach Child Components
+ * @param {Component[]|Snippet[]} topComponents
+ * @param {(Component|Snippet)[]} availableComponents
+ */
+async function setComponentHierarchy(topComponents, availableComponents) {
+  for (const topComponent of topComponents) {
+    if (!topComponent.snippets?.length && topComponent.snippetNames?.length) {
+      for (const snippetName of topComponent.snippetNames) {
+        const snippet = availableComponents.find((component) => component.name === snippetName)
+        if (snippet !== undefined) {
+          topComponent.snippets.push(snippet)
+        } else {
+          fatal(`Unable to find component "${snippetName}" requested from a render tag in "${topComponent.name}".`)
+        }
+      }
+    }
+  }
 }

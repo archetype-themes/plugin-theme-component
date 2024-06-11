@@ -83,7 +83,7 @@ describe('Dev Command File', async function () {
       await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
 
       assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.componentNames, null)
+      assert.deepStrictEqual(Session.components, null)
       assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
       assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
       assert.strictEqual(Session.setupFiles, Dev.flags[SETUP_FLAG_NAME].default)
@@ -119,7 +119,7 @@ describe('Dev Command File', async function () {
       await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
 
       assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.componentNames, null)
+      assert.deepStrictEqual(Session.components, null)
       assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
       assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
       assert.strictEqual(Session.setupFiles, false)
@@ -155,7 +155,7 @@ describe('Dev Command File', async function () {
       await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
 
       assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.componentNames, null)
+      assert.deepStrictEqual(Session.components, null)
       assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
       assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
       assert.strictEqual(Session.setupFiles, false)
@@ -191,7 +191,7 @@ describe('Dev Command File', async function () {
       await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
 
       assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.componentNames, null)
+      assert.deepStrictEqual(Session.components, null)
       assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
       assert.strictEqual(Session.watchMode, Dev.flags[WATCH_FLAG_NAME].default)
       assert.strictEqual(Session.setupFiles, false)
@@ -231,7 +231,7 @@ describe('Dev Command File', async function () {
       await Dev.setSessionValues(argv, flags, metadata, tomlConfig)
 
       assert.strictEqual(Session.callerType, 'collection')
-      assert.deepStrictEqual(Session.componentNames, ['section-alpha', 'shopping-cart'])
+      assert.deepStrictEqual(Session.components, ['section-alpha', 'shopping-cart'])
       assert.strictEqual(Session.localesPath, Dev.flags[LOCALES_FLAG_NAME].default)
       assert.strictEqual(Session.watchMode, false)
       assert.strictEqual(Session.setupFiles, true)
