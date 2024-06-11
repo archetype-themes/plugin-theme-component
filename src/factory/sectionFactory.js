@@ -1,5 +1,8 @@
-import { Section } from '../models/Section.js'
+// External Dependencies
 import { basename } from 'node:path'
+
+// Internal Dependencies
+import { Section } from '../models/Section.js'
 import { getFileContents } from '../utils/fileUtils.js'
 import { getSnippetNames } from '../utils/liquidUtils.js'
 
