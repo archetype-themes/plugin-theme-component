@@ -88,13 +88,27 @@ export function displayCollectionTree(collection) {
  * @param {Theme} theme
  */
 export function displayThemeTree(theme) {
-  logTitleItem('Theme Sections Tree')
+  logTitleItem('Theme Components Tree')
 
   logSpacer()
-  info(`${theme.name}/`)
 
-  // Top level is section components only
+  info(`${theme.name}/layout`)
+  for (const [i, layout] of theme.layouts.entries()) {
+    const last = i === theme.layouts.length - 1
+    folderTreeLog(layout, last)
+  }
 
+  logSpacer()
+
+  info(`${theme.name}/templates`)
+  for (const [i, template] of theme.templates.entries()) {
+    const last = i === theme.templates.length - 1
+    folderTreeLog(template, last)
+  }
+
+  logSpacer()
+
+  info(`${theme.name}/sections`)
   for (const [i, section] of theme.sections.entries()) {
     const last = i === theme.sections.length - 1
     folderTreeLog(section, last)

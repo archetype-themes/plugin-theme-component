@@ -14,11 +14,23 @@ class Theme {
   /** @type {string} **/
   rootFolder
 
+  /** @type {Template[]} **/
+  templates
+
+  /** @type {Layout[]} **/
+  layouts
+
   /** @type {Section[]} **/
   sections
 
   /** @type {string} **/
   sectionsFolder
+
+  /** @type {string} **/
+  layoutsFolder
+
+  /** @type {string} **/
+  templatesFolder
 
   /** @type {string} **/
   snippetsFolder

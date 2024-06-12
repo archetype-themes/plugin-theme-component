@@ -85,7 +85,7 @@ export default class Install extends BaseCommand {
 
     // If no component names are provided, use theme sections' render names
     if (!Session.componentNames?.length) {
-      await setComponentHierarchy(theme.sections, collection.allComponents)
+      await setComponentHierarchy([...theme.layouts, ...theme.sections, ...theme.templates], collection.allComponents)
       displayThemeTree(theme)
     } else {
       displayCollectionTree(collection)
