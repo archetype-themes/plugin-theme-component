@@ -24,6 +24,9 @@ export const ASSETS_FOLDER_NAME = 'assets'
 export const COMPONENTS_FOLDER = 'components'
 
 /** @type {string} **/
+export const LAYOUTS_FOLDER = 'layout'
+
+/** @type {string} **/
 export const CONFIG_FOLDER_NAME = 'config'
 
 /** @type {string} **/

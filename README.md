@@ -54,7 +54,7 @@ DESCRIPTION
   Theme Component Plugin - By Archetype Themes
 ```
 
-_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.0/src/commands/theme/component/index.js)_
+_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/index.js)_
 
 ## `shopify theme component dev [COMPONENTS]`
 
@@ -111,7 +111,7 @@ FLAG DESCRIPTIONS
     options for that command in your toml file.
 ```
 
-_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.0/src/commands/theme/component/dev.js)_
+_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/dev.js)_
 
 ## `shopify theme component generate COMPONENTS`
 
@@ -132,7 +132,7 @@ DESCRIPTION
   Generate canvas files for new components
 ```
 
-_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.0/src/commands/theme/component/generate.js)_
+_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/generate.js)_
 
 ## `shopify theme component install [COMPONENTS]`
 
@@ -171,7 +171,7 @@ FLAG DESCRIPTIONS
     publicly shared locales database.
 ```
 
-_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.0/src/commands/theme/component/install.js)_
+_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/install.js)_
 <!-- commandsstop -->
 
 ## Contributing

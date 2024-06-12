@@ -27,10 +27,30 @@ class ImportMapProcessor {
     /** @type {{imports: Object<string, string>}} */
     const importMapJson = await getJsonFileContents(importMapFile)
     const importMapEntries = this.resolveImportMapEntries(importMapJson.imports, collectionRootFolder)
-    // TODO Filter importmap entries based on jsFiles passed in. Make sure jsFiles are being sourced from component.liquid files
-    importMap.tags = this.generateImportMapTags(importMapEntries)
-    importMap.entries = this.filterBuildEntries(importMapEntries, jsFilesSet)
+    const filteredImportMapEntries = this.filterImportMapEntries(importMapEntries, jsFilesSet)
+    importMap.tags = this.generateImportMapTags(filteredImportMapEntries)
+    importMap.entries = this.filterBuildEntries(filteredImportMapEntries, jsFilesSet)
     return importMap
+  }
+
+
+/**
+   * Filter build entries by excluding component JS entry points
+   * @param {Map<string, string>} buildEntries
+   * @param {Set<string>} jsFiles
+   * @returns {Map<string, string>}
+   */
+  static filterImportMapEntries(entries, jsFiles) {
+    const map = new Map()
+    for (const [specifier, modulePath] of entries) {
+      const isComponent = specifier.startsWith('components');
+      const assetUrl = this.assetUrl(modulePath);
+
+      if (!isComponent || jsFiles.has(modulePath)) {
+        map.set(specifier, modulePath);
+      }  
+    }
+    return map
   }
 
   /**
