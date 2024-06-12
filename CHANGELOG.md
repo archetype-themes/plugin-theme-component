@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- install cmd: Autodetect components also included in layout files
+- install cmd: Autodetect components also included in layout + template.liquid files
+- Make sure unused component JS don't get included on install
 
 ## [3.7.0] — 2024-06-07
 
