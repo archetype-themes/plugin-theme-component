@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-package-to-github:
+  publish-package-to-npm:
     runs-on: ubuntu-latest
     permissions:
       actions: write
