@@ -14,7 +14,6 @@ import { ChangeType } from '../utils/Watcher.js'
 import ImportMapProcessor from '../processors/ImportMapProcessor.js'
 import { plural } from '../utils/textUtils.js'
 import ComponentBuild from '../models/ComponentBuild.js'
-import SvgProcessor from '../processors/SvgProcessor.js'
 import { getCopyright } from '../utils/copyright.js'
 
 /**
@@ -98,16 +97,9 @@ async function buildComponent(component, collectionRootFolder, copyright) {
   component.build = new ComponentBuild()
 
   // Build Liquid Code
-  if (component.isSvg()) {
-    component.build.liquidCode = await SvgProcessor.buildSvg(component.name, component.liquidCode, collectionRootFolder)
-    if (copyright) {
-      component.build.liquidCode = getCopyright(FileTypes.Svg, copyright) + component.build.liquidCode
-    }
-  } else {
-    component.build.liquidCode = component.liquidCode
-    if (copyright) {
-      component.build.liquidCode = getCopyright(FileTypes.Liquid, copyright) + component.build.liquidCode
-    }
+  component.build.liquidCode = component.liquidCode
+  if (copyright) {
+    component.build.liquidCode = getCopyright(FileTypes.Liquid, copyright) + component.build.liquidCode
   }
 
   return component

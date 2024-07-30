@@ -19,10 +19,6 @@ class Snippet {
 
   /** @type {Snippet[]} **/
   snippets = []
-
-  isSvg() {
-    return !!(this.name.startsWith('icon-') || this.name.endsWith('-svg') || this.name.endsWith('.svg'))
-  }
 }
 
 export default Snippet
