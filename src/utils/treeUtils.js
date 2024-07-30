@@ -132,12 +132,10 @@ function folderTreeLog(component, last = false, grid = []) {
 
   info(`${prefix}${ascii} ${component.name}`)
 
-  // Removing icons from the list
-  const filteredSnippets = component.snippets.filter((component) => !component.isSvg())
-  if (filteredSnippets.length) {
+  if (component.snippets.length) {
     grid.push(!last)
-    for (const [i, snippet] of filteredSnippets.entries()) {
-      const lastChild = i === filteredSnippets.length - 1
+    for (const [i, snippet] of component.snippets.entries()) {
+      const lastChild = i === component.snippets.length - 1
       folderTreeLog(snippet, lastChild, grid)
 
       lastChild && grid.pop()
