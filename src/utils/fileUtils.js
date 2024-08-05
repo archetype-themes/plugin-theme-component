@@ -12,6 +12,7 @@ import {
   FileTypes,
   LIQUID_EXTENSION,
   SCRIPT_EXTENSIONS,
+  SCRIPT_TEST_EXTENSIONS,
   STYLE_EXTENSIONS,
   SVG_EXTENSION
 } from '../config/constants.js'
@@ -281,6 +282,9 @@ export function getAbsolutePath(path) {
 
 export function getFileType(filename) {
   const extension = extname(filename).toLowerCase()
+  if (SCRIPT_TEST_EXTENSIONS.includes(extension)) {
+    return FileTypes.Test
+  }
   if (SCRIPT_EXTENSIONS.includes(extension)) {
     return FileTypes.Javascript
   }

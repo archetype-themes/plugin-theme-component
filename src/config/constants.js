@@ -74,17 +74,21 @@ export const LIQUID_EXTENSION = '.liquid'
 export const SCRIPT_EXTENSIONS = ['.js', '.mjs', '.cjs']
 
 /** @type {string[]}  **/
+export const SCRIPT_TEST_EXTENSIONS = ['.spec.js']
+
+/** @type {string[]}  **/
 export const STYLE_EXTENSIONS = ['.css']
 
 export const SVG_EXTENSION = '.svg'
 
 /**
  * File Types Enum
- * @type {{Liquid: string, Css: string, Svg: string, Javascript: string}}
+ * @type {{Liquid: string, Css: string, Svg: string, Javascript: string, Test: string}}
  */
 export const FileTypes = {
   Css: 'css',
   Javascript: 'javascript',
+  Test: 'test',
   Liquid: 'liquid',
   Svg: 'svg'
 }
