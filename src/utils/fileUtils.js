@@ -282,10 +282,11 @@ export function getAbsolutePath(path) {
 
 export function getFileType(filename) {
   const extension = extname(filename).toLowerCase()
-  if (SCRIPT_TEST_EXTENSIONS.includes(extension)) {
-    return FileTypes.Test
-  }
   if (SCRIPT_EXTENSIONS.includes(extension)) {
+    if (filename.includes('.spec.js')) {
+      return FileTypes.Test
+    }
+    
     return FileTypes.Javascript
   }
   if (STYLE_EXTENSIONS.includes(extension)) {
