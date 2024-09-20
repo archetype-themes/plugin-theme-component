@@ -76,11 +76,6 @@ export async function installCollection(collection, theme) {
     fileOperations.push(snippetFilesWritePromises)
   }
 
-  // Install Storefront Locales
-  if (collection.build.locales && (Session.firstRun || Session.changeType === ChangeType.Locale)) {
-    fileOperations.push(installLocales(collection.build.locales, theme.localesFolder, exclusions))
-  }
-
   return Promise.all(fileOperations)
 }
 
@@ -192,63 +187,6 @@ async function installJavascriptFiles(jsFiles, importMap, assetsFolder, snippets
     fileOperations.push(installFile(jsFile, assetsFolder, copyrightText, exclusions))
   }
   return Promise.all(fileOperations)
-}
-
-/**
- * Write Locales, merging them atop of the theme's Locales
- * @param {Object} collectionLocales
- * @param {string} themeLocalesPath
- * @param {string[]} exclusions
- * @return {Promise<Awaited<unknown>[]>}
- */
-async function installLocales(collectionLocales, themeLocalesPath, exclusions) {
-  debug("Merging Collection Locales with the Theme's Locales")
-  const promises = []
-
-  // const collectionLocalesFolderEntries = await readdir(collectionLocalesPath, { withFileTypes: true })
-  for (const localeKey of Object.keys(collectionLocales)) {
-    promises.push(installLocale(localeKey, collectionLocales[localeKey], themeLocalesPath, exclusions))
-  }
-  return Promise.all(promises)
-}
-
-/**
- * Install Locale To Theme
- * @param {string} localeKey
- * @param localeValues
- * @param {string} installPath
- * @param exclusions
- * @returns {Promise<void|null>}
- */
-async function installLocale(localeKey, localeValues, installPath, exclusions) {
-  const localeFilename = `${localeKey}.json`
-
-  const defaultLocaleFilename = `${localeKey}.default.json`
-
-  const targetFile = join(installPath, localeFilename)
-  const defaultTargetFile = join(installPath, defaultLocaleFilename)
-
-  const targetFileExists = await exists(targetFile)
-  const defaultTargetFileExists = await exists(defaultTargetFile)
-
-  if (targetFileExists || defaultTargetFileExists) {
-    const realTargetFile = targetFileExists ? targetFile : defaultTargetFile
-    if (!exclusions?.includes(realTargetFile)) {
-      const themeLocale = await getJsonFileContents(realTargetFile)
-      const mergedLocale = merge(themeLocale, localeValues)
-
-      return saveFile(realTargetFile, JSON.stringify(mergedLocale, null, 2))
-    }
-  } else {
-    // If No Theme Locale File was found for the current locale,
-    // check for a Default Theme Regular Locale File to determine 'default' status for the locale.
-    const defaultLocaleFilename = `${localeKey}.default.json`
-    const realTargetFile = (await exists(join(installPath, defaultLocaleFilename))) ? defaultTargetFile : targetFile
-    if (!exclusions?.includes(realTargetFile)) {
-      return saveFile(realTargetFile, JSON.stringify(localeValues, null, 2))
-    }
-  }
-  return null
 }
 
 /**

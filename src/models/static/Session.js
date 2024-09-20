@@ -25,9 +25,6 @@ class Session {
   /** @type {boolean} Indicates whether it is the first run. **/
   static firstRun = true
 
-  /** @type {string} Path to the external locales library **/
-  static localesPath
-
   /** @type {boolean}  Copy components' setup files or not **/
   static setupFiles
 

@@ -6,9 +6,6 @@ class Theme {
   configFolder
 
   /** @type {string} **/
-  localesFolder
-
-  /** @type {string} **/
   name
 
   /** @type {string} **/

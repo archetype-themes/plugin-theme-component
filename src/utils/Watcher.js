@@ -22,7 +22,6 @@ export const ChangeType = {
   Stylesheet: 'stylesheet',
   JavaScript: 'JavaScript',
   Liquid: 'liquid',
-  Locale: 'locale',
   SetupFiles: 'setup-files'
 }
 
@@ -110,9 +109,6 @@ export function getChangeTypeFromFilename(filename) {
   }
   if (LIQUID_EXTENSION === extension) {
     return ChangeType.Liquid
-  }
-  if (JSON_EXTENSION === extension) {
-    return ChangeType.Locale
   }
   return ChangeType.Asset
 }

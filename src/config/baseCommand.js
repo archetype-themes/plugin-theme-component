@@ -7,7 +7,6 @@ import Session from '../models/static/Session.js'
 import { Levels } from '../utils/logger.js'
 
 export const COMPONENT_ARG_NAME = 'components'
-export const LOCALES_FLAG_NAME = 'locales-path'
 
 export class BaseCommand extends Command {
   static baseFlags = {
@@ -23,7 +22,7 @@ export class BaseCommand extends Command {
 
   /**
    * abstract run function for BaseCommand
-   * @return {Promise<{component?: string, 'theme-path'?: string, 'locales-path'?: string, 'setup-files'?: boolean, watch?: boolean}|null>}
+   * @return {Promise<{component?: string, 'theme-path'?: string, 'setup-files'?: boolean, watch?: boolean}|null>}
    */
   async run() {
     const tomlConfig = await getTomlConfig()

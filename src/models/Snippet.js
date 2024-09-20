@@ -11,9 +11,6 @@ class Snippet {
   /** @type {string} **/
   liquidCode
 
-  /** @type {Object} **/
-  locales = {}
-
   /** @type {string[]} **/
   snippetNames
 

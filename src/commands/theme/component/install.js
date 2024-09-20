@@ -4,7 +4,7 @@ import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
 import { buildCollection } from '../../../builders/collectionBuilder.js'
-import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
+import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
 import { THEME_TYPE_NAME } from '../../../config/constants.js'
 import { collectionFactory } from '../../../factory/collectionFactory.js'
 import { themeFactory } from '../../../factory/themeFactory.js'
@@ -37,16 +37,6 @@ export default class Install extends BaseCommand {
       helpValue: '<path-or-github-url>',
       char: 'c',
       default: 'https://github.com/archetype-themes/reference-components.git'
-    }),
-    [LOCALES_FLAG_NAME]: Flags.string({
-      summary: 'Path to your locales data',
-      description:
-        "The path to your locales data should point to a GitHub URL or a local path. This defaults to Archetype Themes' publicly shared locales database.",
-      helpGroup: 'Path',
-      helpValue: '<path-or-github-url>',
-      char: 'l',
-      default: 'https://github.com/archetype-themes/locales.git',
-      defaultHelp: 'Path to the publicly shared locales repository form Archetype Themes'
     })
   }
 
@@ -59,14 +49,6 @@ export default class Install extends BaseCommand {
     const tomlConfig = await super.run()
 
     await Install.setSessionValues(argv, flags, metadata, tomlConfig)
-
-    // Download Locales If We Have A GitHub Repo URL
-    if (isGitHubUrl(Session.localesPath)) {
-      const timer = new Timer()
-      logChildItem(`Installing Locales Database`)
-      Session.localesPath = await install(Session.localesPath)
-      logChildItem(`Done (${timer.now()} seconds)`)
-    }
 
     // Download Components If We Have A GitHub Repo URL
     if (isGitHubUrl(Session.componentsPath)) {
@@ -120,6 +102,5 @@ export default class Install extends BaseCommand {
     Session.callerType = THEME_TYPE_NAME
     Session.componentNames = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
     Session.componentsPath = await getPathFromFlagOrTomlValue(COMPONENTS_FLAG_NAME, flags, metadata, tomlConfig)
-    Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
   }
 }
