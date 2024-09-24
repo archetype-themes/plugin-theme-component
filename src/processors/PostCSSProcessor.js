@@ -3,6 +3,7 @@ import postcss from 'postcss'
 import postcssImport from 'postcss-import'
 import postcssPresetEnv from 'postcss-preset-env'
 import browsers from '@shopify/browserslist-config'
+import tailwindcss from 'tailwindcss'
 
 class PostCSSProcessor {
   /**
@@ -24,6 +25,7 @@ class PostCSSProcessor {
   static async processStyles(styles) {
     const processor = postcss([
       postcssImport(),
+      tailwindcss(),
       postcssPresetEnv({
         stage: 2,
         browsers,
