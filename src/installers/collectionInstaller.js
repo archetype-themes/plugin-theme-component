@@ -35,7 +35,7 @@ export async function installCollection(collection, theme) {
   const exclusions = await getExclusions(theme.rootFolder)
 
   // Install CSS Build
-  if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet)) {
+  if (collection.build.styles && (Session.firstRun || Session.changeType === ChangeType.Stylesheet || Session.changeType === ChangeType.Liquid)) {
     const stylesheet = join(theme.assetsFolder, collection.build.stylesheet)
     if (!exclusions?.includes(stylesheet)) {
       const stylesheetSavePromise = saveFile(stylesheet, collection.build.styles)
