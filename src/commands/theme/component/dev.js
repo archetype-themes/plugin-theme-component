@@ -6,7 +6,7 @@ import { Args, Flags } from '@oclif/core'
 
 // Internal Dependencies
 import { collectionBuildFactory } from '../../../factory/collectionBuildFactory.js'
-import { BaseCommand, COMPONENT_ARG_NAME, LOCALES_FLAG_NAME } from '../../../config/baseCommand.js'
+import { BaseCommand, COMPONENT_ARG_NAME } from '../../../config/baseCommand.js'
 import {
   ASSETS_FOLDER_NAME,
   COLLECTION_TYPE_NAME,
@@ -72,16 +72,6 @@ export default class Dev extends BaseCommand {
       char: 't',
       default: 'https://github.com/archetype-themes/reference-theme.git'
     }),
-    [LOCALES_FLAG_NAME]: Flags.string({
-      summary: 'Path to your locales data',
-      description:
-        "The path to your locales data should point to a GitHub URL or a local path. This defaults to Archetype Themes' publicly shared locales database.",
-      helpGroup: 'Path',
-      helpValue: '<path-or-github-url>',
-      char: 'l',
-      default: 'https://github.com/archetype-themes/locales.git',
-      defaultHelp: 'Path to the publicly shared locales repository form Archetype Themes'
-    }),
     [SETUP_FLAG_NAME]: Flags.boolean({
       summary: 'Copy Setup Files',
       description:
@@ -93,7 +83,7 @@ export default class Dev extends BaseCommand {
     [WATCH_FLAG_NAME]: Flags.boolean({
       summary: 'Watch For Changes',
       description:
-        'Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.',
+        'Any changes to component and theme source files triggers a file copy and theme build if necessary.',
       char: 'w',
       default: true,
       allowNo: true
@@ -167,16 +157,9 @@ export default class Dev extends BaseCommand {
           )
           .flat()
       )
-      // Ignore all storefront locale files
-      ignorePatterns.push(/(^|[/\\])locales(?!.*schema\.json$).*\.json$/)
+
       promises.push(Dev.watchTheme(Session.themePath, ignorePatterns, collection.rootFolder, Session.componentNames))
       logInitLines.push(`${collection.name}: Watching theme folder for changes`)
-    }
-
-    // Watch Local Locales
-    if (!isGitHubUrl(Session.localesPath)) {
-      promises.push(Dev.watchLocales(Session.localesPath, Session.themePath, Session.componentNames))
-      logInitLines.push(`${collection.name}: Watching locales folder for changes`)
     }
 
     // Run "shopify theme dev"
@@ -258,14 +241,6 @@ export default class Dev extends BaseCommand {
     logChildItem(`Installing Theme Files From ${basename(themePath, '.git')}`)
     await install(themePath, devFolder)
     logChildItem(`Done (${timer.now()} seconds)`)
-
-    // Download Locales
-    if (isGitHubUrl(Session.localesPath)) {
-      const timer = new Timer()
-      logChildItem(`Installing Locales Database`)
-      Session.localesPath = await install(Session.localesPath)
-      logChildItem(`Done (${timer.now()} seconds)`)
-    }
   }
 
   /**
@@ -354,7 +329,6 @@ export default class Dev extends BaseCommand {
   static async setSessionValues(argv, flags, metadata, tomlConfig) {
     Session.callerType = COLLECTION_TYPE_NAME
     Session.componentNames = getValuesFromArgvOrToml(COMPONENT_ARG_NAME, argv, tomlConfig)
-    Session.localesPath = await getPathFromFlagOrTomlValue(LOCALES_FLAG_NAME, flags, metadata, tomlConfig)
     Session.syncMode = getValueFromFlagOrToml(THEME_SYNC_FLAG_NAME, flags, metadata, tomlConfig)
     Session.watchMode = getValueFromFlagOrToml(WATCH_FLAG_NAME, flags, metadata, tomlConfig)
 
@@ -412,22 +386,6 @@ export default class Dev extends BaseCommand {
     const onCollectionWatchEvent = this.exploreComponent.bind(this, themePath, componentNames)
 
     return watch(watcher, onCollectionWatchEvent)
-  }
-
-  /**
-   * Watch locales for file changes
-   * @param {string} localesPath
-   * @param {string[]} componentNames
-   * @param {string} themePath
-   * @return {Promise<FSWatcher>}
-   */
-  static async watchLocales(localesPath, themePath, componentNames) {
-    const watchGlobExpression = join(localesPath, '**/*.json')
-
-    const watcher = getWatcher(watchGlobExpression)
-    const onLocalesWatchEvent = this.exploreComponent.bind(this, themePath, componentNames)
-
-    return watch(watcher, onLocalesWatchEvent)
   }
 
   /**

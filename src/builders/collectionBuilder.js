@@ -2,11 +2,10 @@
 import { join } from 'node:path'
 
 // Internal Dependencies
-import { FileTypes, LOCALES_FOLDER_NAME } from '../config/constants.js'
+import { FileTypes } from '../config/constants.js'
 import { collectionBuildFactory } from '../factory/collectionBuildFactory.js'
 import Timer from '../models/Timer.js'
 import Session from '../models/static/Session.js'
-import LocalesProcessor from '../processors/LocalesProcessor.js'
 import PostCSSProcessor from '../processors/PostCSSProcessor.js'
 import { getFiles } from '../utils/fileUtils.js'
 import { error, fatal, logChildItem, logSpacer, logTitleItem, warn } from '../utils/logger.js'
@@ -63,18 +62,14 @@ async function runProcessors(collection) {
   collection.build = collectionBuildFactory(collection)
 
   if (Session.firstRun) {
-    ;[collection.build.importMap, collection.build.locales, collection.build.styles] = await Promise.all([
+    ;[collection.build.importMap, collection.build.styles] = await Promise.all([
       buildJavaScript(collection.jsIndexes, collection.rootFolder),
-      buildLocales(collection.liquidCode),
       buildStyles(collection.mainStylesheets, collection.copyright)
     ])
   } else {
     switch (Session.changeType) {
       case ChangeType.JavaScript:
         collection.build.importMap = await buildJavaScript(collection.jsIndexes, collection.rootFolder)
-        break
-      case ChangeType.Locale:
-        collection.build.locales = await buildLocales(collection.liquidCode)
         break
       case ChangeType.Stylesheet:
         collection.build.styles = await buildStyles(collection.mainStylesheets, collection.build.stylesheet)
@@ -120,26 +115,6 @@ async function buildJavaScript(jsFiles, cwd) {
     return importMap
   } else {
     warn('No Javascript Files Found. Import Map Build Process Was Skipped.')
-  }
-}
-
-/**
- * Builds locales for the given collection and all components.
- * @param {string[]} liquidCodeExcerpts - Liquid code excerpts to scan for translation tag use
- * @throws Error When build fails
- * @returns {Promise<{}>} - A promise that resolves when the locales' build is complete
- */
-async function buildLocales(liquidCodeExcerpts) {
-  try {
-    logChildItem('Starting The Locales Processor', 1)
-    const timer = new Timer()
-    const localeFiles = await getFiles(join(Session.localesPath, LOCALES_FOLDER_NAME), true)
-    const locales = await LocalesProcessor.build(liquidCodeExcerpts, localeFiles)
-    logChildItem(`Locales Processor Done (${timer.now()} seconds)`, 1)
-    return locales
-  } catch (e) {
-    error('!!!TIP!!! For JSON parsing errors, use debug flag to view the name of the file in error')
-    fatal('Error Building Locales: ', e)
   }
 }
 

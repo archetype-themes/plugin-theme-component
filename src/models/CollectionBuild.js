@@ -1,9 +1,6 @@
 import ComponentBuild from './ComponentBuild.js'
 
 class CollectionBuild extends ComponentBuild {
-  /** @type {Object} **/
-  locales
-
   /** @type {{entries: Map<string, string>, tags:string}} **/
   importMap
 
