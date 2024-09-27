@@ -62,7 +62,7 @@ async function runProcessors(collection) {
   collection.build = collectionBuildFactory(collection)
 
   if (Session.firstRun) {
-    ;[collection.build.importMap, collection.build.styles] = await Promise.all([
+    [collection.build.importMap, collection.build.locales, collection.build.styles] = await Promise.all([
       buildJavaScript(collection.jsIndexes, collection.rootFolder),
       buildStyles(collection.mainStylesheets, collection.copyright)
     ])
@@ -72,6 +72,9 @@ async function runProcessors(collection) {
         collection.build.importMap = await buildJavaScript(collection.jsIndexes, collection.rootFolder)
         break
       case ChangeType.Stylesheet:
+        collection.build.styles = await buildStyles(collection.mainStylesheets, collection.build.stylesheet)
+        break
+      case ChangeType.Liquid:
         collection.build.styles = await buildStyles(collection.mainStylesheets, collection.build.stylesheet)
         break
     }
