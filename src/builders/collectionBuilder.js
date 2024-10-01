@@ -29,15 +29,15 @@ export async function buildCollection(collection) {
   )
   const individualBuildTimer = new Timer()
 
-  // Build Components Individually
-  ;[collection.components, collection.snippets] = await Promise.all([
-    Promise.all(
-      collection.components.map((component) => buildComponent(component, collection.rootFolder, collection.copyright))
-    ),
-    Promise.all(
-      collection.snippets.map((snippet) => buildComponent(snippet, collection.rootFolder, collection.copyright))
-    )
-  ])
+    // Build Components Individually
+    ;[collection.components, collection.snippets] = await Promise.all([
+      Promise.all(
+        collection.components.map((component) => buildComponent(component, collection.rootFolder, collection.copyright))
+      ),
+      Promise.all(
+        collection.snippets.map((snippet) => buildComponent(snippet, collection.rootFolder, collection.copyright))
+      )
+    ])
 
   logChildItem(`Individual Build Done (${individualBuildTimer.now()} seconds)`)
 
@@ -62,7 +62,7 @@ async function runProcessors(collection) {
   collection.build = collectionBuildFactory(collection)
 
   if (Session.firstRun) {
-    [collection.build.importMap, collection.build.locales, collection.build.styles] = await Promise.all([
+    [collection.build.importMap, collection.build.styles] = await Promise.all([
       buildJavaScript(collection.jsIndexes, collection.rootFolder),
       buildStyles(collection.mainStylesheets, collection.copyright)
     ])
