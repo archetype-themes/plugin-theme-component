@@ -62,8 +62,7 @@ Develop using theme components
 
 ```
 USAGE
-  $ shopify theme component dev [COMPONENTS...] [--debug] [--trace] [-t <path-or-github-url>] [-l <path-or-github-url>]
-    [-s] [-w] [--sync]
+  $ shopify theme component dev [COMPONENTS...] [--debug] [--trace] [-t <path-or-github-url>] [-s] [-w] [--sync]
 
 ARGUMENTS
   COMPONENTS...  Component name(s)
@@ -74,10 +73,8 @@ FLAGS
       --[no-]sync         Sync your files through shopify theme dev
 
 PATH FLAGS
-  -l, --locales-path=<path-or-github-url>  [default: https://github.com/archetype-themes/locales.git] Path to your
-                                           locales data
-  -t, --theme-path=<path-or-github-url>    [default: https://github.com/archetype-themes/reference-theme.git] Path to
-                                           your theme
+  -t, --theme-path=<path-or-github-url>  [default: https://github.com/archetype-themes/reference-theme.git] Path to your
+                                         theme
 
 DEBUG FLAGS
   --debug  Debug Mode is more verbose.
@@ -87,11 +84,6 @@ DESCRIPTION
   Develop using theme components
 
 FLAG DESCRIPTIONS
-  -l, --locales-path=<path-or-github-url>  Path to your locales data
-
-    The path to your locales data should point to a GitHub URL or a local path. This defaults to Archetype Themes'
-    publicly shared locales database.
-
   -s, --[no-]setup-files  Copy Setup Files
 
     Installs component setup files in your dev theme to allow component exploration in an isolated environment.
@@ -103,7 +95,7 @@ FLAG DESCRIPTIONS
 
   -w, --[no-]watch  Watch For Changes
 
-    Any changes to component, locale of theme source files triggers a file copy and theme build if necessary.
+    Any changes to component and theme source files triggers a file copy and theme build if necessary.
 
   --[no-]sync  Sync your files through shopify theme dev
 
@@ -140,8 +132,7 @@ Install a collection of components
 
 ```
 USAGE
-  $ shopify theme component install [COMPONENTS...] [--debug] [--trace] [-c <path-or-github-url>] [-l
-  <path-or-github-url>]
+  $ shopify theme component install [COMPONENTS...] [--debug] [--trace] [-c <path-or-github-url>]
 
 ARGUMENTS
   COMPONENTS...  Component name(s)
@@ -149,8 +140,6 @@ ARGUMENTS
 PATH FLAGS
   -c, --components-path=<path-or-github-url>  [default: https://github.com/archetype-themes/reference-components.git]
                                               Path to your components
-  -l, --locales-path=<path-or-github-url>     [default: https://github.com/archetype-themes/locales.git] Path to your
-                                              locales data
 
 DEBUG FLAGS
   --debug  Debug Mode is more verbose.
@@ -164,11 +153,6 @@ FLAG DESCRIPTIONS
 
     The path to your components should point to a GitHub URL or a local path. This defaults to Archetype Themes'
     publicly shared reference components.
-
-  -l, --locales-path=<path-or-github-url>  Path to your locales data
-
-    The path to your locales data should point to a GitHub URL or a local path. This defaults to Archetype Themes'
-    publicly shared locales database.
 ```
 
 _See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/install.js)_
