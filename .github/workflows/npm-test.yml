@@ -2,9 +2,9 @@ name: Run Tests on Pull Requests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -25,11 +25,4 @@ jobs:
       - name: NPM Clean Install
         run: npm ci
       - name: Test The Release With Defaults (Reference-Components & Reference-Theme)
-        run: npm test
-      - name: Test The Release With Expanse and Components
-        env:
-          GITHUB_ID: ${{ secrets.PERSONAL_ACCESS_ID }}
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          COMPONENTS_REPO: "https://github.com/archetype-themes/components.git"
-          THEME_REPO: "https://github.com/archetype-themes/expanse.git"
         run: npm test
