@@ -1,6 +1,6 @@
 {
   "name": "plugin-theme-component",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "type": "module",
   "description": "Archetype Theme's Shopify CLI theme component plugin",
   "license": "MIT",
