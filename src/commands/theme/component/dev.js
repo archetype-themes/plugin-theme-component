@@ -70,7 +70,7 @@ export default class Dev extends BaseCommand {
       helpGroup: 'Path',
       helpValue: '<path-or-github-url>',
       char: 't',
-      default: 'https://github.com/archetype-themes/reference-theme.git'
+      default: 'https://github.com/archetype-themes/plugin-theme-component/tree/main/resources/explorer'
     }),
     [SETUP_FLAG_NAME]: Flags.boolean({
       summary: 'Copy Setup Files',
