@@ -1,0 +1,1 @@
+import { sharedScript } from './shared-script-dependency.js'
