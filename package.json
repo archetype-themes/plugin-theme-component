@@ -1,88 +1,69 @@
 {
   "name": "plugin-theme-component",
-  "version": "3.7.1",
-  "type": "module",
   "description": "Archetype Theme's Shopify CLI theme component plugin",
-  "license": "MIT",
+  "version": "3.7.1",
   "author": "Archetype Themes Limited Partnership",
-  "files": [
-    "/bin",
-    "/src",
-    "/resources",
-    "/oclif.manifest.json"
-  ],
   "bin": {
-    "component": "bin/run.js"
+    "component": "bin/run.js",
+    "plugin-theme-component": "./bin/run.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/archetype-themes/plugin-theme-component.git"
-  },
+  "type": "module",
+  "license": "MIT",
   "scripts": {
-    "cdc": "dpdm --no-warning --no-tree --exit-code circular:1 src/commands/theme/component/*.js",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "prepare": "husky",
-    "prepack": "oclif manifest && oclif readme",
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
-    "pretest": "npm run cdc",
-    "test": "NODE_ENV=test mocha --forbid-only -p false \"test/**/*.test.js\"",
-    "posttest": "npm publish --dry-run && echo '\nTest Run completed succesfully'",
+    "posttest": "npm run lint",
+    "prepack": "oclif manifest && oclif readme",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
   },
+  "types": "dist/index.d.ts",
+  "files": [
+    "/bin",
+    "/dist",
+    "/oclif.manifest.json"
+  ],
+  "repository": "https://github.com/archetype-themes/plugin-theme-component.git",
   "dependencies": {
-    "@iarna/toml": "2.2.5",
-    "@inquirer/prompts": "^5.0.5",
-    "@oclif/core": "3.26.5",
-    "@shopify/browserslist-config": "^3.0.0",
-    "@shopify/cli-kit": "3.61.1",
-    "@types/node": "^18.19.34",
-    "chokidar": "^3.6.0",
-    "deepmerge": "^4.3.1",
-    "es-module-lexer": "^1.5.3",
-    "fast-glob": "^3.3.2",
-    "husky": "^9.0.11",
-    "lodash-es": "^4.17.21",
-    "parse-gitignore": "^2.0.0",
-    "picomatch": "^3.0.1",
-    "postcss": "^8.4.38",
-    "postcss-import": "^16.1.0",
-    "postcss-preset-env": "^9.5.14",
-    "tailwindcss": "^3.4.12"
+    "@oclif/core": "^4",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-plugins": "^5",
+    "chokidar": "^4.0.3",
+    "glob": "^11.0.0",
+    "smol-toml": "^1.3.1"
   },
   "devDependencies": {
-    "@oclif/test": "^3.2.15",
-    "dotenv": "^16.4.5",
-    "dpdm": "^3.14.0",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-prettier": "^5.1.3",
-    "eslint-plugin-promise": "^6.2.0",
-    "mocha": "^10.4.0",
-    "oclif": "^4.13.0",
-    "prettier": "^3.3.1",
-    "shx": "^0.3.4"
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^4.1.5",
+    "@types/chai": "^4",
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "chai": "^4",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "eslint-config-prettier": "^9",
+    "mocha": "^10",
+    "oclif": "^4",
+    "shx": "^0.3.3",
+    "ts-node": "^10",
+    "typescript": "^5"
   },
-  "engines": {
-    "node": ">=18.20.2"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
-  },
-  "exports": {
-    ".": {
-      "default": "./src/bin/component.js"
-    }
-  },
+  "main": "dist/index.js",
   "oclif": {
-    "commands": "./src/commands",
-    "bin": "shopify",
-    "hooks": {
-      "init": "./src/hooks/init"
-    },
-    "topicSeparator": " "
+    "bin": "plugin-theme-component-2",
+    "dirname": "plugin-theme-component-2",
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": " ",
+    "topics": {
+      "hello": {
+        "description": "Say hello to the world and others"
+      }
+    }
   }
 }

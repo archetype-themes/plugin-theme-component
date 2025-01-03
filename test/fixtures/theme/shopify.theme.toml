@@ -1,0 +1,9 @@
+[components]
+[components.collections]
+[components.collections."@archetype-themes/test-collection"]
+repository = "https://github.com/archetype-themes/components"
+version = "1.0.0"
+
+[components.importmap]
+component-a = "@archetype-themes/test-collection"
+component-c = "@theme"
