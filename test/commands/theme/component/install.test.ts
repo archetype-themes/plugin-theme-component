@@ -3,7 +3,7 @@ import {expect} from 'chai'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
-import {parse} from 'smol-toml'
+
 import {getCollectionInfo, getThemeConfig} from '../../../../src/utilities/theme-files'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -22,33 +22,33 @@ describe('install', () => {
   })
 
   afterEach(() => {
-    fs.rmSync(testCollectionPath, {recursive: true, force: true})
-    fs.rmSync(testThemePath, {recursive: true, force: true})
+    fs.rmSync(testCollectionPath, {force: true, recursive: true})
+    fs.rmSync(testThemePath, {force: true, recursive: true})
   })
 
   it('errors when theme path is invalid', async () => {
-    const {error, stdout} = await runCommand(['theme', 'component', 'install', 'invalid/path'])
+    const {error} = await runCommand(['theme', 'component', 'install', 'invalid/path'])
     
     expect(error?.message).to.contain('is not a valid theme directory.')
     expect(error?.oclif?.exit).to.equal(1)
   })
 
   it('installs a component and its assets', async () => {
-    const {error, stdout} = await runCommand(['theme', 'component', 'install', testThemePath])
+    await runCommand(['theme', 'component', 'install', testThemePath])
     
     // Verify only rendered snippets were copied
     const renderedSnippets = ['component-a', 'component-b', 'component-c', 'component-b-snippet']
-    renderedSnippets.forEach(snippet => {
+    for (const snippet of renderedSnippets) {
       const snippetExists = fs.existsSync(path.join(testThemePath, 'snippets', `${snippet}.liquid`))
       expect(snippetExists).to.be.true
-    })
+    }
 
     // Verify only unrendered snippets were not copied
     const unrenderedSnippets = ['component-a-snippet', 'component-d', 'component-d-snippet']
-    unrenderedSnippets.forEach(snippet => {
+    for (const snippet of unrenderedSnippets) {
       const snippetExists = fs.existsSync(path.join(testThemePath, 'snippets', `${snippet}.liquid`))
       expect(snippetExists).to.be.false
-    })
+    }
 
     // Make sure the component-c.liquid which has import set to @theme is not copied
     const componentCCollectionContents = fs.readFileSync(path.join(testCollectionPath, 'components', 'component-c', 'component-c.liquid'), 'utf8')
@@ -61,7 +61,7 @@ describe('install', () => {
   it('updates the theme config with the collection name and version', async () => {
     const beforeConfig = getThemeConfig(path.join(testThemePath, 'shopify.theme.toml'))
     const pkg = await getCollectionInfo()
-    const {error, stdout} = await runCommand(['theme', 'component', 'install', testThemePath])
+    await runCommand(['theme', 'component', 'install', testThemePath])
     const afterConfig = getThemeConfig(path.join(testThemePath, 'shopify.theme.toml'))
 
     expect(beforeConfig).to.not.deep.equal(afterConfig)
@@ -71,7 +71,7 @@ describe('install', () => {
   it('updates the theme config with the latest importmap values', async () => {
     const beforeConfig = getThemeConfig(path.join(testThemePath, 'shopify.theme.toml'))
     const pkg = await getCollectionInfo()
-    const {error, stdout} = await runCommand(['theme', 'component', 'install', testThemePath])
+    await runCommand(['theme', 'component', 'install', testThemePath])
     const afterConfig = getThemeConfig(path.join(testThemePath, 'shopify.theme.toml'))
 
     expect(beforeConfig).to.not.deep.equal(afterConfig)

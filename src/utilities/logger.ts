@@ -1,6 +1,6 @@
 import { Command } from '@oclif/core'
 
-type CommandLogger = Pick<Command, 'log' | 'warn' | 'error'>
+type CommandLogger = Pick<Command, 'error' | 'log' | 'warn'>
 
 let logger: CommandLogger | undefined
 
@@ -13,6 +13,7 @@ function getLogger(): CommandLogger {
   if (!logger) {
     throw new Error('Logger not initialized. Call initializeLogger() first.')
   }
+  
   return logger
 }
 

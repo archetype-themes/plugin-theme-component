@@ -2,6 +2,7 @@ import {expect} from 'chai'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
+
 import {listComponentCollectionSnippets} from '../../src/utilities/theme-files'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -20,12 +21,12 @@ describe('theme-files utilities', () => {
 
     afterEach(() => {
       // Cleanup test directory
-      fs.rmSync(testComponentsDir, {recursive: true, force: true})
+      fs.rmSync(testComponentsDir, {force: true, recursive: true})
     })
 
     it('should list snippets from component directories', async () => {
       const snippets = await listComponentCollectionSnippets(testComponentsDir)
-      const snippetArray = Array.from(snippets)
+      const snippetArray = [...snippets]
       expect(snippetArray.map(snippet => snippet.name)).to.include.members([
         'component-a',
         'component-a-snippet',
@@ -58,7 +59,7 @@ describe('theme-files utilities', () => {
 
     it('should handle empty directories', async () => {
       // Remove all files to simulate empty directory
-      fs.rmSync(testComponentsDir, {recursive: true, force: true})
+      fs.rmSync(testComponentsDir, {force: true, recursive: true})
       fs.mkdirSync(testComponentsDir, {recursive: true})
 
       const snippets = await listComponentCollectionSnippets(testComponentsDir)

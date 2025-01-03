@@ -2,6 +2,7 @@ import {glob,globSync} from 'glob'
 import fs from 'node:fs'
 import path from 'node:path'
 import {parse, stringify} from 'smol-toml'
+
 import config from './config.js'
 import {cloneTheme} from './git.js'
 
@@ -20,7 +21,7 @@ interface LiquidNode {
   file: string 
   name: string
   snippets: string[]
-  type: 'block' | 'layout' | 'section' | 'snippet' | 'template' | 'asset'
+  type: 'asset' | 'block' | 'layout' | 'section' | 'snippet' | 'template'
 }
 
 const LIQUID_BLOCK_REGEX = /{%-?.*?-?%}/gs
@@ -288,11 +289,9 @@ export function copySetupFiles(
   const schemaFiles = globSync(`${componentsDir}/${componentSelector}/setup/config/settings_schema.json`)
   const configDir = path.join(themeDir, 'config');
   fs.mkdirSync(configDir, { recursive: true });
+  
   // Deep merge the schema files
-  const schema = schemaFiles.reduce((acc, file) => {
-    const schema = JSON.parse(fs.readFileSync(file, 'utf8'))
-    return deepMerge(acc, schema)
-  }, {})
+  const schema = schemaFiles.flatMap(file => JSON.parse(fs.readFileSync(file, 'utf8')));
   const destinationSchemaPath = path.join(themeDir, 'config', 'settings_schema.json');
   if (!fs.existsSync(destinationSchemaPath) || JSON.stringify(schema, null, 2) !== fs.readFileSync(destinationSchemaPath, 'utf8')) {
     fs.writeFileSync(destinationSchemaPath, JSON.stringify(schema, null, 2));
