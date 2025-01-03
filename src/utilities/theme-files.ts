@@ -34,20 +34,10 @@ interface PackageJSON {
   version: string;
 }
 
-function deepMerge(target: any, source: any): any {
-  for (const key in source) {
-    if (source[key] instanceof Object && key in target) {
-      deepMerge(target[key], source[key])
-    } else {
-      target[key] = source[key]
-    }
-  }
-  return target
-}
-
 export function getThemeConfig(configFilePath: string): ThemeConfig {
   const configContent = fs.readFileSync(configFilePath, 'utf8')
-  const parsed = parse(configContent) as any
+  const parsed = parse(configContent) as unknown as ThemeConfig
+
   return {
     components: {
       collections: parsed.components?.collections || {},
@@ -67,9 +57,9 @@ export function updateSnippetImportMap(configFilePath: string, snippets: Set<Liq
   const config = getThemeConfig(configFilePath)
   const importMap = { ...config.components.importmap }
   
-  snippets.forEach(snippet => {
+  for (const snippet of snippets) {
     importMap[snippet.name] = collectionName
-  })
+  }
   
   config.components.importmap = importMap
   const updatedConfigContent = stringify(config)
@@ -99,16 +89,16 @@ export async function listSnippetsToCopy(
   const allCollectionSnippets = await listComponentCollectionSnippets(componentsDir)
   const renderedCollectionSnippets = listRenderedSnippets(entryPoints, allCollectionSnippets)
   const themeSnippets = await listThemeSnippets(themePath)
-  const config = await getThemeConfig(configFilePath) as ThemeConfig
+  const config = await getThemeConfig(configFilePath)
   const importMap = config?.components?.importmap
 
   const snippetsToCopy = new Set<LiquidNode>();
-  renderedCollectionSnippets.forEach(snippet => {
+  for (const snippet of renderedCollectionSnippets) {
     const importMapEntry = importMap?.[snippet.name];
     if (importMapEntry === collectionName || importMapEntry !== '@theme' || (!importMapEntry && !themeSnippets.has(snippet))) {
       snippetsToCopy.add(snippet);
     }
-  });
+  }
 
   return snippetsToCopy;
 }
@@ -259,42 +249,12 @@ export function copySetupFiles(
   themeDir: string,
   componentSelector: string
 ): void {
-  const sectionFiles = globSync(`${componentsDir}/${componentSelector}/setup/sections/*.liquid`)
-  const sectionsDir = path.join(themeDir, 'sections');
-  fs.mkdirSync(sectionsDir, { recursive: true });
-  sectionFiles.forEach(file => {
-    const destinationSectionPath = path.join(themeDir, 'sections', path.basename(file));
-    if (!fs.existsSync(destinationSectionPath) || fs.readFileSync(file, 'utf8') !== fs.readFileSync(destinationSectionPath, 'utf8')) {
-      fs.copyFileSync(file, destinationSectionPath);
-    }
-  })
-  const templateFiles = globSync(`${componentsDir}/${componentSelector}/setup/templates/*.json`)
-  const templatesDir = path.join(themeDir, 'templates');
-  fs.mkdirSync(templatesDir, { recursive: true });
-  templateFiles.forEach(file => {
-    const destinationTemplatePath = path.join(themeDir, 'templates', path.basename(file));
-    if (!fs.existsSync(destinationTemplatePath) || fs.readFileSync(file, 'utf8') !== fs.readFileSync(destinationTemplatePath, 'utf8')) {
-      fs.copyFileSync(file, destinationTemplatePath);
-    }
-  })
-  const blockFiles = globSync(`${componentsDir}/${componentSelector}/setup/blocks/*.liquid`)
-  const blocksDir = path.join(themeDir, 'blocks');
-  fs.mkdirSync(blocksDir, { recursive: true });
-  blockFiles.forEach(file => {
-    const destinationBlockPath = path.join(themeDir, 'blocks', path.basename(file));
-    if (!fs.existsSync(destinationBlockPath) || fs.readFileSync(file, 'utf8') !== fs.readFileSync(destinationBlockPath, 'utf8')) {
-      fs.copyFileSync(file, destinationBlockPath);
-    }
-  })
-  const schemaFiles = globSync(`${componentsDir}/${componentSelector}/setup/config/settings_schema.json`)
-  const configDir = path.join(themeDir, 'config');
-  fs.mkdirSync(configDir, { recursive: true });
+  const setupFiles = globSync(path.join(componentSelector, 'setup', '**/*'), {cwd: componentsDir})
   
-  // Deep merge the schema files
-  const schema = schemaFiles.flatMap(file => JSON.parse(fs.readFileSync(file, 'utf8')));
-  const destinationSchemaPath = path.join(themeDir, 'config', 'settings_schema.json');
-  if (!fs.existsSync(destinationSchemaPath) || JSON.stringify(schema, null, 2) !== fs.readFileSync(destinationSchemaPath, 'utf8')) {
-    fs.writeFileSync(destinationSchemaPath, JSON.stringify(schema, null, 2));
+  for (const file of setupFiles) {
+    const sourcePath = path.join(componentsDir, file)
+    const destinationPath = path.join(themeDir, path.basename(file))
+    fs.copyFileSync(sourcePath, destinationPath)
   }
 }
 
@@ -303,49 +263,16 @@ export function copySnippetsAndAssets(
   themePath: string,
   componentsDir: string,
 ): Set<LiquidNode> {
-  const filesCopied = new Set<LiquidNode>();
+  const copiedFiles = new Set<LiquidNode>()
+  
+  for (const snippet of snippetsToCopy) {
+    const sourcePath = path.join(componentsDir, snippet.file)
+    const destinationPath = path.join(themePath, 'snippets', path.basename(snippet.file))
+    fs.copyFileSync(sourcePath, destinationPath)
+    copiedFiles.add(snippet)
+  }
 
-  // Ensure snippets and assets directories exist
-  const snippetsDir = path.join(themePath, 'snippets');
-  const assetsDir = path.join(themePath, 'assets');
-  fs.mkdirSync(snippetsDir, { recursive: true });
-  fs.mkdirSync(assetsDir, { recursive: true });
-
-  snippetsToCopy.forEach(snippet => {
-    const sourceFile = path.join(componentsDir, snippet.file);
-    const destinationFile = path.join(snippetsDir, path.basename(snippet.file));
-    
-    if (!fs.existsSync(sourceFile)) {
-      console.warn(`Skipping ${sourceFile} - file does not exist`);
-      return;
-    }
-    
-    if (!fs.existsSync(destinationFile) || fs.readFileSync(sourceFile, 'utf8') !== fs.readFileSync(destinationFile, 'utf8')) {
-      fs.copyFileSync(sourceFile, destinationFile);
-      filesCopied.add(snippet);
-    }
-
-    const snippetAssetsDir = path.join(componentsDir, snippet.name, 'assets');
-    if (fs.existsSync(snippetAssetsDir) && fs.lstatSync(snippetAssetsDir).isDirectory()) {
-      const assetFiles = globSync(path.join(snippetAssetsDir, '*'));
-      assetFiles.forEach((assetFile: string) => {
-        const destinationAssetPath = path.join(themePath, 'assets', path.basename(assetFile));
-        const assetContents = fs.readFileSync(assetFile, 'utf8');
-        if (!fs.existsSync(destinationAssetPath) || fs.readFileSync(assetFile, 'utf8') !== fs.readFileSync(destinationAssetPath, 'utf8')) {
-          fs.copyFileSync(assetFile, destinationAssetPath);
-          filesCopied.add({
-            body: assetContents,
-            file: path.relative(componentsDir, assetFile),
-            name: path.basename(assetFile, path.extname(assetFile)),
-            snippets: [],
-            type: 'asset'
-          });
-        }
-      });
-    }
-  });
-
-  return filesCopied;
+  return copiedFiles
 }
 
 export async function copyComponents(componentSelector: string, themeDir: string): Promise<Set<LiquidNode>> {
