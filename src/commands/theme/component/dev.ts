@@ -2,11 +2,11 @@ import chokidar from 'chokidar'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import {copyComponents, copyTheme} from '../../../utilities/theme-files.js'    
-import Flags from '../../../utilities/flags.js'
-import Args from '../../../utilities/args.js'
+import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
 import config from '../../../utilities/config.js'
+import Flags from '../../../utilities/flags.js'
+import {copyComponents, copyTheme} from '../../../utilities/theme-files.js'
 
 export default class Dev extends BaseCommand {
   static override args = Args.getDefinitions([

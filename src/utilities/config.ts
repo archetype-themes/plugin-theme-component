@@ -1,25 +1,26 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+
 import Flags from './flags.js'
-import { ComponentConfig, PackageJSON, LiquidNode, CollectionConfig } from './types.js'
-import { getThemeConfig, updateThemeCollection, updateSnippetImportMap } from './toml-config.js'
+import { getThemeConfig, updateSnippetImportMap, updateThemeCollection } from './toml-config.js'
+import { CollectionConfig, ComponentConfig, LiquidNode, PackageJSON } from './types.js'
 
 let config: ComponentConfig | undefined
 
 const DEFAULT_CONFIG: ComponentConfig = {
-  COLLECTIONS: {},
-  IMPORTMAP: {},
-  THEME_CLI_CONFIG: './shopify.theme.toml',
   COLLECTION_COMPONENT_DIR: './components',
-  COLLECTION_NAME: undefined,
-  COLLECTION_VERSION: undefined,
   COLLECTION_DEV_DIR: './dev',
   COLLECTION_DEV_THEME_DIR: 'https://github.com/archetype-themes/explorer',
+  COLLECTION_NAME: undefined,
   COLLECTION_PACKAGE_JSON: './package.json',
+  COLLECTION_VERSION: undefined,
+  COLLECTIONS: {},
   COPY_SETUP_FILES: true,
-  WATCH: false,
+  IMPORTMAP: {},
   SYNC: false,
-  THEME_DIRECTORIES: ['layout', 'sections', 'templates', 'blocks'] as const
+  THEME_CLI_CONFIG: './shopify.theme.toml',
+  THEME_DIRECTORIES: ['layout', 'sections', 'templates', 'blocks'] as const,
+  WATCH: false
 }
 
 // Collection-specific config keys that can be overridden
@@ -87,6 +88,7 @@ function getConfig(): ComponentConfig {
   if (!config) {
     throw new Error('Config not initialized. Call initializeConfig() first.')
   }
+
   return config
 }
 

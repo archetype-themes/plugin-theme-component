@@ -1,10 +1,10 @@
 import { Command } from '@oclif/core'
 
 interface Logger {
+  debug: (...args: any[]) => void
   error: Command['error']
   log: Command['log']
   warn: Command['warn']
-  debug: (...args: any[]) => void
 }
 
 type CommandLogger = Command
@@ -20,6 +20,7 @@ function getLogger(): CommandLogger {
   if (!logger) {
     throw new Error('Logger not initialized. Call initializeLogger() first.')
   }
+
   return logger
 }
 

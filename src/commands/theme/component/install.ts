@@ -1,9 +1,10 @@
 import {Command} from '@oclif/core'
-import {copyComponents} from '../../../utilities/theme-files.js'    
+
+import Args from '../../../utilities/args.js'    
+import BaseCommand from '../../../utilities/base-command.js'
 import {updateThemeConfig} from '../../../utilities/config.js'
 import Flags from '../../../utilities/flags.js'
-import Args from '../../../utilities/args.js'
-import BaseCommand from '../../../utilities/base-command.js'
+import {copyComponents} from '../../../utilities/theme-files.js'
 
 export default class Install extends BaseCommand {
   static override args = Args.getDefinitions([

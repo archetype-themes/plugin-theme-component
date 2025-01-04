@@ -1,6 +1,7 @@
 import * as fs from 'node:fs'
 import { parse as parseToml, stringify } from 'smol-toml'
-import { TomlConfig, LiquidNode, PackageJSON } from './types.js'
+
+import { LiquidNode, PackageJSON, TomlConfig } from './types.js'
 
 export function getThemeConfig(configFilePath: string): TomlConfig {
   const configContent = fs.readFileSync(configFilePath, 'utf8')

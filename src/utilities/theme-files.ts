@@ -3,12 +3,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import {
-  LiquidNode,
-} from './types.js'
-import {
   themeComponentConfig
 } from './config.js'
 import {cloneTheme} from './git.js'
+import {
+  LiquidNode,
+} from './types.js'
 
 const LIQUID_BLOCK_REGEX = /{%-?.*?-?%}/gs
 const LIQUID_COMMENTS_REGEX = /{%-?\s*comment\s*-?%}[\S\s]*?{%-?\s*endcomment\s*-?%}/gi
@@ -219,11 +219,11 @@ export function copySnippetsAndAssets(
         fs.mkdirSync(path.dirname(assetDest), { recursive: true })
         fs.copyFileSync(assetSource, assetDest)
         copiedFiles.add({
+          body: '',
           file: path.join('assets', assetFile),
           name: path.basename(assetFile, path.extname(assetFile)),
-          type: 'asset',
-          body: '',
-          snippets: []
+          snippets: [],
+          type: 'asset'
         } as LiquidNode)
       }
     }

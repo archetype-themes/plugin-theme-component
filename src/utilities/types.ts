@@ -1,17 +1,17 @@
 export interface ComponentConfig {
-  COLLECTIONS: Record<string, CollectionConfig>
-  IMPORTMAP: Record<string, string>
-  THEME_CLI_CONFIG: string
   COLLECTION_COMPONENT_DIR: string
-  COLLECTION_VERSION: string | undefined
-  COLLECTION_NAME: string | undefined
   COLLECTION_DEV_DIR: string | undefined
   COLLECTION_DEV_THEME_DIR: string | undefined
+  COLLECTION_NAME: string | undefined
   COLLECTION_PACKAGE_JSON: string
+  COLLECTION_VERSION: string | undefined
+  COLLECTIONS: Record<string, CollectionConfig>
   COPY_SETUP_FILES: boolean
-  WATCH: boolean
+  IMPORTMAP: Record<string, string>
   SYNC: boolean
+  THEME_CLI_CONFIG: string
   THEME_DIRECTORIES: readonly ['layout', 'sections', 'templates', 'blocks']
+  WATCH: boolean
 }
 
 export interface TomlConfig {
@@ -28,10 +28,10 @@ export interface LiquidNode {
 
 export interface CollectionConfig {
   COLLECTION_COMPONENT_DIR?: string
-  COLLECTION_VERSION?: string
   COLLECTION_DEV_DIR?: string
   COLLECTION_DEV_THEME_DIR?: string
   COLLECTION_PACKAGE_JSON?: string
+  COLLECTION_VERSION?: string
 }
 
 export interface PackageJSON {
