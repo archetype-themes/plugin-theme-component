@@ -9,6 +9,7 @@ import {cloneTheme} from './git.js'
 import {
   LiquidNode,
 } from './types.js'
+import logger from './logger.js'
 
 const LIQUID_BLOCK_REGEX = /{%-?.*?-?%}/gs
 const LIQUID_COMMENTS_REGEX = /{%-?\s*comment\s*-?%}[\S\s]*?{%-?\s*endcomment\s*-?%}/gi
@@ -42,7 +43,10 @@ export async function listSnippetsToCopy(
   for (const snippet of renderedCollectionSnippets) {
     const importMapEntry = importMap?.[snippet.name];
     if (importMapEntry === collectionName || importMapEntry !== '@theme' || (!importMapEntry && !themeSnippets.has(snippet))) {
+      logger.debug(`Adding snippet ${snippet.name} to copy`)  
       snippetsToCopy.add(snippet);
+    } else {
+      logger.debug(`Skipping snippet ${snippet.name}`)
     }
   }
 
@@ -188,8 +192,17 @@ export function copySetupFiles(
   
   for (const file of setupFiles) {
     const sourcePath = path.join(componentsDir, file)
-    const destinationPath = path.join(themeDir, path.basename(file))
-    fs.copyFileSync(sourcePath, destinationPath)
+    const destinationPath = path.join(themeDir, path.basename(path.dirname(file)), path.basename(file))
+    
+    // Create directory if it doesn't exist
+    fs.mkdirSync(path.dirname(destinationPath), { recursive: true })
+    
+    // Copy file or directory
+    if (fs.statSync(sourcePath).isDirectory()) {
+      fs.mkdirSync(destinationPath, { recursive: true })
+    } else {
+      copyChangedFiles(sourcePath, destinationPath)
+    }
   }
 }
 
@@ -200,11 +213,21 @@ export function copySnippetsAndAssets(
 ): Set<LiquidNode> {
   const copiedFiles = new Set<LiquidNode>()
   
+  // Create snippets directory if it doesn't exist
+  const snippetsDir = path.join(themePath, 'snippets')
+  fs.mkdirSync(snippetsDir, { recursive: true })
+  
   for (const snippet of snippetsToCopy) {
     // Copy the snippet file
     const sourcePath = path.join(componentsDir, snippet.file)
     const destinationPath = path.join(themePath, 'snippets', path.basename(snippet.file))
-    fs.copyFileSync(sourcePath, destinationPath)
+    
+    if (!fs.existsSync(sourcePath)) {
+      logger.debug(`Skipping missing file: ${sourcePath}`)
+      continue
+    }
+    
+    copyChangedFiles(sourcePath, destinationPath)
     copiedFiles.add(snippet)
 
     // Check for and copy associated assets
@@ -212,12 +235,20 @@ export function copySnippetsAndAssets(
     const componentAssetsPath = path.join(componentsDir, snippetName, 'assets')
     if (fs.existsSync(componentAssetsPath)) {
       const themeAssetsPath = path.join(themePath, 'assets')
+      fs.mkdirSync(themeAssetsPath, { recursive: true })
+      
       const assetFiles = globSync('**/*', { cwd: componentAssetsPath })
       for (const assetFile of assetFiles) {
         const assetSource = path.join(componentAssetsPath, assetFile)
         const assetDest = path.join(themeAssetsPath, assetFile)
+        
+        if (!fs.existsSync(assetSource)) {
+          logger.debug(`Skipping missing asset: ${assetSource}`)
+          continue
+        }
+        
         fs.mkdirSync(path.dirname(assetDest), { recursive: true })
-        fs.copyFileSync(assetSource, assetDest)
+        copyChangedFiles(assetSource, assetDest)
         copiedFiles.add({
           body: '',
           file: path.join('assets', assetFile),
@@ -240,9 +271,6 @@ export async function copyComponents(componentSelector: string, themeDir: string
     copySetupFiles(componentsDir, themeDir, componentSelector)
   }
 
-  // Get config and package info
-  const configFilePath = path.join(path.resolve(process.cwd(), themeDir), themeComponentConfig.THEME_CLI_CONFIG)
-  
   // Filter snippets to copy based on import map and theme snippets
   const snippetsToCopy = await listSnippetsToCopy(themeDir, componentsDir)
   
@@ -251,13 +279,28 @@ export async function copyComponents(componentSelector: string, themeDir: string
 }
 
 export async function copyTheme(source: string, destination: string): Promise<void> {
-  if (fs.existsSync(destination)) {
-    fs.rmSync(destination, {recursive: true})
-  }
-
   if (source.startsWith('https://')) {
     await cloneTheme(source, destination)
   } else {
-    fs.cpSync(source, destination, {recursive: true})
+    copyChangedFiles(source, destination)
+  }
+}
+
+function copyChangedFiles(source: string, destination: string): void {
+  if (fs.lstatSync(source).isDirectory()) {
+    const files = fs.readdirSync(source, { withFileTypes: true })
+    for (const file of files) {
+      if (file.name.startsWith('.') || file.name === '.git') {
+        continue
+      }
+      const sourcePath = path.join(source, file.name)
+      const destinationPath = path.join(destination, file.name)
+      copyChangedFiles(sourcePath, destinationPath)
+    }
+  } else {
+    if (!fs.existsSync(destination) || !fs.readFileSync(source).equals(fs.readFileSync(destination))) {
+      fs.mkdirSync(path.dirname(destination), { recursive: true })
+      fs.copyFileSync(source, destination)
+    }
   }
 }

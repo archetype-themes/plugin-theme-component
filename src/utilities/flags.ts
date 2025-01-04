@@ -14,8 +14,9 @@ export default class Flags {
   static readonly COPY_SETUP_FILES = 'copy-setup-files';
   static readonly SYNC = 'sync';
   static readonly THEME_CLI_CONFIG = 'theme-cli-config';
-
   static readonly WATCH = 'watch';
+  static readonly GENERATE_IMPORT_MAP = 'generate-import-map';
+  static readonly GENERATE_TEMPLATE_MAP = 'generate-template-map';
 
   private flagValues: Record<string, any>;
   constructor(flags: Record<string, any>) {
@@ -57,7 +58,7 @@ flagDefinitions = {
 
   [Flags.COLLECTION_DEV_THEME_DIR]: OclifFlags.string({
     char: 't',
-    default: './theme',
+    default: 'https://github.com/archetype-themes/explorer',
     description: 'directory that contains theme files for development',
   }),
 
@@ -76,6 +77,7 @@ flagDefinitions = {
     char: 'y',
     default: true,
     description: 'sync changes to theme directory',
+    allowNo: true,
   }),
 
   [Flags.THEME_CLI_CONFIG]: OclifFlags.string({
@@ -88,5 +90,17 @@ flagDefinitions = {
     char: 'w',
     default: true,
     description: 'watch for changes in theme and component directories',
+  }),
+
+  [Flags.GENERATE_IMPORT_MAP]: OclifFlags.boolean({
+    char: 'i',
+    default: true,
+    description: 'generate import map',
+  }),
+
+  [Flags.GENERATE_TEMPLATE_MAP]: OclifFlags.boolean({
+    char: 'm',
+    default: true,
+    description: 'generate template map',
   })
 }

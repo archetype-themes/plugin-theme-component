@@ -11,6 +11,7 @@
   "license": "MIT",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
+    "watch": "tsc --watch",
     "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",

@@ -7,6 +7,8 @@ export interface ComponentConfig {
   COLLECTION_VERSION: string | undefined
   COLLECTIONS: Record<string, CollectionConfig>
   COPY_SETUP_FILES: boolean
+  GENERATE_IMPORT_MAP: boolean
+  GENERATE_TEMPLATE_MAP: boolean
   IMPORTMAP: Record<string, string>
   SYNC: boolean
   THEME_CLI_CONFIG: string

@@ -16,6 +16,8 @@ const DEFAULT_CONFIG: ComponentConfig = {
   COLLECTION_VERSION: undefined,
   COLLECTIONS: {},
   COPY_SETUP_FILES: true,
+  GENERATE_IMPORT_MAP: false,
+  GENERATE_TEMPLATE_MAP: false,
   IMPORTMAP: {},
   SYNC: false,
   THEME_CLI_CONFIG: './shopify.theme.toml',
