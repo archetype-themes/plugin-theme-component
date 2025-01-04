@@ -4,7 +4,8 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {getCollectionInfo, getThemeConfig} from '../../../../src/utilities/theme-files'
+import {getCollectionInfo} from '../../../../src/utilities/config.js'
+import {getThemeConfig} from '../../../../src/utilities/toml-config.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixturesPath = path.join(__dirname, '../../../fixtures')
@@ -27,13 +28,16 @@ describe('install', () => {
   })
 
   it('errors when theme path is invalid', async () => {
-    const {error} = await runCommand(['theme', 'component', 'install', 'invalid/path'])
+    const {error, stderr  } = await runCommand(['theme', 'component', 'install', 'invalid/path'])
+    console.log(error)
+    console.log(stderr)
     
-    expect(error?.message).to.contain('is not a valid theme directory.')
+    expect(error?.message).to.contain('does appear to contain valid theme files.')
     expect(error?.oclif?.exit).to.equal(1)
   })
 
   it('installs a component and its assets', async () => {
+    debugger;
     await runCommand(['theme', 'component', 'install', testThemePath])
     
     // Verify only rendered snippets were copied
@@ -60,22 +64,22 @@ describe('install', () => {
 
   it('updates the theme config with the collection name and version', async () => {
     const beforeConfig = getThemeConfig(path.join(testThemePath, 'shopify.theme.toml'))
-    const pkg = await getCollectionInfo()
     await runCommand(['theme', 'component', 'install', testThemePath])
+    const pkg = await getCollectionInfo()
     const afterConfig = getThemeConfig(path.join(testThemePath, 'shopify.theme.toml'))
 
     expect(beforeConfig).to.not.deep.equal(afterConfig)
-    expect(afterConfig.components.collections[pkg.name].version).to.equal(pkg.version)
+    expect(afterConfig.COMPONENTS?.COLLECTIONS?.[pkg.name]?.COLLECTION_VERSION).to.equal(pkg.version)
   })
 
   it('updates the theme config with the latest importmap values', async () => {
     const beforeConfig = getThemeConfig(path.join(testThemePath, 'shopify.theme.toml'))
-    const pkg = await getCollectionInfo()
     await runCommand(['theme', 'component', 'install', testThemePath])
+    const pkg = await getCollectionInfo()
     const afterConfig = getThemeConfig(path.join(testThemePath, 'shopify.theme.toml'))
 
     expect(beforeConfig).to.not.deep.equal(afterConfig)
-    expect(afterConfig.components.importmap['component-a']).to.equal(pkg.name)
-    expect(afterConfig.components.importmap['component-c']).to.equal('@theme')
+    expect(afterConfig.COMPONENTS?.IMPORTMAP?.['component-a']).to.equal(pkg.name)
+    expect(afterConfig.COMPONENTS?.IMPORTMAP?.['component-c']).to.equal('@theme')
   })
 })

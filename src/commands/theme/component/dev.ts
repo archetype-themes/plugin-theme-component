@@ -1,5 +1,7 @@
 import chokidar from 'chokidar'
 import fs from 'node:fs'
+import path from 'node:path'
+
 import {copyComponents, copyTheme} from '../../../utilities/theme-files.js'    
 import Flags from '../../../utilities/flags.js'
 import Args from '../../../utilities/args.js'
@@ -25,41 +27,56 @@ export default class Dev extends BaseCommand {
     Flags.COLLECTION_NAME,
     Flags.COLLECTION_DEV_DIR,
     Flags.COLLECTION_DEV_THEME_DIR,
-    Flags.COPY_SETUP_FILES,
-    Flags.WATCH,
-    Flags.SYNC,
+    Flags.COPY_SETUP_FILES
   ])
 
+  protected override async init(): Promise<void> {
+    await super.init(Dev)
+  }
+
   public async run(): Promise<void> {
-    // Remove existing dev directory
     if (fs.existsSync(config.COLLECTION_DEV_DIR!)) {
+      this.log(`Removing existing dev directory: ${config.COLLECTION_DEV_DIR}`)
       fs.rmSync(config.COLLECTION_DEV_DIR!, {recursive: true})
     }
     
-    // Copy theme files into dev directory
+    this.log(`Copying theme files from ${config.COLLECTION_DEV_THEME_DIR} into dev directory ${config.COLLECTION_DEV_DIR}`)
     await copyTheme(config.COLLECTION_DEV_THEME_DIR!, config.COLLECTION_DEV_DIR!)
 
-    // Copy component files into dev directory
+    this.log(`Copying component files from ${config.COLLECTION_COMPONENT_DIR} into dev directory ${config.COLLECTION_DEV_DIR}`)
     await copyComponents(this.args[Args.COMPONENT_SELECTOR], config.COLLECTION_DEV_DIR!)
 
     if (config.WATCH) {
-      // Watch theme source directory for changes
+      this.log(`Watching theme and component directories for changes...`)
+
       const themeWatcher = chokidar.watch(config.COLLECTION_DEV_THEME_DIR!)
-      
-      themeWatcher.on('all', async (event: string, path: string) => {
-        if (event === 'add' || event === 'change' || event === 'unlink') {
+      themeWatcher.on('all', async (event: string, filePath: string) => {
+        if (event === 'add' || event === 'change') {
+          this.log(`Theme file ${filePath} changed. Updating theme files to dev directory.`)
           await copyTheme(config.COLLECTION_DEV_THEME_DIR!, config.COLLECTION_DEV_DIR!)
-          // After theme files are copied, ensure components are up to date
           await copyComponents(this.args[Args.COMPONENT_SELECTOR], config.COLLECTION_DEV_DIR!)
+        } else if (event === 'unlink') {
+          this.log(`Theme file ${filePath} removed. Removing from dev directory.`)
+          const relativePath = path.relative(config.COLLECTION_DEV_THEME_DIR!, filePath)
+          const destinationPath = path.join(config.COLLECTION_DEV_DIR!, relativePath)
+          if (fs.existsSync(destinationPath)) {
+            fs.rmSync(destinationPath)
+          }
         }
       })
 
-      // Watch component directory for changes
       const componentWatcher = chokidar.watch(config.COLLECTION_COMPONENT_DIR)
-      
-      componentWatcher.on('all', async (event: string, path: string) => {
+      componentWatcher.on('all', async (event: string, filePath: string) => {
         if (event === 'add' || event === 'change') {
+          this.log(`Component file ${filePath} changed. Updating component files to dev directory.`)
           await copyComponents(this.args[Args.COMPONENT_SELECTOR], config.COLLECTION_DEV_DIR!)
+        } else if (event === 'unlink') {
+          this.log(`Component file ${filePath} removed. Removing from dev directory.`)
+          const relativePath = path.relative(config.COLLECTION_COMPONENT_DIR, filePath)
+          const destinationPath = path.join(config.COLLECTION_DEV_DIR!, relativePath)
+          if (fs.existsSync(destinationPath)) {
+            fs.rmSync(destinationPath)
+          }
         }
       })
 

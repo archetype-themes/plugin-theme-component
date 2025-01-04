@@ -1,8 +1,6 @@
 import {Command} from '@oclif/core'
-import { 
-  copyComponents,
-  updateThemeConfig
-} from '../../../utilities/theme-files.js'    
+import {copyComponents} from '../../../utilities/theme-files.js'    
+import {updateThemeConfig} from '../../../utilities/config.js'
 import Flags from '../../../utilities/flags.js'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
@@ -27,15 +25,21 @@ export default class Install extends BaseCommand {
     Flags.COLLECTION_NAME
   ])
 
+  protected override async init(): Promise<void> {
+    await super.init(Install)
+  }
+
   public async run(): Promise<void> {
-    // Copy components and get list of copied files
+    this.log(`Copying components to theme directory ${this.args[Args.THEME_DIR]}`)
     const filesCopied = await copyComponents(
       this.args[Args.COMPONENT_SELECTOR], 
       this.args[Args.THEME_DIR]
     )
+    this.log(`Copied ${filesCopied.size} files to theme directory ${this.args[Args.THEME_DIR]}`)
 
-    // Update theme config with copied files
+    this.log(`Updating theme config ${this.flags[Flags.THEME_CLI_CONFIG]}...`)
     await updateThemeConfig(filesCopied, this.args[Args.THEME_DIR])
+    this.log(`Theme config updated`)
   }
 }
 

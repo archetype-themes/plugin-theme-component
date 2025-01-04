@@ -1,88 +1,124 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
-import { parse as parseToml } from 'smol-toml'
 import Flags from './flags.js'
+import { ComponentConfig, PackageJSON, LiquidNode, CollectionConfig } from './types.js'
+import { getThemeConfig, updateThemeCollection, updateSnippetImportMap } from './toml-config.js'
 
-interface TomlConfig {
-  components?: {
-    collections?: Record<string, {
-      repository?: string
-      version?: string
-    }>
-    importmap?: Record<string, string>
-  }
+let config: ComponentConfig | undefined
+
+const DEFAULT_CONFIG: ComponentConfig = {
+  COLLECTIONS: {},
+  IMPORTMAP: {},
+  THEME_CLI_CONFIG: './shopify.theme.toml',
+  COLLECTION_COMPONENT_DIR: './components',
+  COLLECTION_NAME: undefined,
+  COLLECTION_VERSION: undefined,
+  COLLECTION_DEV_DIR: './dev',
+  COLLECTION_DEV_THEME_DIR: 'https://github.com/archetype-themes/explorer',
+  COLLECTION_PACKAGE_JSON: './package.json',
+  COPY_SETUP_FILES: true,
+  WATCH: false,
+  SYNC: false,
+  THEME_DIRECTORIES: ['layout', 'sections', 'templates', 'blocks'] as const
 }
 
-export interface ThemeComponentConfigData {
-  // Config from shopify.theme.toml
-  COLLECTIONS?: Record<string, {
-    repository?: string
-    version?: string
-  }>
-  IMPORTMAP?: Record<string, string>
+// Collection-specific config keys that can be overridden
+const COLLECTION_KEYS = [
+  'COLLECTION_COMPONENT_DIR',
+  'COLLECTION_VERSION',
+  'COLLECTION_DEV_DIR',
+  'COLLECTION_DEV_THEME_DIR',
+  'COLLECTION_PACKAGE_JSON',
+] as const
 
-  // Runtime config from flags - matches Flags.* definitions
-  THEME_CLI_CONFIG: string
-  COLLECTION_COMPONENT_DIR: string
-  COLLECTION_NAME?: string
-  COLLECTION_DEV_DIR?: string
-  COLLECTION_DEV_THEME_DIR?: string
-  COLLECTION_PACKAGE_JSON: string
-  COPY_SETUP_FILES?: boolean
-  WATCH?: boolean
-  SYNC?: boolean
+export async function getCollectionInfo(): Promise<PackageJSON> {
+  const pkgPath = path.join(process.cwd(), path.basename(themeComponentConfig.COLLECTION_PACKAGE_JSON));
+  const pkg = JSON.parse(await fs.promises.readFile(pkgPath, 'utf8'));
+  return {
+    name: pkg.name,
+    repository: pkg.repository,
+    version: pkg.version
+  };
 }
 
-let config: ThemeComponentConfigData | undefined
+export async function updateThemeConfig(filesCopied: Set<LiquidNode>, themeDir: string): Promise<void> {
+  const configFilePath = path.join(themeDir, themeComponentConfig.THEME_CLI_CONFIG)
+  const pkg = await getCollectionInfo()
+  const collectionName = await getCollectionName()
+  
+  updateThemeCollection(configFilePath, pkg)
+  updateSnippetImportMap(configFilePath, filesCopied, collectionName)
+}
 
-export function initializeConfig(flags: Flags, configPath?: string): void {
+export function initializeConfig(flags: Flags, configPath?: string, themeDir?: string): void {
   if (config) return // Only initialize once
 
-  // Initialize with default config
-  config = {
-    THEME_CLI_CONFIG: 'shopify.theme.toml',
-    COLLECTION_COMPONENT_DIR: './components',
-    COLLECTION_PACKAGE_JSON: './package.json',
-    COPY_SETUP_FILES: true,
-    WATCH: false,
-    SYNC: false,
-  }
+  // Start with default config
+  config = { ...DEFAULT_CONFIG }
 
-  // Load TOML config if it exists
-  if (configPath && fs.existsSync(configPath)) {
-    const tomlConfig = parseToml(fs.readFileSync(configPath, 'utf-8')) as TomlConfig
-    config = {
-      ...config,
-      COLLECTIONS: tomlConfig.components?.collections,
-      IMPORTMAP: tomlConfig.components?.importmap
+  // If we have a theme directory and a relative config path, make it absolute
+  const resolvedConfigPath = themeDir && configPath 
+    ? path.join(themeDir, configPath)
+    : configPath
+
+  // Override with TOML config if it exists
+  if (resolvedConfigPath && fs.existsSync(resolvedConfigPath)) {
+    const tomlConfig = getThemeConfig(resolvedConfigPath)
+    if (tomlConfig.COMPONENTS) {
+      Object.assign(config, tomlConfig.COMPONENTS)
     }
   }
 
-  // Override with flag values - direct 1:1 mapping with Flags.*
-  config = {
-    ...config,
-    THEME_CLI_CONFIG: flags[Flags.THEME_CLI_CONFIG] ?? config.THEME_CLI_CONFIG,
-    COLLECTION_COMPONENT_DIR: flags[Flags.COLLECTION_COMPONENT_DIR] ?? config.COLLECTION_COMPONENT_DIR,
-    COLLECTION_NAME: flags[Flags.COLLECTION_NAME],
-    COLLECTION_DEV_DIR: flags[Flags.COLLECTION_DEV_DIR],
-    COLLECTION_DEV_THEME_DIR: flags[Flags.COLLECTION_DEV_THEME_DIR],
-    COPY_SETUP_FILES: flags[Flags.COPY_SETUP_FILES],
-    WATCH: flags[Flags.WATCH],
-    SYNC: flags[Flags.SYNC]
-  }
+  // Get all static SNAKE_CASE keys from Flags class
+  const staticKeys = Object.getOwnPropertyNames(Flags)
+    .filter(key => key === key.toUpperCase())
+
+  // Map flag values using static properties as keys, filtering out undefined values
+  const flagValues = Object.fromEntries(
+    staticKeys
+      .map(key => [key, flags[Flags[key as keyof typeof Flags] as string]])
+      .filter(([_, value]) => value !== undefined)
+  )
+
+  Object.assign(config, flagValues)
 }
 
-function getConfig(): ThemeComponentConfigData {
+function getConfig(): ComponentConfig {
   if (!config) {
     throw new Error('Config not initialized. Call initializeConfig() first.')
   }
   return config
 }
 
+async function getCollectionName(): Promise<string> {
+  const config = getConfig()
+  if (config.COLLECTION_NAME) return config.COLLECTION_NAME
+  const pkg = await getCollectionInfo()
+  return pkg.name
+}
+
 // Create the config proxy
-export const themeComponentConfig = new Proxy({} as ThemeComponentConfigData, {
+export const themeComponentConfig = new Proxy({} as ComponentConfig, {
   get(target, prop) {
-    return getConfig()[prop as keyof ThemeComponentConfigData]
+    const config = getConfig()
+    
+    if (prop === 'COLLECTION_NAME') {
+      return getCollectionName()
+    }
+
+    // Check for collection-specific override if the property is a collection key
+    if (COLLECTION_KEYS.includes(prop as typeof COLLECTION_KEYS[number])) {
+      const collectionName = config.COLLECTION_NAME
+      if (collectionName && config.COLLECTIONS[collectionName]) {
+        const key = prop as keyof CollectionConfig
+        const collectionValue = config.COLLECTIONS[collectionName][key]
+        if (collectionValue !== undefined) {
+          return collectionValue
+        }
+      }
+    }
+
+    return config[prop as keyof ComponentConfig]
   }
 })
 

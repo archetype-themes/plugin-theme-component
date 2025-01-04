@@ -1,6 +1,13 @@
 import { Command } from '@oclif/core'
 
-type CommandLogger = Pick<Command, 'error' | 'log' | 'warn'>
+interface Logger {
+  error: Command['error']
+  log: Command['log']
+  warn: Command['warn']
+  debug: (...args: any[]) => void
+}
+
+type CommandLogger = Command
 
 let logger: CommandLogger | undefined
 
@@ -13,14 +20,13 @@ function getLogger(): CommandLogger {
   if (!logger) {
     throw new Error('Logger not initialized. Call initializeLogger() first.')
   }
-  
   return logger
 }
 
 // Create the logger proxy
-export const themeComponentLogger = new Proxy({} as CommandLogger, {
-  get(target, prop) {
-    return getLogger()[prop as keyof CommandLogger]
+export const themeComponentLogger = new Proxy({} as Logger, {
+  get(_, prop) {
+    return getLogger()[prop as keyof Logger]
   }
 })
 

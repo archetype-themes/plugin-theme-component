@@ -1,70 +1,18 @@
 import {glob,globSync} from 'glob'
 import fs from 'node:fs'
 import path from 'node:path'
-import {parse, stringify} from 'smol-toml'
 
-import config from './config.js'
+import {
+  LiquidNode,
+} from './types.js'
+import {
+  themeComponentConfig
+} from './config.js'
 import {cloneTheme} from './git.js'
-
-interface ThemeConfig {
-  components: {
-    collections: Record<string, {
-      repository: string;
-      version: string;
-    }>;
-    importmap: Record<string, string>;
-  };
-}
-
-interface LiquidNode {
-  body: string
-  file: string 
-  name: string
-  snippets: string[]
-  type: 'asset' | 'block' | 'layout' | 'section' | 'snippet' | 'template'
-}
 
 const LIQUID_BLOCK_REGEX = /{%-?.*?-?%}/gs
 const LIQUID_COMMENTS_REGEX = /{%-?\s*comment\s*-?%}[\S\s]*?{%-?\s*endcomment\s*-?%}/gi
 const LIQUID_RENDER_REGEX = /\srender\s+'([^']+)'/gs
-
-interface PackageJSON {
-  name: string;
-  repository: string;
-  version: string;
-}
-
-export function getThemeConfig(configFilePath: string): ThemeConfig {
-  const configContent = fs.readFileSync(configFilePath, 'utf8')
-  const parsed = parse(configContent) as unknown as ThemeConfig
-
-  return {
-    components: {
-      collections: parsed.components?.collections || {},
-      importmap: parsed.components?.importmap || {}
-    }
-  }
-}
-
-export function updateThemeCollection(configFilePath: string, pkg: PackageJSON): void {
-  const config = getThemeConfig(configFilePath)
-  config.components.collections[pkg.name] = {repository: pkg.repository, version: pkg.version}
-  const updatedConfigContent = stringify(config)
-  fs.writeFileSync(configFilePath, updatedConfigContent, 'utf8')
-}
-
-export function updateSnippetImportMap(configFilePath: string, snippets: Set<LiquidNode>, collectionName: string): void {
-  const config = getThemeConfig(configFilePath)
-  const importMap = { ...config.components.importmap }
-  
-  for (const snippet of snippets) {
-    importMap[snippet.name] = collectionName
-  }
-  
-  config.components.importmap = importMap
-  const updatedConfigContent = stringify(config)
-  fs.writeFileSync(configFilePath, updatedConfigContent, 'utf8')
-}
 
 export function getSnippetNames(liquidCode: string) {
   const cleanLiquidCode = liquidCode.replaceAll(LIQUID_COMMENTS_REGEX, '')
@@ -81,18 +29,16 @@ export function getSnippetNames(liquidCode: string) {
 
 export async function listSnippetsToCopy(
   themePath: string, 
-  componentsDir: string, 
-  configFilePath: string,
-  collectionName: string
+  componentsDir: string
 ): Promise<Set<LiquidNode>> {
   const entryPoints = await listThemeEntryPoints(themePath);
   const allCollectionSnippets = await listComponentCollectionSnippets(componentsDir)
   const renderedCollectionSnippets = listRenderedSnippets(entryPoints, allCollectionSnippets)
   const themeSnippets = await listThemeSnippets(themePath)
-  const config = await getThemeConfig(configFilePath)
-  const importMap = config?.components?.importmap
-
-  const snippetsToCopy = new Set<LiquidNode>();
+  const importMap = themeComponentConfig.IMPORTMAP
+  const collectionName = await themeComponentConfig.COLLECTION_NAME
+  const snippetsToCopy =    new Set<LiquidNode>();
+  
   for (const snippet of renderedCollectionSnippets) {
     const importMapEntry = importMap?.[snippet.name];
     if (importMapEntry === collectionName || importMapEntry !== '@theme' || (!importMapEntry && !themeSnippets.has(snippet))) {
@@ -116,11 +62,9 @@ export function isThemeDirectory(directory: string): boolean {
 }
 
 export async function listThemeEntryPoints(directory: string): Promise<Set<LiquidNode>> {
-  const themeDirectories = ['layout', 'sections', 'templates', 'blocks'] as const
   const entryPoints = new Set<LiquidNode>()
 
-  
-  for (const dir of themeDirectories) {
+  for (const dir of themeComponentConfig.THEME_DIRECTORIES) {
     const files = glob.sync(path.join(dir, '**/*.liquid'), {cwd: directory})
     for (const file of files) {
       const contents = fs.readFileSync(path.join(directory, file), 'utf8')
@@ -235,15 +179,6 @@ export async function listComponentCollectionSnippets(directory: string): Promis
   return snippets
 }
 
-export async function getCollectionInfo(): Promise<PackageJSON> {
-  const pkg = JSON.parse(await fs.promises.readFile(config.COLLECTION_PACKAGE_JSON, 'utf8'));
-  return {
-    name: pkg.name,
-    repository: pkg.repository,
-    version: pkg.version
-  };
-}
-
 export function copySetupFiles(
   componentsDir: string,
   themeDir: string,
@@ -266,30 +201,50 @@ export function copySnippetsAndAssets(
   const copiedFiles = new Set<LiquidNode>()
   
   for (const snippet of snippetsToCopy) {
+    // Copy the snippet file
     const sourcePath = path.join(componentsDir, snippet.file)
     const destinationPath = path.join(themePath, 'snippets', path.basename(snippet.file))
     fs.copyFileSync(sourcePath, destinationPath)
     copiedFiles.add(snippet)
+
+    // Check for and copy associated assets
+    const snippetName = snippet.name
+    const componentAssetsPath = path.join(componentsDir, snippetName, 'assets')
+    if (fs.existsSync(componentAssetsPath)) {
+      const themeAssetsPath = path.join(themePath, 'assets')
+      const assetFiles = globSync('**/*', { cwd: componentAssetsPath })
+      for (const assetFile of assetFiles) {
+        const assetSource = path.join(componentAssetsPath, assetFile)
+        const assetDest = path.join(themeAssetsPath, assetFile)
+        fs.mkdirSync(path.dirname(assetDest), { recursive: true })
+        fs.copyFileSync(assetSource, assetDest)
+        copiedFiles.add({
+          file: path.join('assets', assetFile),
+          name: path.basename(assetFile, path.extname(assetFile)),
+          type: 'asset',
+          body: '',
+          snippets: []
+        } as LiquidNode)
+      }
+    }
   }
 
   return copiedFiles
 }
 
 export async function copyComponents(componentSelector: string, themeDir: string): Promise<Set<LiquidNode>> {
-  const componentsDir = path.join(process.cwd(), config.COLLECTION_COMPONENT_DIR)
+  const componentsDir = path.join(process.cwd(), themeComponentConfig.COLLECTION_COMPONENT_DIR)
 
   // Copy setup files first
-  if (config.COPY_SETUP_FILES) {
+  if (themeComponentConfig.COPY_SETUP_FILES) {
     copySetupFiles(componentsDir, themeDir, componentSelector)
   }
 
   // Get config and package info
-  const configFilePath = path.join(path.resolve(process.cwd(), themeDir), config.THEME_CLI_CONFIG)
-  const pkg = await getCollectionInfo()
-  const collectionName = config.COLLECTION_NAME || pkg.name
-
+  const configFilePath = path.join(path.resolve(process.cwd(), themeDir), themeComponentConfig.THEME_CLI_CONFIG)
+  
   // Filter snippets to copy based on import map and theme snippets
-  const snippetsToCopy = await listSnippetsToCopy(themeDir, componentsDir, configFilePath, collectionName)
+  const snippetsToCopy = await listSnippetsToCopy(themeDir, componentsDir)
   
   // Copy filtered snippets and their assets, and return the copied files
   return copySnippetsAndAssets(snippetsToCopy, themeDir, componentsDir)
@@ -305,13 +260,4 @@ export async function copyTheme(source: string, destination: string): Promise<vo
   } else {
     fs.cpSync(source, destination, {recursive: true})
   }
-}
-
-export async function updateThemeConfig(filesCopied: Set<LiquidNode>, themeDir: string): Promise<void> {
-  const configFilePath = path.join(themeDir, config.THEME_CLI_CONFIG)
-  const pkg = await getCollectionInfo()
-  const collectionName = config.COLLECTION_NAME || pkg.name
-  
-  updateThemeCollection(configFilePath, pkg)
-  updateSnippetImportMap(configFilePath, filesCopied, collectionName)
 }

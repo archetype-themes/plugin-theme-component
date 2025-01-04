@@ -33,9 +33,11 @@ export default class Args {
         description: 'path to theme directory', 
         required: true,
         parse: async (input: string): Promise<string> => {
+          logger.debug(`Parsing theme directory argument '${input}'`)
           if (!isThemeDirectory(input)) {
-            logger.error(new Error(`The provided path ${input} is not a valid theme directory.`), {exit: 1})
+            logger.error(new Error(`The provided path ${input} does appear to contain valid theme files.`), {exit: 1})
           }
+          logger.debug(`Theme directory ${input} appears to be valid`)
           return input
         }
       })
@@ -47,27 +49,29 @@ export default class Args {
         required: false, 
         default: '*',
         parse: async (input: string): Promise<string> => {
+          logger.debug(`Parsing component selector argument '${input}'`)
           // Allow * as a valid pattern
-          if (input === '*') return input
-
-          // For component names, only allow alphanumeric, hyphen, and underscore
-          const validComponentName = /^[a-zA-Z0-9-_]+$/
-          const components = input.split(',').map(name => name.trim())
-
-          // Validate each component name format
-          const invalidNames = components.filter(name => !validComponentName.test(name))
-          if (invalidNames.length > 0) {
-            throw new Error(`Invalid component name(s): ${invalidNames.join(', ')}. Component names can only contain letters, numbers, hyphens, and underscores.`)
+          if (input === '*') {
+            logger.debug('Component selector * is valid')
+            return input
           }
 
-          // Get available components from the collection
+          logger.debug('Component name(s) provided. Checking if component selector is valid')
+          const validComponentName = /^[a-zA-Z0-9-_]+$/
+          const components = input.split(',').map(name => name.trim())
+          const invalidNames = components.filter(name => !validComponentName.test(name))
+          if (invalidNames.length > 0) {
+            logger.error(new Error(`Invalid component name(s): ${invalidNames.join(', ')}. Component names can only contain letters, numbers, hyphens, and underscores.`), {exit: 1})
+          }
+
+          logger.debug('Checking if provided components exist in collection')
           const availableComponents = await glob('*/', {cwd: config.COLLECTION_COMPONENT_DIR})
             .then(dirs => dirs.map((dir: string) => dir.replace('/', '')))
-
-          // Check if all requested components exist
           const missingComponents = components.filter(name => !availableComponents.includes(name))
           if (missingComponents.length > 0) {
-            throw new Error(`Component(s) not found in collection: ${missingComponents.join(', ')}.`)
+            logger.warn(new Error(`Component(s) not found in collection: ${missingComponents.join(', ')}.`))
+          } else {
+            logger.debug('All provided components exist in collection')
           }
 
           return input
