@@ -1,9 +1,0 @@
-[COMPONENTS]
-[COMPONENTS.COLLECTIONS]
-[COMPONENTS.COLLECTIONS."@archetype-themes/test-collection"]
-COLLECTION_DEV_THEME_DIR = "https://github.com/archetype-themes/components"
-COLLECTION_VERSION = "1.0.0"
-
-[COMPONENTS.IMPORTMAP]
-component-a = "@archetype-themes/test-collection"
-component-c = "@theme"

@@ -8,15 +8,20 @@ export default class Flags {
   [key: string]: any;
   static readonly COLLECTION_COMPONENT_DIR = 'collection-components-dir';
   static readonly COLLECTION_DEV_DIR = 'collection-dev-dir';
-  static readonly COLLECTION_DEV_THEME_DIR = 'collection-dev-theme-dir';
+  static readonly THEME_DIR = 'theme-dir';
   static readonly COLLECTION_NAME = 'collection-name';
   static readonly COLLECTION_PACKAGE_JSON = 'collection-package-json';
-  static readonly COPY_SETUP_FILES = 'copy-setup-files';
-  static readonly SYNC = 'sync';
+  static readonly COLLECTION_VERSION = 'collection-version';
+  static readonly SETUP_FILES = 'setup-files';
+  static readonly PREVIEW = 'preview';
   static readonly THEME_CLI_CONFIG = 'theme-cli-config';
   static readonly WATCH = 'watch';
   static readonly GENERATE_IMPORT_MAP = 'generate-import-map';
   static readonly GENERATE_TEMPLATE_MAP = 'generate-template-map';
+  static readonly IGNORE_CONFLICTS = 'ignore-conflicts';
+  static readonly IGNORE_OVERRIDES = 'ignore-overrides';
+  static readonly CLEAN = 'clean';
+  static readonly QUIET = 'quiet';
 
   private flagValues: Record<string, any>;
   constructor(flags: Record<string, any>) {
@@ -56,7 +61,7 @@ flagDefinitions = {
     description: 'directory to output development files',
   }),
 
-  [Flags.COLLECTION_DEV_THEME_DIR]: OclifFlags.string({
+  [Flags.THEME_DIR]: OclifFlags.string({
     char: 't',
     default: 'https://github.com/archetype-themes/explorer',
     description: 'directory that contains theme files for development',
@@ -67,13 +72,13 @@ flagDefinitions = {
     description: 'name of the component collection',
   }),
 
-  [Flags.COPY_SETUP_FILES]: OclifFlags.boolean({
+  [Flags.SETUP_FILES]: OclifFlags.boolean({
     char: 's',
     default: true,
     description: 'copy setup files to theme directory',
   }),
 
-  [Flags.SYNC]: OclifFlags.boolean({
+  [Flags.PREVIEW]: OclifFlags.boolean({
     char: 'y',
     default: true,
     description: 'sync changes to theme directory',
@@ -102,5 +107,34 @@ flagDefinitions = {
     char: 'm',
     default: true,
     description: 'generate template map',
+  }),
+
+  [Flags.IGNORE_CONFLICTS]: OclifFlags.boolean({
+    char: 'f',
+    default: false,
+    description: 'ignore conflicts when mapping components',
+  }),
+
+  [Flags.IGNORE_OVERRIDES]: OclifFlags.boolean({
+    char: 'o',
+    default: false,
+    description: 'ignore overrides when mapping components',
+  }),
+
+  [Flags.CLEAN]: OclifFlags.boolean({
+    description: 'Clean the theme directory before copying components',
+    default: false
+  }),
+
+  [Flags.QUIET]: OclifFlags.boolean({
+    char: 'q',
+    description: 'suppress non-essential output',
+    default: false,
+    allowNo: true
+  }),
+
+  [Flags.COLLECTION_VERSION]: OclifFlags.string({
+    char: 'v',
+    description: 'version of the component collection',
   })
 }

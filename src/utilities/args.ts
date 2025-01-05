@@ -1,8 +1,8 @@
 import {Args as OclifArgs} from '@oclif/core'
 import {glob} from 'glob'
-import config from './config.js'
 import logger from './logger.js'
-import {isThemeDirectory} from './theme-files.js'
+import path from 'node:path'
+import fs from 'node:fs'
 
 export let argDefinitions: Record<string, any>
 
@@ -41,7 +41,16 @@ argDefinitions = {
     required: true,
     parse: async (input: string): Promise<string> => {
       logger.debug(`Parsing theme directory argument '${input}'`)
-      if (!isThemeDirectory(input)) {
+      const requiredFolders = ['layout', 'templates', 'config']
+      let isThemeDirectory = true
+
+      for (const folder of requiredFolders) {
+        if (!fs.existsSync(path.join(input, folder))) {
+          isThemeDirectory = false
+        }
+      }
+
+      if (!isThemeDirectory) {
         logger.error(new Error(`The provided path ${input} does not appear to contain valid theme files.`), {exit: 1})
       }
       logger.debug(`Theme directory ${input} appears to be valid`)
@@ -70,7 +79,7 @@ argDefinitions = {
       }
 
       logger.debug('Checking if provided components exist in collection')
-      const availableComponents = await glob('*/', {cwd: config.COLLECTION_COMPONENT_DIR})
+      const availableComponents = await glob('*/', {cwd: 'components'})
         .then(dirs => dirs.map((dir: string) => dir.replace('/', '')))
       const missingComponents = components.filter(name => !availableComponents.includes(name))
       if (missingComponents.length > 0) {

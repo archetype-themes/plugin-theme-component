@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
-
+import Flags from '../../../utilities/flags.js'
 export default class GenerateImportMap extends BaseCommand {
   static description = 'Generate an import map for JavaScript files in the assets directory'
 
@@ -47,6 +47,8 @@ export default class GenerateImportMap extends BaseCommand {
       fs.writeFileSync(importMapPath, importMapContent)
     }
 
-    this.log('Successfully generated import map at snippets/import-map.liquid')
+    if (!this.flags[Flags.QUIET]) {
+      this.log('Successfully generated import map at snippets/import-map.liquid')
+    }
   }
 }

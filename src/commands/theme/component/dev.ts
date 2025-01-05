@@ -9,14 +9,18 @@
 
 
 import chokidar from 'chokidar'
-import fs from 'node:fs'
 import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import config from '../../../utilities/config.js'
 import Flags from '../../../utilities/flags.js'
-import {copyComponents, copyTheme} from '../../../utilities/theme-files.js'
+import { cloneTheme } from '../../../utilities/git.js'
+import { getCollectionNodes } from '../../../utilities/nodes.js'
+import { syncFiles, copyFileIfChanged, cleanDir } from '../../../utilities/files.js'
+
+import Install from './install.js'
+import GenerateImportMap from '../generate/import-map.js'
+import GenerateTemplateMap from '../generate/template-map.js'
 
 export default class Dev extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -32,14 +36,12 @@ export default class Dev extends BaseCommand {
   ]
 
   static override flags = Flags.getDefinitions([
-    Flags.THEME_CLI_CONFIG,
-    Flags.COLLECTION_COMPONENT_DIR,
     Flags.COLLECTION_NAME,
-    Flags.COLLECTION_DEV_DIR,
-    Flags.COLLECTION_DEV_THEME_DIR,
-    Flags.COPY_SETUP_FILES,
+    Flags.COLLECTION_VERSION,
+    Flags.THEME_DIR,
+    Flags.SETUP_FILES,
     Flags.WATCH,
-    Flags.SYNC,
+    Flags.PREVIEW,
     Flags.GENERATE_IMPORT_MAP,
     Flags.GENERATE_TEMPLATE_MAP
   ])
@@ -49,73 +51,90 @@ export default class Dev extends BaseCommand {
   }
 
   public async run(): Promise<void> {
-    if (fs.existsSync(config.COLLECTION_DEV_DIR!)) {
-      this.log(`Removing existing dev directory: ${config.COLLECTION_DEV_DIR}`)
-      fs.rmSync(config.COLLECTION_DEV_DIR!, {recursive: true})
+    const componentSelector = this.args[Args.COMPONENT_SELECTOR]
+    const generateImportMap = this.flags[Flags.GENERATE_IMPORT_MAP]
+    const generateTemplateMap = this.flags[Flags.GENERATE_TEMPLATE_MAP]
+    const setupFiles = this.flags[Flags.SETUP_FILES]
+    const preview = this.flags[Flags.PREVIEW]
+    const watch = this.flags[Flags.WATCH]
+
+    const collectionDir = process.cwd()
+    const componentsDir = path.join(collectionDir, 'components')
+    const devDir = path.join(process.cwd(), '.dev')
+
+    // Remove the existing dev directory if it exists
+    cleanDir(devDir)
+
+    // Clone the theme if it's a remote repo and set the themeDir to the cloned repo
+    let themeDir: string;
+    if (this.flags[Flags.THEME_DIR].includes('github.com')) {
+      themeDir = path.join(devDir, '.repo')
+      this.log(`Cloning theme from ${this.flags[Flags.THEME_DIR]} into dev directory ${devDir}`)
+      await cloneTheme(this.flags[Flags.THEME_DIR], themeDir)
+    } else {
+      themeDir = path.resolve(process.cwd(), this.flags[Flags.THEME_DIR])
     }
-    
-    this.log(`Copying theme files from ${config.COLLECTION_DEV_THEME_DIR} into dev directory ${config.COLLECTION_DEV_DIR}`)
-    await copyTheme(config.COLLECTION_DEV_THEME_DIR!, config.COLLECTION_DEV_DIR!)
 
-    this.log(`Copying component files from ${config.COLLECTION_COMPONENT_DIR} into dev directory ${config.COLLECTION_DEV_DIR}`)
-    await copyComponents(this.args[Args.COMPONENT_SELECTOR], config.COLLECTION_DEV_DIR!)
+    this.log(`Building theme in ${devDir}...`)
+    const buildTheme = async(destination: string) => {
+      // Copy the theme files to the dev directory
+      syncFiles(themeDir, destination);
 
-    if (this.flags[Flags.GENERATE_IMPORT_MAP]) {
-      await this.config.runCommand(`theme:generate:import-map`, [config.COLLECTION_DEV_DIR!])
+      // Copy the component setup files to the dev directory
+      if (setupFiles) {
+        const collectionNodes = getCollectionNodes(collectionDir)
+        collectionNodes
+          .filter(node => componentSelector === '*' || componentSelector.includes(path.basename(node.file, '.liquid')))
+          .flatMap(node => node.setup)
+          .forEach(setupFile => {
+            const folderName = path.basename(path.dirname(setupFile))
+            const name = path.basename(setupFile)
+            const node = collectionNodes.find(n => n.name === name && n.themeFolder === folderName)
+            if (node) {
+              copyFileIfChanged(node.file, path.join(destination, node.themeFolder, node.name))
+            }
+          })
+      }
+      
+      // Install the components
+      await Install.run([destination])
+
+      // Generate the js import map
+      if (generateImportMap) {
+        await GenerateImportMap.run([destination, '--quiet'])
+      }
+
+      // Generate the template map that is used by explorer
+      if (generateTemplateMap && setupFiles) {
+        await GenerateTemplateMap.run([destination, '--quiet'])
+      }
+    } 
+
+    await buildTheme(devDir)
+
+    // Run shopify theme dev on the dev directory
+    if (preview) {
+      await this.config.runCommand(`theme:dev`, ['--path', devDir])
     }
 
-    if (this.flags[Flags.GENERATE_TEMPLATE_MAP] && this.flags[Flags.COPY_SETUP_FILES]) {
-      await this.config.runCommand(`theme:generate:template-map`, [config.COLLECTION_DEV_DIR!])
-    }
-
-    if (config.SYNC) {
-      this.log(`Running 'shopify theme dev' on path ${config.COLLECTION_DEV_DIR}`)
-      await this.config.runCommand(`theme:dev`, ['--path', config.COLLECTION_DEV_DIR!])
-    }
-
-    if (config.WATCH) {
-      this.log(`Watching theme and component directories for changes...`)
-
-      const themeWatcher = chokidar.watch(config.COLLECTION_DEV_THEME_DIR!,{
-        // ignored: (file) => file.startsWith('.'),
+    // Watch for changes to the theme and components and rebuild the theme
+    if (watch) {
+      const watchDir = path.join(devDir, '.watch')
+      const themeWatcher = chokidar.watch([themeDir, componentsDir], {
         ignoreInitial: true,
-      })
-      themeWatcher.on('all', async (event: string, filePath: string) => {
-        if (event === 'add' || event === 'change') {
-          this.debug(`Theme file ${filePath} changed. Updating theme files to dev directory.`)
-          await copyTheme(config.COLLECTION_DEV_THEME_DIR!, config.COLLECTION_DEV_DIR!)
-          await copyComponents(this.args[Args.COMPONENT_SELECTOR], config.COLLECTION_DEV_DIR!)
-        } else if (event === 'unlink') {
-          this.debug(`Theme file ${filePath} removed. Removing from dev directory.`)
-          const relativePath = path.relative(config.COLLECTION_DEV_THEME_DIR!, filePath)
-          const destinationPath = path.join(config.COLLECTION_DEV_DIR!, relativePath)
-          if (fs.existsSync(destinationPath)) {
-            fs.rmSync(destinationPath)
-          }
-        }
+        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: true
       })
 
-      const componentWatcher = chokidar.watch(config.COLLECTION_COMPONENT_DIR, {
-        ignored: (file) => file.endsWith('.md'),
-        ignoreInitial: true
+      // Watch for specific file events
+      themeWatcher.on('all', async () => {
+        await buildTheme(watchDir)
+        syncFiles(watchDir, devDir)
       })
-      componentWatcher.on('all', async (event: string, filePath: string) => {
-        if (event === 'add' || event === 'change') {
-          this.debug(`Component file ${filePath} changed. Updating component files to dev directory.`)
-          await copyComponents(this.args[Args.COMPONENT_SELECTOR], config.COLLECTION_DEV_DIR!)
-        } else if (event === 'unlink') {
-          this.debug(`Component file ${filePath} removed. Removing from dev directory.`)
-          const relativePath = path.relative(config.COLLECTION_COMPONENT_DIR, filePath)
-          const destinationPath = path.join(config.COLLECTION_DEV_DIR!, relativePath)
-          if (fs.existsSync(destinationPath)) {
-            fs.rmSync(destinationPath)
-          }
-        }
-      })
+
+      this.log('Watching for changes...')
 
       return new Promise(() => {})
     }
   }
 }
-
-

@@ -3,6 +3,7 @@ import * as path from 'path'
 
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
+import Flags from '../../../utilities/flags.js'
 
 export default class GenerateTemplateMap extends BaseCommand {
   static description = 'Generate a template map for component routes in the templates directory'
@@ -149,6 +150,9 @@ export default class GenerateTemplateMap extends BaseCommand {
       fs.writeFileSync(path.join(snippetsDir, 'template-map.liquid'), templateMapContent)
     }
 
-    this.log('Successfully generated template map at snippets/template-map.liquid')
+    if (!this.flags[Flags.QUIET]) {
+      this.log('Successfully generated template map at snippets/template-map.liquid')
+    }
   }
 }
+

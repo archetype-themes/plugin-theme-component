@@ -1,0 +1,24 @@
+{
+  "collections": {
+    "@archetype-themes/test-collection": {
+      "version": "1.0.0"
+    }
+  },
+  "files": {
+    "snippets": {
+      "removed.liquid": "@archetype-themes/test-collection",
+      "theme-component.liquid": "@theme",
+      "theme-component-removed.liquid": "@theme",
+      "other-collection-component.liquid": "@other/collection",
+      "other-collection-component-removed.liquid": "@other/collection",
+      "override.liquid": "@theme",
+      "override-parent.liquid": "@theme"
+    },
+    "assets": {
+      "other-collection-component.css": "@other/collection",
+      "other-collection-component-removed.css": "@other/collection",
+      "theme-component.css": "@theme",
+      "theme-component-removed.css": "@theme"
+    }
+  }
+}
