@@ -7,6 +7,7 @@ import logger from './logger.js'
 /**
  * Synchronizes files from a source directory to a destination directory.
  * Removes files in destination that don't exist in source and copies new/changed files.
+ * Ensures minimal file operations to avoid unnecessary watcher events.
  */
 export function syncFiles(srcDir: string, destDir: string) {
   if (!fse.existsSync(srcDir)) {

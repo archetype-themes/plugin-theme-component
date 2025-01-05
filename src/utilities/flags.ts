@@ -6,15 +6,12 @@ export let flagDefinitions: Record<string, any>;
 
 export default class Flags {
   [key: string]: any;
-  static readonly COLLECTION_COMPONENT_DIR = 'collection-components-dir';
-  static readonly COLLECTION_DEV_DIR = 'collection-dev-dir';
   static readonly THEME_DIR = 'theme-dir';
   static readonly COLLECTION_NAME = 'collection-name';
   static readonly COLLECTION_PACKAGE_JSON = 'collection-package-json';
   static readonly COLLECTION_VERSION = 'collection-version';
   static readonly SETUP_FILES = 'setup-files';
   static readonly PREVIEW = 'preview';
-  static readonly THEME_CLI_CONFIG = 'theme-cli-config';
   static readonly WATCH = 'watch';
   static readonly GENERATE_IMPORT_MAP = 'generate-import-map';
   static readonly GENERATE_TEMPLATE_MAP = 'generate-template-map';
@@ -49,18 +46,6 @@ export default class Flags {
 }
 
 flagDefinitions = {
-  [Flags.COLLECTION_COMPONENT_DIR]: OclifFlags.string({
-    char: 'd',
-    default: './components',
-    description: 'directory that contains components',
-  }),
-
-  [Flags.COLLECTION_DEV_DIR]: OclifFlags.string({
-    char: 'o',
-    default: './.dev',
-    description: 'directory to output development files',
-  }),
-
   [Flags.THEME_DIR]: OclifFlags.string({
     char: 't',
     default: 'https://github.com/archetype-themes/explorer',
@@ -83,12 +68,6 @@ flagDefinitions = {
     default: true,
     description: 'sync changes to theme directory',
     allowNo: true,
-  }),
-
-  [Flags.THEME_CLI_CONFIG]: OclifFlags.string({
-    char: 'c',
-    default: './shopify.theme.toml',
-    description: 'path to the Shopify Theme CLI config file (typically shopify.theme.toml)',
   }),
 
   [Flags.WATCH]: OclifFlags.boolean({

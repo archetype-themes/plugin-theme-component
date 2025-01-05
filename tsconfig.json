@@ -7,7 +7,7 @@
     "strict": true,
     "target": "es2022",
     "moduleResolution": "node16",
-    "types": ["node", "fs-extra"]
+    "types": ["node", "mocha"]
   },
   "include": ["./src/**/*"],
   "ts-node": {
