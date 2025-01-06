@@ -11,7 +11,7 @@ const themePath = path.join(__dirname, '../../../fixtures/theme')
 const testCollectionPath = path.join(fixturesPath, 'test-collection')
 const testThemePath = path.join(fixturesPath, 'test-theme')
 
-describe('theme component map', () => {
+describe('theme component clean', () => {
   beforeEach(() => {
     fs.cpSync(collectionPath, testCollectionPath, {recursive: true})
     fs.cpSync(themePath, testThemePath, {recursive: true})
@@ -23,10 +23,22 @@ describe('theme component map', () => {
     fs.rmSync(testThemePath, {force: true, recursive: true})
   })
 
-  it('should throw an error if the cwd is not a component collection', async () => {
+  it('removes files that are no longer in the component-map.json file', async () => {
+    await runCommand(['theme', 'component', 'clean', testThemePath])
+    expect(fs.existsSync(path.join(testThemePath, 'snippets', 'missing.liquid'))).to.be.false
+    expect(fs.existsSync(path.join(testThemePath, 'assets', 'missing.css'))).to.be.false
+  })
+
+  it('does not remove files that are still in the component-map.json file', async () => {
+    await runCommand(['theme', 'component', 'clean', testThemePath])
+    expect(fs.existsSync(path.join(testThemePath, 'snippets', 'theme-component.liquid'))).to.be.true
+    expect(fs.existsSync(path.join(testThemePath, 'assets', 'theme-component.css'))).to.be.true
+  })
+
+  it('can be run from a theme directory without an argument', async () => {
     process.chdir(testThemePath)
-    const {error} = await runCommand(['theme', 'component', 'map', testThemePath])
-    expect(error).to.be.instanceOf(Error)
-    expect(error?.message).to.include('Warning: Current directory does not appear to be a component collection. Expected to find package.json and components directory.')
+    await runCommand(['theme', 'component', 'clean'])
+    expect(fs.existsSync(path.join(testThemePath, 'snippets', 'missing.liquid'))).to.be.false
+    expect(fs.existsSync(path.join(testThemePath, 'assets', 'missing.css'))).to.be.false
   })
 })

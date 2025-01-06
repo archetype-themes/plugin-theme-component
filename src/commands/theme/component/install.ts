@@ -4,6 +4,7 @@
  * - Maps the components in the theme directory
  * - Copies rendered component files (snippets and assets) into the theme directory
  * - Cleans up unnecessary component files in the theme directory
+ * - Generates an import-map.liquid snippet file based on JS assets
  */
 
 import path from 'node:path'
@@ -15,6 +16,7 @@ import Flags from '../../../utilities/flags.js'
 import Map from './map.js'
 import Copy from './copy.js'
 import Clean from './clean.js'
+import GenerateImportMap from '../generate/import-map.js'
 
 export default class Install extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -43,5 +45,6 @@ export default class Install extends BaseCommand {
     await Map.run([this.args[Args.THEME_DIR]!])
     await Copy.run([this.args[Args.THEME_DIR]!])
     await Clean.run([this.args[Args.THEME_DIR]!])
+    await GenerateImportMap.run([this.args[Args.THEME_DIR]!])
   }
 }

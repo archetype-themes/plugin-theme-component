@@ -74,6 +74,7 @@ flagDefinitions = {
     char: 'w',
     default: true,
     description: 'watch for changes in theme and component directories',
+    allowNo: true,
   }),
 
   [Flags.GENERATE_IMPORT_MAP]: OclifFlags.boolean({
