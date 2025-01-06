@@ -16,7 +16,8 @@ import { getNameFromPackageJson, getVersionFromPackageJson } from '../../../util
 
 export default class ComponentMap extends BaseCommand {
   static override args = Args.getDefinitions([
-    Args.THEME_DIR
+    Args.THEME_DIR,
+    Args.COMPONENT_SELECTOR
   ])
 
   static override description = 'Generates or updates a shopify.theme.json file with the component collection details and a snippets import map'

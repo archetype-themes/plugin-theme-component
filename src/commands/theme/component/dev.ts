@@ -80,7 +80,7 @@ export default class Dev extends BaseCommand {
       // Copy the theme files to the dev directory
       syncFiles(themeDir, destination);
 
-      // Copy the component setup files to the dev directory
+      // Copy the component setup files to the dev directory based on the component selector
       if (setupFiles) {
         const collectionNodes = getCollectionNodes(collectionDir)
         collectionNodes

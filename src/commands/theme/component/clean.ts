@@ -1,8 +1,8 @@
 /**
- * This command copies component files into a theme directory.
+ * This command cleans up component files in a theme directory.
  * 
- * - Copies rendered component files (snippets and assets) into the theme directory
- * - Updates the theme CLI config (shopify.theme.json) with the component collection details
+ * - Removes component files (snippets and assets) that are not listed in the component map
+ * - Ensures the theme directory only contains necessary component files
  */
 
 import path from 'node:path'
@@ -12,34 +12,24 @@ import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
 import { getComponentMap } from '../../../utilities/component-map.js'
 import { getThemeNodes } from '../../../utilities/nodes.js'
-import { getNameFromPackageJson } from '../../../utilities/package-json.js'
-import { getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
-export default class Copy extends BaseCommand {
+export default class Clean extends BaseCommand {
   static override args = Args.getDefinitions([
-    Args.THEME_DIR
+    Args.override(Args.THEME_DIR, { required: false, default: '.' })
   ])
 
-  static override description = 'Copy components files into a theme'
+  static override description = 'Clean up component files in a theme directory'
 
   static override examples = [
-    '<%= config.bin %> <%= command.id %> theme-directory',
-    '<%= config.bin %> <%= command.id %> theme-directory header',
-    '<%= config.bin %> <%= command.id %> theme-directory header,footer,navigation'
+    '<%= config.bin %> <%= command.id %> theme-directory'
   ]
 
-  static override flags = Flags.getDefinitions([
-    Flags.COLLECTION_NAME,
-    Flags.COLLECTION_VERSION
-  ])
-
   protected override async init(): Promise<void> {
-    await super.init(Copy)
+    await super.init(Clean)
   }
 
   public async run(): Promise<void> {
-    const currentDir = process.cwd()
-    const themeDir = path.resolve(currentDir, this.args[Args.THEME_DIR])
+    const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     
     const componentMap = getComponentMap(path.join(themeDir, 'component-map.json'))
     const themeNodes = getThemeNodes(themeDir)

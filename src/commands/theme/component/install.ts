@@ -1,8 +1,9 @@
 /**
- * This command copies component files into a theme directory.
+ * This command installs component files into a theme directory.
  * 
+ * - Maps the components in the theme directory
  * - Copies rendered component files (snippets and assets) into the theme directory
- * - Updates the theme CLI config (shopify.theme.json) with the component collection details
+ * - Cleans up unnecessary component files in the theme directory
  */
 
 import path from 'node:path'
@@ -17,7 +18,8 @@ import Clean from './clean.js'
 
 export default class Install extends BaseCommand {
   static override args = Args.getDefinitions([
-    Args.THEME_DIR
+    Args.THEME_DIR,
+    Args.COMPONENT_SELECTOR
   ])
 
   static override description = 'Copy components files into a theme'

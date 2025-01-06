@@ -14,18 +14,17 @@ import { getComponentMap } from '../../../utilities/component-map.js'
 import { getCollectionNodes } from '../../../utilities/nodes.js'
 import { getNameFromPackageJson } from '../../../utilities/package-json.js'
 import { getVersionFromPackageJson } from '../../../utilities/package-json.js'
+import { copyFileIfChanged } from '../../../utilities/files.js';
 
 export default class Copy extends BaseCommand {
   static override args = Args.getDefinitions([
     Args.THEME_DIR
   ])
 
-  static override description = 'Copy components files into a theme'
+  static override description = 'Copy files from a component collection into a theme based on the contents of component-map.json'
 
   static override examples = [
-    '<%= config.bin %> <%= command.id %> theme-directory',
-    '<%= config.bin %> <%= command.id %> theme-directory header',
-    '<%= config.bin %> <%= command.id %> theme-directory header,footer,navigation'
+    '<%= config.bin %> <%= command.id %> theme-directory'
   ]
 
   static override flags = Flags.getDefinitions([
@@ -50,44 +49,31 @@ export default class Copy extends BaseCommand {
     const collectionName = this.flags[Flags.COLLECTION_NAME] || getNameFromPackageJson(process.cwd())
     const collectionVersion = this.flags[Flags.COLLECTION_VERSION] || getVersionFromPackageJson(process.cwd())
 
+    if (!fs.existsSync(path.join(themeDir, 'component-map.json'))) {
+      this.error('Error: component-map.json file not found in the theme directory. Run "shopify theme component map" to generate a component-map.json file.');
+    }
+    
     const componentMap = getComponentMap(path.join(themeDir, 'component-map.json'))
     const componentNodes = getCollectionNodes(currentDir)
 
     if (componentMap.collections[collectionName].version !== collectionVersion) {
-      this.warn(`Version mismatch: Expected ${collectionVersion} but found ${componentMap.collections[collectionName].version}.`);
-      return;
+      this.error(`Version mismatch: Expected ${collectionVersion} but found ${componentMap.collections[collectionName].version}. Run "shopify theme component map" to update the component-map.json file.`);
     }
 
-    for (const [snippetName, snippetCollection] of Object.entries(componentMap.files.snippets)) {
-      if (snippetCollection === collectionName) {
-        const node = componentNodes.find(node => node.name === snippetName && node.themeFolder === 'snippets');
-        if (node) {
-          const src = node.file;
-          const dest = path.join(themeDir, 'snippets', snippetName);
-          copyFileIfChanged(src, dest);
+    const copyComponentMapFiles = (fileType: 'snippets' | 'assets') => {
+      for (const [fileName, fileCollection] of Object.entries(componentMap.files[fileType])) {
+        if (fileCollection === collectionName) {
+          const node = componentNodes.find(node => node.name === fileName && node.themeFolder === fileType);
+          if (node) {
+            const src = node.file;
+            const dest = path.join(themeDir, fileType, fileName);
+            copyFileIfChanged(src, dest);
+          }
         }
       }
-    }
+    };
 
-    for (const [assetName, assetCollection] of Object.entries(componentMap.files.assets)) {
-      if (assetCollection === collectionName) {
-        const node = componentNodes.find(node => node.name === assetName && node.themeFolder === 'assets');
-        if (node) {
-          const src = node.file;
-          const dest = path.join(themeDir, 'assets', assetName);
-          copyFileIfChanged(src, dest);
-        }
-      }
-    }
-  }
-}
-
-function copyFileIfChanged(src: string, dest: string) {
-  const destDir = path.dirname(dest);
-  if (!fs.existsSync(destDir)) {
-    fs.mkdirSync(destDir, { recursive: true });
-  }
-  if (!fs.existsSync(dest) || fs.readFileSync(src, 'utf8') !== fs.readFileSync(dest, 'utf8')) {
-    fs.copyFileSync(src, dest);
+    copyComponentMapFiles('snippets');
+    copyComponentMapFiles('assets');
   }
 }
