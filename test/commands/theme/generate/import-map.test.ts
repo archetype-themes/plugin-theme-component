@@ -3,6 +3,7 @@ import {expect} from 'chai'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
+
 import Flags from '../../../../src/utilities/flags.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -47,14 +48,14 @@ describe('theme generate import-map', () => {
   })
 
   it('handles missing assets directory', async () => {
-    fs.rmSync(path.join(testThemePath, 'assets'), {recursive: true, force: true})
+    fs.rmSync(path.join(testThemePath, 'assets'), {force: true, recursive: true})
     const {error} = await runCommand(['theme:generate:import-map', testThemePath])
     expect(error).to.be.instanceOf(Error)
     expect(error?.message).to.include(`Assets directory not found. Please ensure ${path.resolve(testThemePath)} is a theme directory.`)
   })
 
   it('handles missing snippets directory', async () => {
-    fs.rmSync(path.join(testThemePath, 'snippets'), {recursive: true, force: true})
+    fs.rmSync(path.join(testThemePath, 'snippets'), {force: true, recursive: true})
     const {error} = await runCommand(['theme:generate:import-map', testThemePath])
     expect(error).to.be.instanceOf(Error)
     expect(error?.message).to.include(`Snippets directory not found. Please ensure ${path.resolve(testThemePath)} is a theme directory.`)

@@ -3,6 +3,7 @@ import {expect} from 'chai'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
+
 import Flags from '../../../../src/utilities/flags.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -20,8 +21,9 @@ describe('theme generate template-map', () => {
   beforeEach(() => {
     // Clean up any existing test directory
     if (fs.existsSync(testThemePath)) {
-      fs.rmSync(testThemePath, {recursive: true, force: true})
+      fs.rmSync(testThemePath, {force: true, recursive: true})
     }
+
     fs.cpSync(themePath, testThemePath, {recursive: true})
   })
 
@@ -71,8 +73,9 @@ describe('theme generate template-map', () => {
   it('handles missing templates directory', async () => {
     // Ensure clean state
     if (fs.existsSync(testThemePath)) {
-      fs.rmSync(testThemePath, {recursive: true, force: true})
+      fs.rmSync(testThemePath, {force: true, recursive: true})
     }
+
     fs.mkdirSync(testThemePath, {recursive: true})
 
     const {error} = await runCommand(['theme:generate:template-map', testThemePath])
@@ -82,7 +85,7 @@ describe('theme generate template-map', () => {
   })
 
   it('handles missing snippets directory', async () => {
-    fs.rmSync(path.join(testThemePath, 'snippets'), {recursive: true, force: true})
+    fs.rmSync(path.join(testThemePath, 'snippets'), {force: true, recursive: true})
     const {error} = await runCommand(['theme:generate:template-map', testThemePath])
     expect(error).to.be.instanceOf(Error)
     expect(error?.message).to.include('Snippets directory not found. Please ensure you are in a theme directory.')

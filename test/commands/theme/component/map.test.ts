@@ -193,18 +193,18 @@ describe('theme component map', () => {
     const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component-map.json'), 'utf8'))
     // Check that the files keys are sorted alphabetically
     const filesKeys = Object.keys(data.files)
-    expect(filesKeys).to.deep.equal(filesKeys.slice().sort())
+    expect(filesKeys).to.deep.equal([...filesKeys].sort())
 
     // Check that the snippets keys are sorted alphabetically
     const snippetsKeys = Object.keys(data.files.snippets)
-    expect(snippetsKeys).to.deep.equal(snippetsKeys.slice().sort())
+    expect(snippetsKeys).to.deep.equal([...snippetsKeys].sort())
 
     // Check that the assets keys are sorted alphabetically
     const assetsKeys = Object.keys(data.files.assets)
-    expect(assetsKeys).to.deep.equal(assetsKeys.slice().sort())
+    expect(assetsKeys).to.deep.equal([...assetsKeys].sort())
 
     // Check that the collections keys are sorted alphabetically
     const collectionsKeys = Object.keys(data.collections)
-    expect(collectionsKeys).to.deep.equal(collectionsKeys.slice().sort())
+    expect(collectionsKeys).to.deep.equal([...collectionsKeys].sort())
   })
 })

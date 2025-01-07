@@ -4,10 +4,12 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import sinon from 'sinon'
-import Map from '../../../../src/commands/theme/component/map.js'
-import Copy from '../../../../src/commands/theme/component/copy.js'
+
 import Clean from '../../../../src/commands/theme/component/clean.js'
+import Copy from '../../../../src/commands/theme/component/copy.js'
+import Map from '../../../../src/commands/theme/component/map.js'
 import GenerateImportMap from '../../../../src/commands/theme/generate/import-map.js'
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixturesPath = path.join(__dirname, '../../../fixtures')
 const collectionPath = path.join(__dirname, '../../../fixtures/collection')
