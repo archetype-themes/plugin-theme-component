@@ -47,7 +47,7 @@ describe('theme component copy', () => {
 
   it('copies files from a component collection to a theme directory based on component-map.json', async () => {
     const componentMapPath = path.join(testThemePath, 'component-map.json')
-    const componentMap = JSON.parse(fs.readFileSync(componentMapPath, 'utf-8'))
+    const componentMap = JSON.parse(fs.readFileSync(componentMapPath, 'utf8'))
     componentMap.collections["@archetype-themes/test-collection"].version = "1.0.1"
     fs.writeFileSync(componentMapPath, JSON.stringify(componentMap, null, 2))
     await runCommand(['theme', 'component', 'copy', testThemePath])

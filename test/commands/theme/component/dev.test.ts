@@ -1,13 +1,14 @@
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
+import chokidar from 'chokidar'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import sinon from 'sinon'
-import chokidar from 'chokidar'
+
 import Install from '../../../../src/commands/theme/component/install.js'
-import GenerateTemplateMap from '../../../../src/commands/theme/generate/template-map.js'
 import GenerateImportMap from '../../../../src/commands/theme/generate/import-map.js'
+import GenerateTemplateMap from '../../../../src/commands/theme/generate/template-map.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixturesPath = path.join(__dirname, '../../../fixtures')
@@ -77,8 +78,8 @@ describe('theme component dev', () => {
     // Mock the watch method to return a minimal watcher interface
     const onStub = sandbox.stub()
     const mockWatcher = {
-      on: onStub,
-      emit: sandbox.stub()
+      emit: sandbox.stub(),
+      on: onStub
     }
     watchStub.returns(mockWatcher as any)
 

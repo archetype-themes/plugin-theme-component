@@ -5,16 +5,16 @@
  * - Updates the theme CLI config (shopify.theme.json) with the component collection details
  */
 
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
+
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import Flags from '../../../utilities/flags.js'
 import { getComponentMap } from '../../../utilities/component-map.js'
-import { getCollectionNodes } from '../../../utilities/nodes.js'
-import { getNameFromPackageJson } from '../../../utilities/package-json.js'
-import { getVersionFromPackageJson } from '../../../utilities/package-json.js'
 import { copyFileIfChanged } from '../../../utilities/files.js';
+import Flags from '../../../utilities/flags.js'
+import { getCollectionNodes } from '../../../utilities/nodes.js'
+import { getNameFromPackageJson , getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
 export default class Copy extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -60,7 +60,7 @@ export default class Copy extends BaseCommand {
       this.error(`Version mismatch: Expected ${collectionVersion} but found ${componentMap.collections[collectionName].version}. Run "shopify theme component map" to update the component-map.json file.`);
     }
 
-    const copyComponentMapFiles = (fileType: 'snippets' | 'assets') => {
+    const copyComponentMapFiles = (fileType: 'assets' | 'snippets') => {
       for (const [fileName, fileCollection] of Object.entries(componentMap.files[fileType])) {
         if (fileCollection === collectionName) {
           const node = componentNodes.find(node => node.name === fileName && node.themeFolder === fileType);

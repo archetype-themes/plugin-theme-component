@@ -7,16 +7,16 @@
  * - Generates an import-map.liquid snippet file based on JS assets
  */
 
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
+
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-
-import Map from './map.js'
-import Copy from './copy.js'
-import Clean from './clean.js'
 import GenerateImportMap from '../generate/import-map.js'
+import Clean from './clean.js'
+import Copy from './copy.js'
+import Map from './map.js'
 
 export default class Install extends BaseCommand {
   static override args = Args.getDefinitions([

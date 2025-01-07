@@ -13,14 +13,13 @@ import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
+import { cleanDir, copyFileIfChanged, syncFiles } from '../../../utilities/files.js'
 import Flags from '../../../utilities/flags.js'
 import { cloneTheme } from '../../../utilities/git.js'
 import { getCollectionNodes } from '../../../utilities/nodes.js'
-import { syncFiles, copyFileIfChanged, cleanDir } from '../../../utilities/files.js'
-
-import Install from './install.js'
 import GenerateImportMap from '../generate/import-map.js'
 import GenerateTemplateMap from '../generate/template-map.js'
+import Install from './install.js'
 
 export default class Dev extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -83,17 +82,16 @@ export default class Dev extends BaseCommand {
       // Copy the component setup files to the dev directory based on the component selector
       if (setupFiles) {
         const collectionNodes = getCollectionNodes(collectionDir)
-        collectionNodes
+        for (const setupFile of collectionNodes
           .filter(node => componentSelector === '*' || componentSelector.includes(path.basename(node.file, '.liquid')))
-          .flatMap(node => node.setup)
-          .forEach(setupFile => {
+          .flatMap(node => node.setup)) {
             const folderName = path.basename(path.dirname(setupFile))
             const name = path.basename(setupFile)
             const node = collectionNodes.find(n => n.name === name && n.themeFolder === folderName)
             if (node) {
               copyFileIfChanged(node.file, path.join(destination, node.themeFolder, node.name))
             }
-          })
+          }
       }
       
       // Install the components
@@ -122,7 +120,7 @@ export default class Dev extends BaseCommand {
       const watchDir = path.join(devDir, '.watch')
       const themeWatcher = chokidar.watch([themeDir, componentsDir], {
         ignoreInitial: true,
-        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        ignored: /(^|[/\\])\../, // ignore dotfiles
         persistent: true
       })
 

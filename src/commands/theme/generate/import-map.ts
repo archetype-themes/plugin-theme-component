@@ -1,14 +1,15 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
+
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
 export default class GenerateImportMap extends BaseCommand {
-  static description = 'Generate an import map for JavaScript files in the assets directory'
-
   static override args = Args.getDefinitions([
-    Args.override(Args.THEME_DIR, { required: false, default: '.' })
+    Args.override(Args.THEME_DIR, { default: '.', required: false })
   ])
+
+  static description = 'Generate an import map for JavaScript files in the assets directory'
 
   async run() {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
@@ -19,6 +20,7 @@ export default class GenerateImportMap extends BaseCommand {
     if (!fs.existsSync(assetsDir)) {
       this.error(`Assets directory not found. Please ensure ${themeDir} is a theme directory.`)
     }
+
     // Create snippets directory if it doesn't exist
     if (!fs.existsSync(snippetsDir)) {
       this.error(`Snippets directory not found. Please ensure ${themeDir} is a theme directory.`)

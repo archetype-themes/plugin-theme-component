@@ -5,17 +5,18 @@
  * - Ensures the theme directory only contains necessary component files
  */
 
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
+
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import Flags from '../../../utilities/flags.js'
 import { getComponentMap } from '../../../utilities/component-map.js'
+import Flags from '../../../utilities/flags.js'
 import { getThemeNodes } from '../../../utilities/nodes.js'
 
 export default class Clean extends BaseCommand {
   static override args = Args.getDefinitions([
-    Args.override(Args.THEME_DIR, { required: false, default: '.' })
+    Args.override(Args.THEME_DIR, { default: '.', required: false })
   ])
 
   static override description = 'Clean up component files in a theme directory'

@@ -1,12 +1,12 @@
 export interface ComponentConfig {
-  THEME_DIR: string | undefined
   COLLECTION_NAME: string | undefined
   COLLECTION_PACKAGE_JSON: string
   COLLECTION_VERSION: string | undefined
-  SETUP_FILES: boolean
   GENERATE_IMPORT_MAP: boolean
   GENERATE_TEMPLATE_MAP: boolean
   PREVIEW: boolean
+  SETUP_FILES: boolean
+  THEME_DIR: string | undefined
   THEME_DIRECTORIES: readonly ['layout', 'sections', 'templates', 'blocks']
   WATCH: boolean
 }
@@ -16,14 +16,14 @@ export interface TomlConfig {
 }
 
 export interface LiquidNode {
-  body: string
-  file: string 
-  name: string
-  snippets: string[]
   assets: string[]
-  type: 'asset' | 'component' | 'entry' | 'snippet' | 'setup'
-  themeFolder: 'assets' | 'snippets' | 'templates' | 'blocks' | 'config' | 'sections' | 'layout'
+  body: string 
+  file: string
+  name: string
   setup: string[]
+  snippets: string[]
+  themeFolder: 'assets' | 'blocks' | 'config' | 'layout' | 'sections' | 'snippets' | 'templates'
+  type: 'asset' | 'component' | 'entry' | 'setup' | 'snippet'
 }
 
 export interface PackageJSON {

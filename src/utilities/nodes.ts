@@ -1,6 +1,6 @@
+import { globSync } from 'glob'
 import * as fs from 'node:fs'
 import path from 'node:path'
-import { globSync } from 'glob'
 
 import { LiquidNode } from './types.js'
 
@@ -9,7 +9,7 @@ const LIQUID_COMMENTS_REGEX = /{%-?\s*comment\s*-?%}[\S\s]*?{%-?\s*endcomment\s*
 const LIQUID_RENDER_REGEX = /\srender\s+'([^']+)'/gs
 
 export function getSnippetNames(liquidCode: string) {
-  const cleanLiquidCode = liquidCode.replace(LIQUID_COMMENTS_REGEX, '')
+  const cleanLiquidCode = liquidCode.replaceAll(LIQUID_COMMENTS_REGEX, '')
 
   const snippetNames = new Set<string>()
   for (const block of cleanLiquidCode.matchAll(LIQUID_BLOCK_REGEX)) {
@@ -38,14 +38,14 @@ export function generateLiquidNode(file: string, type: LiquidNode['type'], theme
   }
 
   return {
-    name: path.basename(file),
-    type,
-    snippets,
+    assets,
     body,
     file,
-    assets,
+    name: path.basename(file),
+    setup,
+    snippets,
     themeFolder,
-    setup
+    type
   }
 }
 

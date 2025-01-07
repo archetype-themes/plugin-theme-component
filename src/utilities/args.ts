@@ -1,15 +1,16 @@
 import {Args as OclifArgs} from '@oclif/core'
 import {glob} from 'glob'
-import logger from './logger.js'
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
+
+import logger from './logger.js'
 
 export let argDefinitions: Record<string, any>
 
 export default class Args {
   [key: string]: any
-  static readonly THEME_DIR = 'themeDir'
   static readonly COMPONENT_SELECTOR = 'componentSelector'
+  static readonly THEME_DIR = 'themeDir'
 
   private argValues: Record<string, any>
   constructor(args: Record<string, any>) {
@@ -19,12 +20,13 @@ export default class Args {
         if (prop in target) {
           return (target as any)[prop]
         }
+
         return target.argValues[prop.toString()]
       }
     })
   }
 
-  static getDefinitions(keys: (string | Record<string, any>)[]) {
+  static getDefinitions(keys: (Record<string, any> | string)[]) {
     return Object.fromEntries(
       keys.map(key => typeof key === 'string' ? [key, argDefinitions[key]] : Object.entries(key)[0])
     )
@@ -36,33 +38,10 @@ export default class Args {
 }
 
 argDefinitions = {
-  [Args.THEME_DIR]: OclifArgs.string({
-    description: 'path to theme directory', 
-    required: true,
-    parse: async (input: string): Promise<string> => {
-      logger.debug(`Parsing theme directory argument '${input}'`)
-      const requiredFolders = ['layout', 'templates', 'config']
-      let isThemeDirectory = true
-
-      for (const folder of requiredFolders) {
-        if (!fs.existsSync(path.join(input, folder))) {
-          isThemeDirectory = false
-        }
-      }
-
-      if (!isThemeDirectory) {
-        logger.error(new Error(`The provided path ${input} does not appear to contain valid theme files.`), {exit: 1})
-      }
-      logger.debug(`Theme directory ${input} appears to be valid`)
-      return input
-    }
-  }),
-
   [Args.COMPONENT_SELECTOR]: OclifArgs.string({
+    default: '*', 
     description: 'component name or names (comma-separated) or "*" for all components', 
-    required: false, 
-    default: '*',
-    parse: async (input: string): Promise<string> => {
+    async parse(input: string): Promise<string> {
       logger.debug(`Parsing component selector argument '${input}'`)
       // Allow * as a valid pattern
       if (input === '*') {
@@ -71,7 +50,7 @@ argDefinitions = {
       }
 
       logger.debug('Component name(s) provided. Checking if component selector is valid')
-      const validComponentName = /^[a-zA-Z0-9-_]+$/
+      const validComponentName = /^[\w-]+$/
       const components = input.split(',').map(name => name.trim())
       const invalidNames = components.filter(name => !validComponentName.test(name))
       if (invalidNames.length > 0) {
@@ -89,6 +68,30 @@ argDefinitions = {
       }
 
       return input
-    }
+    },
+    required: false
+  }),
+
+  [Args.THEME_DIR]: OclifArgs.string({
+    description: 'path to theme directory', 
+    async parse(input: string): Promise<string> {
+      logger.debug(`Parsing theme directory argument '${input}'`)
+      const requiredFolders = ['layout', 'templates', 'config']
+      let isThemeDirectory = true
+
+      for (const folder of requiredFolders) {
+        if (!fs.existsSync(path.join(input, folder))) {
+          isThemeDirectory = false
+        }
+      }
+
+      if (!isThemeDirectory) {
+        logger.error(new Error(`The provided path ${input} does not appear to contain valid theme files.`), {exit: 1})
+      }
+
+      logger.debug(`Theme directory ${input} appears to be valid`)
+      return input
+    },
+    required: true
   })
 } 

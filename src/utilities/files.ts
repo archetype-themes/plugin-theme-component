@@ -1,7 +1,7 @@
-import fs from 'node:fs'
-import path from 'node:path'
 // @ts-ignore
 import fse from 'fs-extra';
+import fs from 'node:fs'
+import path from 'node:path'
 
 import logger from './logger.js'
 
@@ -76,6 +76,7 @@ export function copyFileIfChanged(src: string, dest: string) {
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
+
   if (!fs.existsSync(dest) || fs.readFileSync(src, 'utf8') !== fs.readFileSync(dest, 'utf8')) {
     fs.copyFileSync(src, dest);
   }
@@ -88,5 +89,6 @@ export function cleanDir(dir: string) {
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, {recursive: true})
   }
+
   fs.mkdirSync(dir)
 }

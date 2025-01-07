@@ -1,16 +1,16 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
 
 export default class GenerateTemplateMap extends BaseCommand {
-  static description = 'Generate a template map for component routes in the templates directory'
-
   static override args = Args.getDefinitions([
-    Args.override(Args.THEME_DIR, { required: false, default: '.' })
+    Args.override(Args.THEME_DIR, { default: '.', required: false })
   ])
+
+  static description = 'Generate a template map for component routes in the templates directory'
 
   async run() {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
@@ -21,6 +21,7 @@ export default class GenerateTemplateMap extends BaseCommand {
     if (!fs.existsSync(templatesDir)) {
       this.error('Templates directory not found. Please ensure you are in a theme directory.')
     }
+
     if (!fs.existsSync(snippetsDir)) {
       this.error('Snippets directory not found. Please ensure you are in a theme directory.')
     }
@@ -33,9 +34,11 @@ export default class GenerateTemplateMap extends BaseCommand {
         if (fs.statSync(filePath).isDirectory()) {
           return [...acc, ...getFiles(filePath)]
         }
+
         if (file.endsWith('.liquid') || file.endsWith('.json')) {
           return [...acc, filePath]
         }
+
         return acc
       }, [])
     }
@@ -52,65 +55,104 @@ export default class GenerateTemplateMap extends BaseCommand {
         // Generate the route based on the category
         let routeTemplate = ''
         switch (category) {
-          case '404':
+          case '404': {
             routeTemplate = '{{ routes.root_url }}'
             break
-          case 'article':
+          }
+
+          case 'article': {
             routeTemplate = '{{ article.url }}'
             break
-          case 'blog':
+          }
+
+          case 'blog': {
             routeTemplate = '{{ blog.url }}'
             break
-          case 'cart':
+          }
+
+          case 'cart': {
             routeTemplate = '{{ routes.cart_url }}'
             break
-          case 'collection':
+          }
+
+          case 'collection': {
             routeTemplate = '{{ collections.first.url }}'
             break
-          case 'customers/account':
+          }
+
+          case 'customers/account': {
             routeTemplate = '{{ routes.account_url }}'
             break
-          case 'customers/activate_account':
+          }
+
+          case 'customers/activate_account': {
             routeTemplate = '{{ routes.account_url }}'
             break
-          case 'customers/addresses':
+          }
+
+          case 'customers/addresses': {
             routeTemplate = '{{ routes.account_addresses_url }}'
             break
-          case 'customers/login':
+          }
+
+          case 'customers/login': {
             routeTemplate = '{{ routes.account_login_url }}'
             break
-          case 'customers/order':
+          }
+
+          case 'customers/order': {
             routeTemplate = '{{ customer.order_url }}'
             break
-          case 'customers/register':
+          }
+
+          case 'customers/register': {
             routeTemplate = '{{ routes.account_register_url }}'
             break
-          case 'customers/reset_password':
+          }
+
+          case 'customers/reset_password': {
             routeTemplate = '{{ routes.account_recover_url }}'
             break
-          case 'gift_card':
+          }
+
+          case 'gift_card': {
             routeTemplate = '{{ gift_card.url }}'
             break
-          case 'index':
+          }
+
+          case 'index': {
             routeTemplate = '{{ routes.root_url }}'
             break
-          case 'list-collections':
+          }
+
+          case 'list-collections': {
             routeTemplate = '{{ routes.collections_url }}'
             break
-          case 'page':
+          }
+
+          case 'page': {
             routeTemplate = '{{ page.url }}'
             break
-          case 'password':
+          }
+
+          case 'password': {
             routeTemplate = '{{ routes.root_url }}'
             break
-          case 'product':
+          }
+
+          case 'product': {
             routeTemplate = '{{ product_url }}'
             break
-          case 'search':
+          }
+
+          case 'search': {
             routeTemplate = '{{ routes.search_url }}'
             break
-          default:
+          }
+
+          default: {
             routeTemplate = '{{ routes.root_url }}'
+          }
         }
 
         const fullRoute = `${routeTemplate}?view=${componentName}`
@@ -126,6 +168,7 @@ export default class GenerateTemplateMap extends BaseCommand {
       if (typeof routes === 'object' && routes !== null) {
         acc[component] = acc[component] ? { ...acc[component], ...routes } : routes
       }
+
       return acc
     }, {})
 
