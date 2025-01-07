@@ -145,7 +145,7 @@ export default class GenerateTemplateMap extends BaseCommand {
       {% endif %}
     `
 
-    const templateMapContent = `<script type="application/json" data-template-map>\n${liquidQuery}\n${JSON.stringify(mergedTemplateMap, null, 2)}\n</script>`
+    const templateMapContent = `${liquidQuery}\n<script type="application/json" data-template-map>${JSON.stringify(mergedTemplateMap, null, 2)}\n</script>`
     if (!fs.existsSync(path.join(snippetsDir, 'template-map.liquid')) || fs.readFileSync(path.join(snippetsDir, 'template-map.liquid'), 'utf8') !== templateMapContent) {
       fs.writeFileSync(path.join(snippetsDir, 'template-map.liquid'), templateMapContent)
     }

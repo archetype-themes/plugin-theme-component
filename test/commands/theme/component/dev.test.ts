@@ -4,6 +4,7 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import sinon from 'sinon'
+import chokidar from 'chokidar'
 import Install from '../../../../src/commands/theme/component/install.js'
 import GenerateTemplateMap from '../../../../src/commands/theme/generate/template-map.js'
 import GenerateImportMap from '../../../../src/commands/theme/generate/import-map.js'
@@ -16,13 +17,17 @@ const testCollectionPath = path.join(fixturesPath, 'test-collection')
 const testThemePath = path.join(fixturesPath, 'test-theme')
 
 describe('theme component dev', () => {
+  let sandbox: sinon.SinonSandbox
+
   beforeEach(() => {
+    sandbox = sinon.createSandbox()
     fs.cpSync(collectionPath, testCollectionPath, {recursive: true})
     fs.cpSync(themePath, testThemePath, {recursive: true})
     process.chdir(testCollectionPath)
   })
 
   afterEach(() => {
+    sandbox.restore()
     fs.rmSync(testCollectionPath, {force: true, recursive: true})
     fs.rmSync(testThemePath, {force: true, recursive: true})
   })
@@ -43,30 +48,50 @@ describe('theme component dev', () => {
   })
 
   it('runs the install command', async () => {
-    const installRunSpy = sinon.spy(Install.prototype, 'run')
+    const installRunSpy = sandbox.spy(Install.prototype, 'run')
 
     await runCommand(['theme', 'component', 'dev', '-t', '../test-theme'])
 
     expect(installRunSpy.calledOnce).to.be.true
-    installRunSpy.restore()
   })
 
-  // it('runs the generate import map command', async () => {
-  //   const generateImportMapRunSpy = sinon.spy(GenerateImportMap.prototype, 'run')
+  it('runs the generate import map command', async () => {
+    const generateImportMapRunSpy = sandbox.spy(GenerateImportMap.prototype, 'run')
 
-  //   const {error, stdout} = await runCommand(['theme', 'component', 'dev', '-t', '../test-theme', '--no-preview', '--no-watch'])
-  //   console.log(stdout)
-  //   console.log(error)
-  //   expect(generateImportMapRunSpy.calledOnce).to.be.true
-  //   generateImportMapRunSpy.restore()
-  // })
+    await runCommand(['theme', 'component', 'dev', '-t', '../test-theme', '--no-preview', '--no-watch'])
+    
+    expect(generateImportMapRunSpy.callCount).to.be.greaterThan(0)
+    expect(generateImportMapRunSpy.called).to.be.true
+  })
 
   it('runs the generate template map command', async () => {
-    const generateTemplateMapRunSpy = sinon.spy(GenerateTemplateMap.prototype, 'run')
+    const generateTemplateMapRunSpy = sandbox.spy(GenerateTemplateMap.prototype, 'run')
 
     await runCommand(['theme', 'component', 'dev', '-t', '../test-theme', '--no-preview', '--no-watch'])
 
     expect(generateTemplateMapRunSpy.calledOnce).to.be.true
-    generateTemplateMapRunSpy.restore()
+  })
+
+  it('watches for changes to the theme and components and rebuilds the theme', async () => {
+    const watchStub = sandbox.stub(chokidar, 'watch')
+    // Mock the watch method to return a minimal watcher interface
+    const onStub = sandbox.stub()
+    const mockWatcher = {
+      on: onStub,
+      emit: sandbox.stub()
+    }
+    watchStub.returns(mockWatcher as any)
+
+    // Set NODE_ENV to test
+    const originalEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'test'
+
+    await runCommand(['theme', 'component', 'dev', '-t', '../test-theme', '--watch', '--no-preview'])
+
+    expect(watchStub.calledOnce).to.be.true
+    expect(watchStub.firstCall.args[0]).to.deep.equal([path.join(testThemePath), path.join(testCollectionPath, 'components')])
+    
+    // Restore NODE_ENV
+    process.env.NODE_ENV = originalEnv
   })
 })

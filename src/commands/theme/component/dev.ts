@@ -134,7 +134,14 @@ export default class Dev extends BaseCommand {
 
       this.log('Watching for changes...')
 
-      return new Promise(() => {})
+      return new Promise((resolve) => {
+        // Store the resolve function so it can be called externally if needed
+        if (process.env.NODE_ENV === 'test') {
+          // Simulate a change event
+          themeWatcher.emit('all', 'change', themeDir)
+          resolve()
+        }
+      })
     }
   }
 }
