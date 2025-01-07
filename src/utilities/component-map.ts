@@ -1,5 +1,4 @@
 import * as fs from 'node:fs'
-import path from 'node:path'
 
 import logger from './logger.js'
 import { getCollectionNodes, getThemeNodes } from './nodes.js'

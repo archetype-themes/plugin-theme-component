@@ -7,9 +7,6 @@
  * - Generates an import-map.liquid snippet file based on JS assets
  */
 
-import fs from 'node:fs'
-import path from 'node:path'
-
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'

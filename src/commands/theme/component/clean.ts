@@ -11,7 +11,6 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
 import { getComponentMap } from '../../../utilities/component-map.js'
-import Flags from '../../../utilities/flags.js'
 import { getThemeNodes } from '../../../utilities/nodes.js'
 
 export default class Clean extends BaseCommand {

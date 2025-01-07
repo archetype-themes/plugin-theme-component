@@ -5,11 +5,6 @@ import path from 'node:path'
 
 import logger from './logger.js'
 
-/**
- * Synchronizes files from a source directory to a destination directory.
- * Removes files in destination that don't exist in source and copies new/changed files.
- * Ensures minimal file operations to avoid unnecessary watcher events.
- */
 export function syncFiles(srcDir: string, destDir: string) {
   if (!fse.existsSync(srcDir)) {
     logger.error(`Source directory ${srcDir} does not exist`);
@@ -68,9 +63,6 @@ export function syncFiles(srcDir: string, destDir: string) {
   }
 }
 
-/**
- * Copies a file only if the destination doesn't exist or if the content has changed.
- */
 export function copyFileIfChanged(src: string, dest: string) {
   const destDir = path.dirname(dest);
   if (!fs.existsSync(destDir)) {
@@ -82,9 +74,6 @@ export function copyFileIfChanged(src: string, dest: string) {
   }
 }
 
-/**
- * Cleans (removes and recreates) a directory.
- */
 export function cleanDir(dir: string) {
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, {recursive: true})
