@@ -10,7 +10,7 @@ import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import { generateComponentFilesMap, getComponentMap, ComponentMapOptions } from '../../../utilities/component-map.js'
+import { ComponentMapOptions, generateComponentFilesMap, getComponentMap } from '../../../utilities/component-map.js'
 import Flags from '../../../utilities/flags.js'
 import { getNameFromPackageJson, getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
@@ -60,9 +60,9 @@ export default class ComponentMap extends BaseCommand {
     const componentMap = getComponentMap(componentMapPath);
 
     const options: ComponentMapOptions = {
+      componentSelector,
       ignoreConflicts,
-      ignoreOverrides,
-      componentSelector
+      ignoreOverrides
     }
 
     const files = generateComponentFilesMap(

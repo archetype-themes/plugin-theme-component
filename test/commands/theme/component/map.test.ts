@@ -258,13 +258,12 @@ describe('theme component map', () => {
     expect(data.files.snippets['child.liquid']).to.equal('@archetype-themes/test-collection')
     
     // Should still maintain other collection entries
-    Object.entries(beforeData.files.snippets)
-      .filter(([_, value]) => value !== '@archetype-themes/test-collection')
-      .forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(beforeData.files.snippets)
+      .filter(([_, value]) => value !== '@archetype-themes/test-collection')) {
         if (fs.existsSync(path.join(testThemePath, 'snippets', key))) {
           expect(data.files.snippets[key]).to.equal(value)
         }
-      })
+      }
   })
 
   it('should throw an error when no components match the selector', async () => {

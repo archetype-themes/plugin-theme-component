@@ -19,9 +19,9 @@ export function getComponentMap(path: string): ComponentMap {
 }
 
 export interface ComponentMapOptions {
+  componentSelector?: string;
   ignoreConflicts: boolean;
   ignoreOverrides: boolean;
-  componentSelector?: string;
 }
 
 export function generateComponentFilesMap(
@@ -57,29 +57,29 @@ export function generateComponentFilesMap(
 
     // Add all child snippets and recursively check their children
     if (node.snippets) {
-      node.snippets.forEach(snippet => {
+      for (const snippet of node.snippets) {
         const snippetNode = collectionNodes.find(n => n.name === snippet)
         if (snippetNode) {
           selectedCollectionNodes.add(snippetNode)
           addNodeAndChildren(snippet, visited)
         }
-      })
+      }
     }
 
     // Add all child assets
     if (node.type === 'component' && node.assets) {
-      node.assets.forEach(asset => {
+      for (const asset of node.assets) {
         const assetNode = collectionNodes.find(n => n.name === asset)
         if (assetNode) {
           selectedCollectionNodes.add(assetNode)
         }
-      })
+      }
     }
   }
 
   if (options.componentSelector && options.componentSelector !== '*') {
     const selectedComponents = options.componentSelector.split(',')
-    selectedComponents.forEach(component => addNodeAndChildren(`${component}.liquid`))
+    for (const component of selectedComponents) addNodeAndChildren(`${component}.liquid`)
     // Throw error if no components were matched
     if (selectedCollectionNodes.size === 0) {
       logger.error(`No components found matching selector: ${options.componentSelector}`)
