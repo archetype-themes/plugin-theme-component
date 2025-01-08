@@ -10,7 +10,7 @@ import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import { generateComponentFilesMap, getComponentMap } from '../../../utilities/component-map.js'
+import { generateComponentFilesMap, getComponentMap, ComponentMapOptions } from '../../../utilities/component-map.js'
 import Flags from '../../../utilities/flags.js'
 import { getNameFromPackageJson, getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
@@ -54,17 +54,23 @@ export default class ComponentMap extends BaseCommand {
     const collectionVersion = this.flags[Flags.COLLECTION_VERSION] || getVersionFromPackageJson(process.cwd())
     const ignoreConflicts = this.flags[Flags.IGNORE_CONFLICTS]
     const ignoreOverrides = this.flags[Flags.IGNORE_OVERRIDES]
+    const componentSelector = this.args[Args.COMPONENT_SELECTOR]
 
     const componentMapPath = path.join(themeDir, 'component-map.json')
     const componentMap = getComponentMap(componentMapPath);
+
+    const options: ComponentMapOptions = {
+      ignoreConflicts,
+      ignoreOverrides,
+      componentSelector
+    }
 
     const files = generateComponentFilesMap(
       componentMap.files, 
       themeDir, 
       collectionDir, 
       collectionName,
-      ignoreConflicts,
-      ignoreOverrides
+      options
     )
 
     componentMap.files = sortObjectKeys(files)

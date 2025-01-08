@@ -207,4 +207,78 @@ describe('theme component map', () => {
     const collectionsKeys = Object.keys(data.collections)
     expect(collectionsKeys).to.deep.equal([...collectionsKeys].sort())
   })
+
+  it('should only include specified components when using component selector', async () => {
+    await runCommand(['theme', 'component', 'map', testThemePath, 'new'])
+
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component-map.json'), 'utf8'))
+    
+    // Should include the selected component and its assets
+    expect(data.files.snippets['new.liquid']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.assets['new.css']).to.equal('@archetype-themes/test-collection')
+
+    // Should not include unrelated components
+    expect(data.files.snippets['parent.liquid']).to.be.undefined
+    expect(data.files.snippets['child.liquid']).to.be.undefined
+  })
+
+  it('should include multiple components when using comma-separated component selector', async () => {
+    await runCommand(['theme', 'component', 'map', testThemePath, 'new,parent'])
+
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component-map.json'), 'utf8'))
+    
+    // Should include both selected components and their dependencies
+    expect(data.files.snippets['new.liquid']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.assets['new.css']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.snippets['parent.liquid']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.snippets['child.liquid']).to.equal('@archetype-themes/test-collection')
+  })
+
+  it('should only match component type nodes when using component selector', async () => {
+    // Try to select a snippet that's not a component
+    await runCommand(['theme', 'component', 'map', testThemePath, 'child'])
+
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component-map.json'), 'utf8'))
+    
+    // Should not include the snippet since it's not a component
+    expect(data.files.snippets['child.liquid']).to.be.undefined
+  })
+
+  it('should include all components when using "*" as component selector', async () => {
+    const beforeData = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component-map.json'), 'utf8'))
+    
+    await runCommand(['theme', 'component', 'map', testThemePath, '*'])
+
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component-map.json'), 'utf8'))
+    
+    // Should include all components from the collection
+    expect(data.files.snippets['new.liquid']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.assets['new.css']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.snippets['parent.liquid']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.snippets['child.liquid']).to.equal('@archetype-themes/test-collection')
+    
+    // Should still maintain other collection entries
+    Object.entries(beforeData.files.snippets)
+      .filter(([_, value]) => value !== '@archetype-themes/test-collection')
+      .forEach(([key, value]) => {
+        if (fs.existsSync(path.join(testThemePath, 'snippets', key))) {
+          expect(data.files.snippets[key]).to.equal(value)
+        }
+      })
+  })
+
+  it('should throw an error when no components match the selector', async () => {
+    const beforeData = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component-map.json'), 'utf8'))
+    
+    const {error} = await runCommand(['theme', 'component', 'map', testThemePath, 'non-existent'])
+
+    // Should throw an error
+    expect(error).to.be.instanceOf(Error)
+    expect(error?.message).to.include('No components found matching selector: non-existent')
+
+    // Map should remain unchanged
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component-map.json'), 'utf8'))
+    expect(data.files.snippets).to.deep.equal(beforeData.files.snippets)
+    expect(data.files.assets).to.deep.equal(beforeData.files.assets)
+  })
 })

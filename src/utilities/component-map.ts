@@ -18,13 +18,18 @@ export function getComponentMap(path: string): ComponentMap {
   return data
 }
 
+export interface ComponentMapOptions {
+  ignoreConflicts: boolean;
+  ignoreOverrides: boolean;
+  componentSelector?: string;
+}
+
 export function generateComponentFilesMap(
   oldFilesMap: ComponentMap['files'],
   themeDir: string, 
   collectionDir: string,
   collectionName: string,
-  ignoreConflicts: boolean,
-  ignoreOverrides: boolean
+  options: ComponentMapOptions
 ): ComponentMap['files'] {
   const collectionNodes = getCollectionNodes(collectionDir)
   const themeNodes = getThemeNodes(themeDir)
@@ -35,6 +40,52 @@ export function generateComponentFilesMap(
     snippets: {}
   }
 
+  // Track collection nodes that are selected or children of selected components
+  const selectedCollectionNodes = new Set<LiquidNode>()
+  
+  function addNodeAndChildren(nodeName: string, visited = new Set<string>()) {
+    if (visited.has(nodeName)) return // Prevent infinite recursion
+    visited.add(nodeName)
+
+    const node = collectionNodes.find(n => 
+      n.type === 'component' && 
+      n.name === nodeName
+    )
+    if (!node) return
+    
+    selectedCollectionNodes.add(node)
+
+    // Add all child snippets and recursively check their children
+    if (node.snippets) {
+      node.snippets.forEach(snippet => {
+        const snippetNode = collectionNodes.find(n => n.name === snippet)
+        if (snippetNode) {
+          selectedCollectionNodes.add(snippetNode)
+          addNodeAndChildren(snippet, visited)
+        }
+      })
+    }
+
+    // Add all child assets
+    if (node.type === 'component' && node.assets) {
+      node.assets.forEach(asset => {
+        const assetNode = collectionNodes.find(n => n.name === asset)
+        if (assetNode) {
+          selectedCollectionNodes.add(assetNode)
+        }
+      })
+    }
+  }
+
+  if (options.componentSelector && options.componentSelector !== '*') {
+    const selectedComponents = options.componentSelector.split(',')
+    selectedComponents.forEach(component => addNodeAndChildren(`${component}.liquid`))
+    // Throw error if no components were matched
+    if (selectedCollectionNodes.size === 0) {
+      logger.error(`No components found matching selector: ${options.componentSelector}`)
+    }
+  }
+
   for (const node of themeNodes) {
     // Add theme nodes not present in the old import map
     // They have been added manually by the user since the last time the import map was generated
@@ -42,7 +93,7 @@ export function generateComponentFilesMap(
         const collectionNode = collectionNodes.find(n => n.themeFolder === node.themeFolder && n.name === node.name)
 
         if (collectionNode) {
-          if (ignoreConflicts) {
+          if (options.ignoreConflicts) {
             // If the user has passed the --ignore-conflicts flag, skip the node so it can be logged later as a component entry
             continue;
           } else {
@@ -79,7 +130,7 @@ export function generateComponentFilesMap(
         const collectionNode = collectionNodes.find(node => node.themeFolder === themeFolder && node.name === name)
         if (collectionNode) {
           // If the node also exists in the collection, it's considered an override
-          if (ignoreOverrides) {
+          if (options.ignoreOverrides) {
             // If the user has passed the --ignore-overrides, set the new import map value to the collection name
             newFilesMap[node.themeFolder][node.name] = collectionName
             node = collectionNode
@@ -101,6 +152,11 @@ export function generateComponentFilesMap(
         }
       }
     } else if (oldImportMapValue === collectionName || oldImportMapValue === undefined) {
+      // Skip if we have a component selector (not '*') and this node is not selected or a child of a selected component
+      if (options.componentSelector && options.componentSelector !== '*' && ![...selectedCollectionNodes].some(node => node.name === name)) {
+        return
+      }
+      
       // If the import map value is set our collection or undefined
       const node = collectionNodes.find(node => node.themeFolder === themeFolder && node.name === name)
       if (node) {
