@@ -1,7 +1,7 @@
 import { Command } from '@oclif/core'
 
 interface Logger {
-  debug: (...args: any[]) => void
+  debug: (...args: unknown[]) => void
   error: Command['error']
   log: Command['log']
   warn: Command['warn']

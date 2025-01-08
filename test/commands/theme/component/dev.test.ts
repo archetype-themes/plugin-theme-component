@@ -1,6 +1,6 @@
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
-import chokidar from 'chokidar'
+import chokidar, { FSWatcher } from 'chokidar'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -77,11 +77,11 @@ describe('theme component dev', () => {
     const watchStub = sandbox.stub(chokidar, 'watch')
     // Mock the watch method to return a minimal watcher interface
     const onStub = sandbox.stub()
-    const mockWatcher = {
+    const mockWatcher: Partial<FSWatcher> = {
       emit: sandbox.stub(),
       on: onStub
     }
-    watchStub.returns(mockWatcher as any)
+    watchStub.returns(mockWatcher as FSWatcher)
 
     // Set NODE_ENV to test
     const originalEnv = process.env.NODE_ENV
