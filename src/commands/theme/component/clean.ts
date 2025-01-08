@@ -18,7 +18,7 @@ export default class Clean extends BaseCommand {
     Args.override(Args.THEME_DIR, { default: '.', required: false })
   ])
 
-  static override description = 'Clean up component files in a theme directory'
+  static override description = 'Remove unused component files in a theme'
 
   static override examples = [
     '<%= config.bin %> <%= command.id %> theme-directory'

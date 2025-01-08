@@ -20,7 +20,7 @@ export default class ComponentMap extends BaseCommand {
     Args.COMPONENT_SELECTOR
   ])
 
-  static override description = 'Generates or updates a shopify.theme.json file with the component collection details and a snippets import map'
+  static override description = 'Generates or updates a component-map.json file with the component collection details and a file map'
 
   static override examples = [
     '<%= config.bin %> <%= command.id %> theme-directory',

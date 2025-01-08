@@ -52,7 +52,10 @@ describe('theme component install', () => {
   it('runs the theme component clean command', async () => {
     const cleanRunSpy = sandbox.spy(Clean.prototype, 'run')
 
-    await runCommand(['theme', 'component', 'install', '../test-theme'])
+    const {stdout, error} = await runCommand(['theme', 'component', 'install', '../test-theme'])
+    console.log(stdout)
+    console.log(error)
+
 
     expect(cleanRunSpy.calledOnce).to.be.true
   })

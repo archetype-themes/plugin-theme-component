@@ -21,7 +21,7 @@ export default class Copy extends BaseCommand {
     Args.THEME_DIR
   ])
 
-  static override description = 'Copy files from a component collection into a theme based on the contents of component-map.json'
+  static override description = 'Copy files from a component collection into a theme'
 
   static override examples = [
     '<%= config.bin %> <%= command.id %> theme-directory'

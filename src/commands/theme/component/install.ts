@@ -21,7 +21,7 @@ export default class Install extends BaseCommand {
     Args.COMPONENT_SELECTOR
   ])
 
-  static override description = 'Copy components files into a theme'
+  static override description = 'Runs the map, copy, clean, and generate import-map commands in sequence'
 
   static override examples = [
     '<%= config.bin %> <%= command.id %> theme-directory',
