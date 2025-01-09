@@ -167,7 +167,7 @@ _See code: [src/commands/theme/component/install.ts](https://github.com/archetyp
 
 ## `shopify theme component map THEMEDIR [COMPONENTSELECTOR]`
 
-Generates or updates a component.manifest.json file with the component collection details and a file map
+Generates or updates a component-map.json file with the component collection details and a file map
 
 ```
 USAGE
@@ -184,7 +184,7 @@ FLAGS
   -v, --collection-version=<value>  version of the component collection
 
 DESCRIPTION
-  Generates or updates a component.manifest.json file with the component collection details and a file map
+  Generates or updates a component-map.json file with the component collection details and a file map
 
 EXAMPLES
   $ shopify theme component map theme-directory
