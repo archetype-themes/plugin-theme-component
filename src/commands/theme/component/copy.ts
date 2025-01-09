@@ -10,7 +10,7 @@ import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import { getComponentMap } from '../../../utilities/component-map.js'
+import { getManifest } from '../../../utilities/manifest.js'
 import { copyFileIfChanged } from '../../../utilities/files.js';
 import Flags from '../../../utilities/flags.js'
 import { getCollectionNodes } from '../../../utilities/nodes.js'
@@ -49,19 +49,19 @@ export default class Copy extends BaseCommand {
     const collectionName = this.flags[Flags.COLLECTION_NAME] || getNameFromPackageJson(process.cwd())
     const collectionVersion = this.flags[Flags.COLLECTION_VERSION] || getVersionFromPackageJson(process.cwd())
 
-    if (!fs.existsSync(path.join(themeDir, 'component-map.json'))) {
-      this.error('Error: component-map.json file not found in the theme directory. Run "shopify theme component map" to generate a component-map.json file.');
+    if (!fs.existsSync(path.join(themeDir, 'component.manifest.json'))) {
+      this.error('Error: component.manifest.json file not found in the theme directory. Run "shopify theme component map" to generate a component.manifest.json file.');
     }
     
-    const componentMap = getComponentMap(path.join(themeDir, 'component-map.json'))
+    const manifest = getManifest(path.join(themeDir, 'component.manifest.json'))
     const componentNodes = getCollectionNodes(currentDir)
 
-    if (componentMap.collections[collectionName].version !== collectionVersion) {
-      this.error(`Version mismatch: Expected ${collectionVersion} but found ${componentMap.collections[collectionName].version}. Run "shopify theme component map" to update the component-map.json file.`);
+    if (manifest.collections[collectionName].version !== collectionVersion) {
+      this.error(`Version mismatch: Expected ${collectionVersion} but found ${manifest.collections[collectionName].version}. Run "shopify theme component map" to update the component.manifest.json file.`);
     }
 
-    const copyComponentMapFiles = (fileType: 'assets' | 'snippets') => {
-      for (const [fileName, fileCollection] of Object.entries(componentMap.files[fileType])) {
+    const copyManifestFiles = (fileType: 'assets' | 'snippets') => {
+      for (const [fileName, fileCollection] of Object.entries(manifest.files[fileType])) {
         if (fileCollection === collectionName) {
           const node = componentNodes.find(node => node.name === fileName && node.themeFolder === fileType);
           if (node) {
@@ -73,7 +73,7 @@ export default class Copy extends BaseCommand {
       }
     };
 
-    copyComponentMapFiles('snippets');
-    copyComponentMapFiles('assets');
+    copyManifestFiles('snippets');
+    copyManifestFiles('assets');
   }
 }

@@ -1,5 +1,5 @@
 /**
- * This command generates or updates a component-map.json file
+ * This command generates or updates a component.manifest.json file
  * 
  * - Updates component files (assets and snippets) mapping
  * - Updates component collection details
@@ -10,17 +10,17 @@ import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import { ComponentMapOptions, generateComponentFilesMap, getComponentMap } from '../../../utilities/component-map.js'
+import { ManifestOptions, generateManifestFiles, getManifest } from '../../../utilities/manifest.js'
 import Flags from '../../../utilities/flags.js'
 import { getNameFromPackageJson, getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
-export default class ComponentMap extends BaseCommand {
+export default class Manifest extends BaseCommand {
   static override args = Args.getDefinitions([
     Args.THEME_DIR,
     Args.COMPONENT_SELECTOR
   ])
 
-  static override description = 'Generates or updates a component-map.json file with the component collection details and a file map'
+  static override description = 'Generates or updates a component.manifest.json file with the component collection details and a file map'
 
   static override examples = [
     '<%= config.bin %> <%= command.id %> theme-directory',
@@ -36,7 +36,7 @@ export default class ComponentMap extends BaseCommand {
   ])
 
   protected override async init(): Promise<void> {
-    await super.init(ComponentMap)
+    await super.init(Manifest)
   }
 
   public async run(): Promise<void> {
@@ -56,28 +56,28 @@ export default class ComponentMap extends BaseCommand {
     const ignoreOverrides = this.flags[Flags.IGNORE_OVERRIDES]
     const componentSelector = this.args[Args.COMPONENT_SELECTOR]
 
-    const componentMapPath = path.join(themeDir, 'component-map.json')
-    const componentMap = getComponentMap(componentMapPath);
+    const manifestPath = path.join(themeDir, 'component.manifest.json')
+    const manifest = getManifest(manifestPath);
 
-    const options: ComponentMapOptions = {
+    const options: ManifestOptions = {
       componentSelector,
       ignoreConflicts,
       ignoreOverrides
     }
 
-    const files = generateComponentFilesMap(
-      componentMap.files, 
+    const files = generateManifestFiles(
+      manifest.files, 
       themeDir, 
       collectionDir, 
       collectionName,
       options
     )
 
-    componentMap.files = sortObjectKeys(files)
-    componentMap.collections[collectionName] = componentMap.collections[collectionName] || {}
-    componentMap.collections[collectionName].version = collectionVersion
+    manifest.files = sortObjectKeys(files)
+    manifest.collections[collectionName] = manifest.collections[collectionName] || {}
+    manifest.collections[collectionName].version = collectionVersion
 
-    fs.writeFileSync(componentMapPath, JSON.stringify(sortObjectKeys(componentMap), null, 2))
+    fs.writeFileSync(manifestPath, JSON.stringify(sortObjectKeys(manifest), null, 2))
   }
 }
 

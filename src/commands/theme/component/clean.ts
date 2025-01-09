@@ -10,7 +10,7 @@ import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import { getComponentMap } from '../../../utilities/component-map.js'
+import { getManifest } from '../../../utilities/manifest.js'
 import { getThemeNodes } from '../../../utilities/nodes.js'
 
 export default class Clean extends BaseCommand {
@@ -31,13 +31,13 @@ export default class Clean extends BaseCommand {
   public async run(): Promise<void> {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     
-    const componentMap = getComponentMap(path.join(themeDir, 'component-map.json'))
+    const manifest = getManifest(path.join(themeDir, 'component.manifest.json'))
     const themeNodes = getThemeNodes(themeDir)
 
     // Remove files that are not in the component map
     for (const node of themeNodes) {
       if (node.type === 'snippet' || node.type === 'asset') {
-        const collection = node.type === 'snippet' ? componentMap.files.snippets : componentMap.files.assets;
+        const collection = node.type === 'snippet' ? manifest.files.snippets : manifest.files.assets;
         if (!collection[node.name]) {
           const filePath = path.join(themeDir, node.themeFolder, node.name);
           if (fs.existsSync(filePath)) {

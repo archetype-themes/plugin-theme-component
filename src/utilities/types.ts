@@ -32,7 +32,7 @@ export interface PackageJSON {
   version: string;
 }
 
-export interface ComponentMap {
+export interface Manifest {
   collections: {
     [name: string]: {
       [version: string]: string;

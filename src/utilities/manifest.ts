@@ -2,14 +2,14 @@ import * as fs from 'node:fs'
 
 import logger from './logger.js'
 import { getCollectionNodes, getThemeNodes } from './nodes.js'
-import { ComponentMap, LiquidNode } from './types.js'
+import { Manifest, LiquidNode } from './types.js'
 
-export function getComponentMap(path: string): ComponentMap {
-  const data: ComponentMap = { collections: {}, files: { assets: {}, snippets: {} } }
+export function getManifest(path: string): Manifest {
+  const data: Manifest = { collections: {}, files: { assets: {}, snippets: {} } }
 
   if (fs.existsSync(path)) {
-    const componentMapContent = fs.readFileSync(path, 'utf8')
-    const parsedContent = JSON.parse(componentMapContent)
+    const manifestContent = fs.readFileSync(path, 'utf8')
+    const parsedContent = JSON.parse(manifestContent)
     data.collections = parsedContent.collections || {}
     data.files.assets = parsedContent.files?.assets || {}
     data.files.snippets = parsedContent.files?.snippets || {}
@@ -18,24 +18,24 @@ export function getComponentMap(path: string): ComponentMap {
   return data
 }
 
-export interface ComponentMapOptions {
+export interface ManifestOptions {
   componentSelector?: string;
   ignoreConflicts: boolean;
   ignoreOverrides: boolean;
 }
 
-export function generateComponentFilesMap(
-  oldFilesMap: ComponentMap['files'],
+export function generateManifestFiles(
+  oldFilesMap: Manifest['files'],
   themeDir: string, 
   collectionDir: string,
   collectionName: string,
-  options: ComponentMapOptions
-): ComponentMap['files'] {
+  options: ManifestOptions
+): Manifest['files'] {
   const collectionNodes = getCollectionNodes(collectionDir)
   const themeNodes = getThemeNodes(themeDir)
   const entryPointNodes = themeNodes.filter(node => node.type === 'entry')
 
-  const newFilesMap: ComponentMap['files'] = {
+  const newFilesMap: Manifest['files'] = {
     assets: {},
     snippets: {}
   }

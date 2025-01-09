@@ -30,26 +30,26 @@ describe('theme component copy', () => {
     expect(error?.message).to.include('Warning: Current directory does not appear to be a component collection.')
   })
 
-  it('throws an error if the component-map.json file is not found in the theme directory', async () => {
+  it('throws an error if the component.manifest.json file is not found in the theme directory', async () => {
     process.chdir(testCollectionPath)
-    fs.rmSync(path.join(testThemePath, 'component-map.json'), {force: true})
+    fs.rmSync(path.join(testThemePath, 'component.manifest.json'), {force: true})
     const {error} = await runCommand(['theme', 'component', 'copy', testThemePath])
     expect(error).to.be.instanceOf(Error)
-    expect(error?.message).to.include('Error: component-map.json file not found in the theme directory.')
+    expect(error?.message).to.include('Error: component.manifest.json file not found in the theme directory.')
   })
 
-  it('throws an error if the version of the component collection does not match the version in the component-map.json file', async () => {
+  it('throws an error if the version of the component collection does not match the version in the component.manifest.json file', async () => {
     process.chdir(testCollectionPath)
     const {error} = await runCommand(['theme', 'component', 'copy', testThemePath])
     expect(error).to.be.instanceOf(Error)
     expect(error?.message).to.include('Version mismatch:')
   })
 
-  it('copies files from a component collection to a theme directory based on component-map.json', async () => {
-    const componentMapPath = path.join(testThemePath, 'component-map.json')
-    const componentMap = JSON.parse(fs.readFileSync(componentMapPath, 'utf8'))
-    componentMap.collections["@archetype-themes/test-collection"].version = "1.0.1"
-    fs.writeFileSync(componentMapPath, JSON.stringify(componentMap, null, 2))
+  it('copies files from a component collection to a theme directory based on component.manifest.json', async () => {
+    const manifestPath = path.join(testThemePath, 'component.manifest.json')
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
+    manifest.collections["@archetype-themes/test-collection"].version = "1.0.1"
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2))
     await runCommand(['theme', 'component', 'copy', testThemePath])
 
     expect(fs.existsSync(path.join(testThemePath, 'snippets', 'to-be-copied.liquid'))).to.be.true

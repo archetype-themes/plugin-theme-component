@@ -23,13 +23,13 @@ describe('theme component clean', () => {
     fs.rmSync(testThemePath, {force: true, recursive: true})
   })
 
-  it('removes files that are no longer in the component-map.json file', async () => {
+  it('removes files that are no longer in the component.manifest.json file', async () => {
     await runCommand(['theme', 'component', 'clean', testThemePath])
     expect(fs.existsSync(path.join(testThemePath, 'snippets', 'missing.liquid'))).to.be.false
     expect(fs.existsSync(path.join(testThemePath, 'assets', 'missing.css'))).to.be.false
   })
 
-  it('does not remove files that are still in the component-map.json file', async () => {
+  it('does not remove files that are still in the component.manifest.json file', async () => {
     await runCommand(['theme', 'component', 'clean', testThemePath])
     expect(fs.existsSync(path.join(testThemePath, 'snippets', 'theme-component.liquid'))).to.be.true
     expect(fs.existsSync(path.join(testThemePath, 'assets', 'theme-component.css'))).to.be.true
