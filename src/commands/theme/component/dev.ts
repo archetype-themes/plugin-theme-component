@@ -42,7 +42,15 @@ export default class Dev extends BaseCommand {
     Flags.WATCH,
     Flags.PREVIEW,
     Flags.GENERATE_IMPORT_MAP,
-    Flags.GENERATE_TEMPLATE_MAP
+    Flags.GENERATE_TEMPLATE_MAP,
+    Flags.HOST,
+    Flags.LIVE_RELOAD,
+    Flags.PORT,
+    Flags.STORE_PASSWORD,
+    Flags.THEME,
+    Flags.STORE,
+    Flags.ENVIRONMENT,
+    Flags.PASSWORD
   ])
 
   protected override async init(): Promise<void> {
@@ -112,7 +120,30 @@ export default class Dev extends BaseCommand {
 
     // Run shopify theme dev on the dev directory
     if (preview) {
-      await this.config.runCommand(`theme:dev`, ['--path', devDir])
+      const additionalArgs = Object.entries(this.flags.values)
+        .filter(([key]) => {
+          const themeDevFlags = [
+            'host',
+            'live-reload',
+            'port',
+            'store-password',
+            'theme',
+            'store',
+            'environment',
+            'password',
+            'path'
+          ];
+          return themeDevFlags.includes(key);
+        })
+        .map(([key, value]): string | null => {
+          if (typeof value === 'boolean') {
+            return value ? `--${key}` : null;
+          }
+          return value ? `--${key}=${value}` : null;
+        })
+        .filter((arg): arg is string => arg !== null);
+
+      await this.config.runCommand(`theme:dev`, ['--path', devDir, ...additionalArgs])
     }
 
     // Watch for changes to the theme and components and rebuild the theme

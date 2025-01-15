@@ -7,6 +7,9 @@
 /node_modules
 oclif.manifest.json
 
+# Test run-time fixtures
+test-collection
+test-theme
 
 
 yarn.lock

@@ -19,7 +19,15 @@ export default class Flags {
   static readonly SETUP_FILES = 'setup-files';
   static readonly THEME_DIR = 'theme-dir';
   static readonly WATCH = 'watch';
-
+  static readonly HOST = 'host';
+  static readonly LIVE_RELOAD = 'live-reload';
+  static readonly PORT = 'port';
+  static readonly THEME = 'theme';
+  static readonly STORE = 'store';
+  static readonly ENVIRONMENT = 'environment';
+  static readonly PASSWORD = 'password';
+  static readonly STORE_PASSWORD = 'store-password';
+  
   private flagValues: Record<string, any>;
   constructor(flags: Record<string, any>) {
     this.flagValues = flags
@@ -116,5 +124,37 @@ flagDefinitions = {
     char: 'w',
     default: true,
     description: 'watch for changes in theme and component directories',
-  })
+  }),
+
+  [Flags.HOST]: OclifFlags.string({
+    description: 'Set which network interface the web server listens on. The default value is 127.0.0.1.',
+  }),
+
+  [Flags.LIVE_RELOAD]: OclifFlags.boolean({
+    description: 'Reload the browser when changes are made.',
+  }),
+
+  [Flags.PASSWORD]: OclifFlags.string({
+    description: 'Password generated from the Theme Access app.',
+  }),
+
+  [Flags.PORT]: OclifFlags.integer({
+    description: 'Local port to serve theme preview from.',
+  }),
+
+  [Flags.STORE_PASSWORD]: OclifFlags.string({
+    description: 'The password for storefronts with password protection.',
+  }),
+
+  [Flags.THEME]: OclifFlags.string({
+    description: 'Theme ID or name of the remote theme.',
+  }),
+
+  [Flags.STORE]: OclifFlags.string({
+    description: 'Store URL. It can be the store prefix (example.myshopify.com) or the complete URL.',
+  }),
+
+  [Flags.ENVIRONMENT]: OclifFlags.string({
+    description: 'The environment to apply to the current command.',
+  }),
 }
