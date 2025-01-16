@@ -2,7 +2,7 @@ import * as fs from 'node:fs'
 
 import logger from './logger.js'
 import { getCollectionNodes, getThemeNodes } from './nodes.js'
-import { Manifest, LiquidNode } from './types.js'
+import { LiquidNode, Manifest } from './types.js'
 
 export function getManifest(path: string): Manifest {
   const data: Manifest = { collections: {}, files: { assets: {}, snippets: {} } }

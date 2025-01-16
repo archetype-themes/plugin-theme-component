@@ -135,10 +135,11 @@ export default class Dev extends BaseCommand {
           ];
           return themeDevFlags.includes(key);
         })
-        .map(([key, value]): string | null => {
+        .map(([key, value]): null | string => {
           if (typeof value === 'boolean') {
             return value ? `--${key}` : null;
           }
+
           return value ? `--${key}=${value}` : null;
         })
         .filter((arg): arg is string => arg !== null);

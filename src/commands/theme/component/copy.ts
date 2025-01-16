@@ -10,9 +10,9 @@ import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import { getManifest } from '../../../utilities/manifest.js'
 import { copyFileIfChanged } from '../../../utilities/files.js';
 import Flags from '../../../utilities/flags.js'
+import { getManifest } from '../../../utilities/manifest.js'
 import { getCollectionNodes } from '../../../utilities/nodes.js'
 import { getNameFromPackageJson , getVersionFromPackageJson } from '../../../utilities/package-json.js'
 

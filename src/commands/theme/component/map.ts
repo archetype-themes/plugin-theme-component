@@ -10,8 +10,8 @@ import path from 'node:path'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import { ManifestOptions, generateManifestFiles, getManifest } from '../../../utilities/manifest.js'
 import Flags from '../../../utilities/flags.js'
+import { ManifestOptions, generateManifestFiles, getManifest } from '../../../utilities/manifest.js'
 import { getNameFromPackageJson, getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
 export default class Manifest extends BaseCommand {
