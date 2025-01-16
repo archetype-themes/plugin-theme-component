@@ -1,63 +1,62 @@
-// @ts-ignore
-import fse from 'fs-extra';
-import fs from 'node:fs'
+/* eslint-disable import/default */
+import fs from 'fs-extra';
 import path from 'node:path'
 
 import logger from './logger.js'
 
 export function syncFiles(srcDir: string, destDir: string) {
-  if (!fse.existsSync(srcDir)) {
+  if (!fs.existsSync(srcDir)) {
     logger.error(`Source directory ${srcDir} does not exist`);
     return;
   }
 
   try {
     // Ensure destination exists
-    fse.ensureDirSync(destDir);
+    fs.ensureDirSync(destDir);
 
     // Get all files in both directories
-    const srcFiles = fse.readdirSync(srcDir);
-    const destFiles = fse.existsSync(destDir) ? fse.readdirSync(destDir) : [];
+    const srcFiles = fs.readdirSync(srcDir);
+    const destFiles = fs.existsSync(destDir) ? fs.readdirSync(destDir) : [];
 
     // Remove files that don't exist in source
-    destFiles.forEach((file: string) => {
-      if (file.startsWith('.')) return;
+    for (const file of destFiles) {
+      if (file.startsWith('.')) continue;
       if (!srcFiles.includes(file)) {
         const destPath = path.join(destDir, file);
-        if (fse.statSync(destPath).isDirectory()) {
-          fse.removeSync(destPath);
+        if (fs.statSync(destPath).isDirectory()) {
+          fs.removeSync(destPath);
           logger.debug(`Removed directory: ${file}`);
         } else {
-          fse.removeSync(destPath);
+          fs.removeSync(destPath);
           logger.debug(`Removed file: ${file}`);
         }
       }
-    });
+    }
     
     // Copy each file/directory from source
-    srcFiles.forEach((file: string) => {
-      if (file.startsWith('.')) return;
+    for (const file of srcFiles) {
+      if (file.startsWith('.')) continue;
 
       const srcPath = path.join(srcDir, file);
       const destPath = path.join(destDir, file);
-      const stat = fse.statSync(srcPath);
+      const stat = fs.statSync(srcPath);
 
       if (stat.isDirectory()) {
         syncFiles(srcPath, destPath);
       } else {
-        const srcContent = fse.readFileSync(srcPath, 'utf8');
+        const srcContent = fs.readFileSync(srcPath, 'utf8');
         let needsCopy = true;
 
-        if (fse.existsSync(destPath)) {
-          const destContent = fse.readFileSync(destPath, 'utf8');
+        if (fs.existsSync(destPath)) {
+          const destContent = fs.readFileSync(destPath, 'utf8');
           needsCopy = srcContent !== destContent;
         }
 
         if (needsCopy) {
-          fse.copyFileSync(srcPath, destPath);
+          fs.copyFileSync(srcPath, destPath);
         }
       }
-    });
+    }
   } catch (error) {
     logger.error(error as Error);
   }
