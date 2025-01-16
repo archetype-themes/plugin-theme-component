@@ -24,15 +24,15 @@ export interface ManifestOptions {
   ignoreOverrides: boolean;
 }
 
-export function generateManifestFiles(
+export async function generateManifestFiles(
   oldFilesMap: Manifest['files'],
   themeDir: string, 
   collectionDir: string,
   collectionName: string,
   options: ManifestOptions
-): Manifest['files'] {
-  const collectionNodes = getCollectionNodes(collectionDir)
-  const themeNodes = getThemeNodes(themeDir)
+): Promise<Manifest['files']> {
+  const collectionNodes = await getCollectionNodes(collectionDir)
+  const themeNodes = await getThemeNodes(themeDir)
   const entryPointNodes = themeNodes.filter(node => node.type === 'entry')
 
   const newFilesMap: Manifest['files'] = {
@@ -47,10 +47,7 @@ export function generateManifestFiles(
     if (visited.has(nodeName)) return // Prevent infinite recursion
     visited.add(nodeName)
 
-    const node = collectionNodes.find(n => 
-      n.type === 'component' && 
-      n.name === nodeName
-    )
+    const node = collectionNodes.find(n => n.name === nodeName)
     if (!node) return
     
     selectedCollectionNodes.add(node)
@@ -66,12 +63,13 @@ export function generateManifestFiles(
       }
     }
 
-    // Add all child assets
-    if (node.type === 'component' && node.assets) {
+    // Add all child assets and recursively check their dependencies
+    if (node.assets) {
       for (const asset of node.assets) {
         const assetNode = collectionNodes.find(n => n.name === asset)
         if (assetNode) {
           selectedCollectionNodes.add(assetNode)
+          addNodeAndChildren(asset, visited)
         }
       }
     }
@@ -162,7 +160,7 @@ export function generateManifestFiles(
       if (node) {
         // If the node exists in the collection, add it to the new import map
         newFilesMap[node.themeFolder][node.name] = collectionName
-        if (node.type === 'component') {
+        if (node.assets.length > 0) {
           // If the node is a component, add its assets to the new import map
           for (const asset of node.assets) addFilesMapEntry('assets', asset)
         }

@@ -280,4 +280,13 @@ describe('theme component map', () => {
     expect(data.files.snippets).to.deep.equal(beforeData.files.snippets)
     expect(data.files.assets).to.deep.equal(beforeData.files.assets)
   })
+
+  it('should include shared js assets in the manifest', async () => {
+    await runCommand(['theme', 'component', 'map', testThemePath])
+
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
+    expect(data.files.assets['shared-script.js']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.assets['shared-script-dependency.js']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.assets['unused-shared-script.js']).to.be.undefined
+  })
 })

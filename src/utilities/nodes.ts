@@ -1,6 +1,7 @@
 import { globSync } from 'glob'
 import * as fs from 'node:fs'
 import path from 'node:path'
+import { parseImports } from 'parse-imports'
 
 import { LiquidNode } from './types.js'
 
@@ -21,7 +22,7 @@ export function getSnippetNames(liquidCode: string) {
   return [...snippetNames]
 }
 
-export function generateLiquidNode(file: string, type: LiquidNode['type'], themeFolder: LiquidNode['themeFolder']): LiquidNode {
+export async function generateLiquidNode(file: string, type: LiquidNode['type'], themeFolder: LiquidNode['themeFolder']): Promise<LiquidNode> {
   let assets: string[] = []
   let body: string = ''
   let snippets: string[] = []
@@ -30,6 +31,11 @@ export function generateLiquidNode(file: string, type: LiquidNode['type'], theme
   if (type !== 'asset') {
     body = fs.readFileSync(file, 'utf8')
     snippets = getSnippetNames(body)
+  }
+
+  if (type === 'asset' && path.basename(file).endsWith('.js')) {
+    body = fs.readFileSync(file, 'utf8')
+    assets = await getJsAssets(body)
   }
 
   if (type === 'component') {
@@ -49,7 +55,7 @@ export function generateLiquidNode(file: string, type: LiquidNode['type'], theme
   }
 }
 
-export function getCollectionNodes(collectionDir: string): LiquidNode[] {
+export async function getCollectionNodes(collectionDir: string): Promise<LiquidNode[]> {
   const collectionSnippets = globSync(path.join(collectionDir, 'components', '*', 'snippets', '*.liquid'), { absolute: true })
     .map(file => generateLiquidNode(file, 'snippet', 'snippets'))
   const collectionComponents = globSync(path.join(collectionDir, 'components', '*', '*.liquid'), { absolute: true })
@@ -61,6 +67,8 @@ export function getCollectionNodes(collectionDir: string): LiquidNode[] {
     .map(file => generateLiquidNode(file, 'component', 'snippets'))
   const collectionAssets = globSync(path.join(collectionDir, 'components', '*', 'assets', '*'), { absolute: true })
     .map(file => generateLiquidNode(file, 'asset', 'assets'))
+  const collectionScripts = globSync(path.join(collectionDir, 'scripts', '*.js'), { absolute: true })
+    .map(file => generateLiquidNode(file, 'asset', 'assets'))
 
   const collectionSetup = globSync(path.join(collectionDir, 'components', '*', 'setup', '*/*'), { absolute: true })
     .map(file => {
@@ -68,10 +76,10 @@ export function getCollectionNodes(collectionDir: string): LiquidNode[] {
       return generateLiquidNode(file, 'setup', parentFolderName)
     })
 
-  return [...collectionSnippets, ...collectionComponents, ...collectionAssets, ...collectionSetup]
+  return Promise.all([...collectionSnippets, ...collectionComponents, ...collectionAssets, ...collectionScripts, ...collectionSetup])
 }
 
-export function getThemeNodes(themeDir: string): LiquidNode[] {
+export async function getThemeNodes(themeDir: string): Promise<LiquidNode[]> {
   const entryNodes = globSync(path.join(themeDir, '{layout,sections,blocks,templates}', '*.liquid'), { absolute: true })
     .map(file => { 
       const parentFolderName = path.basename(path.dirname(file)) as LiquidNode['themeFolder']
@@ -81,5 +89,16 @@ export function getThemeNodes(themeDir: string): LiquidNode[] {
     .map(file => generateLiquidNode(file, 'snippet', 'snippets'))
   const themeAssets = globSync(path.join(themeDir, 'assets', '*'), { absolute: true })
     .map(file => generateLiquidNode(file, 'asset', 'assets'))
-  return [...entryNodes, ...themeSnippets, ...themeAssets]
+  return Promise.all([...entryNodes, ...themeSnippets, ...themeAssets])
+}
+
+export async function getJsAssets(body: string) {
+  const imports = [...(await parseImports(body))]
+  return imports.map((imp) => {
+    if (!imp.moduleSpecifier?.value) return ''
+    const value = imp.moduleSpecifier.value.endsWith('.js') 
+      ? imp.moduleSpecifier.value 
+      : `${imp.moduleSpecifier.value}.js`
+    return path.basename(value)
+  })
 }

@@ -54,7 +54,7 @@ export default class Copy extends BaseCommand {
     }
     
     const manifest = getManifest(path.join(themeDir, 'component.manifest.json'))
-    const componentNodes = getCollectionNodes(currentDir)
+    const componentNodes = await getCollectionNodes(currentDir)
 
     if (manifest.collections[collectionName].version !== collectionVersion) {
       this.error(`Version mismatch: Expected ${collectionVersion} but found ${manifest.collections[collectionName].version}. Run "shopify theme component map" to update the component.manifest.json file.`);

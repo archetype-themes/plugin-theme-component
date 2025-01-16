@@ -65,7 +65,7 @@ export default class Manifest extends BaseCommand {
       ignoreOverrides
     }
 
-    const files = generateManifestFiles(
+    const files = await generateManifestFiles(
       manifest.files, 
       themeDir, 
       collectionDir, 

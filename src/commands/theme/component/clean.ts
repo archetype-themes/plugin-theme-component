@@ -32,7 +32,7 @@ export default class Clean extends BaseCommand {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     
     const manifest = getManifest(path.join(themeDir, 'component.manifest.json'))
-    const themeNodes = getThemeNodes(themeDir)
+    const themeNodes = await getThemeNodes(themeDir)
 
     // Remove files that are not in the component map
     for (const node of themeNodes) {

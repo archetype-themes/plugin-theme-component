@@ -89,7 +89,7 @@ export default class Dev extends BaseCommand {
 
       // Copy the component setup files to the dev directory based on the component selector
       if (setupFiles) {
-        const collectionNodes = getCollectionNodes(collectionDir)
+        const collectionNodes = await getCollectionNodes(collectionDir)
         for (const setupFile of collectionNodes
           .filter(node => componentSelector === '*' || componentSelector.includes(path.basename(node.file, '.liquid')))
           .flatMap(node => node.setup)) {
