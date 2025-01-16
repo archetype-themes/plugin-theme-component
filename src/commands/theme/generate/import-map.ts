@@ -34,8 +34,8 @@ export default class GenerateImportMap extends BaseCommand {
     const importMap = {
       imports: Object.fromEntries(
         jsFiles.map(file => [
-          // Use filename without .js extension as the key
-          path.basename(file, '.js'),
+          // Remove both .min.js and .js extensions from the filename
+          path.basename(file).replace(/\.min\.js$|\.js$/, ''),
           // Use Shopify's asset_url filter for the value
           `{{ '${file}' | asset_url }}`
         ])

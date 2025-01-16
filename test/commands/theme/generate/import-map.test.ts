@@ -25,21 +25,47 @@ describe('theme generate import-map', () => {
     
     const importMapPath = path.join(testThemePath, 'snippets', 'import-map.liquid')
     const content = fs.readFileSync(importMapPath, 'utf8')
-    const expected = `<script type="importmap">\n{\n  "imports": {}\n}\n</script>`
-    expect(content).to.equal(expected)
+    
+    const jsonContent = extractImportMapJson(content)
+    expect(jsonContent).to.deep.equal({
+      imports: {}
+    })
   })
 
   it('generates import map with JS files', async () => {
     const assetsPath = path.join(testThemePath, 'assets')
     fs.writeFileSync(path.join(assetsPath, 'main.js'), '')
     fs.writeFileSync(path.join(assetsPath, 'utils.js'), '')
-
+    
     await runCommand(['theme:generate:import-map', testThemePath])
     
     const importMapPath = path.join(testThemePath, 'snippets', 'import-map.liquid')
     const content = fs.readFileSync(importMapPath, 'utf8')
-    const expected = `<script type="importmap">\n{\n  "imports": {\n    "main": "{{ 'main.js' | asset_url }}",\n    "utils": "{{ 'utils.js' | asset_url }}"\n  }\n}\n</script>`
-    expect(content).to.equal(expected)
+    
+    const jsonContent = extractImportMapJson(content)
+    expect(jsonContent).to.deep.equal({
+      imports: {
+        main: "{{ 'main.js' | asset_url }}",
+        utils: "{{ 'utils.js' | asset_url }}"
+      }
+    })
+  })
+
+  it('does not include .min in the entry key', async () => {
+    const assetsPath = path.join(testThemePath, 'assets')
+    fs.writeFileSync(path.join(assetsPath, 'component.min.js'), '')
+    
+    await runCommand(['theme:generate:import-map', testThemePath])
+    
+    const importMapPath = path.join(testThemePath, 'snippets', 'import-map.liquid')
+    const content = fs.readFileSync(importMapPath, 'utf8')
+    
+    const jsonContent = extractImportMapJson(content)
+    expect(jsonContent).to.deep.equal({
+      imports: {
+        component: "{{ 'component.min.js' | asset_url }}",
+      }
+    })
   })
 
   it('respects quiet flag', async () => {
@@ -71,7 +97,20 @@ describe('theme generate import-map', () => {
     await runCommand(['theme:generate:import-map', testThemePath])
     
     const content = fs.readFileSync(importMapPath, 'utf8')
-    const expected = `<script type="importmap">\n{\n  "imports": {\n    "main": "{{ 'main.js' | asset_url }}"\n  }\n}\n</script>`
-    expect(content).to.equal(expected)
+    const jsonContent = extractImportMapJson(content)
+    expect(jsonContent).to.deep.equal({
+      imports: {
+        main: "{{ 'main.js' | asset_url }}"
+      }
+    })
   })
 })
+
+// Helper function to extract and parse JSON from import map script tag
+function extractImportMapJson(content: string): any {
+  const match = content.match(/<script type="importmap">\s*(\{[\s\S]*\})\s*<\/script>/)
+  if (!match) {
+    throw new Error('Invalid import map format')
+  }
+  return JSON.parse(match[1])
+}
