@@ -42,6 +42,6 @@ export default class Install extends BaseCommand {
     await Map.run([this.args[Args.THEME_DIR]!])
     await Copy.run([this.args[Args.THEME_DIR]!])
     await Clean.run([this.args[Args.THEME_DIR]!])
-    await GenerateImportMap.run([this.args[Args.THEME_DIR]!])
+    await GenerateImportMap.run([this.args[Args.THEME_DIR]!, '--quiet'])
   }
 }

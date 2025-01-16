@@ -17,7 +17,6 @@ import { cleanDir, copyFileIfChanged, syncFiles } from '../../../utilities/files
 import Flags from '../../../utilities/flags.js'
 import { cloneTheme } from '../../../utilities/git.js'
 import { getCollectionNodes } from '../../../utilities/nodes.js'
-import GenerateImportMap from '../generate/import-map.js'
 import GenerateTemplateMap from '../generate/template-map.js'
 import Install from './install.js'
 
@@ -59,7 +58,6 @@ export default class Dev extends BaseCommand {
 
   public async run(): Promise<void> {
     const componentSelector = this.args[Args.COMPONENT_SELECTOR]
-    const generateImportMap = this.flags[Flags.GENERATE_IMPORT_MAP]
     const generateTemplateMap = this.flags[Flags.GENERATE_TEMPLATE_MAP]
     const setupFiles = this.flags[Flags.SETUP_FILES]
     const preview = this.flags[Flags.PREVIEW]
@@ -104,11 +102,6 @@ export default class Dev extends BaseCommand {
       
       // Install the components
       await Install.run([destination])
-
-      // Generate the js import map
-      if (generateImportMap) {
-        await GenerateImportMap.run([destination, '--quiet'])
-      }
 
       // Generate the template map that is used by explorer
       if (generateTemplateMap && setupFiles) {
