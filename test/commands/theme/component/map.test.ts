@@ -281,12 +281,33 @@ describe('theme component map', () => {
     expect(data.files.assets).to.deep.equal(beforeData.files.assets)
   })
 
-  it('should include shared js assets in the manifest', async () => {
+  it('should include shared js assets referenced in other JS files in the manifest', async () => {
     await runCommand(['theme', 'component', 'map', testThemePath])
 
     const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
     expect(data.files.assets['shared-script.js']).to.equal('@archetype-themes/test-collection')
     expect(data.files.assets['shared-script-dependency.js']).to.equal('@archetype-themes/test-collection')
     expect(data.files.assets['unused-shared-script.js']).to.be.undefined
+  })
+
+  it('should detect JS imports from script tags with {{ "filename" | asset_url }} filter', async () => {
+    await runCommand(['theme', 'component', 'map', testThemePath])
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
+    
+    expect(data.files.assets['script-with-filter.js']).to.equal('@archetype-themes/test-collection')
+  })
+
+  it('should detect JS imports from script tags with import statements', async () => {
+    await runCommand(['theme', 'component', 'map', testThemePath])
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
+    
+    expect(data.files.assets['script-with-import.js']).to.equal('@archetype-themes/test-collection')
+  })
+
+  it('should not include commented out script imports', async () => {
+    await runCommand(['theme', 'component', 'map', testThemePath])
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
+    
+    expect(data.files.assets['commented-script.js']).to.be.undefined
   })
 })

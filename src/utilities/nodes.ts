@@ -8,6 +8,8 @@ import { LiquidNode } from './types.js'
 const LIQUID_BLOCK_REGEX = /{%-?.*?-?%}/gs
 const LIQUID_COMMENTS_REGEX = /{%-?\s*comment\s*-?%}[\S\s]*?{%-?\s*endcomment\s*-?%}/gi
 const LIQUID_RENDER_REGEX = /\srender\s+'([^']+)'/gs
+const ASSET_URL_REGEX = /\{\{\s*'([^']+\.js)'\s*\|\s*asset_url\s*\}\}/g
+const SCRIPT_IMPORT_REGEX = /<script[^>]*>[\s\S]*?import\s+['"]([^'"]+)['"]/g
 
 export function getSnippetNames(liquidCode: string) {
   const cleanLiquidCode = liquidCode.replaceAll(LIQUID_COMMENTS_REGEX, '')
@@ -20,6 +22,24 @@ export function getSnippetNames(liquidCode: string) {
   }
 
   return [...snippetNames]
+}
+
+export function getJsImportsFromLiquid(liquidCode: string) {
+  const cleanLiquidCode = liquidCode.replaceAll(LIQUID_COMMENTS_REGEX, '')
+  const jsImports = new Set<string>()
+
+  // Match any JS files referenced with the asset_url filter
+  for (const match of cleanLiquidCode.matchAll(ASSET_URL_REGEX)) {
+    jsImports.add(match[1])
+  }
+
+  // Match import statements within script tags
+  for (const match of cleanLiquidCode.matchAll(SCRIPT_IMPORT_REGEX)) {
+    const importPath = match[1]
+    jsImports.add(importPath.endsWith('.js') ? importPath : `${importPath}.js`)
+  }
+
+  return [...jsImports]
 }
 
 export async function generateLiquidNode(file: string, type: LiquidNode['type'], themeFolder: LiquidNode['themeFolder']): Promise<LiquidNode> {
@@ -39,7 +59,10 @@ export async function generateLiquidNode(file: string, type: LiquidNode['type'],
   }
 
   if (type === 'component') {
-    assets = globSync(path.join(path.dirname(file), 'assets', '**/*'), { absolute: true }).map(asset => path.basename(asset))
+    body = fs.readFileSync(file, 'utf8')
+    const jsImports = getJsImportsFromLiquid(body)
+    const globbedAssets = globSync(path.join(path.dirname(file), 'assets', '**/*'), { absolute: true }).map(asset => path.basename(asset))
+    assets = [...new Set([...jsImports, ...globbedAssets])]
     setup = globSync(path.join(path.dirname(file), 'setup', '**/*'), { absolute: true }).map(asset => path.relative(path.join(path.dirname(file), 'setup'), asset))
   }
 
