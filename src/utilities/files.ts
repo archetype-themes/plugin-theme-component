@@ -11,7 +11,7 @@ export function syncFiles(srcDir: string, destDir: string) {
   }
 
   try {
-    // Ensure destination exists
+    // eslint-disable-next-line import/no-named-as-default-member
     fs.ensureDirSync(destDir);
 
     // Get all files in both directories
@@ -24,10 +24,10 @@ export function syncFiles(srcDir: string, destDir: string) {
       if (!srcFiles.includes(file)) {
         const destPath = path.join(destDir, file);
         if (fs.statSync(destPath).isDirectory()) {
-          fs.removeSync(destPath);
+          fs.removeSync(destPath); // eslint-disable-line import/no-named-as-default-member
           logger.debug(`Removed directory: ${file}`);
         } else {
-          fs.removeSync(destPath);
+          fs.removeSync(destPath); // eslint-disable-line import/no-named-as-default-member
           logger.debug(`Removed file: ${file}`);
         }
       }

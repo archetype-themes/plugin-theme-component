@@ -29,18 +29,21 @@ export default class GenerateTemplateMap extends BaseCommand {
     // Get all liquid files in templates directory recursively
     const getFiles = (dir: string): string[] => {
       const files = fs.readdirSync(dir)
-      return files.reduce<string[]>((acc, file) => {
+      const result: string[] = [];
+      
+      for (const file of files) {
         const filePath = path.join(dir, file)
         if (fs.statSync(filePath).isDirectory()) {
-          return [...acc, ...getFiles(filePath)]
+          result.push(...getFiles(filePath));
+          continue;
         }
 
         if (file.endsWith('.liquid') || file.endsWith('.json')) {
-          return [...acc, filePath]
+          result.push(filePath);
         }
-
-        return acc
-      }, [])
+      }
+      
+      return result;
     }
 
     const liquidFiles = getFiles(templatesDir)
@@ -48,113 +51,10 @@ export default class GenerateTemplateMap extends BaseCommand {
     // Create template map object
     const templateMap = Object.fromEntries(
       liquidFiles.map(file => {
-        const relativePath = path.relative(templatesDir, file)
         const [category, componentName] = path.basename(file, '.liquid').split('.')
         if (!componentName) return [] // Skip if no component name
 
-        // Generate the route based on the category
-        let routeTemplate = ''
-        switch (category) {
-          case '404': {
-            routeTemplate = '{{ routes.root_url }}'
-            break
-          }
-
-          case 'article': {
-            routeTemplate = '{{ article.url }}'
-            break
-          }
-
-          case 'blog': {
-            routeTemplate = '{{ blog.url }}'
-            break
-          }
-
-          case 'cart': {
-            routeTemplate = '{{ routes.cart_url }}'
-            break
-          }
-
-          case 'collection': {
-            routeTemplate = '{{ collections.first.url }}'
-            break
-          }
-
-          case 'customers/account': {
-            routeTemplate = '{{ routes.account_url }}'
-            break
-          }
-
-          case 'customers/activate_account': {
-            routeTemplate = '{{ routes.account_url }}'
-            break
-          }
-
-          case 'customers/addresses': {
-            routeTemplate = '{{ routes.account_addresses_url }}'
-            break
-          }
-
-          case 'customers/login': {
-            routeTemplate = '{{ routes.account_login_url }}'
-            break
-          }
-
-          case 'customers/order': {
-            routeTemplate = '{{ customer.order_url }}'
-            break
-          }
-
-          case 'customers/register': {
-            routeTemplate = '{{ routes.account_register_url }}'
-            break
-          }
-
-          case 'customers/reset_password': {
-            routeTemplate = '{{ routes.account_recover_url }}'
-            break
-          }
-
-          case 'gift_card': {
-            routeTemplate = '{{ gift_card.url }}'
-            break
-          }
-
-          case 'index': {
-            routeTemplate = '{{ routes.root_url }}'
-            break
-          }
-
-          case 'list-collections': {
-            routeTemplate = '{{ routes.collections_url }}'
-            break
-          }
-
-          case 'page': {
-            routeTemplate = '{{ page.url }}'
-            break
-          }
-
-          case 'password': {
-            routeTemplate = '{{ routes.root_url }}'
-            break
-          }
-
-          case 'product': {
-            routeTemplate = '{{ product_url }}'
-            break
-          }
-
-          case 'search': {
-            routeTemplate = '{{ routes.search_url }}'
-            break
-          }
-
-          default: {
-            routeTemplate = '{{ routes.root_url }}'
-          }
-        }
-
+        const routeTemplate = this.getRouteTemplate(category)
         const fullRoute = `${routeTemplate}?view=${componentName}`
         return [
           componentName,
@@ -164,13 +64,15 @@ export default class GenerateTemplateMap extends BaseCommand {
     )
 
     // Merge entries with the same component name
-    const mergedTemplateMap = Object.entries(templateMap).reduce<Record<string, Record<string, string>>>((acc, [component, routes]) => {
+    const mergedTemplateMap: Record<string, Record<string, string>> = {};
+    
+    for (const [component, routes] of Object.entries(templateMap)) {
       if (typeof routes === 'object' && routes !== null) {
-        acc[component] = acc[component] ? { ...acc[component], ...routes } : routes
+        mergedTemplateMap[component] = mergedTemplateMap[component] 
+          ? { ...mergedTemplateMap[component], ...routes } 
+          : routes;
       }
-
-      return acc
-    }, {})
+    }
 
     // Write the template map to snippets/template-map.liquid
     const liquidQuery = `
@@ -195,6 +97,91 @@ export default class GenerateTemplateMap extends BaseCommand {
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully generated template map at snippets/template-map.liquid')
+    }
+  }
+
+  // Get route template based on category
+  private getRouteTemplate(category: string): string {
+    switch (category) {
+      case '404': {
+        return '{{ routes.root_url }}'
+      }
+
+      case 'article': {
+        return '{{ article.url }}'
+      }
+
+      case 'blog': {
+        return '{{ blog.url }}'
+      }
+
+      case 'cart': {
+        return '{{ routes.cart_url }}'
+      }
+
+      case 'collection': {
+        return '{{ collections.first.url }}'
+      }
+
+      case 'customers/account': {
+        return '{{ routes.account_url }}'
+      }
+
+      case 'customers/activate_account': {
+        return '{{ routes.account_url }}'
+      }
+
+      case 'customers/addresses': {
+        return '{{ routes.account_addresses_url }}'
+      }
+
+      case 'customers/login': {
+        return '{{ routes.account_login_url }}'
+      }
+
+      case 'customers/order': {
+        return '{{ customer.order_url }}'
+      }
+
+      case 'customers/register': {
+        return '{{ routes.account_register_url }}'
+      }
+
+      case 'customers/reset_password': {
+        return '{{ routes.account_recover_url }}'
+      }
+
+      case 'gift_card': {
+        return '{{ gift_card.url }}'
+      }
+
+      case 'index': {
+        return '{{ routes.root_url }}'
+      }
+
+      case 'list-collections': {
+        return '{{ routes.collections_url }}'
+      }
+
+      case 'page': {
+        return '{{ page.url }}'
+      }
+
+      case 'password': {
+        return '{{ routes.root_url }}'
+      }
+
+      case 'product': {
+        return '{{ product_url }}'
+      }
+
+      case 'search': {
+        return '{{ routes.search_url }}'
+      }
+
+      default: {
+        return '{{ routes.root_url }}'
+      }
     }
   }
 }

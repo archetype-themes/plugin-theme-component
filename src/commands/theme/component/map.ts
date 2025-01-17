@@ -81,16 +81,19 @@ export default class Manifest extends BaseCommand {
   }
 }
 
-function sortObjectKeys(obj: any): any {
+function sortObjectKeys<T>(obj: T): T {
   if (Array.isArray(obj)) {
-    return obj.map(sortObjectKeys);
+    return obj.map((item) => sortObjectKeys(item)) as T;
   }
 
- if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj).sort().reduce((result, key) => {
-      result[key] = sortObjectKeys(obj[key]);
-      return result;
-    }, {} as any);
+  if (obj !== null && typeof obj === 'object') {
+    const sortedObj: Record<string, unknown> = {};
+    const sortedKeys = Object.keys(obj as object).sort();
+    for (const key of sortedKeys) {
+      sortedObj[key] = sortObjectKeys((obj as Record<string, unknown>)[key]);
+    }
+    
+    return sortedObj as T;
   }
 
   return obj;

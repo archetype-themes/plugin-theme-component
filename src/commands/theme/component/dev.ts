@@ -143,6 +143,7 @@ export default class Dev extends BaseCommand {
     // Watch for changes to the theme and components and rebuild the theme
     if (watch) {
       const watchDir = path.join(devDir, '.watch')
+      // eslint-disable-next-line import/no-named-as-default-member
       const themeWatcher = chokidar.watch([themeDir, componentsDir], {
         ignoreInitial: true,
         ignored: /(^|[/\\])\../, // ignore dotfiles

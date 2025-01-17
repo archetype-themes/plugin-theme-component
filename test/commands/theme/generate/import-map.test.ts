@@ -107,7 +107,7 @@ describe('theme generate import-map', () => {
 })
 
 // Helper function to extract and parse JSON from import map script tag
-function extractImportMapJson(content: string): any {
+function extractImportMapJson(content: string): object {
   const match = content.match(/<script type="importmap">\s*({[\S\s]*})\s*<\/script>/)
   if (!match) {
     throw new Error('Invalid import map format')

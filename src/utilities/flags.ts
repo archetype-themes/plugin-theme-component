@@ -1,11 +1,10 @@
 import {Flags as OclifFlags} from '@oclif/core'
+import { FlagInput } from '@oclif/core/interfaces';
 
 import { ComponentConfig } from './types.js'
 
-export let flagDefinitions: Record<string, any>;
-
 export default class Flags {
-  [key: string]: any;
+  [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   static readonly CLEAN = 'clean';
   static readonly COLLECTION_NAME = 'collection-name';
   static readonly COLLECTION_PACKAGE_JSON = 'collection-package-json';
@@ -28,18 +27,10 @@ export default class Flags {
   static readonly THEME_DIR = 'theme-dir';
   static readonly WATCH = 'watch';
   
-  private flagValues: Record<string, any>;
-  constructor(flags: Record<string, any>) {
+  private flagValues: Record<string, FlagInput<object>>;
+  constructor(flags: Record<string, FlagInput<object>>) {
     this.flagValues = flags
-    return new Proxy(this, {
-      get(target: Flags, prop: string | symbol): any {
-        if (prop in target) {
-          return (target as any)[prop]
-        }
-
-        return target.flagValues[prop.toString()]
-      }
-    })
+    Object.assign(this, flags)
   }
 
   static getDefinitions(keys: string[]) {
@@ -53,7 +44,8 @@ export default class Flags {
   }
 }
 
-flagDefinitions = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const flagDefinitions: Record<string, any> = {
   [Flags.CLEAN]: OclifFlags.boolean({
     default: false,
     description: 'Clean the theme directory before copying components'
