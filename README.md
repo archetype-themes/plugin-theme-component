@@ -4,9 +4,9 @@
 ![Static Badge](https://img.shields.io/badge/Node.js-v18.12.0-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Shopify CLI plugin for building theme components.
+A Shopify CLI plugin for building themes with Liquid theme components.
 
-The `plugin-theme-component` repository is a foundational part of the [Archetype Devkit preview](https://github.com/archetype-themes/devkit). It provides commands to create, develop, and install a collection of theme components.
+The `plugin-theme-component` repository is a foundational part of the [Archetype Devkit preview](https://github.com/archetype-themes/devkit).
 
 ## Getting Started
 
@@ -19,29 +19,27 @@ You'll need to ensure you have the following installed on your local development
 
 ### Installation
 
-Simply run the following command to install the Shopify CLI plugin:
+Install the Shopify CLI plugin:
 ```bash
 shopify plugins install plugin-theme-component
 ```
 
-### Uninstalling the plugin
-
-If you want to uninstall the plugin from the Shopify CLI, you can run the following command:
-```bash
-shopify plugins uninstall plugin-theme-component
-```
 
 ## List of commands
 
 <!-- commands -->
 * [`shopify theme component`](#shopify-theme-component)
-* [`shopify theme component dev [COMPONENTS]`](#shopify-theme-component-dev-components)
-* [`shopify theme component generate COMPONENTS`](#shopify-theme-component-generate-components)
-* [`shopify theme component install [COMPONENTS]`](#shopify-theme-component-install-components)
+* [`shopify theme component clean [THEMEDIR]`](#shopify-theme-component-clean-themedir)
+* [`shopify theme component copy THEMEDIR`](#shopify-theme-component-copy-themedir)
+* [`shopify theme component dev [COMPONENTSELECTOR]`](#shopify-theme-component-dev-componentselector)
+* [`shopify theme component install THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-install-themedir-componentselector)
+* [`shopify theme component map THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-map-themedir-componentselector)
+* [`shopify theme generate import-map [THEMEDIR]`](#shopify-theme-generate-import-map-themedir)
+* [`shopify theme generate template-map [THEMEDIR]`](#shopify-theme-generate-template-map-themedir)
 
 ## `shopify theme component`
 
-Theme Component Plugin - By Archetype Themes
+Theme Component Plugin by Archetype Themes
 
 ```
 USAGE
@@ -51,111 +49,203 @@ FLAGS
   -v, --version  Display Plugin Version
 
 DESCRIPTION
-  Theme Component Plugin - By Archetype Themes
+  Theme Component Plugin by Archetype Themes
 ```
 
-_See code: [src/commands/theme/component/index.js](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.2/src/commands/theme/component/index.js)_
+_See code: [src/commands/theme/component/index.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/index.ts)_
 
-## `shopify theme component dev [COMPONENTS]`
+## `shopify theme component clean [THEMEDIR]`
 
-Develop using theme components
+Remove unused component files in a theme
 
 ```
 USAGE
-  $ shopify theme component dev [COMPONENTS...] [--debug] [--trace] [-t <path-or-github-url>] [-s] [-w] [--sync]
+  $ shopify theme component clean [THEMEDIR] [-q]
 
 ARGUMENTS
-  COMPONENTS...  Component name(s)
+  THEMEDIR  [default: .] path to theme directory
 
 FLAGS
-  -s, --[no-]setup-files  Copy Setup Files
-  -w, --[no-]watch        Watch For Changes
-      --[no-]sync         Sync your files through shopify theme dev
-
-PATH FLAGS
-  -t, --theme-path=<path-or-github-url>  [default: https://github.com/archetype-themes/plugin-theme-component/tree/main/
-                                         resources/explorer] Path to your theme
-
-DEBUG FLAGS
-  --debug  Debug Mode is more verbose.
-  --trace  Trace Mode provides tracing and debug information.
+  -q, --[no-]quiet  suppress non-essential output
 
 DESCRIPTION
-  Develop using theme components
+  Remove unused component files in a theme
 
-FLAG DESCRIPTIONS
-  -s, --[no-]setup-files  Copy Setup Files
-
-    Installs component setup files in your dev theme to allow component exploration in an isolated environment.
-
-  -t, --theme-path=<path-or-github-url>  Path to your theme
-
-    The path to your theme should point to a GitHub URL or a local path. This defaults to Archetype Themes' publicly
-    shared component explorer theme.
-
-  -w, --[no-]watch  Watch For Changes
-
-    Any changes to component and theme source files triggers a file copy and theme build if necessary.
-
-  --[no-]sync  Sync your files through shopify theme dev
-
-    This will execute `shopify theme dev --path .explorer` along with your component dev command. You can customize
-    options for that command in your toml file.
+EXAMPLES
+  $ shopify theme component clean theme-directory
 ```
 
-_See code: [src/commands/theme/component/dev.js](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.2/src/commands/theme/component/dev.js)_
+_See code: [src/commands/theme/component/clean.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/clean.ts)_
 
-## `shopify theme component generate COMPONENTS`
+## `shopify theme component copy THEMEDIR`
 
-Generate canvas files for new components
+Copy files from a component collection into a theme
 
 ```
 USAGE
-  $ shopify theme component generate COMPONENTS... [--debug] [--trace]
+  $ shopify theme component copy THEMEDIR [-n <value>] [-v <value>]
 
 ARGUMENTS
-  COMPONENTS...  Component name(s)
+  THEMEDIR  path to theme directory
 
-DEBUG FLAGS
-  --debug  Debug Mode is more verbose.
-  --trace  Trace Mode provides tracing and debug information.
+FLAGS
+  -n, --collection-name=<value>     name of the component collection
+  -v, --collection-version=<value>  version of the component collection
 
 DESCRIPTION
-  Generate canvas files for new components
+  Copy files from a component collection into a theme
+
+EXAMPLES
+  $ shopify theme component copy theme-directory
 ```
 
-_See code: [src/commands/theme/component/generate.js](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.2/src/commands/theme/component/generate.js)_
+_See code: [src/commands/theme/component/copy.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/copy.ts)_
 
-## `shopify theme component install [COMPONENTS]`
+## `shopify theme component dev [COMPONENTSELECTOR]`
 
-Install a collection of components
+Start a sandboxed development environment for components
 
 ```
 USAGE
-  $ shopify theme component install [COMPONENTS...] [--debug] [--trace] [-c <path-or-github-url>]
+  $ shopify theme component dev [COMPONENTSELECTOR] [-n <value>] [-v <value>] [-t <value>] [-s] [-w] [-y] [-i] [-m]
+    [--host <value>] [--live-reload] [--port <value>] [--store-password <value>] [--theme <value>] [--store <value>]
+    [--environment <value>] [--password <value>]
 
 ARGUMENTS
-  COMPONENTS...  Component name(s)
+  COMPONENTSELECTOR  [default: *] component name or names (comma-separated) or "*" for all components
 
-PATH FLAGS
-  -c, --components-path=<path-or-github-url>  [default: https://github.com/archetype-themes/reference-components.git]
-                                              Path to your components
-
-DEBUG FLAGS
-  --debug  Debug Mode is more verbose.
-  --trace  Trace Mode provides tracing and debug information.
+FLAGS
+  -i, --generate-import-map         generate import map
+  -m, --generate-template-map       generate template map
+  -n, --collection-name=<value>     name of the component collection
+  -s, --setup-files                 copy setup files to theme directory
+  -t, --theme-dir=<value>           [default: https://github.com/archetype-themes/explorer] directory that contains
+                                    theme files for development
+  -v, --collection-version=<value>  version of the component collection
+  -w, --[no-]watch                  watch for changes in theme and component directories
+  -y, --[no-]preview                sync changes to theme directory
+      --environment=<value>         The environment to apply to the current command.
+      --host=<value>                Set which network interface the web server listens on. The default value is
+                                    127.0.0.1.
+      --live-reload                 Reload the browser when changes are made.
+      --password=<value>            Password generated from the Theme Access app.
+      --port=<value>                Local port to serve theme preview from.
+      --store=<value>               Store URL. It can be the store prefix (example.myshopify.com) or the complete URL.
+      --store-password=<value>      The password for storefronts with password protection.
+      --theme=<value>               Theme ID or name of the remote theme.
 
 DESCRIPTION
-  Install a collection of components
+  Start a sandboxed development environment for components
 
-FLAG DESCRIPTIONS
-  -c, --components-path=<path-or-github-url>  Path to your components
+EXAMPLES
+  $ shopify theme component dev
 
-    The path to your components should point to a GitHub URL or a local path. This defaults to Archetype Themes'
-    publicly shared reference components.
+  $ shopify theme component dev header
+
+  $ shopify theme component dev header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/install.js](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.2/src/commands/theme/component/install.js)_
+_See code: [src/commands/theme/component/dev.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/dev.ts)_
+
+## `shopify theme component install THEMEDIR [COMPONENTSELECTOR]`
+
+Runs the map, copy, clean, and generate import-map commands in sequence
+
+```
+USAGE
+  $ shopify theme component install THEMEDIR [COMPONENTSELECTOR] [-n <value>] [-v <value>]
+
+ARGUMENTS
+  THEMEDIR           path to theme directory
+  COMPONENTSELECTOR  [default: *] component name or names (comma-separated) or "*" for all components
+
+FLAGS
+  -n, --collection-name=<value>     name of the component collection
+  -v, --collection-version=<value>  version of the component collection
+
+DESCRIPTION
+  Runs the map, copy, clean, and generate import-map commands in sequence
+
+EXAMPLES
+  $ shopify theme component install theme-directory
+
+  $ shopify theme component install theme-directory header
+
+  $ shopify theme component install theme-directory header,footer,navigation
+```
+
+_See code: [src/commands/theme/component/install.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/install.ts)_
+
+## `shopify theme component map THEMEDIR [COMPONENTSELECTOR]`
+
+Generates or updates a component.manifest.json file with the component collection details and a file map
+
+```
+USAGE
+  $ shopify theme component map THEMEDIR [COMPONENTSELECTOR] [-n <value>] [-v <value>] [-f] [-o]
+
+ARGUMENTS
+  THEMEDIR           path to theme directory
+  COMPONENTSELECTOR  [default: *] component name or names (comma-separated) or "*" for all components
+
+FLAGS
+  -f, --ignore-conflicts            ignore conflicts when mapping components
+  -n, --collection-name=<value>     name of the component collection
+  -o, --ignore-overrides            ignore overrides when mapping components
+  -v, --collection-version=<value>  version of the component collection
+
+DESCRIPTION
+  Generates or updates a component.manifest.json file with the component collection details and a file map
+
+EXAMPLES
+  $ shopify theme component map theme-directory
+
+  $ shopify theme component map theme-directory header
+
+  $ shopify theme component map theme-directory header,footer,navigation
+```
+
+_See code: [src/commands/theme/component/map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/map.ts)_
+
+## `shopify theme generate import-map [THEMEDIR]`
+
+Generate an import map for JavaScript files in the assets directory
+
+```
+USAGE
+  $ shopify theme generate import-map [THEMEDIR] [-q]
+
+ARGUMENTS
+  THEMEDIR  [default: .] path to theme directory
+
+FLAGS
+  -q, --[no-]quiet  suppress non-essential output
+
+DESCRIPTION
+  Generate an import map for JavaScript files in the assets directory
+```
+
+_See code: [src/commands/theme/generate/import-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/generate/import-map.ts)_
+
+## `shopify theme generate template-map [THEMEDIR]`
+
+Generate a template map for component routes in the templates directory
+
+```
+USAGE
+  $ shopify theme generate template-map [THEMEDIR] [-q]
+
+ARGUMENTS
+  THEMEDIR  [default: .] path to theme directory
+
+FLAGS
+  -q, --[no-]quiet  suppress non-essential output
+
+DESCRIPTION
+  Generate a template map for component routes in the templates directory
+```
+
+_See code: [src/commands/theme/generate/template-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/generate/template-map.ts)_
 <!-- commandsstop -->
 
 ## Contributing
@@ -171,5 +261,5 @@ If you already have the plugin installed via npm, you'll need to [uninstall](#un
 Once this is done, follow these steps to ensure the Shopify CLI is running the local version of the plugin:
 - `git clone https://github.com/archetype-themes/plugin-theme-component.git`
 - `cd plugin-theme-component`
-- `npm ci`
+- `npm i`
 - `shopify plugins link`
