@@ -52,7 +52,7 @@ DESCRIPTION
   Theme Component Plugin by Archetype Themes
 ```
 
-_See code: [src/commands/theme/component/index.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/index.ts)_
+_See code: [src/commands/theme/component/index.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/index.ts)_
 
 ## `shopify theme component clean [THEMEDIR]`
 
@@ -75,7 +75,7 @@ EXAMPLES
   $ shopify theme component clean theme-directory
 ```
 
-_See code: [src/commands/theme/component/clean.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/clean.ts)_
+_See code: [src/commands/theme/component/clean.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/clean.ts)_
 
 ## `shopify theme component copy THEMEDIR`
 
@@ -99,7 +99,7 @@ EXAMPLES
   $ shopify theme component copy theme-directory
 ```
 
-_See code: [src/commands/theme/component/copy.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/copy.ts)_
+_See code: [src/commands/theme/component/copy.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/copy.ts)_
 
 ## `shopify theme component dev [COMPONENTSELECTOR]`
 
@@ -108,6 +108,8 @@ Start a sandboxed development environment for components
 ```
 USAGE
   $ shopify theme component dev [COMPONENTSELECTOR] [-n <value>] [-v <value>] [-t <value>] [-s] [-w] [-y] [-i] [-m]
+    [--host <value>] [--live-reload] [--port <value>] [--store-password <value>] [--theme <value>] [--store <value>]
+    [--environment <value>] [--password <value>]
 
 ARGUMENTS
   COMPONENTSELECTOR  [default: *] component name or names (comma-separated) or "*" for all components
@@ -122,6 +124,15 @@ FLAGS
   -v, --collection-version=<value>  version of the component collection
   -w, --[no-]watch                  watch for changes in theme and component directories
   -y, --[no-]preview                sync changes to theme directory
+      --environment=<value>         The environment to apply to the current command.
+      --host=<value>                Set which network interface the web server listens on. The default value is
+                                    127.0.0.1.
+      --live-reload                 Reload the browser when changes are made.
+      --password=<value>            Password generated from the Theme Access app.
+      --port=<value>                Local port to serve theme preview from.
+      --store=<value>               Store URL. It can be the store prefix (example.myshopify.com) or the complete URL.
+      --store-password=<value>      The password for storefronts with password protection.
+      --theme=<value>               Theme ID or name of the remote theme.
 
 DESCRIPTION
   Start a sandboxed development environment for components
@@ -134,7 +145,7 @@ EXAMPLES
   $ shopify theme component dev header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/dev.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/dev.ts)_
+_See code: [src/commands/theme/component/dev.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/dev.ts)_
 
 ## `shopify theme component install THEMEDIR [COMPONENTSELECTOR]`
 
@@ -163,11 +174,11 @@ EXAMPLES
   $ shopify theme component install theme-directory header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/install.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/install.ts)_
+_See code: [src/commands/theme/component/install.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/install.ts)_
 
 ## `shopify theme component map THEMEDIR [COMPONENTSELECTOR]`
 
-Generates or updates a component-map.json file with the component collection details and a file map
+Generates or updates a component.manifest.json file with the component collection details and a file map
 
 ```
 USAGE
@@ -184,7 +195,7 @@ FLAGS
   -v, --collection-version=<value>  version of the component collection
 
 DESCRIPTION
-  Generates or updates a component-map.json file with the component collection details and a file map
+  Generates or updates a component.manifest.json file with the component collection details and a file map
 
 EXAMPLES
   $ shopify theme component map theme-directory
@@ -194,7 +205,7 @@ EXAMPLES
   $ shopify theme component map theme-directory header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/component/map.ts)_
+_See code: [src/commands/theme/component/map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/component/map.ts)_
 
 ## `shopify theme generate import-map [THEMEDIR]`
 
@@ -214,7 +225,7 @@ DESCRIPTION
   Generate an import map for JavaScript files in the assets directory
 ```
 
-_See code: [src/commands/theme/generate/import-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/generate/import-map.ts)_
+_See code: [src/commands/theme/generate/import-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/generate/import-map.ts)_
 
 ## `shopify theme generate template-map [THEMEDIR]`
 
@@ -234,7 +245,7 @@ DESCRIPTION
   Generate a template map for component routes in the templates directory
 ```
 
-_See code: [src/commands/theme/generate/template-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v3.7.1/src/commands/theme/generate/template-map.ts)_
+_See code: [src/commands/theme/generate/template-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v4.0.0/src/commands/theme/generate/template-map.ts)_
 <!-- commandsstop -->
 
 ## Contributing
@@ -250,5 +261,5 @@ If you already have the plugin installed via npm, you'll need to [uninstall](#un
 Once this is done, follow these steps to ensure the Shopify CLI is running the local version of the plugin:
 - `git clone https://github.com/archetype-themes/plugin-theme-component.git`
 - `cd plugin-theme-component`
-- `npm ci`
+- `npm i`
 - `shopify plugins link`
