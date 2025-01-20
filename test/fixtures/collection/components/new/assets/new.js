@@ -1,1 +1,0 @@
-import sharedScript from 'shared-script'
