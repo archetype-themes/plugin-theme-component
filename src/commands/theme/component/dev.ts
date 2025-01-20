@@ -10,6 +10,7 @@
 
 import chokidar from 'chokidar'
 import path from 'node:path'
+import { URL } from 'url'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
@@ -72,7 +73,9 @@ export default class Dev extends BaseCommand {
 
     // Clone the theme if it's a remote repo and set the themeDir to the cloned repo
     let themeDir: string;
-    if (this.flags[Flags.THEME_DIR].includes('github.com')) {
+    const url = new URL(this.flags[Flags.THEME_DIR]);
+    const host = url.host;
+    if (host === 'github.com' || host.endsWith('.github.com')) {
       themeDir = path.join(devDir, '.repo')
       this.log(`Cloning theme from ${this.flags[Flags.THEME_DIR]} into dev directory ${devDir}`)
       await cloneTheme(this.flags[Flags.THEME_DIR], themeDir)
