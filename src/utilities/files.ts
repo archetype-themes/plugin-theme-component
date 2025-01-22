@@ -73,6 +73,17 @@ export function copyFileIfChanged(src: string, dest: string) {
   }
 }
 
+export function writeFileIfChanged(content: string, dest: string) {
+  const destDir = path.dirname(dest);
+  if (!fs.existsSync(destDir)) {
+    fs.mkdirSync(destDir, { recursive: true });
+  }
+
+  if (!fs.existsSync(dest) || content !== fs.readFileSync(dest, 'utf8')) {
+    fs.writeFileSync(dest, content);
+  }
+}
+
 export function cleanDir(dir: string) {
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, {recursive: true})

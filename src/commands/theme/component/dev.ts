@@ -14,12 +14,19 @@ import { URL } from 'node:url'
 
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
-import { cleanDir, copyFileIfChanged, syncFiles } from '../../../utilities/files.js'
+import { cleanDir, syncFiles } from '../../../utilities/files.js'
 import Flags from '../../../utilities/flags.js'
 import { cloneTheme } from '../../../utilities/git.js'
-import { getCollectionNodes } from '../../../utilities/nodes.js'
+import { copySetupComponentFiles } from '../../../utilities/setup.js'
 import GenerateTemplateMap from '../generate/template-map.js'
 import Install from './install.js'
+
+interface BuildThemeParams {
+  componentSelector: string
+  generateTemplateMap: boolean
+  setupFiles: boolean
+  themeDir: string
+}
 
 export default class Dev extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -71,108 +78,120 @@ export default class Dev extends BaseCommand {
     // Remove the existing dev directory if it exists
     cleanDir(devDir)
 
-    // Clone the theme if it's a remote repo and set the themeDir to the cloned repo
-    let themeDir: string;
-    if (this.flags[Flags.THEME_DIR].startsWith('http')) {
-      const url = new URL(this.flags[Flags.THEME_DIR]);
-      const {host} = url;
-      if (host === 'github.com' || host.endsWith('.github.com')) {
-        themeDir = path.join(devDir, '.repo')
-        this.log(`Cloning theme from ${this.flags[Flags.THEME_DIR]} into dev directory ${devDir}`)
-        await cloneTheme(this.flags[Flags.THEME_DIR], themeDir)
-      } else {
-        throw new Error(`Unsupported theme URL: ${this.flags[Flags.THEME_DIR]}`)
-      }
-    } else {
-      themeDir = path.resolve(process.cwd(), this.flags[Flags.THEME_DIR])
-    }
+    // Get theme directory
+    const themeDir = await this.getThemeDirectory(devDir)
 
     this.log(`Building theme in ${devDir}...`)
-    const buildTheme = async(destination: string) => {
-      // Copy the theme files to the dev directory
-      syncFiles(themeDir, destination);
+    
+    const buildThemeParams: BuildThemeParams = {
+      componentSelector,
+      generateTemplateMap,
+      setupFiles,
+      themeDir
+    }
+    
+    await this.buildTheme(devDir, buildThemeParams)
 
-      // Copy the component setup files to the dev directory based on the component selector
-      if (setupFiles) {
-        const collectionNodes = await getCollectionNodes(collectionDir)
-        for (const setupFile of collectionNodes
-          .filter(node => componentSelector === '*' || componentSelector.includes(path.basename(node.file, '.liquid')))
-          .flatMap(node => node.setup)) {
-            const folderName = path.basename(path.dirname(setupFile))
-            const name = path.basename(setupFile)
-            const node = collectionNodes.find(n => n.name === name && n.themeFolder === folderName)
-            if (node) {
-              copyFileIfChanged(node.file, path.join(destination, node.themeFolder, node.name))
-            }
-          }
-      }
-      
-      // Install the components
-      await Install.run([destination])
-
-      // Generate the template map that is used by explorer
-      if (generateTemplateMap && setupFiles) {
-        await GenerateTemplateMap.run([destination, '--quiet'])
-      }
-    } 
-
-    await buildTheme(devDir)
-
-    // Run shopify theme dev on the dev directory
+    // Run shopify theme dev if preview is enabled
     if (preview) {
-      const additionalArgs = Object.entries(this.flags.values)
-        .filter(([key]) => {
-          const themeDevFlags = [
-            'host',
-            'live-reload',
-            'port',
-            'store-password',
-            'theme',
-            'store',
-            'environment',
-            'password',
-            'path'
-          ];
-          return themeDevFlags.includes(key);
-        })
-        .map(([key, value]): null | string => {
-          if (typeof value === 'boolean') {
-            return value ? `--${key}` : null;
-          }
-
-          return value ? `--${key}=${value}` : null;
-        })
-        .filter((arg): arg is string => arg !== null);
-
+      const additionalArgs = this.getThemeDevFlags()
       await this.config.runCommand(`theme:dev`, ['--path', devDir, ...additionalArgs])
     }
 
-    // Watch for changes to the theme and components and rebuild the theme
+    // Setup file watcher if watch is enabled
     if (watch) {
-      const watchDir = path.join(devDir, '.watch')
-      // eslint-disable-next-line import/no-named-as-default-member
-      const themeWatcher = chokidar.watch([themeDir, componentsDir], {
-        ignoreInitial: true,
-        ignored: /(^|[/\\])\../, // ignore dotfiles
-        persistent: true
-      })
-
-      // Watch for specific file events
-      themeWatcher.on('all', async () => {
-        await buildTheme(watchDir)
-        syncFiles(watchDir, devDir)
-      })
-
-      this.log('Watching for changes...')
-
-      return new Promise((resolve) => {
-        // Store the resolve function so it can be called externally if needed
-        if (process.env.NODE_ENV === 'test') {
-          // Simulate a change event
-          themeWatcher.emit('all', 'change', themeDir)
-          resolve()
-        }
-      })
+      return this.setupWatcher(devDir, themeDir, componentsDir, buildThemeParams)
     }
+  }
+
+  private async buildTheme(destination: string, params: BuildThemeParams): Promise<void> {
+    // Copy the theme files to the dev directory
+    syncFiles(params.themeDir, destination)
+
+    // Copy the component setup files if needed
+    if (params.setupFiles) {
+      await copySetupComponentFiles(
+        process.cwd(), 
+        destination, 
+        params.componentSelector
+      )
+    }
+    
+    // Install the components
+    await Install.run([destination])
+
+    // Generate the template map that is used by explorer
+    if (params.generateTemplateMap && params.setupFiles) {
+      await GenerateTemplateMap.run([destination, '--quiet'])
+    }
+  }
+
+  private getThemeDevFlags(): string[] {
+    const themeDevFlags = new Set([
+      'host',
+      'live-reload',
+      'port',
+      'store-password',
+      'theme',
+      'store',
+      'environment',
+      'password',
+      'path'
+    ])
+
+    return Object.entries(this.flags.values)
+      .filter(([key]) => themeDevFlags.has(key))
+      .map(([key, value]): null | string => {
+        if (typeof value === 'boolean') {
+          return value ? `--${key}` : null
+        }
+
+        return value ? `--${key}=${value}` : null
+      })
+      .filter((arg): arg is string => arg !== null)
+  }
+
+  private async getThemeDirectory(devDir: string): Promise<string> {
+    if (this.flags[Flags.THEME_DIR].startsWith('http')) {
+      const url = new URL(this.flags[Flags.THEME_DIR])
+      const {host} = url
+      
+      if (host === 'github.com' || host.endsWith('.github.com')) {
+        const themeDir = path.join(devDir, '.repo')
+        this.log(`Cloning theme from ${this.flags[Flags.THEME_DIR]} into dev directory ${devDir}`)
+        await cloneTheme(this.flags[Flags.THEME_DIR], themeDir)
+        return themeDir
+      }
+      
+      throw new Error(`Unsupported theme URL: ${this.flags[Flags.THEME_DIR]}`)
+    }
+    
+    return path.resolve(process.cwd(), this.flags[Flags.THEME_DIR])
+  }
+
+  private setupWatcher(devDir: string, themeDir: string, componentsDir: string, buildThemeParams: BuildThemeParams): Promise<void> {
+    const watchDir = path.join(devDir, '.watch')
+    
+    // Need to access chokidar as a default import so it can be mocked in tests
+    // eslint-disable-next-line import/no-named-as-default-member
+    const themeWatcher = chokidar.watch([themeDir, componentsDir], {
+      ignoreInitial: true,
+      ignored: /(^|[/\\])\../, // ignore dotfiles
+      persistent: true
+    })
+
+    themeWatcher.on('all', async () => {
+      await this.buildTheme(watchDir, buildThemeParams)
+      syncFiles(watchDir, devDir)
+    })
+
+    this.log('Watching for changes...')
+
+    return new Promise((resolve) => {
+      if (process.env.NODE_ENV === 'test') {
+        themeWatcher.emit('all', 'change', themeDir)
+        resolve()
+      }
+    })
   }
 }

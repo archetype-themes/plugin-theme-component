@@ -39,6 +39,24 @@ describe('theme component dev', () => {
     expect(fs.existsSync(path.join(testCollectionPath, '.dev', 'templates', 'index.with-setup.liquid'))).to.be.true
   })
 
+  it('merges the settings_schema.json setup files', async () => {
+    await runCommand(['theme', 'component', 'dev', '-t', '../test-theme'])
+    expect(fs.existsSync(path.join(testCollectionPath, '.dev', 'config', 'settings_schema.json'))).to.be.true
+    const json = fs.readFileSync(path.join(testCollectionPath, '.dev', 'config', 'settings_schema.json'), 'utf8')
+    const jsonObject = JSON.parse(json)
+    expect(jsonObject).to.have.deep.members([{ name: "schema_1" }, { name: "schema_2" }, { name: "schema_3" }])
+
+  })
+
+  it('merges the settings_data.json setup files', async () => {
+    await runCommand(['theme', 'component', 'dev', '-t', '../test-theme'])
+    expect(fs.existsSync(path.join(testCollectionPath, '.dev', 'config', 'settings_data.json'))).to.be.true
+    const json = fs.readFileSync(path.join(testCollectionPath, '.dev', 'config', 'settings_data.json'), 'utf8')
+    const jsonObject = JSON.parse(json)
+    expect(jsonObject.presets.Default.value_1).to.be.true
+    expect(jsonObject.presets.Default.value_2).to.be.true
+  })
+
   it('copies a selected component setup file to the dev directory', async () => {
     await runCommand(['theme', 'component', 'dev', 'with-setup', '-t', '../test-theme',])
     expect(fs.existsSync(path.join(testCollectionPath, '.dev', 'sections', 'with-setup.liquid'))).to.be.true

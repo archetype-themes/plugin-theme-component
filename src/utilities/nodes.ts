@@ -63,7 +63,8 @@ export async function generateLiquidNode(file: string, type: LiquidNode['type'],
     const jsImports = getJsImportsFromLiquid(body)
     const globbedAssets = globSync(path.join(path.dirname(file), 'assets', '**/*'), { absolute: true }).map(asset => path.basename(asset))
     assets = [...new Set([...jsImports, ...globbedAssets])]
-    setup = globSync(path.join(path.dirname(file), 'setup', '**/*'), { absolute: true }).map(asset => path.relative(path.join(path.dirname(file), 'setup'), asset))
+    setup = globSync(path.join(path.dirname(file), 'setup', '**/*'), { absolute: true })
+      .filter(file => !fs.statSync(file).isDirectory())
   }
 
   return {
@@ -94,6 +95,7 @@ export async function getCollectionNodes(collectionDir: string): Promise<LiquidN
     .map(file => generateLiquidNode(file, 'asset', 'assets'))
 
   const collectionSetup = globSync(path.join(collectionDir, 'components', '*', 'setup', '*/*'), { absolute: true })
+    .filter(file => !fs.statSync(file).isDirectory())
     .map(file => {
       const parentFolderName = path.basename(path.dirname(file)) as LiquidNode['themeFolder']
       return generateLiquidNode(file, 'setup', parentFolderName)
