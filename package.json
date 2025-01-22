@@ -1,7 +1,7 @@
 {
   "name": "plugin-theme-component",
   "description": "Archetype Theme's Shopify CLI theme component plugin",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "author": "Archetype Themes Limited Partnership",
   "bin": {
     "component": "bin/run.js",
