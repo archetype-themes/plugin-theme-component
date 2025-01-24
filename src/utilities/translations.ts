@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { flattenObject, unflattenObject } from './object.js'
+import { flattenObject, unflattenObject } from './objects.js'
 
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const LIQUID_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
