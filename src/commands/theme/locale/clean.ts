@@ -43,13 +43,8 @@ export default class Clean extends BaseCommand {
       this.error('Cannot disable cleaning of both schema and storefront locales. Remove either --no-schema-locales or --no-storefront-locales flag')
     }
 
-    if (storefrontLocales) {
-      cleanStorefrontTranslations(themeDir)
-    }
-
-    if (schemaLocales) {
-      cleanSchemaTranslations(themeDir)
-    }
+    schemaLocales && cleanSchemaTranslations(themeDir)
+    storefrontLocales && cleanStorefrontTranslations(themeDir)
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully cleaned translations from locale files')

@@ -49,3 +49,17 @@ export function unflattenObject(obj: Record<string, unknown>): Record<string, un
 
   return result
 }
+
+export function sortObjectKeys(obj: Record<string, unknown>): Record<string, unknown> {
+  const sorted: Record<string, unknown> = {}
+  const keys = Object.keys(obj).sort()
+
+  for (const key of keys) {
+    const value = obj[key]
+    sorted[key] = value && typeof value === 'object' && !Array.isArray(value)
+      ? sortObjectKeys(value as Record<string, unknown>)
+      : value
+  }
+
+  return sorted
+}

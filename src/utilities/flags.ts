@@ -16,8 +16,11 @@ export default class Flags {
   static readonly IGNORE_CONFLICTS = 'ignore-conflicts';
   static readonly IGNORE_OVERRIDES = 'ignore-overrides';
   static readonly LIVE_RELOAD = 'live-reload';
+  static readonly LOCALES_DIR = 'locales-dir';
+  static readonly OVERWRITE_LOCALES = 'overwrite-locales';
   static readonly PASSWORD = 'password';
   static readonly PORT = 'port';
+  static readonly PRESERVE_LOCALES = 'preserve-locales';
   static readonly PREVIEW = 'preview';
   static readonly QUIET = 'quiet';
   static readonly SCHEMA_LOCALES = 'schema-locales';
@@ -99,12 +102,30 @@ export const flagDefinitions: Record<string, any> = {
     description: 'Reload the browser when changes are made.',
   }),
 
+  [Flags.LOCALES_DIR]: OclifFlags.string({
+    char: 'l',
+    default: 'https://github.com/archetype-themes/locales',
+    description: 'Directory or repository containing locale files',
+  }),
+
+  [Flags.OVERWRITE_LOCALES]: OclifFlags.boolean({
+    char: 'w',
+    default: false,
+    description: 'Overwrite existing theme locale files with source versions'
+  }),
+
   [Flags.PASSWORD]: OclifFlags.string({
     description: 'Password generated from the Theme Access app.',
   }),
 
   [Flags.PORT]: OclifFlags.integer({
     description: 'Local port to serve theme preview from.',
+  }),
+
+  [Flags.PRESERVE_LOCALES]: OclifFlags.boolean({
+    char: 'p',
+    default: false,
+    description: 'Preserve existing theme locale files when conflicts occur'
   }),
 
   [Flags.PREVIEW]: OclifFlags.boolean({
@@ -166,5 +187,4 @@ export const flagDefinitions: Record<string, any> = {
     default: true,
     description: 'watch for changes in theme and component directories',
   }),
-
 }

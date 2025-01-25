@@ -3,9 +3,21 @@ import path from 'node:path'
 
 import { flattenObject, unflattenObject } from './objects.js'
 
+// Export interfaces
+export interface LocaleContent {
+  [key: string]: Record<string, unknown>
+}
+
+export interface ThemeTranslations {
+  schema: Set<string>
+  storefront: Set<string>
+}
+
+// Constants remain internal
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const LIQUID_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
 
+// Export functions
 export function cleanSchemaTranslations(themeDir: string): void {
   const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
   const localesDir = path.join(themeDir, 'locales')
@@ -28,6 +40,39 @@ export function cleanStorefrontTranslations(themeDir: string): void {
   }
 }
 
+export function getThemeTranslations(themeDir: string): ThemeTranslations {
+  return {
+    schema: scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys),
+    storefront: scanFiles(themeDir, LIQUID_DIRS, findStorefrontKeys)
+  }
+}
+
+export function extractRequiredTranslations(
+  sourceLocales: Record<string, Record<string, unknown>>,
+  required: ThemeTranslations
+): LocaleContent {
+  const result: LocaleContent = {}
+
+  for (const [file, content] of Object.entries(sourceLocales)) {
+    const isSchema = file.endsWith('.schema.json')
+    const requiredKeys = isSchema ? required.schema : required.storefront
+
+    const flatContent = flattenObject(content)
+    const filteredContent: Record<string, unknown> = {}
+
+    for (const key of requiredKeys) {
+      if (key in flatContent) {
+        filteredContent[key] = flatContent[key]
+      }
+    }
+
+    result[file] = unflattenObject(filteredContent)
+  }
+
+  return result
+}
+
+// Helper functions remain internal
 function scanFiles(themeDir: string, dirs: readonly string[], findKeys: (content: string) => Set<string>): Set<string> {
   const usedKeys = new Set<string>()
 
