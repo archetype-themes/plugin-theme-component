@@ -20,13 +20,15 @@ export default class Flags {
   static readonly PORT = 'port';
   static readonly PREVIEW = 'preview';
   static readonly QUIET = 'quiet';
+  static readonly SCHEMA_LOCALES = 'schema-locales';
   static readonly SETUP_FILES = 'setup-files';
   static readonly STORE = 'store';
   static readonly STORE_PASSWORD = 'store-password';
+  static readonly STOREFRONT_LOCALES = 'storefront-locales';
   static readonly THEME = 'theme';
   static readonly THEME_DIR = 'theme-dir';
   static readonly WATCH = 'watch';
-  
+
   private flagValues: Record<string, FlagInput<object>>;
   constructor(flags: Record<string, FlagInput<object>>) {
     this.flagValues = flags
@@ -119,6 +121,13 @@ export const flagDefinitions: Record<string, any> = {
     description: 'suppress non-essential output'
   }),
 
+  [Flags.SCHEMA_LOCALES]: OclifFlags.boolean({
+    allowNo: true,
+    char: 's',
+    default: true,
+    description: 'Clean translations from schema locale files'
+  }),
+
   [Flags.SETUP_FILES]: OclifFlags.boolean({
     allowNo: true,
     char: 's',
@@ -132,6 +141,13 @@ export const flagDefinitions: Record<string, any> = {
 
   [Flags.STORE_PASSWORD]: OclifFlags.string({
     description: 'The password for storefronts with password protection.',
+  }),
+
+  [Flags.STOREFRONT_LOCALES]: OclifFlags.boolean({
+    allowNo: true,
+    char: 'f',
+    default: true,
+    description: 'Clean translations from storefront locale files'
   }),
 
   [Flags.THEME]: OclifFlags.string({
@@ -150,4 +166,5 @@ export const flagDefinitions: Record<string, any> = {
     default: true,
     description: 'watch for changes in theme and component directories',
   }),
+
 }
