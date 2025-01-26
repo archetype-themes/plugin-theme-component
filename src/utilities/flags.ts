@@ -22,12 +22,11 @@ export default class Flags {
   static readonly PORT = 'port';
   static readonly PREVIEW = 'preview';
   static readonly QUIET = 'quiet';
-  static readonly SCHEMA_LOCALES = 'schema-locales';
   static readonly SETUP_FILES = 'setup-files';
   static readonly STORE = 'store';
   static readonly STORE_PASSWORD = 'store-password';
-  static readonly STOREFRONT_LOCALES = 'storefront-locales';
   static readonly SYNC_MODE = 'sync-mode';
+  static readonly TARGET = 'target';
   static readonly THEME = 'theme';
   static readonly THEME_DIR = 'theme-dir';
   static readonly WATCH = 'watch';
@@ -54,8 +53,8 @@ export const flagDefinitions: Record<string, any> = {
   [Flags.CLEAN]: OclifFlags.boolean({
     allowNo: true,
     char: 'c',
-    default: true,
-    description: 'Clean unused translations from locale files'
+    default: false,
+    description: 'Clean unused translations before syncing'
   }),
 
   [Flags.COLLECTION_NAME]: OclifFlags.string({
@@ -137,13 +136,6 @@ export const flagDefinitions: Record<string, any> = {
     description: 'Suppress non-essential output'
   }),
 
-  [Flags.SCHEMA_LOCALES]: OclifFlags.boolean({
-    allowNo: true,
-    char: 's',
-    default: true,
-    description: 'Clean translations from schema locale files'
-  }),
-
   [Flags.SETUP_FILES]: OclifFlags.boolean({
     allowNo: true,
     char: 's',
@@ -159,13 +151,6 @@ export const flagDefinitions: Record<string, any> = {
     description: 'The password for storefronts with password protection.',
   }),
 
-  [Flags.STOREFRONT_LOCALES]: OclifFlags.boolean({
-    allowNo: true,
-    char: 'f',
-    default: true,
-    description: 'Clean translations from storefront locale files'
-  }),
-
   [Flags.SYNC_MODE]: OclifFlags.string({
     char: 'm',
     default: 'update',
@@ -174,6 +159,12 @@ export const flagDefinitions: Record<string, any> = {
       '- replace: Replace all translations with source versions\n' +
       '- add: Only add new translations, preserve existing ones',
     options: ['update', 'replace', 'add']
+  }),
+
+  [Flags.TARGET]: OclifFlags.string({
+    default: 'all',
+    description: 'Target for cleaning: all (default), schema, or storefront',
+    options: ['all', 'schema', 'storefront']
   }),
 
   [Flags.THEME]: OclifFlags.string({

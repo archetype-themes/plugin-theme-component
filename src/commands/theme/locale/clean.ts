@@ -10,7 +10,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { cleanSchemaTranslations, cleanStorefrontTranslations } from '../../../utilities/translations.js'
+import { CleanTarget, cleanTranslations } from '../../../utilities/translations.js'
 
 export default class Clean extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -21,13 +21,12 @@ export default class Clean extends BaseCommand {
 
   static override examples = [
     '<%= config.bin %> <%= command.id %> theme-directory',
-    '<%= config.bin %> <%= command.id %> theme-directory --no-schema-locales',
-    '<%= config.bin %> <%= command.id %> theme-directory --no-storefront-locales'
+    '<%= config.bin %> <%= command.id %> theme-directory --target=schema',
+    '<%= config.bin %> <%= command.id %> theme-directory --target=storefront'
   ]
 
   static override flags = Flags.getDefinitions([
-    Flags.SCHEMA_LOCALES,
-    Flags.STOREFRONT_LOCALES
+    Flags.TARGET
   ])
 
   protected override async init(): Promise<void> {
@@ -36,15 +35,9 @@ export default class Clean extends BaseCommand {
 
   public async run(): Promise<void> {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
-    const schemaLocales = this.flags[Flags.SCHEMA_LOCALES]
-    const storefrontLocales = this.flags[Flags.STOREFRONT_LOCALES]
+    const target = this.flags[Flags.TARGET] as CleanTarget
 
-    if (!schemaLocales && !storefrontLocales) {
-      this.error('Cannot disable cleaning of both schema and storefront locales. Remove either --no-schema-locales or --no-storefront-locales flag')
-    }
-
-    schemaLocales && cleanSchemaTranslations(themeDir)
-    storefrontLocales && cleanStorefrontTranslations(themeDir)
+    await cleanTranslations(themeDir, target)
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully cleaned locale files')

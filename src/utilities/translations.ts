@@ -9,6 +9,8 @@ export interface ThemeTranslations {
   storefront: Set<string>
 }
 
+export type CleanTarget = 'all' | 'schema' | 'storefront'
+
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
 
@@ -195,4 +197,24 @@ export function extractRequiredTranslations(
   }
 
   return result
+}
+
+export async function cleanTranslations(themeDir: string, target: CleanTarget): Promise<void> {
+  switch (target) {
+    case 'schema': {
+      await cleanSchemaTranslations(themeDir)
+      break
+    }
+
+    case 'storefront': {
+      await cleanStorefrontTranslations(themeDir)
+      break
+    }
+
+    case 'all': {
+      await cleanSchemaTranslations(themeDir)
+      await cleanStorefrontTranslations(themeDir)
+      break
+    }
+  }
 }

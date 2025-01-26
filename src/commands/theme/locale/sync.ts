@@ -12,8 +12,13 @@ import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
 import { fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
-import { ThemeTranslations, extractRequiredTranslations, getThemeTranslations } from '../../../utilities/translations.js'
-import Clean from './clean.js'
+import {
+  CleanTarget,
+  ThemeTranslations,
+  cleanTranslations,
+  extractRequiredTranslations,
+  getThemeTranslations
+} from '../../../utilities/translations.js'
 
 export default class Sync extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -23,7 +28,9 @@ export default class Sync extends BaseCommand {
   static override description = 'Sync theme locale files with source translations'
 
   static override examples = [
-    '<%= config.bin %> <%= command.id %> theme-directory'
+    '<%= config.bin %> <%= command.id %> theme-directory',
+    '<%= config.bin %> <%= command.id %> theme-directory --clean',
+    '<%= config.bin %> <%= command.id %> theme-directory --clean --target=schema'
   ]
 
   static override flags = Flags.getDefinitions([
@@ -31,16 +38,16 @@ export default class Sync extends BaseCommand {
     Flags.FORMAT,
     Flags.LOCALES_DIR,
     Flags.SYNC_MODE,
-    Flags.SCHEMA_LOCALES,
-    Flags.STOREFRONT_LOCALES
+    Flags.TARGET
   ])
 
   public async run(): Promise<void> {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     const localesDir = this.flags[Flags.LOCALES_DIR]
+    const target = this.flags[Flags.TARGET] as CleanTarget
 
     if (this.flags[Flags.CLEAN]) {
-      await Clean.run([themeDir, ...this.getCleanFlags()])
+      await cleanTranslations(themeDir, target)
     }
 
     const translations = getThemeTranslations(themeDir)
@@ -53,13 +60,6 @@ export default class Sync extends BaseCommand {
   }> {
     const sourceLocales = await fetchLocaleSource(localesDir)
     return { locales: sourceLocales }
-  }
-
-  private getCleanFlags(): string[] {
-    return Object.entries(this.flags)
-      .filter(([key]) => [Flags.SCHEMA_LOCALES, Flags.STOREFRONT_LOCALES].includes(key))
-      .map(([key, value]) => value === false ? `--no-${key}` : null)
-      .filter(Boolean) as string[]
   }
 
   private async syncTranslations(
