@@ -79,6 +79,7 @@ export default class Sync extends BaseCommand {
     sourceData: { locales: Record<string, Record<string, unknown>> }
   ): Promise<void> {
     const requiredLocales = extractRequiredTranslations(sourceData.locales, translations)
+
     await syncLocales(themeDir, requiredLocales, {
       overwrite: this.flags[Flags.OVERWRITE_LOCALES],
       preserve: this.flags[Flags.PRESERVE_LOCALES]

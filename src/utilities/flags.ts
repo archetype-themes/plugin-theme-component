@@ -58,12 +58,12 @@ export const flagDefinitions: Record<string, any> = {
 
   [Flags.COLLECTION_NAME]: OclifFlags.string({
     char: 'n',
-    description: 'name of the component collection',
+    description: 'Name of the component collection',
   }),
 
   [Flags.COLLECTION_VERSION]: OclifFlags.string({
     char: 'v',
-    description: 'version of the component collection',
+    description: 'Version of the component collection',
   }),
 
   [Flags.ENVIRONMENT]: OclifFlags.string({
@@ -73,13 +73,13 @@ export const flagDefinitions: Record<string, any> = {
   [Flags.GENERATE_IMPORT_MAP]: OclifFlags.boolean({
     char: 'i',
     default: true,
-    description: 'generate import map',
+    description: 'Generate import map',
   }),
 
   [Flags.GENERATE_TEMPLATE_MAP]: OclifFlags.boolean({
     char: 'm',
     default: true,
-    description: 'generate template map',
+    description: 'Generate template map',
   }),
 
   [Flags.HOST]: OclifFlags.string({
@@ -89,13 +89,13 @@ export const flagDefinitions: Record<string, any> = {
   [Flags.IGNORE_CONFLICTS]: OclifFlags.boolean({
     char: 'f',
     default: false,
-    description: 'ignore conflicts when mapping components',
+    description: 'Ignore conflicts when mapping components',
   }),
 
   [Flags.IGNORE_OVERRIDES]: OclifFlags.boolean({
     char: 'o',
     default: false,
-    description: 'ignore overrides when mapping components',
+    description: 'Ignore overrides when mapping components',
   }),
 
   [Flags.LIVE_RELOAD]: OclifFlags.boolean({
@@ -132,14 +132,14 @@ export const flagDefinitions: Record<string, any> = {
     allowNo: true,
     char: 'y',
     default: true,
-    description: 'sync changes to theme directory',
+    description: 'Sync changes to theme directory',
   }),
 
   [Flags.QUIET]: OclifFlags.boolean({
     allowNo: true,
     char: 'q',
     default: false,
-    description: 'suppress non-essential output'
+    description: 'Suppress non-essential output'
   }),
 
   [Flags.SCHEMA_LOCALES]: OclifFlags.boolean({
@@ -153,7 +153,7 @@ export const flagDefinitions: Record<string, any> = {
     allowNo: true,
     char: 's',
     default: true,
-    description: 'copy setup files to theme directory',
+    description: 'Copy setup files to theme directory',
   }),
 
   [Flags.STORE]: OclifFlags.string({
@@ -178,13 +178,13 @@ export const flagDefinitions: Record<string, any> = {
   [Flags.THEME_DIR]: OclifFlags.string({
     char: 't',
     default: 'https://github.com/archetype-themes/explorer',
-    description: 'directory that contains theme files for development',
+    description: 'Directory that contains theme files for development',
   }),
 
   [Flags.WATCH]: OclifFlags.boolean({
     allowNo: true,
     char: 'w',
     default: true,
-    description: 'watch for changes in theme and component directories',
+    description: 'Watch for changes in theme and component directories',
   }),
 }
