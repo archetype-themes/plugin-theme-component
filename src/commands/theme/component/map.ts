@@ -1,6 +1,6 @@
 /**
  * This command generates or updates a component.manifest.json file
- * 
+ *
  * - Updates component files (assets and snippets) mapping
  * - Updates component collection details
  */
@@ -8,11 +8,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import Args from '../../../utilities/args.js'    
+import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
 import { getLastCommitHash } from '../../../utilities/git.js'
 import { ManifestOptions, generateManifestFiles, getManifest } from '../../../utilities/manifest.js'
+import { sortObjectKeys } from '../../../utilities/objects.js'
 import { getNameFromPackageJson, getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
 export default class Manifest extends BaseCommand {
@@ -67,9 +68,9 @@ export default class Manifest extends BaseCommand {
     }
 
     const files = await generateManifestFiles(
-      manifest.files, 
-      themeDir, 
-      collectionDir, 
+      manifest.files,
+      themeDir,
+      collectionDir,
       collectionName,
       options
     )
@@ -82,22 +83,4 @@ export default class Manifest extends BaseCommand {
 
     fs.writeFileSync(manifestPath, JSON.stringify(sortObjectKeys(manifest), null, 2))
   }
-}
-
-function sortObjectKeys<T>(obj: T): T {
-  if (Array.isArray(obj)) {
-    return obj.map((item) => sortObjectKeys(item)) as T;
-  }
-
-  if (obj !== null && typeof obj === 'object') {
-    const sortedObj: Record<string, unknown> = {};
-    const sortedKeys = Object.keys(obj as object).sort();
-    for (const key of sortedKeys) {
-      sortedObj[key] = sortObjectKeys((obj as Record<string, unknown>)[key]);
-    }
-    
-    return sortedObj as T;
-  }
-
-  return obj;
 }

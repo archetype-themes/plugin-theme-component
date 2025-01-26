@@ -50,16 +50,21 @@ export function unflattenObject(obj: Record<string, unknown>): Record<string, un
   return result
 }
 
-export function sortObjectKeys(obj: Record<string, unknown>): Record<string, unknown> {
-  const sorted: Record<string, unknown> = {}
-  const keys = Object.keys(obj).sort()
-
-  for (const key of keys) {
-    const value = obj[key]
-    sorted[key] = value && typeof value === 'object' && !Array.isArray(value)
-      ? sortObjectKeys(value as Record<string, unknown>)
-      : value
+export function sortObjectKeys<T>(obj: T): T {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => sortObjectKeys(item)) as T
   }
 
-  return sorted
+  if (obj !== null && typeof obj === 'object') {
+    const sortedObj: Record<string, unknown> = {}
+    const sortedKeys = Object.keys(obj as object).sort()
+
+    for (const key of sortedKeys) {
+      sortedObj[key] = sortObjectKeys((obj as Record<string, unknown>)[key])
+    }
+
+    return sortedObj as T
+  }
+
+  return obj
 }
