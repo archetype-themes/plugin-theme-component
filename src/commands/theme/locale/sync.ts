@@ -11,7 +11,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { LocaleSourceStats, analyzeLocaleFiles, fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
+import { analyzeLocaleFiles, fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
 import { ThemeTranslations, extractRequiredTranslations, getThemeTranslations } from '../../../utilities/translations.js'
 import Clean from './clean.js'
 
@@ -52,12 +52,10 @@ export default class Sync extends BaseCommand {
   }
 
   private async fetchAndAnalyzeSource(localesDir: string): Promise<{
-    locales: Record<string, Record<string, unknown>>,
-    stats: LocaleSourceStats
+    locales: Record<string, Record<string, unknown>>
   }> {
     const sourceLocales = await fetchLocaleSource(localesDir)
-    const stats = analyzeLocaleFiles(Object.keys(sourceLocales))
-    return { locales: sourceLocales, stats }
+    return { locales: sourceLocales }
   }
 
   private getCleanFlags(): string[] {
@@ -65,12 +63,6 @@ export default class Sync extends BaseCommand {
       .filter(([key]) => [Flags.SCHEMA_LOCALES, Flags.STOREFRONT_LOCALES].includes(key))
       .map(([key, value]) => value === false ? `--no-${key}` : null)
       .filter(Boolean) as string[]
-  }
-
-  private getSyncMode(): string {
-    if (this.flags[Flags.OVERWRITE_LOCALES]) return 'overwrite'
-    if (this.flags[Flags.PRESERVE_LOCALES]) return 'preserve'
-    return 'merge'
   }
 
   private async syncTranslations(

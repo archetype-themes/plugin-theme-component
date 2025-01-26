@@ -9,12 +9,6 @@ export interface LocaleContent {
   [key: string]: Record<string, unknown>
 }
 
-export interface LocaleSourceStats {
-  schemaFiles: number
-  storefrontFiles: number
-  totalFiles: number
-}
-
 export interface LocaleDiff {
   added: Set<string>
   modified: Set<string>
@@ -24,14 +18,6 @@ export interface LocaleDiff {
 interface SyncOptions {
   overwrite?: boolean
   preserve?: boolean
-}
-
-export function analyzeLocaleFiles(localeFiles: string[]): LocaleSourceStats {
-  return {
-    schemaFiles: localeFiles.filter(f => f.endsWith('.schema.json')).length,
-    storefrontFiles: localeFiles.filter(f => !f.endsWith('.schema.json')).length,
-    totalFiles: localeFiles.length
-  }
 }
 
 export async function fetchLocaleSource(source: string): Promise<LocaleContent> {
