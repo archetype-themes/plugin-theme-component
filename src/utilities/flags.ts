@@ -10,6 +10,7 @@ export default class Flags {
   static readonly COLLECTION_PACKAGE_JSON = 'collection-package-json';
   static readonly COLLECTION_VERSION = 'collection-version';
   static readonly ENVIRONMENT = 'environment';
+  static readonly FORMAT = 'format';
   static readonly GENERATE_IMPORT_MAP = 'generate-import-map';
   static readonly GENERATE_TEMPLATE_MAP = 'generate-template-map';
   static readonly HOST = 'host';
@@ -69,6 +70,11 @@ export const flagDefinitions: Record<string, any> = {
 
   [Flags.ENVIRONMENT]: OclifFlags.string({
     description: 'The environment to apply to the current command.',
+  }),
+
+  [Flags.FORMAT]: OclifFlags.boolean({
+    default: false,
+    description: 'Format locale files (sort keys alphabetically)',
   }),
 
   [Flags.GENERATE_IMPORT_MAP]: OclifFlags.boolean({

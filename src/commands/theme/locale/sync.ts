@@ -28,6 +28,7 @@ export default class Sync extends BaseCommand {
 
   static override flags = Flags.getDefinitions([
     Flags.CLEAN,
+    Flags.FORMAT,
     Flags.LOCALES_DIR,
     Flags.SYNC_MODE,
     Flags.SCHEMA_LOCALES,
@@ -67,9 +68,10 @@ export default class Sync extends BaseCommand {
     sourceData: { locales: Record<string, Record<string, unknown>> }
   ): Promise<void> {
     const requiredLocales = extractRequiredTranslations(sourceData.locales, translations)
+    const format = this.flags[Flags.FORMAT]
     const mode = this.flags[Flags.SYNC_MODE]
 
-    await syncLocales(themeDir, requiredLocales, mode)
+    await syncLocales(themeDir, requiredLocales, { format, mode })
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully synced locale files')

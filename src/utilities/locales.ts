@@ -17,6 +17,11 @@ export interface LocaleDiff {
 
 export type SyncMode = 'add' | 'replace' | 'update'
 
+export interface SyncOptions {
+  format?: boolean
+  mode: SyncMode
+}
+
 export async function fetchLocaleSource(source: string): Promise<LocaleContent> {
   if (isUrl(source)) {
     return fetchRemoteLocales(source)
@@ -55,15 +60,17 @@ function loadLocalLocales(dir: string): LocaleContent {
 export async function syncLocales(
   themeDir: string,
   sourceLocales: Record<string, Record<string, unknown>>,
-  mode: SyncMode
+  options?: Partial<SyncOptions>
 ): Promise<void> {
   const localesDir = path.join(themeDir, 'locales')
+  const { format = false, mode = 'update' } = options ?? {}
 
   for (const [file, sourceContent] of Object.entries(sourceLocales)) {
     const targetPath = path.join(localesDir, file)
 
     if (!fs.existsSync(targetPath)) {
-      fs.writeFileSync(targetPath, JSON.stringify(sortObjectKeys(sourceContent), null, 2))
+      const content = format ? sortObjectKeys(sourceContent) : sourceContent
+      fs.writeFileSync(targetPath, JSON.stringify(content, null, 2))
       continue
     }
 
@@ -76,7 +83,8 @@ export async function syncLocales(
       ? addNewContent(sourceContent, targetContent, diff)
       : updateContent(sourceContent, targetContent, diff)
 
-    fs.writeFileSync(targetPath, JSON.stringify(sortObjectKeys(mergedContent), null, 2))
+    const content = format ? sortObjectKeys(mergedContent) : mergedContent
+    fs.writeFileSync(targetPath, JSON.stringify(content, null, 2))
   }
 }
 
