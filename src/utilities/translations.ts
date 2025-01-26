@@ -3,7 +3,6 @@ import path from 'node:path'
 
 import { flattenObject, unflattenObject } from './objects.js'
 
-// Export interfaces
 export interface LocaleContent {
   [key: string]: Record<string, unknown>
 }
@@ -13,11 +12,9 @@ export interface ThemeTranslations {
   storefront: Set<string>
 }
 
-// Constants remain internal
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
-const LIQUID_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
+const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
 
-// Export functions
 export function cleanSchemaTranslations(themeDir: string): void {
   const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
   const localesDir = path.join(themeDir, 'locales')
@@ -30,7 +27,7 @@ export function cleanSchemaTranslations(themeDir: string): void {
 }
 
 export function cleanStorefrontTranslations(themeDir: string): void {
-  const usedKeys = scanFiles(themeDir, LIQUID_DIRS, findStorefrontKeys)
+  const usedKeys = scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
   const localesDir = path.join(themeDir, 'locales')
   const localeFiles = fs.readdirSync(localesDir)
     .filter(file => file.endsWith('.json') && !file.endsWith('.schema.json'))
@@ -43,7 +40,7 @@ export function cleanStorefrontTranslations(themeDir: string): void {
 export function getThemeTranslations(themeDir: string): ThemeTranslations {
   return {
     schema: scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys),
-    storefront: scanFiles(themeDir, LIQUID_DIRS, findStorefrontKeys)
+    storefront: scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
   }
 }
 
@@ -72,7 +69,6 @@ export function extractRequiredTranslations(
   return result
 }
 
-// Helper functions remain internal
 function scanFiles(themeDir: string, dirs: readonly string[], findKeys: (content: string) => Set<string>): Set<string> {
   const usedKeys = new Set<string>()
 
@@ -110,7 +106,7 @@ function findSchemaKeys(content: string): Set<string> {
 function findStorefrontKeys(content: string): Set<string> {
   const keys = new Set<string>()
 
-  // Standard liquid translation patterns
+  // Standard Liquid translation patterns
   const standardPatterns = [
     /{{\s*-?\s*["']([^"']+)["']\s*\|\s*t[^}]*-?\s*}}/g,
     /{%\s*(?:assign|capture)\s+\w+\s*=\s*["']([^"']+)["']\s*\|\s*t[^%]*%}/g,
