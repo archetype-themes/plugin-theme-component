@@ -17,10 +17,8 @@ export default class Flags {
   static readonly IGNORE_OVERRIDES = 'ignore-overrides';
   static readonly LIVE_RELOAD = 'live-reload';
   static readonly LOCALES_DIR = 'locales-dir';
-  static readonly OVERWRITE_LOCALES = 'overwrite-locales';
   static readonly PASSWORD = 'password';
   static readonly PORT = 'port';
-  static readonly PRESERVE_LOCALES = 'preserve-locales';
   static readonly PREVIEW = 'preview';
   static readonly QUIET = 'quiet';
   static readonly SCHEMA_LOCALES = 'schema-locales';
@@ -28,6 +26,7 @@ export default class Flags {
   static readonly STORE = 'store';
   static readonly STORE_PASSWORD = 'store-password';
   static readonly STOREFRONT_LOCALES = 'storefront-locales';
+  static readonly SYNC_MODE = 'sync-mode';
   static readonly THEME = 'theme';
   static readonly THEME_DIR = 'theme-dir';
   static readonly WATCH = 'watch';
@@ -52,8 +51,10 @@ export default class Flags {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const flagDefinitions: Record<string, any> = {
   [Flags.CLEAN]: OclifFlags.boolean({
-    default: false,
-    description: 'Clean the theme directory before copying components'
+    allowNo: true,
+    char: 'c',
+    default: true,
+    description: 'Clean unused translations from locale files'
   }),
 
   [Flags.COLLECTION_NAME]: OclifFlags.string({
@@ -108,24 +109,12 @@ export const flagDefinitions: Record<string, any> = {
     description: 'Directory or repository containing locale files',
   }),
 
-  [Flags.OVERWRITE_LOCALES]: OclifFlags.boolean({
-    char: 'w',
-    default: false,
-    description: 'Overwrite existing theme locale files with source versions'
-  }),
-
   [Flags.PASSWORD]: OclifFlags.string({
     description: 'Password generated from the Theme Access app.',
   }),
 
   [Flags.PORT]: OclifFlags.integer({
     description: 'Local port to serve theme preview from.',
-  }),
-
-  [Flags.PRESERVE_LOCALES]: OclifFlags.boolean({
-    char: 'p',
-    default: false,
-    description: 'Preserve existing theme locale files when conflicts occur'
   }),
 
   [Flags.PREVIEW]: OclifFlags.boolean({
@@ -169,6 +158,16 @@ export const flagDefinitions: Record<string, any> = {
     char: 'f',
     default: true,
     description: 'Clean translations from storefront locale files'
+  }),
+
+  [Flags.SYNC_MODE]: OclifFlags.string({
+    char: 'm',
+    default: 'update',
+    description: 'Sync mode for locale files:\n' +
+      '- update: Add new and update modified translations (default)\n' +
+      '- replace: Replace all translations with source versions\n' +
+      '- add: Only add new translations, preserve existing ones',
+    options: ['update', 'replace', 'add']
   }),
 
   [Flags.THEME]: OclifFlags.string({

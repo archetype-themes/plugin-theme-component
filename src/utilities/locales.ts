@@ -15,10 +15,7 @@ export interface LocaleDiff {
   removed: Set<string>
 }
 
-interface SyncOptions {
-  overwrite?: boolean
-  preserve?: boolean
-}
+export type SyncMode = 'add' | 'replace' | 'update'
 
 export async function fetchLocaleSource(source: string): Promise<LocaleContent> {
   if (isUrl(source)) {
@@ -58,7 +55,7 @@ function loadLocalLocales(dir: string): LocaleContent {
 export async function syncLocales(
   themeDir: string,
   sourceLocales: Record<string, Record<string, unknown>>,
-  options: SyncOptions
+  mode: SyncMode
 ): Promise<void> {
   const localesDir = path.join(themeDir, 'locales')
 
@@ -73,11 +70,11 @@ export async function syncLocales(
     const targetContent = JSON.parse(fs.readFileSync(targetPath, 'utf8'))
     const diff = compareLocales(sourceContent, targetContent)
 
-    const mergedContent = options.overwrite
-      ? mergeOverwrite(sourceContent)
-      : options.preserve
-      ? mergePreserve(sourceContent, targetContent, diff)
-      : mergeSelective(sourceContent, targetContent, diff)
+    const mergedContent = mode === 'replace'
+      ? replaceContent(sourceContent)
+      : mode === 'add'
+      ? addNewContent(sourceContent, targetContent, diff)
+      : updateContent(sourceContent, targetContent, diff)
 
     fs.writeFileSync(targetPath, JSON.stringify(sortObjectKeys(mergedContent), null, 2))
   }
@@ -96,11 +93,11 @@ export function compareLocales(source: Record<string, unknown>, target: Record<s
   }
 }
 
-function mergeOverwrite(source: Record<string, unknown>): Record<string, unknown> {
+function replaceContent(source: Record<string, unknown>): Record<string, unknown> {
   return source
 }
 
-function mergePreserve(
+function addNewContent(
   source: Record<string, unknown>,
   target: Record<string, unknown>,
   diff: LocaleDiff
@@ -116,7 +113,7 @@ function mergePreserve(
   return unflattenObject(flatMerged)
 }
 
-function mergeSelective(
+function updateContent(
   source: Record<string, unknown>,
   target: Record<string, unknown>,
   diff: LocaleDiff
