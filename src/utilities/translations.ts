@@ -1,11 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { LocaleContent } from './locales.js'
 import { flattenObject, unflattenObject } from './objects.js'
-
-export interface LocaleContent {
-  [key: string]: Record<string, unknown>
-}
 
 export interface ThemeTranslations {
   schema: Set<string>
@@ -42,31 +39,6 @@ export function getThemeTranslations(themeDir: string): ThemeTranslations {
     schema: scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys),
     storefront: scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
   }
-}
-
-export function extractRequiredTranslations(
-  sourceLocales: Record<string, Record<string, unknown>>,
-  required: ThemeTranslations
-): LocaleContent {
-  const result: LocaleContent = {}
-
-  for (const [file, content] of Object.entries(sourceLocales)) {
-    const isSchema = file.endsWith('.schema.json')
-    const requiredKeys = isSchema ? required.schema : required.storefront
-
-    const flatContent = flattenObject(content)
-    const filteredContent: Record<string, unknown> = {}
-
-    for (const key of requiredKeys) {
-      if (key in flatContent) {
-        filteredContent[key] = flatContent[key]
-      }
-    }
-
-    result[file] = unflattenObject(filteredContent)
-  }
-
-  return result
 }
 
 function scanFiles(themeDir: string, dirs: readonly string[], findKeys: (content: string) => Set<string>): Set<string> {
@@ -198,4 +170,29 @@ function cleanLocaleFile(filePath: string, usedKeys: Set<string>): void {
   } catch (error) {
     throw new Error(`Error processing ${path.basename(filePath)}: ${error}`)
   }
+}
+
+export function extractRequiredTranslations(
+  sourceLocales: Record<string, Record<string, unknown>>,
+  required: ThemeTranslations
+): LocaleContent {
+  const result: LocaleContent = {}
+
+  for (const [file, content] of Object.entries(sourceLocales)) {
+    const isSchema = file.endsWith('.schema.json')
+    const requiredKeys = isSchema ? required.schema : required.storefront
+
+    const flatContent = flattenObject(content)
+    const filteredContent: Record<string, unknown> = {}
+
+    for (const key of requiredKeys) {
+      if (key in flatContent) {
+        filteredContent[key] = flatContent[key]
+      }
+    }
+
+    result[file] = unflattenObject(filteredContent)
+  }
+
+  return result
 }

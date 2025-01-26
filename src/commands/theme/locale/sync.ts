@@ -11,8 +11,8 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { fetchLocaleSource, syncLocales } from '../../../utilities/locale-sync.js'
-import { extractRequiredTranslations, getThemeTranslations } from '../../../utilities/translations.js'
+import { LocaleSourceStats, analyzeLocaleFiles, fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
+import { ThemeTranslations, extractRequiredTranslations, getThemeTranslations } from '../../../utilities/translations.js'
 import Clean from './clean.js'
 
 export default class Sync extends BaseCommand {
@@ -38,7 +38,6 @@ export default class Sync extends BaseCommand {
     Flags.STOREFRONT_LOCALES
   ])
 
-
   public async run(): Promise<void> {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     const localesDir = this.flags[Flags.LOCALES_DIR]
@@ -47,46 +46,19 @@ export default class Sync extends BaseCommand {
       await Clean.run([themeDir, ...this.getCleanFlags()])
     }
 
-    try {
-      // 1. Get all translations used in theme
-      this.log(`Scanning theme directory: ${themeDir}`)
-      const requiredTranslations = getThemeTranslations(themeDir)
+    const translations = await this.scanThemeTranslations(themeDir)
+    const sourceLocales = await this.fetchAndAnalyzeSource(localesDir)
+    await this.syncTranslations(themeDir, translations, sourceLocales)
+  }
 
-      if (!this.flags[Flags.QUIET]) {
-        this.log('Found translations in theme:')
-        this.log(`- Schema keys: ${requiredTranslations.schema.size}`)
-        this.log(`- Storefront keys: ${requiredTranslations.storefront.size}`)
-      }
-
-      // 2. Fetch source locales
-      this.log(`Fetching locales from: ${localesDir}`)
-      const sourceLocales = await fetchLocaleSource(localesDir)
-      const localeFiles = Object.keys(sourceLocales)
-
-      if (!this.flags[Flags.QUIET]) {
-        this.log(`Found ${localeFiles.length} locale files in source:`)
-        this.log(`- Schema files: ${localeFiles.filter(f => f.endsWith('.schema.json')).length}`)
-        this.log(`- Storefront files: ${localeFiles.filter(f => !f.endsWith('.schema.json')).length}`)
-      }
-
-      // 3. Extract required translations
-      this.log('Extracting required translations')
-      const requiredLocales = extractRequiredTranslations(sourceLocales, requiredTranslations)
-
-      // 4. Sync to theme
-      const syncMode = this.flags[Flags.OVERWRITE_LOCALES] ? 'overwrite' : this.flags[Flags.PRESERVE_LOCALES] ? 'preserve' : 'merge'
-      this.log(`Syncing translations to theme (mode: ${syncMode})`)
-      await syncLocales(themeDir, requiredLocales, {
-        overwrite: this.flags[Flags.OVERWRITE_LOCALES],
-        preserve: this.flags[Flags.PRESERVE_LOCALES]
-      })
-
-      if (!this.flags[Flags.QUIET]) {
-        this.log('Successfully synced locale files')
-      }
-    } catch (error) {
-      this.error(`Failed to sync locales: ${error}`)
-    }
+  private async fetchAndAnalyzeSource(localesDir: string): Promise<{
+    locales: Record<string, Record<string, unknown>>,
+    stats: LocaleSourceStats
+  }> {
+    const sourceLocales = await fetchLocaleSource(localesDir)
+    const stats = analyzeLocaleFiles(Object.keys(sourceLocales))
+    this.logSourceStats(stats)
+    return { locales: sourceLocales, stats }
   }
 
   private getCleanFlags(): string[] {
@@ -94,5 +66,52 @@ export default class Sync extends BaseCommand {
       .filter(([key]) => [Flags.SCHEMA_LOCALES, Flags.STOREFRONT_LOCALES].includes(key))
       .map(([key, value]) => value === false ? `--no-${key}` : null)
       .filter(Boolean) as string[]
+  }
+
+  private getSyncMode(): string {
+    if (this.flags[Flags.OVERWRITE_LOCALES]) return 'overwrite'
+    if (this.flags[Flags.PRESERVE_LOCALES]) return 'preserve'
+    return 'merge'
+  }
+
+  private logSourceStats(stats: LocaleSourceStats): void {
+    if (!this.flags[Flags.QUIET]) {
+      this.log(`Found ${stats.totalFiles} locale files in source:`)
+      this.log(`- Schema files: ${stats.schemaFiles}`)
+      this.log(`- Storefront files: ${stats.storefrontFiles}`)
+    }
+  }
+
+  private logTranslationStats(stats: ThemeTranslations): void {
+    if (!this.flags[Flags.QUIET]) {
+      this.log('Found translations in theme:')
+      this.log(`- Schema keys: ${stats.schema.size}`)
+      this.log(`- Storefront keys: ${stats.storefront.size}`)
+    }
+  }
+
+  private async scanThemeTranslations(themeDir: string): Promise<ThemeTranslations> {
+    const translations = getThemeTranslations(themeDir)
+    this.logTranslationStats(translations)
+    return translations
+  }
+
+  private async syncTranslations(
+    themeDir: string,
+    translations: ThemeTranslations,
+    sourceData: { locales: Record<string, Record<string, unknown>> }
+  ): Promise<void> {
+    const requiredLocales = extractRequiredTranslations(sourceData.locales, translations)
+    const syncMode = this.getSyncMode()
+    this.log(`Syncing translations to theme (mode: ${syncMode})`)
+
+    await syncLocales(themeDir, requiredLocales, {
+      overwrite: this.flags[Flags.OVERWRITE_LOCALES],
+      preserve: this.flags[Flags.PRESERVE_LOCALES]
+    })
+
+    if (!this.flags[Flags.QUIET]) {
+      this.log('Successfully synced locale files')
+    }
   }
 }
