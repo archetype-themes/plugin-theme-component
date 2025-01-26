@@ -12,6 +12,13 @@ export interface ThemeTranslations {
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
 
+export function getThemeTranslations(themeDir: string): ThemeTranslations {
+  return {
+    schema: scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys),
+    storefront: scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
+  }
+}
+
 export function cleanSchemaTranslations(themeDir: string): void {
   const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
   const localesDir = path.join(themeDir, 'locales')
@@ -31,13 +38,6 @@ export function cleanStorefrontTranslations(themeDir: string): void {
 
   for (const file of localeFiles) {
     cleanLocaleFile(path.join(localesDir, file), usedKeys)
-  }
-}
-
-export function getThemeTranslations(themeDir: string): ThemeTranslations {
-  return {
-    schema: scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys),
-    storefront: scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
   }
 }
 

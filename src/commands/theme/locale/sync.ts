@@ -46,7 +46,7 @@ export default class Sync extends BaseCommand {
       await Clean.run([themeDir, ...this.getCleanFlags()])
     }
 
-    const translations = await this.scanThemeTranslations(themeDir)
+    const translations = getThemeTranslations(themeDir)
     const sourceLocales = await this.fetchAndAnalyzeSource(localesDir)
     await this.syncTranslations(themeDir, translations, sourceLocales)
   }
@@ -57,7 +57,6 @@ export default class Sync extends BaseCommand {
   }> {
     const sourceLocales = await fetchLocaleSource(localesDir)
     const stats = analyzeLocaleFiles(Object.keys(sourceLocales))
-    this.logSourceStats(stats)
     return { locales: sourceLocales, stats }
   }
 
@@ -74,37 +73,12 @@ export default class Sync extends BaseCommand {
     return 'merge'
   }
 
-  private logSourceStats(stats: LocaleSourceStats): void {
-    if (!this.flags[Flags.QUIET]) {
-      this.log(`Found ${stats.totalFiles} locale files in source:`)
-      this.log(`- Schema files: ${stats.schemaFiles}`)
-      this.log(`- Storefront files: ${stats.storefrontFiles}`)
-    }
-  }
-
-  private logTranslationStats(stats: ThemeTranslations): void {
-    if (!this.flags[Flags.QUIET]) {
-      this.log('Found translations in theme:')
-      this.log(`- Schema keys: ${stats.schema.size}`)
-      this.log(`- Storefront keys: ${stats.storefront.size}`)
-    }
-  }
-
-  private async scanThemeTranslations(themeDir: string): Promise<ThemeTranslations> {
-    const translations = getThemeTranslations(themeDir)
-    this.logTranslationStats(translations)
-    return translations
-  }
-
   private async syncTranslations(
     themeDir: string,
     translations: ThemeTranslations,
     sourceData: { locales: Record<string, Record<string, unknown>> }
   ): Promise<void> {
     const requiredLocales = extractRequiredTranslations(sourceData.locales, translations)
-    const syncMode = this.getSyncMode()
-    this.log(`Syncing translations to theme (mode: ${syncMode})`)
-
     await syncLocales(themeDir, requiredLocales, {
       overwrite: this.flags[Flags.OVERWRITE_LOCALES],
       preserve: this.flags[Flags.PRESERVE_LOCALES]
