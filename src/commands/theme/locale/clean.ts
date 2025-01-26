@@ -17,7 +17,7 @@ export default class Clean extends BaseCommand {
     Args.override(Args.THEME_DIR, { default: '.', required: false })
   ])
 
-  static override description = 'Clean theme locale files'
+  static override description = 'Remove unused translations from theme locale files'
 
   static override examples = [
     '<%= config.bin %> <%= command.id %> theme-directory',
@@ -47,7 +47,7 @@ export default class Clean extends BaseCommand {
     storefrontLocales && cleanStorefrontTranslations(themeDir)
 
     if (!this.flags[Flags.QUIET]) {
-      this.log('Successfully cleaned translations from locale files')
+      this.log('Successfully cleaned locale files')
     }
   }
 }
