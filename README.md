@@ -45,4 +45,5 @@ Once this is done, follow these steps to ensure the Shopify CLI is running the l
 - `git clone https://github.com/archetype-themes/plugin-theme-component.git`
 - `cd plugin-theme-component`
 - `npm i`
+- `npm run watch` or `npm run build`
 - `shopify plugins link`
