@@ -120,6 +120,7 @@ export const flagDefinitions: Record<string, any> = {
   }),
 
   [Flags.SETUP_FILES]: OclifFlags.boolean({
+    allowNo: true,
     char: 's',
     default: true,
     description: 'copy setup files to theme directory',

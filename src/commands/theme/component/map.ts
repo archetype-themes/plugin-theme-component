@@ -11,6 +11,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'    
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
+import { getLastCommitHash } from '../../../utilities/git.js'
 import { ManifestOptions, generateManifestFiles, getManifest } from '../../../utilities/manifest.js'
 import { getNameFromPackageJson, getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
@@ -74,8 +75,10 @@ export default class Manifest extends BaseCommand {
     )
 
     manifest.files = sortObjectKeys(files)
-    manifest.collections[collectionName] = manifest.collections[collectionName] || {}
-    manifest.collections[collectionName].version = collectionVersion
+    manifest.collections[collectionName] = {
+      version: collectionVersion,
+      commit: getLastCommitHash(collectionDir)
+    }
 
     fs.writeFileSync(manifestPath, JSON.stringify(sortObjectKeys(manifest), null, 2))
   }
