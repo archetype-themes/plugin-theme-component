@@ -76,8 +76,8 @@ export default class Manifest extends BaseCommand {
 
     manifest.files = sortObjectKeys(files)
     manifest.collections[collectionName] = {
-      version: collectionVersion,
-      commit: getLastCommitHash(collectionDir)
+      commit: getLastCommitHash(collectionDir),
+      version: collectionVersion
     }
 
     fs.writeFileSync(manifestPath, JSON.stringify(sortObjectKeys(manifest), null, 2))

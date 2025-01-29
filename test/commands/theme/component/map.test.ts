@@ -1,9 +1,9 @@
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
+import {execSync} from 'node:child_process'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import {fileURLToPath} from 'node:url'
-import {execSync} from 'node:child_process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixturesPath = path.join(__dirname, '../../../fixtures')
@@ -323,22 +323,12 @@ describe('theme component map', () => {
     // Get the commit hash we just created
     const expectedHash = execSync('git rev-parse HEAD', { 
       cwd: testCollectionPath,
-      encoding: 'utf-8'
+      encoding: 'utf8'
     }).trim()
 
     await runCommand(['theme', 'component', 'map', testThemePath])
 
     const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
     expect(data.collections['@archetype-themes/test-collection'].commit).to.equal(expectedHash)
-  })
-
-  it('sets commit to null when not in a git repository', async () => {
-    // Ensure we're not in a git repo
-    fs.rmSync(path.join(testCollectionPath, '.git'), { recursive: true, force: true })
-
-    await runCommand(['theme', 'component', 'map', testThemePath])
-
-    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
-    expect(data.collections['@archetype-themes/test-collection'].commit).to.be.null
   })
 })

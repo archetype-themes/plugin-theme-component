@@ -35,8 +35,8 @@ export interface PackageJSON {
 export interface Manifest {
   collections: {
     [name: string]: {
+      commit: null | string;
       version: string;
-      commit: string | null;
     };
   }
   files: {
