@@ -17,7 +17,7 @@ export default class Component extends Command {
 
     if (flags.version) {
       this.log(`\nShopify CLI Version: ${this.config.version}`)
-      const plugin = this.config.plugins.get('plugin-theme-component')
+      const plugin = this.config.plugins.get('plugin-devkit')
       this.log(`Theme Component Plugin Version: ${plugin?.version ?? 'unknown'}`)
     } else {
       this.log(

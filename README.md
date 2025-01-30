@@ -6,7 +6,7 @@
 
 A Shopify CLI plugin for building themes with Liquid theme components.
 
-The `plugin-theme-component` repository is a foundational part of the [Archetype Devkit preview](https://github.com/archetype-themes/devkit).
+The `plugin-devkit` repository is a foundational part of the [Archetype Devkit preview](https://github.com/archetype-themes/devkit).
 
 ## Getting Started
 
@@ -20,22 +20,23 @@ You'll need to ensure you have the following installed on your local development
 ### Installation
 
 Install the Shopify CLI plugin:
-```bash
-shopify plugins install plugin-theme-component
-```
 
+```bash
+shopify plugins install plugin-devkit
+```
 
 ## List of commands
 
 <!-- commands -->
-* [`shopify theme component`](#shopify-theme-component)
-* [`shopify theme component clean [THEMEDIR]`](#shopify-theme-component-clean-themedir)
-* [`shopify theme component copy THEMEDIR`](#shopify-theme-component-copy-themedir)
-* [`shopify theme component dev [COMPONENTSELECTOR]`](#shopify-theme-component-dev-componentselector)
-* [`shopify theme component install THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-install-themedir-componentselector)
-* [`shopify theme component map THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-map-themedir-componentselector)
-* [`shopify theme generate import-map [THEMEDIR]`](#shopify-theme-generate-import-map-themedir)
-* [`shopify theme generate template-map [THEMEDIR]`](#shopify-theme-generate-template-map-themedir)
+
+- [`shopify theme component`](#shopify-theme-component)
+- [`shopify theme component clean [THEMEDIR]`](#shopify-theme-component-clean-themedir)
+- [`shopify theme component copy THEMEDIR`](#shopify-theme-component-copy-themedir)
+- [`shopify theme component dev [COMPONENTSELECTOR]`](#shopify-theme-component-dev-componentselector)
+- [`shopify theme component install THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-install-themedir-componentselector)
+- [`shopify theme component map THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-map-themedir-componentselector)
+- [`shopify theme generate import-map [THEMEDIR]`](#shopify-theme-generate-import-map-themedir)
+- [`shopify theme generate template-map [THEMEDIR]`](#shopify-theme-generate-template-map-themedir)
 
 ## `shopify theme component`
 
@@ -52,7 +53,7 @@ DESCRIPTION
   Theme Component Plugin by Archetype Themes
 ```
 
-_See code: [src/commands/theme/component/index.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/index.ts)_
+_See code: [src/commands/theme/component/index.ts](https://github.com/archetype-themes/plugin-devkit/blob/v5.0.3/src/commands/theme/component/index.ts)_
 
 ## `shopify theme component clean [THEMEDIR]`
 
@@ -75,7 +76,7 @@ EXAMPLES
   $ shopify theme component clean theme-directory
 ```
 
-_See code: [src/commands/theme/component/clean.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/clean.ts)_
+_See code: [src/commands/theme/component/clean.ts](https://github.com/archetype-themes/plugin-devkit/blob/v5.0.3/src/commands/theme/component/clean.ts)_
 
 ## `shopify theme component copy THEMEDIR`
 
@@ -99,7 +100,7 @@ EXAMPLES
   $ shopify theme component copy theme-directory
 ```
 
-_See code: [src/commands/theme/component/copy.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/copy.ts)_
+_See code: [src/commands/theme/component/copy.ts](https://github.com/archetype-themes/plugin-devkit/blob/v5.0.3/src/commands/theme/component/copy.ts)_
 
 ## `shopify theme component dev [COMPONENTSELECTOR]`
 
@@ -145,7 +146,7 @@ EXAMPLES
   $ shopify theme component dev header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/dev.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/dev.ts)_
+_See code: [src/commands/theme/component/dev.ts](https://github.com/archetype-themes/plugin-devkit/blob/v5.0.3/src/commands/theme/component/dev.ts)_
 
 ## `shopify theme component install THEMEDIR [COMPONENTSELECTOR]`
 
@@ -174,7 +175,7 @@ EXAMPLES
   $ shopify theme component install theme-directory header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/install.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/install.ts)_
+_See code: [src/commands/theme/component/install.ts](https://github.com/archetype-themes/plugin-devkit/blob/v5.0.3/src/commands/theme/component/install.ts)_
 
 ## `shopify theme component map THEMEDIR [COMPONENTSELECTOR]`
 
@@ -205,7 +206,7 @@ EXAMPLES
   $ shopify theme component map theme-directory header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/map.ts)_
+_See code: [src/commands/theme/component/map.ts](https://github.com/archetype-themes/plugin-devkit/blob/v5.0.3/src/commands/theme/component/map.ts)_
 
 ## `shopify theme generate import-map [THEMEDIR]`
 
@@ -225,7 +226,7 @@ DESCRIPTION
   Generate an import map for JavaScript files in the assets directory
 ```
 
-_See code: [src/commands/theme/generate/import-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/generate/import-map.ts)_
+_See code: [src/commands/theme/generate/import-map.ts](https://github.com/archetype-themes/plugin-devkit/blob/v5.0.3/src/commands/theme/generate/import-map.ts)_
 
 ## `shopify theme generate template-map [THEMEDIR]`
 
@@ -245,22 +246,24 @@ DESCRIPTION
   Generate a template map for component routes in the templates directory
 ```
 
-_See code: [src/commands/theme/generate/template-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/generate/template-map.ts)_
+_See code: [src/commands/theme/generate/template-map.ts](https://github.com/archetype-themes/plugin-devkit/blob/v5.0.3/src/commands/theme/generate/template-map.ts)_
+
 <!-- commandsstop -->
 
 ## Contributing
 
 Interested in shaping the future of theme development with us? We welcome you to join our community! Your insights and discussions play a crucial role in our continuous improvement. We encourage you to start [discussions](https://github.com/archetype-themes/devkit/discussions), ask questions, and provide feedback on our component approach.
 
-If you notice a bug, or want to contribute to the codebase, feel free to do so in the form of [creating an issue](https://github.com/archetype-themes/plugin-theme-component/issues/new/choose) or [pull request](https://github.com/archetype-themes/plugin-theme-component/pulls).
+If you notice a bug, or want to contribute to the codebase, feel free to do so in the form of [creating an issue](https://github.com/archetype-themes/plugin-devkit/issues/new/choose) or [pull request](https://github.com/archetype-themes/plugin-devkit/pulls).
 
 ### Developing the plugin locally
 
 If you already have the plugin installed via npm, you'll need to [uninstall](#uninstalling-the-plugin) the plugin before being able to develop the plugin locally.
 
 Once this is done, follow these steps to ensure the Shopify CLI is running the local version of the plugin:
-- `git clone https://github.com/archetype-themes/plugin-theme-component.git`
-- `cd plugin-theme-component`
+
+- `git clone https://github.com/archetype-themes/plugin-devkit.git`
+- `cd plugin-devkit`
 - `npm i`
 - `npm run watch` or `npm run build`
 - `shopify plugins link`

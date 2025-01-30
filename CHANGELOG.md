@@ -308,13 +308,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Stylesheet filename fix https://github.com/archetype-themes/plugin-theme-component/pull/337
+- Stylesheet filename fix https://github.com/archetype-themes/plugin-devkit/pull/337
 
 ## [2.3.0] — 2024-02-01
 
 ### Added
 
-- Opinionated PostCSS Config https://github.com/archetype-themes/plugin-theme-component/pull/328
+- Opinionated PostCSS Config https://github.com/archetype-themes/plugin-devkit/pull/328
 
 ## [2.2.0] — 2024-02-01
 
@@ -378,41 +378,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Drop package.json functions https://github.com/archetype-themes/plugin-theme-component/pull/299
+- Drop package.json functions https://github.com/archetype-themes/plugin-devkit/pull/299
 - archie name and executable renamed to "component" to match the plugin name.
 
 ### Fixed
 
-- Repo paths fix https://github.com/archetype-themes/plugin-theme-component/pull/301
-- Undefined content fix on builds with no styles https://github.com/archetype-themes/plugin-theme-component/pull/309
+- Repo paths fix https://github.com/archetype-themes/plugin-devkit/pull/301
+- Undefined content fix on builds with no styles https://github.com/archetype-themes/plugin-devkit/pull/309
 
 ## [1.9.7] — 2024-01-17
 
 ### Changed
 
-- Update plugin's name https://github.com/archetype-themes/plugin-theme-component/pull/298
+- Update plugin's name https://github.com/archetype-themes/plugin-devkit/pull/298
 
 ## [1.9.6] — 2024-01-16
 
 ### Changed
 
-- Install collections defined via shopify.theme.toml https://github.com/archetype-themes/plugin-theme-component/pull/297
+- Install collections defined via shopify.theme.toml https://github.com/archetype-themes/plugin-devkit/pull/297
 
 ## [1.9.5] — 2024-01-10
 
 ### Changed
 
-- Handle shopify.theme.toml configuration file https://github.com/archetype-themes/plugin-theme-component/pull/291
+- Handle shopify.theme.toml configuration file https://github.com/archetype-themes/plugin-devkit/pull/291
 
 ## [1.9.4] — 2024-01-08
 
 ### Added
 
-- Shopify CLI plugin integration ([#272](https://github.com/archetype-themes/plugin-theme-component/pull/272))
+- Shopify CLI plugin integration ([#272](https://github.com/archetype-themes/plugin-devkit/pull/272))
 
 ### Fixed
 
-- Process locale files only ([#289](https://github.com/archetype-themes/plugin-theme-component/pull/289))
+- Process locale files only ([#289](https://github.com/archetype-themes/plugin-devkit/pull/289))
 
 ## [1.9.3] — 2023-12-20
 
@@ -578,7 +578,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed the computation of gitignore patterns during watch
-  mode ([#228](https://github.com/archetype-themes/plugin-theme-component/pull/228))
+  mode ([#228](https://github.com/archetype-themes/plugin-devkit/pull/228))
 
 ## [1.7.1] — 2023-10-31
 
@@ -590,7 +590,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Import map processor ([#214](https://github.com/archetype-themes/plugin-theme-component/pull/214))
+- Import map processor ([#214](https://github.com/archetype-themes/plugin-devkit/pull/214))
 
 ## [1.6.4]
 
@@ -614,7 +614,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed watch mode ([#215](https://github.com/archetype-themes/plugin-theme-component/issues/215))
+- Fixed watch mode ([#215](https://github.com/archetype-themes/plugin-devkit/issues/215))
 
 ## [1.6.0] — 2023-10-12
 
