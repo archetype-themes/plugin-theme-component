@@ -2,7 +2,7 @@
 import { Command, Flags } from '@oclif/core'
 
 export default class Component extends Command {
-  static description = 'Theme Component Plugin by Archetype Themes'
+  static description = 'Devkit plugin by Archetype Themes'
 
   static flags = {
     version: Flags.boolean({
@@ -18,11 +18,11 @@ export default class Component extends Command {
     if (flags.version) {
       this.log(`\nShopify CLI Version: ${this.config.version}`)
       const plugin = this.config.plugins.get('plugin-devkit')
-      this.log(`Theme Component Plugin Version: ${plugin?.version ?? 'unknown'}`)
+      this.log(`Devkit plugin version: ${plugin?.version ?? 'unknown'}`)
     } else {
       this.log(
-        '\nWelcome To The Theme Component Plugin by Archetype Themes.' +
-          '\n\nUse the "--help" or "-h" flag to list available commands'
+        '\nWelcome to the Devkit plugin by Archetype Themes.' +
+        '\n\nUse the "--help" or "-h" flag to list available commands'
       )
     }
   }

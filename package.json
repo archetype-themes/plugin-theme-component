@@ -1,6 +1,6 @@
 {
   "name": "plugin-devkit",
-  "description": "Archetype Theme's Shopify CLI theme component plugin",
+  "description": "Archetype Themes' Devkit plugin for Shopify CLI",
   "version": "5.0.4",
   "author": "Archetype Themes Limited Partnership",
   "bin": {

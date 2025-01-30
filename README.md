@@ -1,4 +1,4 @@
-# Theme component plugin
+# Devkit plugin
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 ![Static Badge](https://img.shields.io/badge/Node.js-v18.12.0-blue)
@@ -40,7 +40,7 @@ shopify plugins install plugin-devkit
 
 ## `shopify theme component`
 
-Theme Component Plugin by Archetype Themes
+Devkit Plugin by Archetype Themes
 
 ```
 USAGE
