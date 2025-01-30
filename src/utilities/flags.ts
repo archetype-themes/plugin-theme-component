@@ -51,7 +51,6 @@ export default class Flags {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const flagDefinitions: Record<string, any> = {
   [Flags.CLEAN]: OclifFlags.boolean({
-    allowNo: true,
     char: 'c',
     default: false,
     description: 'Clean unused translations before syncing'
