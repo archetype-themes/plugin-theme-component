@@ -52,7 +52,7 @@ DESCRIPTION
   Theme Component Plugin by Archetype Themes
 ```
 
-_See code: [src/commands/theme/component/index.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/index.ts)_
+_See code: [src/commands/theme/component/index.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.5/src/commands/theme/component/index.ts)_
 
 ## `shopify theme component clean [THEMEDIR]`
 
@@ -75,7 +75,7 @@ EXAMPLES
   $ shopify theme component clean theme-directory
 ```
 
-_See code: [src/commands/theme/component/clean.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/clean.ts)_
+_See code: [src/commands/theme/component/clean.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.5/src/commands/theme/component/clean.ts)_
 
 ## `shopify theme component copy THEMEDIR`
 
@@ -99,7 +99,7 @@ EXAMPLES
   $ shopify theme component copy theme-directory
 ```
 
-_See code: [src/commands/theme/component/copy.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/copy.ts)_
+_See code: [src/commands/theme/component/copy.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.5/src/commands/theme/component/copy.ts)_
 
 ## `shopify theme component dev [COMPONENTSELECTOR]`
 
@@ -118,7 +118,7 @@ FLAGS
   -i, --generate-import-map         generate import map
   -m, --generate-template-map       generate template map
   -n, --collection-name=<value>     name of the component collection
-  -s, --setup-files                 copy setup files to theme directory
+  -s, --[no-]setup-files            copy setup files to theme directory
   -t, --theme-dir=<value>           [default: https://github.com/archetype-themes/explorer] directory that contains
                                     theme files for development
   -v, --collection-version=<value>  version of the component collection
@@ -145,7 +145,7 @@ EXAMPLES
   $ shopify theme component dev header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/dev.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/dev.ts)_
+_See code: [src/commands/theme/component/dev.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.5/src/commands/theme/component/dev.ts)_
 
 ## `shopify theme component install THEMEDIR [COMPONENTSELECTOR]`
 
@@ -174,7 +174,7 @@ EXAMPLES
   $ shopify theme component install theme-directory header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/install.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/install.ts)_
+_See code: [src/commands/theme/component/install.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.5/src/commands/theme/component/install.ts)_
 
 ## `shopify theme component map THEMEDIR [COMPONENTSELECTOR]`
 
@@ -205,7 +205,7 @@ EXAMPLES
   $ shopify theme component map theme-directory header,footer,navigation
 ```
 
-_See code: [src/commands/theme/component/map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/component/map.ts)_
+_See code: [src/commands/theme/component/map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.5/src/commands/theme/component/map.ts)_
 
 ## `shopify theme generate import-map [THEMEDIR]`
 
@@ -225,7 +225,7 @@ DESCRIPTION
   Generate an import map for JavaScript files in the assets directory
 ```
 
-_See code: [src/commands/theme/generate/import-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/generate/import-map.ts)_
+_See code: [src/commands/theme/generate/import-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.5/src/commands/theme/generate/import-map.ts)_
 
 ## `shopify theme generate template-map [THEMEDIR]`
 
@@ -245,7 +245,7 @@ DESCRIPTION
   Generate a template map for component routes in the templates directory
 ```
 
-_See code: [src/commands/theme/generate/template-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.3/src/commands/theme/generate/template-map.ts)_
+_See code: [src/commands/theme/generate/template-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.5/src/commands/theme/generate/template-map.ts)_
 <!-- commandsstop -->
 
 ## Contributing
