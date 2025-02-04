@@ -65,6 +65,11 @@ export async function generateLiquidNode(file: string, type: LiquidNode['type'],
     assets = await getJsAssets(body)
   }
 
+  if (type === 'snippet') { 
+    body = fs.readFileSync(file, 'utf8')
+    assets = getJsImportsFromLiquid(body)
+  }
+
   if (type === 'component') {
     body = fs.readFileSync(file, 'utf8')
     const jsImports = getJsImportsFromLiquid(body)

@@ -299,6 +299,13 @@ describe('theme component map', () => {
     expect(data.files.assets['script-with-filter.js']).to.equal('@archetype-themes/test-collection')
   })
 
+  it('should detect JS imports snippets inside components', async () => {
+    await runCommand(['theme', 'component', 'map', testThemePath])
+    const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
+    
+    expect(data.files.assets['script-snippet-import.js']).to.equal('@archetype-themes/test-collection')
+  })
+
   it('should detect JS imports from script tags with import statements', async () => {
     await runCommand(['theme', 'component', 'map', testThemePath])
     const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
