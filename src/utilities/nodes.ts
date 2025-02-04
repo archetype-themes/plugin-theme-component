@@ -126,11 +126,13 @@ export async function getThemeNodes(themeDir: string): Promise<LiquidNode[]> {
 
 export async function getJsAssets(body: string) {
   const imports = [...(await parseImports(body))]
-  return imports.map((imp) => {
-    if (!imp.moduleSpecifier?.value) return ''
-    const value = imp.moduleSpecifier.value.endsWith('.js') 
-      ? imp.moduleSpecifier.value 
+  return imports.flatMap((imp) => {
+    if (!imp.moduleSpecifier?.value) return []
+    const value = imp.moduleSpecifier.value.endsWith('.js')
+      ? imp.moduleSpecifier.value
       : `${imp.moduleSpecifier.value}.js`
-    return path.basename(value)
+    const basename = path.basename(value)
+    const minBasename = basename.replace('.js', '.min.js')
+    return [basename, minBasename]
   })
 }

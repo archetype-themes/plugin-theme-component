@@ -289,6 +289,7 @@ describe('theme component map', () => {
     expect(data.files.assets['shared-script.js']).to.equal('@archetype-themes/test-collection')
     expect(data.files.assets['shared-script-dependency.js']).to.equal('@archetype-themes/test-collection')
     expect(data.files.assets['unused-shared-script.js']).to.be.undefined
+    expect(data.files.assets['shared-min-script.min.js']).to.equal('@archetype-themes/test-collection')
   })
 
   it('should detect JS imports from script tags with {{ "filename" | asset_url }} filter', async () => {
