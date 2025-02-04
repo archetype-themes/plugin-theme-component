@@ -9,7 +9,8 @@ const LIQUID_BLOCK_REGEX = /{%-?.*?-?%}/gs
 const LIQUID_COMMENTS_REGEX = /{%-?\s*comment\s*-?%}[\S\s]*?{%-?\s*endcomment\s*-?%}/gi
 const LIQUID_RENDER_REGEX = /\srender\s+'([^']+)'/gs
 const ASSET_URL_REGEX = /{{\s*'([^']+\.js)'\s*\|\s*asset_url\s*}}/g
-const SCRIPT_IMPORT_REGEX = /<script[^>]*>[\S\s]*?import\s+["']([^"']+)["']/g
+const SCRIPT_TAG_REGEX = /<script[^>]*>[\S\s]*?<\/script>/g
+const SCRIPT_IMPORT_REGEX = /import\s+["']([^"']+)["']/g
 
 export function getSnippetNames(liquidCode: string) {
   const cleanLiquidCode = liquidCode.replaceAll(LIQUID_COMMENTS_REGEX, '')
@@ -34,9 +35,15 @@ export function getJsImportsFromLiquid(liquidCode: string) {
   }
 
   // Match import statements within script tags
-  for (const match of cleanLiquidCode.matchAll(SCRIPT_IMPORT_REGEX)) {
-    const importPath = match[1]
-    jsImports.add(importPath.endsWith('.js') ? importPath : `${importPath}.js`)
+  const scriptTags = cleanLiquidCode.match(SCRIPT_TAG_REGEX) || []
+  for (const scriptTag of scriptTags) {
+    for (const match of scriptTag.matchAll(SCRIPT_IMPORT_REGEX)) {
+      const importPath = match[1]
+
+      // Add both .js and .min.js versions of the import to look for both
+      jsImports.add(importPath.endsWith('.js') ? importPath : `${importPath}.js`)
+      jsImports.add(importPath.endsWith('.min.js') ? importPath : `${importPath}.min.js`)
+    }
   }
 
   return [...jsImports]

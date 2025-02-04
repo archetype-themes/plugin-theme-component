@@ -303,6 +303,7 @@ describe('theme component map', () => {
     const data = JSON.parse(fs.readFileSync(path.join(testThemePath, 'component.manifest.json'), 'utf8'))
     
     expect(data.files.assets['script-with-import.js']).to.equal('@archetype-themes/test-collection')
+    expect(data.files.assets['shared-min-other.js']).to.equal('@archetype-themes/test-collection')
   })
 
   it('should not include commented out script imports', async () => {
