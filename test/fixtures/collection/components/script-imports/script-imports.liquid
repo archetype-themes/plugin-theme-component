@@ -6,9 +6,12 @@
 </script>
 {% endcomment %}
 
+{% render 'script-snippet-import' %}
+
 <script type="module" src="{{ 'script-with-filter.js' | asset_url }}"></script>
 
 <script>
   import 'script-with-import'
   import 'script-imports'
+  import 'shared-min-other'
 </script>

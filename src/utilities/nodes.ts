@@ -9,7 +9,8 @@ const LIQUID_BLOCK_REGEX = /{%-?.*?-?%}/gs
 const LIQUID_COMMENTS_REGEX = /{%-?\s*comment\s*-?%}[\S\s]*?{%-?\s*endcomment\s*-?%}/gi
 const LIQUID_RENDER_REGEX = /\srender\s+'([^']+)'/gs
 const ASSET_URL_REGEX = /{{\s*'([^']+\.js)'\s*\|\s*asset_url\s*}}/g
-const SCRIPT_IMPORT_REGEX = /<script[^>]*>[\S\s]*?import\s+["']([^"']+)["']/g
+const SCRIPT_TAG_REGEX = /<script[^>]*>[\S\s]*?<\/script>/g
+const SCRIPT_IMPORT_REGEX = /import\s+["']([^"']+)["']/g
 
 export function getSnippetNames(liquidCode: string) {
   const cleanLiquidCode = liquidCode.replaceAll(LIQUID_COMMENTS_REGEX, '')
@@ -34,9 +35,15 @@ export function getJsImportsFromLiquid(liquidCode: string) {
   }
 
   // Match import statements within script tags
-  for (const match of cleanLiquidCode.matchAll(SCRIPT_IMPORT_REGEX)) {
-    const importPath = match[1]
-    jsImports.add(importPath.endsWith('.js') ? importPath : `${importPath}.js`)
+  const scriptTags = cleanLiquidCode.match(SCRIPT_TAG_REGEX) || []
+  for (const scriptTag of scriptTags) {
+    for (const match of scriptTag.matchAll(SCRIPT_IMPORT_REGEX)) {
+      const importPath = match[1]
+
+      // Add both .js and .min.js versions of the import to look for both
+      jsImports.add(importPath.endsWith('.js') ? importPath : `${importPath}.js`)
+      jsImports.add(importPath.endsWith('.min.js') ? importPath : `${importPath}.min.js`)
+    }
   }
 
   return [...jsImports]
@@ -56,6 +63,11 @@ export async function generateLiquidNode(file: string, type: LiquidNode['type'],
   if (type === 'asset' && path.basename(file).endsWith('.js')) {
     body = fs.readFileSync(file, 'utf8')
     assets = await getJsAssets(body)
+  }
+
+  if (type === 'snippet') { 
+    body = fs.readFileSync(file, 'utf8')
+    assets = getJsImportsFromLiquid(body)
   }
 
   if (type === 'component') {
@@ -119,11 +131,13 @@ export async function getThemeNodes(themeDir: string): Promise<LiquidNode[]> {
 
 export async function getJsAssets(body: string) {
   const imports = [...(await parseImports(body))]
-  return imports.map((imp) => {
-    if (!imp.moduleSpecifier?.value) return ''
-    const value = imp.moduleSpecifier.value.endsWith('.js') 
-      ? imp.moduleSpecifier.value 
+  return imports.flatMap((imp) => {
+    if (!imp.moduleSpecifier?.value) return []
+    const value = imp.moduleSpecifier.value.endsWith('.js')
+      ? imp.moduleSpecifier.value
       : `${imp.moduleSpecifier.value}.js`
-    return path.basename(value)
+    const basename = path.basename(value)
+    const minBasename = basename.replace('.js', '.min.js')
+    return [basename, minBasename]
   })
 }
