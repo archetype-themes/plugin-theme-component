@@ -5,7 +5,7 @@ All contributions are welcome. To Contribute, create a branch, commit your code,
 ## Install the plugin
 
 Make sure you have installed the [shopify CLI](https://shopify.dev/docs/api/shopify-cli) first. Then, checkout the code
-from the [plugin-theme-component repository](https://github.com/archetype-themes/plugin-theme-component) and link your
+from the [plugin-devkit repository](https://github.com/archetype-themes/plugin-devkit) and link your
 local copy to your shopify CLI instance. Here's an example of what that can look like on macOS
 
 ```shell
@@ -15,10 +15,10 @@ brew install shopify-cli
 
 # Checkout the repository in you projects folder, or any other location of your choice
 cd ~/projects
-git checkout https://github.com/archetype-themes/plugin-theme-component.git
+git checkout https://github.com/archetype-themes/plugin-devkit.git
 
 # Link your local copy to the shopify CLI
-cd plugin-theme-component
+cd plugin-devkit
 shopify plugins link
 ```
 
@@ -28,16 +28,16 @@ Should you ever need to uninstall the plugin, use these commands
 
 ```shell
 # From the project folder
-cd ~/projects/plugin-theme-component
+cd ~/projects/plugin-devkit
 shopify plugins uninstall
 
 # From anywhere
-shopify plugins uninstall plugin-theme-component
+shopify plugins uninstall plugin-devkit
 ```
 
 ## Contributing To The CLI's Development
 
-You should consult the [Issues](https://github.com/archetype-themes/plugin-theme-component/issues) in GitHub. You will
+You should consult the [Issues](https://github.com/archetype-themes/plugin-devkit/issues) in GitHub. You will
 see unsolved issues. Feel free to tackle an existing issue, or create a new one if you need to.
 
 Assign yourself an issue and reach out to us if you have questions. Create a branch for your development. Create a Pull
@@ -89,10 +89,7 @@ Contains additional documentation on components and the plugin's structure and b
 Contains static assets used internally when generating a new component or when running the plugin's dev command with
 setup files enabled.
 
-
 ### src folder
-
-
 
 #### factory
 
@@ -152,6 +149,6 @@ Various utility methods organized by topic.
 ## Fixing Bugs
 
 Check
-the [bug issues panel](https://github.com/archetype-themes/plugin-theme-component/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
+the [bug issues panel](https://github.com/archetype-themes/plugin-devkit/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
 to view current bugs. Assign yourself one and create a branch for your fix. Create a Pull Request for your fix to be
 merged into the main branch.

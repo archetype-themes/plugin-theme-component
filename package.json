@@ -1,11 +1,11 @@
 {
-  "name": "plugin-theme-component",
-  "description": "Archetype Theme's Shopify CLI theme component plugin",
+  "name": "plugin-devkit",
+  "description": "Archetype Themes' Devkit plugin for Shopify CLI",
   "version": "5.0.8",
   "author": "Archetype Themes Limited Partnership",
   "bin": {
     "component": "bin/run.js",
-    "plugin-theme-component": "./bin/run.js"
+    "plugin-devkit": "./bin/run.js"
   },
   "type": "module",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "/dist",
     "/oclif.manifest.json"
   ],
-  "repository": "https://github.com/archetype-themes/plugin-theme-component.git",
+  "repository": "https://github.com/archetype-themes/plugin-devkit.git",
   "dependencies": {
     "@oclif/core": "^4",
     "@oclif/plugin-help": "^6",
@@ -63,7 +63,7 @@
   "main": "dist/index.js",
   "oclif": {
     "bin": "shopify",
-    "dirname": "plugin-theme-component",
+    "dirname": "plugin-devkit",
     "commands": "./dist/commands",
     "topicSeparator": " "
   }
