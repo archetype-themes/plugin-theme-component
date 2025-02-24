@@ -75,20 +75,20 @@ export async function syncLocales(
     }
 
     const targetContent = JSON.parse(fs.readFileSync(targetPath, 'utf8'))
-    const diff = compareLocales(sourceContent, targetContent)
+    const diff = diffLocales(sourceContent, targetContent)
 
     const mergedContent = mode === 'replace'
-      ? replaceContent(sourceContent, targetContent)
+      ? replaceTranslations(sourceContent, targetContent)
       : mode === 'add'
-        ? addNewContent(sourceContent, targetContent, diff)
-        : updateContent(sourceContent, targetContent, diff)
+        ? addMissingTranslations(sourceContent, targetContent, diff)
+        : mergeTranslations(sourceContent, targetContent, diff)
 
     const content = format ? sortObjectKeys(mergedContent) : mergedContent
     fs.writeFileSync(targetPath, JSON.stringify(content, null, 2))
   }
 }
 
-export function compareLocales(source: Record<string, unknown>, target: Record<string, unknown>): LocaleDiff {
+export function diffLocales(source: Record<string, unknown>, target: Record<string, unknown>): LocaleDiff {
   const flatSource = flattenObject(source)
   const flatTarget = flattenObject(target)
 
@@ -101,7 +101,7 @@ export function compareLocales(source: Record<string, unknown>, target: Record<s
   }
 }
 
-function replaceContent(
+function replaceTranslations(
   source: Record<string, unknown>,
   target: Record<string, unknown>
 ): Record<string, unknown> {
@@ -129,7 +129,7 @@ function replaceContent(
   return updateValues(target, source)
 }
 
-function addNewContent(
+function addMissingTranslations(
   source: Record<string, unknown>,
   target: Record<string, unknown>,
   diff: LocaleDiff
@@ -145,7 +145,7 @@ function addNewContent(
   return unflattenObject(flatMerged)
 }
 
-function updateContent(
+function mergeTranslations(
   source: Record<string, unknown>,
   target: Record<string, unknown>,
   diff: LocaleDiff
