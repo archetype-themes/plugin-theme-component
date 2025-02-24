@@ -105,21 +105,17 @@ function replaceTranslations(
   source: Record<string, unknown>,
   target: Record<string, unknown>
 ): Record<string, unknown> {
-  // Helper function to update values in an object while preserving structure
-  function updateValues(targetObj: Record<string, unknown>, sourceObj: Record<string, unknown>): Record<string, unknown> {
+  const updateValues = (targetObj: Record<string, unknown>, sourceObj: Record<string, unknown>): Record<string, unknown> => {
     const result: Record<string, unknown> = {}
 
-    // Iterate through target's keys to preserve order
     for (const [key, value] of Object.entries(targetObj)) {
-      if (typeof value === 'object' && value !== null && key in sourceObj && typeof sourceObj[key] === 'object') {
-        // Recursively handle nested objects
+      const isNestedObject = typeof value === 'object' && value !== null
+      const hasSourceValue = key in sourceObj
+
+      if (isNestedObject && hasSourceValue && typeof sourceObj[key] === 'object') {
         result[key] = updateValues(value as Record<string, unknown>, sourceObj[key] as Record<string, unknown>)
-      } else if (key in sourceObj) {
-        // Replace value from source if it exists
-        result[key] = sourceObj[key]
       } else {
-        // Keep original value if not in source
-        result[key] = value
+        result[key] = hasSourceValue ? sourceObj[key] : value
       }
     }
 
