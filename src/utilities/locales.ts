@@ -63,7 +63,7 @@ export async function syncLocales(
   options?: Partial<SyncOptions>
 ): Promise<void> {
   const localesDir = path.join(themeDir, 'locales')
-  const { format = false, mode = 'add-and-override' } = options ?? {}
+  const { format = false, mode = 'add-missing' } = options ?? {}
 
   for (const [file, sourceContent] of Object.entries(sourceLocales)) {
     const targetPath = path.join(localesDir, file)
