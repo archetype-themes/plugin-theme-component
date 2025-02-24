@@ -37,7 +37,7 @@ export default class Sync extends BaseCommand {
     Flags.CLEAN,
     Flags.FORMAT,
     Flags.LOCALES_DIR,
-    Flags.SYNC_MODE,
+    Flags.MODE,
     Flags.TARGET
   ])
 
@@ -69,7 +69,7 @@ export default class Sync extends BaseCommand {
   ): Promise<void> {
     const requiredLocales = extractRequiredTranslations(sourceData.locales, translations)
     const format = this.flags[Flags.FORMAT]
-    const mode = this.flags[Flags.SYNC_MODE]
+    const mode = this.flags[Flags.MODE]
 
     await syncLocales(themeDir, requiredLocales, { format, mode })
 

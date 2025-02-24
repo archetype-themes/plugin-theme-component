@@ -18,6 +18,7 @@ export default class Flags {
   static readonly IGNORE_OVERRIDES = 'ignore-overrides';
   static readonly LIVE_RELOAD = 'live-reload';
   static readonly LOCALES_DIR = 'locales-dir';
+  static readonly MODE = 'mode';
   static readonly PASSWORD = 'password';
   static readonly PORT = 'port';
   static readonly PREVIEW = 'preview';
@@ -25,7 +26,6 @@ export default class Flags {
   static readonly SETUP_FILES = 'setup-files';
   static readonly STORE = 'store';
   static readonly STORE_PASSWORD = 'store-password';
-  static readonly SYNC_MODE = 'sync-mode';
   static readonly TARGET = 'target';
   static readonly THEME = 'theme';
   static readonly THEME_DIR = 'theme-dir';
@@ -113,6 +113,16 @@ export const flagDefinitions: Record<string, any> = {
     description: 'Directory or repository containing locale files',
   }),
 
+  [Flags.MODE]: OclifFlags.string({
+    char: 'm',
+    default: 'add-and-override',
+    description: 'Sync mode for locale files:\n' +
+      '- add-and-override: Add new translations and override existing ones with source values (default)\n' +
+      '- replace-existing: Replace values of existing translations with source values\n' +
+      '- add-missing: Only add new translations that do not exist in theme',
+    options: ['add-and-override', 'add-missing', 'replace-existing']
+  }),
+
   [Flags.PASSWORD]: OclifFlags.string({
     description: 'Password generated from the Theme Access app.',
   }),
@@ -148,16 +158,6 @@ export const flagDefinitions: Record<string, any> = {
 
   [Flags.STORE_PASSWORD]: OclifFlags.string({
     description: 'The password for storefronts with password protection.',
-  }),
-
-  [Flags.SYNC_MODE]: OclifFlags.string({
-    char: 'm',
-    default: 'add-and-override',
-    description: 'Sync mode for locale files:\n' +
-      '- add-and-override: Add new translations and override existing ones with source values (default)\n' +
-      '- replace-existing: Replace values of existing translations with source values\n' +
-      '- add-missing: Only add new translations that do not exist in theme',
-    options: ['add-and-override', 'add-missing', 'replace-existing']
   }),
 
   [Flags.TARGET]: OclifFlags.string({
