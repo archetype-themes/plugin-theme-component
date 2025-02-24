@@ -78,10 +78,10 @@ export async function syncLocales(
     const diff = compareLocales(sourceContent, targetContent)
 
     const mergedContent = mode === 'replace'
-      ? replaceContent(sourceContent)
+      ? replaceContent(sourceContent, targetContent)
       : mode === 'add'
-      ? addNewContent(sourceContent, targetContent, diff)
-      : updateContent(sourceContent, targetContent, diff)
+        ? addNewContent(sourceContent, targetContent, diff)
+        : updateContent(sourceContent, targetContent, diff)
 
     const content = format ? sortObjectKeys(mergedContent) : mergedContent
     fs.writeFileSync(targetPath, JSON.stringify(content, null, 2))
@@ -101,8 +101,32 @@ export function compareLocales(source: Record<string, unknown>, target: Record<s
   }
 }
 
-function replaceContent(source: Record<string, unknown>): Record<string, unknown> {
-  return source
+function replaceContent(
+  source: Record<string, unknown>,
+  target: Record<string, unknown>
+): Record<string, unknown> {
+  // Helper function to update values in an object while preserving structure
+  function updateValues(targetObj: Record<string, unknown>, sourceObj: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = {}
+
+    // Iterate through target's keys to preserve order
+    for (const [key, value] of Object.entries(targetObj)) {
+      if (typeof value === 'object' && value !== null && key in sourceObj && typeof sourceObj[key] === 'object') {
+        // Recursively handle nested objects
+        result[key] = updateValues(value as Record<string, unknown>, sourceObj[key] as Record<string, unknown>)
+      } else if (key in sourceObj) {
+        // Replace value from source if it exists
+        result[key] = sourceObj[key]
+      } else {
+        // Keep original value if not in source
+        result[key] = value
+      }
+    }
+
+    return result
+  }
+
+  return updateValues(target, source)
 }
 
 function addNewContent(
@@ -110,7 +134,7 @@ function addNewContent(
   target: Record<string, unknown>,
   diff: LocaleDiff
 ): Record<string, unknown> {
-  const merged = {...target}
+  const merged = { ...target }
   const flatContent = flattenObject(source)
   const flatMerged = flattenObject(merged)
 
@@ -126,7 +150,7 @@ function updateContent(
   target: Record<string, unknown>,
   diff: LocaleDiff
 ): Record<string, unknown> {
-  const merged = {...target}
+  const merged = { ...target }
   const flatContent = flattenObject(source)
   const flatMerged = flattenObject(merged)
 
