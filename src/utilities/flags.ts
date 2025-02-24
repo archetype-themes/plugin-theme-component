@@ -1,4 +1,4 @@
-import {Flags as OclifFlags} from '@oclif/core'
+import { Flags as OclifFlags } from '@oclif/core'
 import { FlagInput } from '@oclif/core/interfaces';
 
 import { ComponentConfig } from './types.js'
@@ -152,12 +152,12 @@ export const flagDefinitions: Record<string, any> = {
 
   [Flags.SYNC_MODE]: OclifFlags.string({
     char: 'm',
-    default: 'update',
+    default: 'add-and-override',
     description: 'Sync mode for locale files:\n' +
-      '- update: Add new and update modified translations (default)\n' +
-      '- replace: Replace all translations with source versions\n' +
-      '- add: Only add new translations, preserve existing ones',
-    options: ['update', 'replace', 'add']
+      '- add-and-override: Add new translations and override existing ones with source values (default)\n' +
+      '- replace-existing: Replace values of existing translations with source values\n' +
+      '- add-missing: Only add new translations that do not exist in theme',
+    options: ['add-and-override', 'add-missing', 'replace-existing']
   }),
 
   [Flags.TARGET]: OclifFlags.string({

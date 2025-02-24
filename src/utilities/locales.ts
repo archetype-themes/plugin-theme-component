@@ -15,7 +15,7 @@ export interface LocaleDiff {
   removed: Set<string>
 }
 
-export type SyncMode = 'add' | 'replace' | 'update'
+export type SyncMode = 'add-and-override' | 'add-missing' | 'replace-existing'
 
 export interface SyncOptions {
   format?: boolean
@@ -63,7 +63,7 @@ export async function syncLocales(
   options?: Partial<SyncOptions>
 ): Promise<void> {
   const localesDir = path.join(themeDir, 'locales')
-  const { format = false, mode = 'update' } = options ?? {}
+  const { format = false, mode = 'add-and-override' } = options ?? {}
 
   for (const [file, sourceContent] of Object.entries(sourceLocales)) {
     const targetPath = path.join(localesDir, file)
@@ -77,9 +77,9 @@ export async function syncLocales(
     const targetContent = JSON.parse(fs.readFileSync(targetPath, 'utf8'))
     const diff = diffLocales(sourceContent, targetContent)
 
-    const mergedContent = mode === 'replace'
+    const mergedContent = mode === 'replace-existing'
       ? replaceTranslations(sourceContent, targetContent)
-      : mode === 'add'
+      : mode === 'add-missing'
         ? addMissingTranslations(sourceContent, targetContent, diff)
         : mergeTranslations(sourceContent, targetContent, diff)
 
