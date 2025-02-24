@@ -53,7 +53,7 @@ export const flagDefinitions: Record<string, any> = {
   [Flags.CLEAN]: OclifFlags.boolean({
     char: 'c',
     default: false,
-    description: 'Clean unused translations before syncing'
+    description: 'Remove unused translations from theme locale files before syncing'
   }),
 
   [Flags.COLLECTION_NAME]: OclifFlags.string({
@@ -72,7 +72,7 @@ export const flagDefinitions: Record<string, any> = {
 
   [Flags.FORMAT]: OclifFlags.boolean({
     default: false,
-    description: 'Format locale files (sort keys alphabetically)',
+    description: 'Format locale files by sorting keys alphabetically',
   }),
 
   [Flags.GENERATE_IMPORT_MAP]: OclifFlags.boolean({
