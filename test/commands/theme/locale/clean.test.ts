@@ -23,11 +23,11 @@ describe('theme locale clean', () => {
   it('cleans unused translations from all locale files by default', async () => {
     await runCommand(['theme', 'locale', 'clean'])
 
-    const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    expect(enDefaultContent).to.not.have.property('unused')
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.not.have.property('unused')
 
-    const enSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
-    expect(enSchemaContent).to.not.have.property('unused')
+    const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
+    expect(schemaContent).to.not.have.property('unused')
   })
 
   it('cleans only schema files when target is set to schema', async () => {
@@ -36,12 +36,12 @@ describe('theme locale clean', () => {
 
     await runCommand(['theme', 'locale', 'clean', '--target', 'schema'])
 
-    const enSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
-    expect(enSchemaContent).to.not.have.property('unused')
+    const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
+    expect(schemaContent).to.not.have.property('unused')
 
-    const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    const backupEnDefaultContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.json'), 'utf8'))
-    expect(enDefaultContent).to.deep.equal(backupEnDefaultContent)
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    const backupStorefrontContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.deep.equal(backupStorefrontContent)
 
     fs.rmSync(backupDir, { force: true, recursive: true })
   })
@@ -52,12 +52,12 @@ describe('theme locale clean', () => {
 
     await runCommand(['theme', 'locale', 'clean', '--target', 'storefront'])
 
-    const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    expect(enDefaultContent).to.not.have.property('unused')
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.not.have.property('unused')
 
-    const enSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
-    const backupEnSchemaContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.schema.json'), 'utf8'))
-    expect(enSchemaContent).to.deep.equal(backupEnSchemaContent)
+    const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
+    const backupSchemaContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.schema.json'), 'utf8'))
+    expect(schemaContent).to.deep.equal(backupSchemaContent)
 
     fs.rmSync(backupDir, { force: true, recursive: true })
   })
@@ -65,33 +65,33 @@ describe('theme locale clean', () => {
   it('preserves used translations when cleaning', async () => {
     await runCommand(['theme', 'locale', 'clean'])
 
-    const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    expect(enDefaultContent).to.have.nested.property('actions.add_to_cart')
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
 
-    const enSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
-    expect(enSchemaContent).to.have.nested.property('section.name')
-    expect(enSchemaContent).to.have.nested.property('section.settings.logo_label')
+    const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
+    expect(schemaContent).to.have.nested.property('section.name')
+    expect(schemaContent).to.have.nested.property('section.settings.logo_label')
   })
 
   it('can be run from a theme directory without an argument', async () => {
     process.chdir(testThemePath)
     await runCommand(['theme', 'locale', 'clean'])
 
-    const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    expect(enDefaultContent).to.not.have.property('unused')
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.not.have.property('unused')
   })
 
   it('formats the output files when format flag is set', async () => {
     await runCommand(['theme', 'locale', 'clean', '--format'])
 
-    const fileContent = fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8')
+    const storefrontFileContent = fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8')
 
-    expect(fileContent).to.include('  "actions": {')
-    expect(fileContent).to.include('    "add_to_cart"')
+    expect(storefrontFileContent).to.include('  "actions": {')
+    expect(storefrontFileContent).to.include('    "add_to_cart"')
 
-    const content = JSON.parse(fileContent)
-    expect(content).to.not.have.property('unused')
-    expect(content).to.have.nested.property('actions.add_to_cart')
+    const storefrontContent = JSON.parse(storefrontFileContent)
+    expect(storefrontContent).to.not.have.property('unused')
+    expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
   })
 
   it('formats only target files when used with target flag', async () => {
@@ -106,43 +106,43 @@ describe('theme locale clean', () => {
       path.join(backupDir, 'en.default.schema.json')
     )
 
-    const schemaFile = path.join(testThemeLocalesPath, 'en.default.schema.json')
-    const storefrontFile = path.join(testThemeLocalesPath, 'en.default.json')
+    const schemaFilePath = path.join(testThemeLocalesPath, 'en.default.schema.json')
+    const storefrontFilePath = path.join(testThemeLocalesPath, 'en.default.json')
 
-    const schemaContent = JSON.parse(fs.readFileSync(schemaFile, 'utf8'))
-    const storefrontContent = JSON.parse(fs.readFileSync(storefrontFile, 'utf8'))
+    const schemaContent = JSON.parse(fs.readFileSync(schemaFilePath, 'utf8'))
+    const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
 
-    fs.writeFileSync(schemaFile, JSON.stringify(schemaContent))
-    fs.writeFileSync(storefrontFile, JSON.stringify(storefrontContent))
+    fs.writeFileSync(schemaFilePath, JSON.stringify(schemaContent))
+    fs.writeFileSync(storefrontFilePath, JSON.stringify(storefrontContent))
 
     await runCommand(['theme', 'locale', 'clean', '--format', '--target', 'schema'])
 
-    const formattedSchemaContent = fs.readFileSync(schemaFile, 'utf8')
-    const formattedStorefrontContent = fs.readFileSync(storefrontFile, 'utf8')
+    const formattedSchemaFileContent = fs.readFileSync(schemaFilePath, 'utf8')
+    const storefrontFileContent = fs.readFileSync(storefrontFilePath, 'utf8')
 
-    expect(formattedSchemaContent).to.include('  "section": {')
-    expect(formattedSchemaContent).to.include('    "name"')
-    expect(formattedStorefrontContent).not.to.include('  "actions": {')
+    expect(formattedSchemaFileContent).to.include('  "section": {')
+    expect(formattedSchemaFileContent).to.include('    "name"')
+    expect(storefrontFileContent).not.to.include('  "actions": {')
 
     fs.rmSync(backupDir, { force: true, recursive: true })
   })
 
   it('formats nested objects correctly when format flag is set', async () => {
-    const schemaFile = path.join(testThemeLocalesPath, 'en.default.schema.json')
-    const originalContent = JSON.parse(fs.readFileSync(schemaFile, 'utf8'))
-    fs.writeFileSync(schemaFile, JSON.stringify(originalContent))
+    const schemaFilePath = path.join(testThemeLocalesPath, 'en.default.schema.json')
+    const originalSchemaContent = JSON.parse(fs.readFileSync(schemaFilePath, 'utf8'))
+    fs.writeFileSync(schemaFilePath, JSON.stringify(originalSchemaContent))
 
     await runCommand(['theme', 'locale', 'clean', '--format'])
 
-    const formattedContent = fs.readFileSync(schemaFile, 'utf8')
+    const formattedSchemaFileContent = fs.readFileSync(schemaFilePath, 'utf8')
 
-    expect(formattedContent).to.include('  "section": {')
-    expect(formattedContent).to.include('    "name"')
-    expect(formattedContent).to.include('    "settings": {')
-    expect(formattedContent).to.include('      "logo_label"')
+    expect(formattedSchemaFileContent).to.include('  "section": {')
+    expect(formattedSchemaFileContent).to.include('    "name"')
+    expect(formattedSchemaFileContent).to.include('    "settings": {')
+    expect(formattedSchemaFileContent).to.include('      "logo_label"')
 
-    const parsedContent = JSON.parse(formattedContent)
-    const keys = Object.keys(parsedContent)
+    const formattedSchemaContent = JSON.parse(formattedSchemaFileContent)
+    const keys = Object.keys(formattedSchemaContent)
 
     if (keys.length > 1) {
       const sectionIndex = keys.indexOf('section')

@@ -29,11 +29,11 @@ describe('theme locale sync', () => {
     expect(fs.existsSync(path.join(testThemeLocalesPath, 'fr.json'))).to.be.true
     expect(fs.existsSync(path.join(testThemeLocalesPath, 'fr.schema.json'))).to.be.true
 
-    const content = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    expect(content).to.have.nested.property('actions.add_to_cart')
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
 
-    const frContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'fr.json'), 'utf8'))
-    expect(frContent).to.have.nested.property('actions.add_to_cart')
+    const frStorefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'fr.json'), 'utf8'))
+    expect(frStorefrontContent).to.have.nested.property('actions.add_to_cart')
   })
 
   it('syncs only schema files when target is set to schema', async () => {
@@ -42,12 +42,12 @@ describe('theme locale sync', () => {
 
     await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--target', 'schema'])
 
-    const enSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
-    expect(enSchemaContent).to.have.nested.property('section.name')
+    const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
+    expect(schemaContent).to.have.nested.property('section.name')
 
-    const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    const backupEnDefaultContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.json'), 'utf8'))
-    expect(enDefaultContent).to.deep.equal(backupEnDefaultContent)
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    const backupStorefrontContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.deep.equal(backupStorefrontContent)
 
     fs.rmSync(backupDir, { force: true, recursive: true })
   })
@@ -58,74 +58,74 @@ describe('theme locale sync', () => {
 
     await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--target', 'storefront'])
 
-    const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    expect(enDefaultContent).to.have.nested.property('actions.add_to_cart')
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
 
-    const enSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
-    const backupEnSchemaContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.schema.json'), 'utf8'))
-    expect(enSchemaContent).to.deep.equal(backupEnSchemaContent)
+    const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
+    const backupSchemaContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.schema.json'), 'utf8'))
+    expect(schemaContent).to.deep.equal(backupSchemaContent)
 
     fs.rmSync(backupDir, { force: true, recursive: true })
   })
 
   it('adds missing translations when mode is set to add-missing', async () => {
-    const enDefaultPath = path.join(testThemeLocalesPath, 'en.default.json')
-    const enDefault = JSON.parse(fs.readFileSync(enDefaultPath, 'utf8'))
-    enDefault.custom = { key: 'This should not be changed' }
-    fs.writeFileSync(enDefaultPath, JSON.stringify(enDefault, null, 2))
+    const storefrontFilePath = path.join(testThemeLocalesPath, 'en.default.json')
+    const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
+    storefrontContent.custom = { key: 'This should not be changed' }
+    fs.writeFileSync(storefrontFilePath, JSON.stringify(storefrontContent, null, 2))
 
-    const originalAddToCartValue = enDefault.actions.add_to_cart
+    const originalAddToCartValue = storefrontContent.actions.add_to_cart
 
     await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--mode', 'add-missing'])
 
-    const content = JSON.parse(fs.readFileSync(enDefaultPath, 'utf8'))
-    expect(content.custom.key).to.equal('This should not be changed')
-    expect(content.actions.add_to_cart).to.equal(originalAddToCartValue)
+    const updatedStorefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
+    expect(updatedStorefrontContent.custom.key).to.equal('This should not be changed')
+    expect(updatedStorefrontContent.actions.add_to_cart).to.equal(originalAddToCartValue)
   })
 
   it('replaces existing translations when mode is set to replace-existing', async () => {
-    const enDefaultPath = path.join(testThemeLocalesPath, 'en.default.json')
-    const enDefault = JSON.parse(fs.readFileSync(enDefaultPath, 'utf8'))
-    const originalAddToCartValue = enDefault.actions.add_to_cart
+    const storefrontFilePath = path.join(testThemeLocalesPath, 'en.default.json')
+    const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
+    const originalAddToCartValue = storefrontContent.actions.add_to_cart
 
     await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--mode', 'replace-existing'])
 
-    const content = JSON.parse(fs.readFileSync(enDefaultPath, 'utf8'))
-    expect(content.actions.add_to_cart).to.not.equal(originalAddToCartValue)
+    const updatedStorefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
+    expect(updatedStorefrontContent.actions.add_to_cart).to.not.equal(originalAddToCartValue)
   })
 
   it('adds and overrides translations when mode is set to add-and-override', async () => {
-    const enDefaultPath = path.join(testThemeLocalesPath, 'en.default.json')
-    const enDefault = JSON.parse(fs.readFileSync(enDefaultPath, 'utf8'))
-    enDefault.custom = { key: 'This should not be changed' }
+    const storefrontFilePath = path.join(testThemeLocalesPath, 'en.default.json')
+    const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
+    storefrontContent.custom = { key: 'This should not be changed' }
 
-    const originalAddToCartValue = enDefault.actions.add_to_cart
+    const originalAddToCartValue = storefrontContent.actions.add_to_cart
 
-    fs.writeFileSync(enDefaultPath, JSON.stringify(enDefault, null, 2))
+    fs.writeFileSync(storefrontFilePath, JSON.stringify(storefrontContent, null, 2))
 
     await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--mode', 'add-and-override'])
 
-    const content = JSON.parse(fs.readFileSync(enDefaultPath, 'utf8'))
-    expect(content.custom.key).to.equal('This should not be changed')
+    const updatedStorefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
+    expect(updatedStorefrontContent.custom.key).to.equal('This should not be changed')
 
-    expect(content.actions.add_to_cart).to.not.equal(originalAddToCartValue)
+    expect(updatedStorefrontContent.actions.add_to_cart).to.not.equal(originalAddToCartValue)
   })
 
   it('formats the output files when format flag is set', async () => {
     await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--format'])
 
-    const fileContent = fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8')
+    const storefrontFileContent = fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8')
 
-    expect(fileContent).to.include('  "actions": {')
-    expect(fileContent).to.include('    "add_to_cart"')
+    expect(storefrontFileContent).to.include('  "actions": {')
+    expect(storefrontFileContent).to.include('    "add_to_cart"')
   })
 
   it('cleans locale files when clean flag is set', async () => {
     await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--clean'])
 
-    const content = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    expect(content).to.not.have.property('unused')
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+    expect(storefrontContent).to.not.have.property('unused')
 
-    expect(content).to.have.nested.property('actions.add_to_cart')
+    expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
   })
 })
