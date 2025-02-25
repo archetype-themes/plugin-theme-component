@@ -3,8 +3,8 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 
 import { cloneTheme } from './git.js'
-import { flattenObject, sortObjectKeys, unflattenObject } from './objects.js'
-import { CleanTarget } from './translations.js'
+import { flattenObject, unflattenObject } from './objects.js'
+import { CleanTarget, FormatOptions, writeLocaleFile } from './translations.js'
 
 export interface LocaleContent {
   [key: string]: Record<string, unknown>
@@ -18,9 +18,8 @@ export interface LocaleDiff {
 
 export type SyncMode = 'add-and-override' | 'add-missing' | 'replace-existing'
 
-export interface SyncOptions {
-  format?: boolean
-  mode: SyncMode
+export interface SyncOptions extends FormatOptions {
+  mode?: SyncMode
   target?: CleanTarget
 }
 
@@ -62,7 +61,7 @@ function loadLocalLocales(dir: string): LocaleContent {
 export async function syncLocales(
   themeDir: string,
   sourceLocales: Record<string, Record<string, unknown>>,
-  options?: Partial<SyncOptions>
+  options?: SyncOptions
 ): Promise<void> {
   const localesDir = path.join(themeDir, 'locales')
   const { format = false, mode = 'add-missing', target = 'all' } = options ?? {}
@@ -79,8 +78,7 @@ export async function syncLocales(
     const targetPath = path.join(localesDir, file)
 
     if (!fs.existsSync(targetPath)) {
-      const content = format ? sortObjectKeys(sourceContent) : sourceContent
-      fs.writeFileSync(targetPath, JSON.stringify(content, null, 2) + '\n')
+      writeLocaleFile(targetPath, sourceContent, { format })
       continue
     }
 
@@ -93,8 +91,7 @@ export async function syncLocales(
         ? addMissingTranslations(sourceContent, targetContent, diff)
         : mergeTranslations(sourceContent, targetContent, diff)
 
-    const content = format ? sortObjectKeys(mergedContent) : mergedContent
-    fs.writeFileSync(targetPath, JSON.stringify(content, null, 2) + '\n')
+    writeLocaleFile(targetPath, mergedContent, { format })
   }
 }
 

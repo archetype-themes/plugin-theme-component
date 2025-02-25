@@ -11,9 +11,10 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
+import { SyncOptions, fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
 import {
   CleanTarget,
+  FormatOptions,
   ThemeTranslations,
   cleanTranslations,
   extractRequiredTranslations,
@@ -45,13 +46,15 @@ export default class Sync extends BaseCommand {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     const localesDir = this.flags[Flags.LOCALES_DIR]
     const target = this.flags[Flags.TARGET] as CleanTarget
+    const format = this.flags[Flags.FORMAT]
 
     const translations = getThemeTranslations(themeDir)
     const sourceLocales = await this.fetchAndAnalyzeSource(localesDir)
     await this.syncTranslations(themeDir, translations, sourceLocales)
 
     if (this.flags[Flags.CLEAN]) {
-      await cleanTranslations(themeDir, target)
+      const options: FormatOptions = { format }
+      await cleanTranslations(themeDir, target, options)
     }
   }
 
@@ -68,11 +71,14 @@ export default class Sync extends BaseCommand {
     sourceData: { locales: Record<string, Record<string, unknown>> }
   ): Promise<void> {
     const requiredLocales = extractRequiredTranslations(sourceData.locales, translations)
-    const format = this.flags[Flags.FORMAT]
-    const mode = this.flags[Flags.MODE]
-    const target = this.flags[Flags.TARGET] as CleanTarget
 
-    await syncLocales(themeDir, requiredLocales, { format, mode, target })
+    const options: SyncOptions = {
+      format: this.flags[Flags.FORMAT],
+      mode: this.flags[Flags.MODE],
+      target: this.flags[Flags.TARGET] as CleanTarget
+    }
+
+    await syncLocales(themeDir, requiredLocales, options)
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully synced locale files')

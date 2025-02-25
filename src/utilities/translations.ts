@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { LocaleContent } from './locales.js'
-import { flattenObject, unflattenObject } from './objects.js'
+import { flattenObject, sortObjectKeys, unflattenObject } from './objects.js'
 
 export interface ThemeTranslations {
   schema: Set<string>
@@ -11,8 +11,21 @@ export interface ThemeTranslations {
 
 export type CleanTarget = 'all' | 'schema' | 'storefront'
 
+export interface FormatOptions {
+  format?: boolean
+}
+
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
+
+export function writeLocaleFile(
+  filePath: string,
+  content: Record<string, unknown>,
+  options?: FormatOptions
+): void {
+  const formattedContent = options?.format ? sortObjectKeys(content) : content
+  fs.writeFileSync(filePath, JSON.stringify(formattedContent, null, 2) + '\n')
+}
 
 export function getThemeTranslations(themeDir: string): ThemeTranslations {
   return {
@@ -21,25 +34,25 @@ export function getThemeTranslations(themeDir: string): ThemeTranslations {
   }
 }
 
-export function cleanSchemaTranslations(themeDir: string): void {
+export function cleanSchemaTranslations(themeDir: string, options?: FormatOptions): void {
   const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
   const localesDir = path.join(themeDir, 'locales')
   const schemaFiles = fs.readdirSync(localesDir)
     .filter(file => file.endsWith('.schema.json'))
 
   for (const file of schemaFiles) {
-    cleanLocaleFile(path.join(localesDir, file), usedKeys)
+    cleanLocaleFile(path.join(localesDir, file), usedKeys, options)
   }
 }
 
-export function cleanStorefrontTranslations(themeDir: string): void {
+export function cleanStorefrontTranslations(themeDir: string, options?: FormatOptions): void {
   const usedKeys = scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
   const localesDir = path.join(themeDir, 'locales')
   const localeFiles = fs.readdirSync(localesDir)
     .filter(file => file.endsWith('.json') && !file.endsWith('.schema.json'))
 
   for (const file of localeFiles) {
-    cleanLocaleFile(path.join(localesDir, file), usedKeys)
+    cleanLocaleFile(path.join(localesDir, file), usedKeys, options)
   }
 }
 
@@ -152,7 +165,7 @@ function findVariableFallbackKeys(content: string, assignedTranslations: Map<str
   return keys
 }
 
-function cleanLocaleFile(filePath: string, usedKeys: Set<string>): void {
+function cleanLocaleFile(filePath: string, usedKeys: Set<string>, options?: FormatOptions): void {
   try {
     const content = JSON.parse(fs.readFileSync(filePath, 'utf8'))
     if (!content || typeof content !== 'object') return
@@ -168,7 +181,7 @@ function cleanLocaleFile(filePath: string, usedKeys: Set<string>): void {
     }
 
     const unflattened = unflattenObject(cleanedContent)
-    fs.writeFileSync(filePath, JSON.stringify(unflattened, null, 2) + '\n')
+    writeLocaleFile(filePath, unflattened, options)
   } catch (error) {
     throw new Error(`Error processing ${path.basename(filePath)}: ${error}`)
   }
@@ -199,21 +212,25 @@ export function extractRequiredTranslations(
   return result
 }
 
-export async function cleanTranslations(themeDir: string, target: CleanTarget): Promise<void> {
+export async function cleanTranslations(
+  themeDir: string,
+  target: CleanTarget = 'all',
+  options?: FormatOptions
+): Promise<void> {
   switch (target) {
     case 'schema': {
-      await cleanSchemaTranslations(themeDir)
+      await cleanSchemaTranslations(themeDir, options)
       break
     }
 
     case 'storefront': {
-      await cleanStorefrontTranslations(themeDir)
+      await cleanStorefrontTranslations(themeDir, options)
       break
     }
 
     case 'all': {
-      await cleanSchemaTranslations(themeDir)
-      await cleanStorefrontTranslations(themeDir)
+      await cleanSchemaTranslations(themeDir, options)
+      await cleanStorefrontTranslations(themeDir, options)
       break
     }
   }

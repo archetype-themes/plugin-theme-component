@@ -10,7 +10,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { CleanTarget, cleanTranslations } from '../../../utilities/translations.js'
+import { CleanTarget, FormatOptions, cleanTranslations } from '../../../utilities/translations.js'
 
 export default class Clean extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -26,6 +26,7 @@ export default class Clean extends BaseCommand {
   ]
 
   static override flags = Flags.getDefinitions([
+    Flags.FORMAT,
     Flags.TARGET
   ])
 
@@ -36,8 +37,10 @@ export default class Clean extends BaseCommand {
   public async run(): Promise<void> {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     const target = this.flags[Flags.TARGET] as CleanTarget
+    const format = this.flags[Flags.FORMAT]
 
-    await cleanTranslations(themeDir, target)
+    const options: FormatOptions = { format }
+    await cleanTranslations(themeDir, target, options)
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully cleaned locale files')
