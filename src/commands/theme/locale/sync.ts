@@ -46,13 +46,13 @@ export default class Sync extends BaseCommand {
     const localesDir = this.flags[Flags.LOCALES_DIR]
     const target = this.flags[Flags.TARGET] as CleanTarget
 
-    if (this.flags[Flags.CLEAN]) {
-      await cleanTranslations(themeDir, target)
-    }
-
     const translations = getThemeTranslations(themeDir)
     const sourceLocales = await this.fetchAndAnalyzeSource(localesDir)
     await this.syncTranslations(themeDir, translations, sourceLocales)
+
+    if (this.flags[Flags.CLEAN]) {
+      await cleanTranslations(themeDir, target)
+    }
   }
 
   private async fetchAndAnalyzeSource(localesDir: string): Promise<{

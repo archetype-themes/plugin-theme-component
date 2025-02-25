@@ -53,7 +53,7 @@ export const flagDefinitions: Record<string, any> = {
   [Flags.CLEAN]: OclifFlags.boolean({
     char: 'c',
     default: false,
-    description: 'Remove unused translations from theme locale files before syncing'
+    description: 'Remove unused translations from theme locale files'
   }),
 
   [Flags.COLLECTION_NAME]: OclifFlags.string({
