@@ -95,17 +95,6 @@ describe('theme locale clean', () => {
   })
 
   it('formats only target files when used with target flag', async () => {
-    const backupDir = path.join(testThemePath, 'locales-backup')
-    fs.mkdirSync(backupDir, { recursive: true })
-    fs.copyFileSync(
-      path.join(testThemeLocalesPath, 'en.default.json'),
-      path.join(backupDir, 'en.default.json')
-    )
-    fs.copyFileSync(
-      path.join(testThemeLocalesPath, 'en.default.schema.json'),
-      path.join(backupDir, 'en.default.schema.json')
-    )
-
     const schemaFilePath = path.join(testThemeLocalesPath, 'en.default.schema.json')
     const storefrontFilePath = path.join(testThemeLocalesPath, 'en.default.json')
 
@@ -123,8 +112,6 @@ describe('theme locale clean', () => {
     expect(formattedSchemaFileContent).to.include('  "section": {')
     expect(formattedSchemaFileContent).to.include('    "name"')
     expect(storefrontFileContent).not.to.include('  "actions": {')
-
-    fs.rmSync(backupDir, { force: true, recursive: true })
   })
 
   it('formats nested objects correctly when format flag is set', async () => {
