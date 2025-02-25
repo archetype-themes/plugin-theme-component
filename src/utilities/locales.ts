@@ -4,6 +4,7 @@ import path from 'node:path'
 
 import { cloneTheme } from './git.js'
 import { flattenObject, sortObjectKeys, unflattenObject } from './objects.js'
+import { CleanTarget } from './translations.js'
 
 export interface LocaleContent {
   [key: string]: Record<string, unknown>
@@ -20,6 +21,7 @@ export type SyncMode = 'add-and-override' | 'add-missing' | 'replace-existing'
 export interface SyncOptions {
   format?: boolean
   mode: SyncMode
+  target?: CleanTarget
 }
 
 export async function fetchLocaleSource(source: string): Promise<LocaleContent> {
@@ -63,9 +65,17 @@ export async function syncLocales(
   options?: Partial<SyncOptions>
 ): Promise<void> {
   const localesDir = path.join(themeDir, 'locales')
-  const { format = false, mode = 'add-missing' } = options ?? {}
+  const { format = false, mode = 'add-missing', target = 'all' } = options ?? {}
 
-  for (const [file, sourceContent] of Object.entries(sourceLocales)) {
+  const filesToSync = Object.entries(sourceLocales).filter(([file]) => {
+    const isSchemaFile = file.endsWith('.schema.json')
+
+    if (target === 'schema') return isSchemaFile
+    if (target === 'storefront') return !isSchemaFile
+    return true
+  })
+
+  for (const [file, sourceContent] of filesToSync) {
     const targetPath = path.join(localesDir, file)
 
     if (!fs.existsSync(targetPath)) {

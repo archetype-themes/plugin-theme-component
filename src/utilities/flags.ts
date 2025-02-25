@@ -162,7 +162,10 @@ export const flagDefinitions: Record<string, any> = {
 
   [Flags.TARGET]: OclifFlags.string({
     default: 'all',
-    description: 'Target for cleaning: all (default), schema, or storefront',
+    description: 'Locale files to target for syncing and cleaning:\n' +
+      '- all: Process all locale files (default)\n' +
+      '- schema: Process only schema translations (*.schema.json)\n' +
+      '- storefront: Process only storefront translations (non-schema files)',
     options: ['all', 'schema', 'storefront']
   }),
 

@@ -70,8 +70,9 @@ export default class Sync extends BaseCommand {
     const requiredLocales = extractRequiredTranslations(sourceData.locales, translations)
     const format = this.flags[Flags.FORMAT]
     const mode = this.flags[Flags.MODE]
+    const target = this.flags[Flags.TARGET] as CleanTarget
 
-    await syncLocales(themeDir, requiredLocales, { format, mode })
+    await syncLocales(themeDir, requiredLocales, { format, mode, target })
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully synced locale files')
