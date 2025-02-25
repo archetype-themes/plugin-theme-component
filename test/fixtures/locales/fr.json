@@ -1,0 +1,8 @@
+{
+  "actions": {
+    "add_to_cart": "Ajouter au panier (source)"
+  },
+  "additional": {
+    "new_key": "Ceci est une nouvelle traduction de la source"
+  }
+}

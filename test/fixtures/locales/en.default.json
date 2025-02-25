@@ -1,0 +1,8 @@
+{
+  "actions": {
+    "add_to_cart": "Add to cart (source)"
+  },
+  "additional": {
+    "new_key": "This is a new translation from source"
+  }
+}
