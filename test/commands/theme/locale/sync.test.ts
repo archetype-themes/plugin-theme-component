@@ -31,9 +31,13 @@ describe('theme locale sync', () => {
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
     expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
+    expect(storefrontContent).to.have.nested.property('t_with_fallback.direct_key')
+    expect(storefrontContent).to.have.nested.property('t_with_fallback.variable_key')
 
     const frStorefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'fr.json'), 'utf8'))
     expect(frStorefrontContent).to.have.nested.property('actions.add_to_cart')
+    expect(frStorefrontContent).to.have.nested.property('t_with_fallback.direct_key')
+    expect(frStorefrontContent).to.have.nested.property('t_with_fallback.variable_key')
   })
 
   it('syncs only schema files when target is set to schema', async () => {
@@ -127,5 +131,7 @@ describe('theme locale sync', () => {
     expect(storefrontContent).to.not.have.property('unused')
 
     expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
+    expect(storefrontContent).to.have.nested.property('t_with_fallback.direct_key')
+    expect(storefrontContent).to.have.nested.property('t_with_fallback.variable_key')
   })
 })

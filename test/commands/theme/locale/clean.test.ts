@@ -67,6 +67,8 @@ describe('theme locale clean', () => {
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
     expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
+    expect(storefrontContent).to.have.nested.property('t_with_fallback.direct_key')
+    expect(storefrontContent).to.have.nested.property('t_with_fallback.variable_key')
 
     const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
     expect(schemaContent).to.have.nested.property('section.name')
