@@ -80,4 +80,77 @@ describe('theme locale clean', () => {
     const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
     expect(enDefaultContent).to.not.have.property('unused')
   })
+
+  it('formats the output files when format flag is set', async () => {
+    await runCommand(['theme', 'locale', 'clean', '--format'])
+
+    const fileContent = fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8')
+
+    expect(fileContent).to.include('  "actions": {')
+    expect(fileContent).to.include('    "add_to_cart"')
+
+    const content = JSON.parse(fileContent)
+    expect(content).to.not.have.property('unused')
+    expect(content).to.have.nested.property('actions.add_to_cart')
+  })
+
+  it('formats only target files when used with target flag', async () => {
+    const backupDir = path.join(testThemePath, 'locales-backup')
+    fs.mkdirSync(backupDir, { recursive: true })
+    fs.copyFileSync(
+      path.join(testThemeLocalesPath, 'en.default.json'),
+      path.join(backupDir, 'en.default.json')
+    )
+    fs.copyFileSync(
+      path.join(testThemeLocalesPath, 'en.default.schema.json'),
+      path.join(backupDir, 'en.default.schema.json')
+    )
+
+    const schemaFile = path.join(testThemeLocalesPath, 'en.default.schema.json')
+    const storefrontFile = path.join(testThemeLocalesPath, 'en.default.json')
+
+    const schemaContent = JSON.parse(fs.readFileSync(schemaFile, 'utf8'))
+    const storefrontContent = JSON.parse(fs.readFileSync(storefrontFile, 'utf8'))
+
+    fs.writeFileSync(schemaFile, JSON.stringify(schemaContent))
+    fs.writeFileSync(storefrontFile, JSON.stringify(storefrontContent))
+
+    await runCommand(['theme', 'locale', 'clean', '--format', '--target', 'schema'])
+
+    const formattedSchemaContent = fs.readFileSync(schemaFile, 'utf8')
+    const formattedStorefrontContent = fs.readFileSync(storefrontFile, 'utf8')
+
+    expect(formattedSchemaContent).to.include('  "section": {')
+    expect(formattedSchemaContent).to.include('    "name"')
+    expect(formattedStorefrontContent).not.to.include('  "actions": {')
+
+    fs.rmSync(backupDir, { force: true, recursive: true })
+  })
+
+  it('formats nested objects correctly when format flag is set', async () => {
+    const schemaFile = path.join(testThemeLocalesPath, 'en.default.schema.json')
+    const originalContent = JSON.parse(fs.readFileSync(schemaFile, 'utf8'))
+    fs.writeFileSync(schemaFile, JSON.stringify(originalContent))
+
+    await runCommand(['theme', 'locale', 'clean', '--format'])
+
+    const formattedContent = fs.readFileSync(schemaFile, 'utf8')
+
+    expect(formattedContent).to.include('  "section": {')
+    expect(formattedContent).to.include('    "name"')
+    expect(formattedContent).to.include('    "settings": {')
+    expect(formattedContent).to.include('      "logo_label"')
+
+    const parsedContent = JSON.parse(formattedContent)
+    const keys = Object.keys(parsedContent)
+
+    if (keys.length > 1) {
+      const sectionIndex = keys.indexOf('section')
+      const additionalIndex = keys.indexOf('additional')
+
+      if (sectionIndex !== -1 && additionalIndex !== -1) {
+        expect(additionalIndex).to.be.lessThan(sectionIndex)
+      }
+    }
+  })
 })
