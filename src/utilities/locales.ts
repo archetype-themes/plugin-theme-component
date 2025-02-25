@@ -80,7 +80,7 @@ export async function syncLocales(
 
     if (!fs.existsSync(targetPath)) {
       const content = format ? sortObjectKeys(sourceContent) : sourceContent
-      fs.writeFileSync(targetPath, JSON.stringify(content, null, 2))
+      fs.writeFileSync(targetPath, JSON.stringify(content, null, 2) + '\n')
       continue
     }
 
@@ -94,7 +94,7 @@ export async function syncLocales(
         : mergeTranslations(sourceContent, targetContent, diff)
 
     const content = format ? sortObjectKeys(mergedContent) : mergedContent
-    fs.writeFileSync(targetPath, JSON.stringify(content, null, 2))
+    fs.writeFileSync(targetPath, JSON.stringify(content, null, 2) + '\n')
   }
 }
 

@@ -168,7 +168,7 @@ function cleanLocaleFile(filePath: string, usedKeys: Set<string>): void {
     }
 
     const unflattened = unflattenObject(cleanedContent)
-    fs.writeFileSync(filePath, JSON.stringify(unflattened, null, 2))
+    fs.writeFileSync(filePath, JSON.stringify(unflattened, null, 2) + '\n')
   } catch (error) {
     throw new Error(`Error processing ${path.basename(filePath)}: ${error}`)
   }
