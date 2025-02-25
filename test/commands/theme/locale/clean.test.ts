@@ -27,7 +27,7 @@ describe('theme locale clean', () => {
     expect(enDefaultContent).to.not.have.property('unused')
 
     const enSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
-    expect(enSchemaContent).to.not.have.property('unused_schema')
+    expect(enSchemaContent).to.not.have.property('unused')
   })
 
   it('cleans only schema files when target is set to schema', async () => {
@@ -37,7 +37,7 @@ describe('theme locale clean', () => {
     await runCommand(['theme', 'locale', 'clean', '--target', 'schema'])
 
     const enSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
-    expect(enSchemaContent).to.not.have.property('unused_schema')
+    expect(enSchemaContent).to.not.have.property('unused')
 
     const enDefaultContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
     const backupEnDefaultContent = JSON.parse(fs.readFileSync(path.join(backupDir, 'en.default.json'), 'utf8'))
