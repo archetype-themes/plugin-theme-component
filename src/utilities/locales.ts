@@ -133,6 +133,25 @@ function extractStorefrontTranslationKeys(content: string): Set<string> {
     }
   }
 
+  // Find dynamic translation keys (string literal followed by filters ending with t filter)
+  // This captures patterns like: 'prefix.' | append: x | replace: '-', '_' | t
+  const dynamicPatterns = [
+    // {% assign/capture var = 'prefix' | filters | t %}
+    /{%\s*(?:assign|capture)\s+\w+\s*=\s*["']([^"']+)["']\s*\|.*?\|\s*t[^%]*%}/g,
+    // {{ 'prefix' | filters | t }}
+    /{{\s*-?\s*["']([^"']+)["']\s*\|.*?\|\s*t[^}]*-?\s*}}/g,
+  ]
+
+  for (const pattern of dynamicPatterns) {
+    const matches = content.match(pattern) || []
+    for (const match of matches) {
+      const keyMatch = match.match(/["']([^"']+)["']/)
+      if (keyMatch && keyMatch[1]) {
+        keys.add(keyMatch[1])
+      }
+    }
+  }
+
   // Combine with t_with_fallback translations
   return new Set([...keys, ...extractTWithFallbackTranslationKeys(content)])
 }
@@ -386,18 +405,45 @@ export function filterSourceTranslationsToKeysUsedInTheme(
   for (const [file, content] of Object.entries(sourceLocales)) {
     const isSchema = file.endsWith('.schema.json')
     const requiredKeys = isSchema ? required.schema : required.storefront
-
     const flatContent = flattenObject(content)
-    const filteredContent: Record<string, unknown> = {}
 
-    for (const key of requiredKeys) {
-      if (key in flatContent) {
-        filteredContent[key] = flatContent[key]
-      }
-    }
-
-    result[file] = unflattenObject(filteredContent)
+    result[file] = unflattenObject(filterContentByKeys(flatContent, requiredKeys))
   }
 
   return result
+}
+
+function filterContentByKeys(
+  flatContent: Record<string, unknown>,
+  requiredKeys: Set<string>
+): Record<string, unknown> {
+  const filteredContent: Record<string, unknown> = {}
+
+  // Process exact key matches
+  for (const key of requiredKeys) {
+    if (key in flatContent) {
+      filteredContent[key] = flatContent[key]
+    }
+  }
+
+  // Handle prefix matches for dynamic keys
+  for (const key of requiredKeys) {
+    if (key.endsWith('.')) {
+      addPrefixMatches(flatContent, filteredContent, key)
+    }
+  }
+
+  return filteredContent
+}
+
+function addPrefixMatches(
+  flatContent: Record<string, unknown>,
+  filteredContent: Record<string, unknown>,
+  prefix: string
+): void {
+  for (const sourceKey of Object.keys(flatContent)) {
+    if (sourceKey.startsWith(prefix) && !(sourceKey in filteredContent)) {
+      filteredContent[sourceKey] = flatContent[sourceKey]
+    }
+  }
 }
