@@ -117,7 +117,7 @@ export const flagDefinitions: Record<string, any> = {
     char: 'm',
     default: 'add-missing',
     description: 'Sync mode for locale files:\n' +
-      '- add-missing: Only add new translations that do not exist in theme (default)\n' +
+      '- add-missing: Only add new translations that do not exist in theme\n' +
       '- add-and-override: Add new translations and override existing ones with source values\n' +
       '- replace-existing: Replace values of existing translations with source values',
     options: ['add-missing', 'add-and-override', 'replace-existing']
@@ -163,7 +163,7 @@ export const flagDefinitions: Record<string, any> = {
   [Flags.TARGET]: OclifFlags.string({
     default: 'all',
     description: 'Target locale files to process:\n' +
-      '- all: Process all locale files (default)\n' +
+      '- all: Process all locale files\n' +
       '- schema: Process only schema translations (*.schema.json)\n' +
       '- storefront: Process only storefront translations',
     options: ['all', 'schema', 'storefront']
