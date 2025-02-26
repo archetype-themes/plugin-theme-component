@@ -47,7 +47,6 @@ describe('theme locale sync', () => {
 
   it('syncs only schema files when target is set to schema', async () => {
     const originalStorefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
-    const sourceEnDefaultSchema = JSON.parse(fs.readFileSync(path.join(localesPath, 'en.default.schema.json'), 'utf8'))
     const originalSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
 
     await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--target', 'schema'])
@@ -57,8 +56,7 @@ describe('theme locale sync', () => {
     expect(schemaContent.section.name).to.equal(originalSchemaContent.section.name)
     expect(schemaContent.section.settings.logo_label).to.equal(originalSchemaContent.section.settings.logo_label)
 
-    expect(schemaContent).to.have.nested.property('additional.new_setting')
-    expect(schemaContent.additional.new_setting).to.equal(sourceEnDefaultSchema.additional.new_setting)
+    expect(schemaContent).to.not.have.nested.property('additional.new_setting')
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
     expect(storefrontContent).to.deep.equal(originalStorefrontContent)
@@ -87,8 +85,7 @@ describe('theme locale sync', () => {
 
     expect(updatedStorefrontContent.actions.add_to_cart).to.equal(originalAddToCartValue)
 
-    expect(updatedStorefrontContent).to.have.nested.property('additional.new_key')
-    expect(updatedStorefrontContent.additional.new_key).to.equal(sourceEnDefault.additional.new_key)
+    expect(updatedStorefrontContent).to.not.have.nested.property('additional.new_key')
   })
 
   it('replaces existing translations when mode is set to replace-existing', async () => {
@@ -120,8 +117,7 @@ describe('theme locale sync', () => {
     expect(updatedStorefrontContent.actions.add_to_cart).to.not.equal(originalAddToCartValue)
     expect(updatedStorefrontContent.actions.add_to_cart).to.equal(sourceEnDefault.actions.add_to_cart)
 
-    expect(updatedStorefrontContent).to.have.nested.property('additional.new_key')
-    expect(updatedStorefrontContent.additional.new_key).to.equal(sourceEnDefault.additional.new_key)
+    expect(updatedStorefrontContent).to.not.have.nested.property('additional.new_key')
   })
 
   it('formats the output files when format flag is set', async () => {
@@ -158,7 +154,27 @@ describe('theme locale sync', () => {
     expect(schemaContent.section.name).to.equal(sourceEnDefaultSchema.section.name)
     expect(schemaContent.section.settings.logo_label).to.equal(sourceEnDefaultSchema.section.settings.logo_label)
 
-    expect(schemaContent).to.have.nested.property('additional.new_setting')
-    expect(schemaContent.additional.new_setting).to.equal(sourceEnDefaultSchema.additional.new_setting)
+    expect(schemaContent).to.not.have.nested.property('additional.new_setting')
+  })
+
+  it('does not add unused translations', async () => {
+    const storefrontFilePath = path.join(testThemeLocalesPath, 'en.default.json')
+    const schemaFilePath = path.join(testThemeLocalesPath, 'en.default.schema.json')
+
+    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath])
+
+    const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
+    const schemaContent = JSON.parse(fs.readFileSync(schemaFilePath, 'utf8'))
+
+    // Verify that unused translations from source are not added
+    expect(storefrontContent).to.not.have.nested.property('additional.new_key')
+    expect(schemaContent).to.not.have.nested.property('additional.new_setting')
+
+    // Verify that used translations are still present
+    expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
+    expect(storefrontContent).to.have.nested.property('t_with_fallback.direct_key')
+    expect(storefrontContent).to.have.nested.property('t_with_fallback.variable_key')
+    expect(schemaContent).to.have.nested.property('section.name')
+    expect(schemaContent).to.have.nested.property('section.settings.logo_label')
   })
 })

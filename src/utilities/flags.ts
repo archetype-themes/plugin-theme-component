@@ -116,8 +116,8 @@ export const flagDefinitions: Record<string, any> = {
   [Flags.MODE]: OclifFlags.string({
     char: 'm',
     default: 'add-missing',
-    description: 'Sync mode for locale files:\n' +
-      '- add-missing: Only add new translations that do not exist in theme\n' +
+    description: 'Sync mode for locale files (only translations used in the theme will be processed):\n' +
+      '- add-missing: Only add new translations that do not exist in theme locale files\n' +
       '- add-and-override: Add new translations and override existing ones with source values\n' +
       '- replace-existing: Replace values of existing translations with source values',
     options: ['add-missing', 'add-and-override', 'replace-existing']
