@@ -74,7 +74,7 @@ export interface LocaleDiff {
   removed: Set<string>
 }
 
-export interface ThemeTranslations {
+export interface TranslationKeysUsedInTheme {
   schema: Set<string>
   storefront: Set<string>
 }

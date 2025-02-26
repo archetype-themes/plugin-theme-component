@@ -268,13 +268,13 @@ FLAGS
   -l, --locales-dir=<value>  [default: https://github.com/archetype-themes/locales] Directory or repository containing
                              locale files
   -m, --mode=<option>        [default: add-missing] Sync mode for locale files:
-                             - add-missing: Only add new translations that do not exist in theme (default)
+                             - add-missing: Only add new translations that do not exist in theme
                              - add-and-override: Add new translations and override existing ones with source values
                              - replace-existing: Replace values of existing translations with source values
                              <options: add-missing|add-and-override|replace-existing>
       --format               Format locale files by sorting keys alphabetically
       --target=<option>      [default: all] Target locale files to process:
-                             - all: Process all locale files (default)
+                             - all: Process all locale files
                              - schema: Process only schema translations (*.schema.json)
                              - storefront: Process only storefront translations
                              <options: all|schema|storefront>
@@ -306,7 +306,7 @@ ARGUMENTS
 FLAGS
   --format           Format locale files by sorting keys alphabetically
   --target=<option>  [default: all] Target locale files to process:
-                     - all: Process all locale files (default)
+                     - all: Process all locale files
                      - schema: Process only schema translations (*.schema.json)
                      - storefront: Process only storefront translations
                      <options: all|schema|storefront>
@@ -341,13 +341,13 @@ FLAGS
   -l, --locales-dir=<value>  [default: https://github.com/archetype-themes/locales] Directory or repository containing
                              locale files
   -m, --mode=<option>        [default: add-missing] Sync mode for locale files:
-                             - add-missing: Only add new translations that do not exist in theme (default)
+                             - add-missing: Only add new translations that do not exist in theme
                              - add-and-override: Add new translations and override existing ones with source values
                              - replace-existing: Replace values of existing translations with source values
                              <options: add-missing|add-and-override|replace-existing>
       --format               Format locale files by sorting keys alphabetically
       --target=<option>      [default: all] Target locale files to process:
-                             - all: Process all locale files (default)
+                             - all: Process all locale files
                              - schema: Process only schema translations (*.schema.json)
                              - storefront: Process only storefront translations
                              <options: all|schema|storefront>

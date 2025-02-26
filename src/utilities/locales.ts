@@ -4,7 +4,7 @@ import path from 'node:path'
 
 import { cloneTheme } from './git.js'
 import { flattenObject, sortObjectKeys, unflattenObject } from './objects.js'
-import { CleanOptions, LocaleContent, LocaleDiff, LocaleOptions, SyncOptions, ThemeTranslations } from './types.js'
+import { CleanOptions, LocaleContent, LocaleDiff, LocaleOptions, SyncOptions, TranslationKeysUsedInTheme } from './types.js'
 
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
@@ -68,7 +68,7 @@ export function writeLocaleFile(
   fs.writeFileSync(filePath, JSON.stringify(formattedContent, null, 2) + '\n')
 }
 
-export function getThemeTranslations(themeDir: string): ThemeTranslations {
+export function findTranslationKeysUsedInTheme(themeDir: string): TranslationKeysUsedInTheme {
   return {
     schema: scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys),
     storefront: scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
@@ -189,7 +189,7 @@ function findVariableFallbackKeys(content: string, assignedTranslations: Map<str
   return keys
 }
 
-export async function removeUnusedTranslations(
+export async function removeUnreferencedTranslationsFromTheme(
   themeDir: string,
   options: CleanOptions = {}
 ): Promise<void> {
@@ -207,7 +207,7 @@ export async function removeUnusedTranslations(
       break
     }
 
-    case 'all': {
+    default: {
       await cleanSchemaTranslations(themeDir, formatOptions)
       await cleanStorefrontTranslations(themeDir, formatOptions)
       break
@@ -215,7 +215,7 @@ export async function removeUnusedTranslations(
   }
 }
 
-export function cleanSchemaTranslations(themeDir: string, options?: LocaleOptions): void {
+export async function cleanSchemaTranslations(themeDir: string, options?: LocaleOptions): Promise<void> {
   const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
   const localesDir = path.join(themeDir, 'locales')
 
@@ -227,11 +227,11 @@ export function cleanSchemaTranslations(themeDir: string, options?: LocaleOption
     .filter(file => file.endsWith('.schema.json'))
 
   for (const file of schemaFiles) {
-    removeUnusedKeysFromFile(path.join(localesDir, file), usedKeys, options)
+    removeUnreferencedKeysFromFile(path.join(localesDir, file), usedKeys, options)
   }
 }
 
-export function cleanStorefrontTranslations(themeDir: string, options?: LocaleOptions): void {
+export async function cleanStorefrontTranslations(themeDir: string, options?: LocaleOptions): Promise<void> {
   const usedKeys = scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
   const localesDir = path.join(themeDir, 'locales')
 
@@ -243,11 +243,11 @@ export function cleanStorefrontTranslations(themeDir: string, options?: LocaleOp
     .filter(file => file.endsWith('.json') && !file.endsWith('.schema.json'))
 
   for (const file of localeFiles) {
-    removeUnusedKeysFromFile(path.join(localesDir, file), usedKeys, options)
+    removeUnreferencedKeysFromFile(path.join(localesDir, file), usedKeys, options)
   }
 }
 
-function removeUnusedKeysFromFile(filePath: string, usedKeys: Set<string>, options?: LocaleOptions): void {
+function removeUnreferencedKeysFromFile(filePath: string, usedKeys: Set<string>, options?: LocaleOptions): void {
   if (!fs.existsSync(filePath)) return
 
   const content = JSON.parse(fs.readFileSync(filePath, 'utf8'))
@@ -377,9 +377,9 @@ function mergeTranslations(
   return unflattenObject(flatMerged)
 }
 
-export function extractRequiredTranslations(
+export function filterSourceTranslationsToKeysUsedInTheme(
   sourceLocales: Record<string, Record<string, unknown>>,
-  required: ThemeTranslations
+  required: TranslationKeysUsedInTheme
 ): LocaleContent {
   const result: LocaleContent = {}
 

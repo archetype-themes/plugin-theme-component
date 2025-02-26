@@ -2,7 +2,7 @@
  * This command cleans up locale files in a theme directory.
  *
  * - Scans theme files for translation keys
- * - Removes unused translations from locale files
+ * - Removes unreferenced translations from locale files
  */
 
 import path from 'node:path'
@@ -10,7 +10,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { removeUnusedTranslations } from '../../../utilities/locales.js'
+import { removeUnreferencedTranslationsFromTheme } from '../../../utilities/locales.js'
 import { CleanOptions, CleanTarget } from '../../../utilities/types.js'
 
 export default class Clean extends BaseCommand {
@@ -18,7 +18,7 @@ export default class Clean extends BaseCommand {
     Args.override(Args.THEME_DIR, { default: '.', required: false })
   ])
 
-  static override description = 'Remove unused translations from theme locale files'
+  static override description = 'Remove unreferenced translations from theme locale files'
 
   static override examples = [
     '<%= config.bin %> <%= command.id %> theme-directory',
@@ -41,10 +41,10 @@ export default class Clean extends BaseCommand {
     const format = this.flags[Flags.FORMAT]
 
     const options: CleanOptions = { format, target }
-    await removeUnusedTranslations(themeDir, options)
+    await removeUnreferencedTranslationsFromTheme(themeDir, options)
 
     if (!this.flags[Flags.QUIET]) {
-      this.log('Successfully cleaned locale files')
+      this.log('Successfully removed unreferenced translations from locale files')
     }
   }
 }

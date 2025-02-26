@@ -157,7 +157,7 @@ describe('theme locale sync', () => {
     expect(schemaContent).to.not.have.nested.property('additional.new_setting')
   })
 
-  it('does not add unused translations', async () => {
+  it('does not add unreferenced translations', async () => {
     const storefrontFilePath = path.join(testThemeLocalesPath, 'en.default.json')
     const schemaFilePath = path.join(testThemeLocalesPath, 'en.default.schema.json')
 
@@ -166,11 +166,11 @@ describe('theme locale sync', () => {
     const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
     const schemaContent = JSON.parse(fs.readFileSync(schemaFilePath, 'utf8'))
 
-    // Verify that unused translations from source are not added
+    // Verify that unreferenced translations from source are not added
     expect(storefrontContent).to.not.have.nested.property('additional.new_key')
     expect(schemaContent).to.not.have.nested.property('additional.new_setting')
 
-    // Verify that used translations are still present
+    // Verify that referenced translations are still present
     expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
     expect(storefrontContent).to.have.nested.property('t_with_fallback.direct_key')
     expect(storefrontContent).to.have.nested.property('t_with_fallback.variable_key')

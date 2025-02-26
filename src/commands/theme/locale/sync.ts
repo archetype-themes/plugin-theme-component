@@ -11,8 +11,8 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { extractRequiredTranslations, getLocaleSource, getThemeTranslations, mergeLocaleFiles, removeUnusedTranslations } from '../../../utilities/locales.js'
-import { CleanOptions, CleanTarget, SyncOptions, ThemeTranslations } from '../../../utilities/types.js'
+import { filterSourceTranslationsToKeysUsedInTheme, findTranslationKeysUsedInTheme, getLocaleSource, mergeLocaleFiles, removeUnreferencedTranslationsFromTheme } from '../../../utilities/locales.js'
+import { CleanOptions, CleanTarget, SyncOptions, TranslationKeysUsedInTheme } from '../../../utilities/types.js'
 
 export default class Sync extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -41,13 +41,13 @@ export default class Sync extends BaseCommand {
     const target = this.flags[Flags.TARGET] as CleanTarget
     const format = this.flags[Flags.FORMAT]
 
-    const translations = getThemeTranslations(themeDir)
+    const translations = findTranslationKeysUsedInTheme(themeDir)
     const sourceLocales = await this.fetchAndAnalyzeSource(localesDir)
     await this.syncTranslations(themeDir, translations, sourceLocales)
 
     if (this.flags[Flags.CLEAN]) {
       const options: CleanOptions = { format, target }
-      await removeUnusedTranslations(themeDir, options)
+      await removeUnreferencedTranslationsFromTheme(themeDir, options)
     }
   }
 
@@ -60,7 +60,7 @@ export default class Sync extends BaseCommand {
 
   private async syncTranslations(
     themeDir: string,
-    translations: ThemeTranslations,
+    translations: TranslationKeysUsedInTheme,
     sourceData: { locales: Record<string, Record<string, unknown>> }
   ): Promise<void> {
     const options: SyncOptions = {
@@ -69,7 +69,7 @@ export default class Sync extends BaseCommand {
       target: this.flags[Flags.TARGET] as CleanTarget
     }
 
-    const requiredTranslations = extractRequiredTranslations(sourceData.locales, translations)
+    const requiredTranslations = filterSourceTranslationsToKeysUsedInTheme(sourceData.locales, translations)
     await mergeLocaleFiles(themeDir, requiredTranslations, options)
 
     if (!this.flags[Flags.QUIET]) {

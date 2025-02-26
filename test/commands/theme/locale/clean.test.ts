@@ -20,7 +20,7 @@ describe('theme locale clean', () => {
     fs.rmSync(testThemePath, { force: true, recursive: true })
   })
 
-  it('cleans unused translations from all locale files by default', async () => {
+  it('cleans unreferenced translations from all locale files by default', async () => {
     await runCommand(['theme', 'locale', 'clean'])
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
@@ -62,7 +62,7 @@ describe('theme locale clean', () => {
     fs.rmSync(backupDir, { force: true, recursive: true })
   })
 
-  it('preserves used translations when cleaning', async () => {
+  it('preserves referenced translations when cleaning', async () => {
     await runCommand(['theme', 'locale', 'clean'])
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
