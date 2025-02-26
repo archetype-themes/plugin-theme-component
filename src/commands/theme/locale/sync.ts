@@ -70,15 +70,19 @@ export default class Sync extends BaseCommand {
     translations: ThemeTranslations,
     sourceData: { locales: Record<string, Record<string, unknown>> }
   ): Promise<void> {
-    const requiredLocales = extractRequiredTranslations(sourceData.locales, translations)
-
     const options: SyncOptions = {
       format: this.flags[Flags.FORMAT],
       mode: this.flags[Flags.MODE],
       target: this.flags[Flags.TARGET] as CleanTarget
     }
 
-    await syncLocales(themeDir, requiredLocales, options)
+    // For add-missing and add-and-override modes, we want to include all keys from the source
+    // For replace-existing mode, we only want to include keys that are already used in the theme
+    const locales = (options.mode === 'replace-existing')
+      ? extractRequiredTranslations(sourceData.locales, translations)
+      : sourceData.locales
+
+    await syncLocales(themeDir, locales, options)
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully synced locale files')
