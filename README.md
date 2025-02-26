@@ -28,18 +28,17 @@ shopify plugins install plugin-theme-component
 ## List of commands
 
 <!-- commands -->
-
-- [`shopify theme component`](#shopify-theme-component)
-- [`shopify theme component clean [THEMEDIR]`](#shopify-theme-component-clean-themedir)
-- [`shopify theme component copy THEMEDIR`](#shopify-theme-component-copy-themedir)
-- [`shopify theme component dev [COMPONENTSELECTOR]`](#shopify-theme-component-dev-componentselector)
-- [`shopify theme component install THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-install-themedir-componentselector)
-- [`shopify theme component map THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-map-themedir-componentselector)
-- [`shopify theme generate import-map [THEMEDIR]`](#shopify-theme-generate-import-map-themedir)
-- [`shopify theme generate template-map [THEMEDIR]`](#shopify-theme-generate-template-map-themedir)
-- [`shopify theme locale [THEMEDIR]`](#shopify-theme-locale-themedir)
-- [`shopify theme locale clean [THEMEDIR]`](#shopify-theme-locale-clean-themedir)
-- [`shopify theme locale sync [THEMEDIR]`](#shopify-theme-locale-sync-themedir)
+* [`shopify theme component`](#shopify-theme-component)
+* [`shopify theme component clean [THEMEDIR]`](#shopify-theme-component-clean-themedir)
+* [`shopify theme component copy THEMEDIR`](#shopify-theme-component-copy-themedir)
+* [`shopify theme component dev [COMPONENTSELECTOR]`](#shopify-theme-component-dev-componentselector)
+* [`shopify theme component install THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-install-themedir-componentselector)
+* [`shopify theme component map THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-map-themedir-componentselector)
+* [`shopify theme generate import-map [THEMEDIR]`](#shopify-theme-generate-import-map-themedir)
+* [`shopify theme generate template-map [THEMEDIR]`](#shopify-theme-generate-template-map-themedir)
+* [`shopify theme locale [THEMEDIR]`](#shopify-theme-locale-themedir)
+* [`shopify theme locale clean [THEMEDIR]`](#shopify-theme-locale-clean-themedir)
+* [`shopify theme locale sync [THEMEDIR]`](#shopify-theme-locale-sync-themedir)
 
 ## `shopify theme component`
 
@@ -264,20 +263,28 @@ ARGUMENTS
   THEMEDIR  [default: .] path to theme directory
 
 FLAGS
-  -c, --clean                Remove unused translations from theme locale files
-  -l, --locales-dir=<value>  [default: https://github.com/archetype-themes/locales] Directory or repository containing
-                             locale files
-  -m, --mode=<option>        [default: add-missing] Sync mode for locale files:
-                             - add-missing: Only add new translations that do not exist in theme
-                             - add-and-override: Add new translations and override existing ones with source values
-                             - replace-existing: Replace values of existing translations with source values
-                             <options: add-missing|add-and-override|replace-existing>
-      --format               Format locale files by sorting keys alphabetically
-      --target=<option>      [default: all] Target locale files to process:
-                             - all: Process all locale files
-                             - schema: Process only schema translations (*.schema.json)
-                             - storefront: Process only storefront translations
-                             <options: all|schema|storefront>
+  -c, --clean
+      Remove unreferenced translations from theme locale files
+
+  -l, --locales-dir=<value>
+      [default: https://github.com/archetype-themes/locales] Directory or repository containing locale files
+
+  -m, --mode=<option>
+      [default: add-missing] Sync mode for locale files (only translations used in the theme will be processed):
+      - add-missing: Only add new translations that do not exist in theme locale files
+      - add-and-override: Add new translations and override existing ones with source values
+      - replace-existing: Replace values of existing translations with source values
+      <options: add-missing|add-and-override|replace-existing>
+
+  --format
+      Format locale files by sorting keys alphabetically
+
+  --target=<option>
+      [default: all] Target locale files to process:
+      - all: Process all locale files
+      - schema: Process only schema translations (*.schema.json)
+      - storefront: Process only storefront translations
+      <options: all|schema|storefront>
 
 DESCRIPTION
   Sync theme locale files with source translations
@@ -294,7 +301,7 @@ _See code: [src/commands/theme/locale/index.ts](https://github.com/archetype-the
 
 ## `shopify theme locale clean [THEMEDIR]`
 
-Remove unused translations from theme locale files
+Remove unreferenced translations from theme locale files
 
 ```
 USAGE
@@ -312,7 +319,7 @@ FLAGS
                      <options: all|schema|storefront>
 
 DESCRIPTION
-  Remove unused translations from theme locale files
+  Remove unreferenced translations from theme locale files
 
 EXAMPLES
   $ shopify theme locale clean theme-directory
@@ -337,20 +344,28 @@ ARGUMENTS
   THEMEDIR  [default: .] path to theme directory
 
 FLAGS
-  -c, --clean                Remove unused translations from theme locale files
-  -l, --locales-dir=<value>  [default: https://github.com/archetype-themes/locales] Directory or repository containing
-                             locale files
-  -m, --mode=<option>        [default: add-missing] Sync mode for locale files:
-                             - add-missing: Only add new translations that do not exist in theme
-                             - add-and-override: Add new translations and override existing ones with source values
-                             - replace-existing: Replace values of existing translations with source values
-                             <options: add-missing|add-and-override|replace-existing>
-      --format               Format locale files by sorting keys alphabetically
-      --target=<option>      [default: all] Target locale files to process:
-                             - all: Process all locale files
-                             - schema: Process only schema translations (*.schema.json)
-                             - storefront: Process only storefront translations
-                             <options: all|schema|storefront>
+  -c, --clean
+      Remove unreferenced translations from theme locale files
+
+  -l, --locales-dir=<value>
+      [default: https://github.com/archetype-themes/locales] Directory or repository containing locale files
+
+  -m, --mode=<option>
+      [default: add-missing] Sync mode for locale files (only translations used in the theme will be processed):
+      - add-missing: Only add new translations that do not exist in theme locale files
+      - add-and-override: Add new translations and override existing ones with source values
+      - replace-existing: Replace values of existing translations with source values
+      <options: add-missing|add-and-override|replace-existing>
+
+  --format
+      Format locale files by sorting keys alphabetically
+
+  --target=<option>
+      [default: all] Target locale files to process:
+      - all: Process all locale files
+      - schema: Process only schema translations (*.schema.json)
+      - storefront: Process only storefront translations
+      <options: all|schema|storefront>
 
 DESCRIPTION
   Sync theme locale files with source translations
@@ -364,7 +379,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/theme/locale/sync.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.8/src/commands/theme/locale/sync.ts)_
-
 <!-- commandsstop -->
 
 ## Contributing
