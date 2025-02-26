@@ -1,6 +1,6 @@
 /**
  * This command copies component files into a theme directory.
- * 
+ *
  * - Copies rendered component files (snippets and assets) into the theme directory
  * - Updates the theme CLI config (shopify.theme.json) with the component collection details
  */
@@ -8,13 +8,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import Args from '../../../utilities/args.js'    
+import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import { copyFileIfChanged } from '../../../utilities/files.js';
 import Flags from '../../../utilities/flags.js'
 import { getManifest } from '../../../utilities/manifest.js'
 import { getCollectionNodes } from '../../../utilities/nodes.js'
-import { getNameFromPackageJson , getVersionFromPackageJson } from '../../../utilities/package-json.js'
+import { getNameFromPackageJson, getVersionFromPackageJson } from '../../../utilities/package-json.js'
 
 export default class Copy extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -52,7 +52,7 @@ export default class Copy extends BaseCommand {
     if (!fs.existsSync(path.join(themeDir, 'component.manifest.json'))) {
       this.error('Error: component.manifest.json file not found in the theme directory. Run "shopify theme component map" to generate a component.manifest.json file.');
     }
-    
+
     const manifest = getManifest(path.join(themeDir, 'component.manifest.json'))
     const componentNodes = await getCollectionNodes(currentDir)
 

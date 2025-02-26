@@ -7,7 +7,6 @@
  * - Runs 'shopify theme dev' on the temporary development directory to preview your work
  */
 
-
 import chokidar from 'chokidar'
 import path from 'node:path'
 import { URL } from 'node:url'

@@ -1,3 +1,11 @@
+/**
+ * This command generates a template map for component routes in the templates directory.
+ *
+ * - Reads all liquid files in the templates directory recursively
+ * - Creates a template map object with the component name and route template
+ * - Writes the template map to snippets/template-map.liquid
+ */
+
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
@@ -16,7 +24,7 @@ export default class GenerateTemplateMap extends BaseCommand {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     const templatesDir = path.join(themeDir, 'templates')
     const snippetsDir = path.join(themeDir, 'snippets')
-    
+
     // Check if directories exist
     if (!fs.existsSync(templatesDir)) {
       this.error('Templates directory not found. Please ensure you are in a theme directory.')
@@ -30,7 +38,7 @@ export default class GenerateTemplateMap extends BaseCommand {
     const getFiles = (dir: string): string[] => {
       const files = fs.readdirSync(dir)
       const result: string[] = [];
-      
+
       for (const file of files) {
         const filePath = path.join(dir, file)
         if (fs.statSync(filePath).isDirectory()) {
@@ -42,7 +50,7 @@ export default class GenerateTemplateMap extends BaseCommand {
           result.push(filePath);
         }
       }
-      
+
       return result;
     }
 
@@ -65,11 +73,11 @@ export default class GenerateTemplateMap extends BaseCommand {
 
     // Merge entries with the same component name
     const mergedTemplateMap: Record<string, Record<string, string>> = {};
-    
+
     for (const [component, routes] of Object.entries(templateMap)) {
       if (typeof routes === 'object' && routes !== null) {
-        mergedTemplateMap[component] = mergedTemplateMap[component] 
-          ? { ...mergedTemplateMap[component], ...routes } 
+        mergedTemplateMap[component] = mergedTemplateMap[component]
+          ? { ...mergedTemplateMap[component], ...routes }
           : routes;
       }
     }
@@ -185,4 +193,3 @@ export default class GenerateTemplateMap extends BaseCommand {
     }
   }
 }
-

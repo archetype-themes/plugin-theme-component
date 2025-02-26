@@ -1,3 +1,11 @@
+/**
+ * This command generates an import map for JavaScript files in the assets directory.
+ *
+ * - Reads all JS files in the assets directory
+ * - Creates an import map object with the asset URLs
+ * - Writes the import map to snippets/import-map.liquid
+ */
+
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
@@ -15,7 +23,7 @@ export default class GenerateImportMap extends BaseCommand {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
     const assetsDir = path.join(themeDir, 'assets')
     const snippetsDir = path.join(themeDir, 'snippets')
-    
+
     // Check if assets directory exists
     if (!fs.existsSync(assetsDir)) {
       this.error(`Assets directory not found. Please ensure ${themeDir} is a theme directory.`)
