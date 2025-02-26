@@ -33,12 +33,21 @@ async function fetchRemoteLocales(url: string): Promise<LocaleContent> {
 }
 
 function loadLocalLocales(dir: string): LocaleContent {
+  if (!fs.existsSync(dir)) {
+    throw new Error(`Directory does not exist: ${dir}`)
+  }
+
   const content: LocaleContent = {}
   const files = fs.readdirSync(dir).filter(file => file.endsWith('.json'))
 
   for (const file of files) {
     const filePath = path.join(dir, file)
-    content[file] = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+    try {
+      content[file] = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+    } catch (error) {
+      throw new Error(`Failed to parse JSON file ${file}: ${error instanceof Error ? error.message : String(error)}`)
+    }
   }
 
   return content
@@ -50,6 +59,12 @@ export function writeLocaleFile(
   options?: LocaleOptions
 ): void {
   const formattedContent = options?.format ? sortObjectKeys(content) : content
+  const dirPath = path.dirname(filePath)
+
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true })
+  }
+
   fs.writeFileSync(filePath, JSON.stringify(formattedContent, null, 2) + '\n')
 }
 
@@ -71,7 +86,8 @@ function scanFiles(themeDir: string, dirs: readonly string[], findKeys: (content
       .filter(file => file.endsWith('.liquid') || file.endsWith('.json'))
 
     for (const file of files) {
-      const content = fs.readFileSync(path.join(dirPath, file), 'utf8')
+      const filePath = path.join(dirPath, file)
+      const content = fs.readFileSync(filePath, 'utf8')
       const keys = findKeys(content)
       for (const key of keys) {
         usedKeys.add(key)
@@ -87,8 +103,10 @@ function findSchemaKeys(content: string): Set<string> {
   const matches = content.match(/"t:([^"]+)"/g) || []
 
   for (const match of matches) {
-    const key = match.match(/"t:([^"]+)"/)![1]
-    keys.add(key)
+    const keyMatch = match.match(/"t:([^"]+)"/)
+    if (keyMatch && keyMatch[1]) {
+      keys.add(keyMatch[1])
+    }
   }
 
   return keys
@@ -108,8 +126,10 @@ function findStorefrontKeys(content: string): Set<string> {
   for (const pattern of standardPatterns) {
     const matches = content.match(pattern) || []
     for (const match of matches) {
-      const key = match.match(/["']([^"']+)["']/)![1]
-      keys.add(key)
+      const keyMatch = match.match(/["']([^"']+)["']/)
+      if (keyMatch && keyMatch[1]) {
+        keys.add(keyMatch[1])
+      }
     }
   }
 
@@ -132,7 +152,7 @@ function findAssignedTranslations(content: string): Map<string, string> {
   const assignments = new Map<string, string>()
   const pattern = /{%-?\s*assign\s+([^\s=]+)\s*=\s*["']([^"']+)["']\s*\|\s*t[^%]*-?%}/g
 
-  const matches = content.matchAll(pattern)
+  const matches = [...content.matchAll(pattern)]
   for (const match of matches) {
     const [, varName, translationKey] = match
     assignments.set(varName, translationKey)
@@ -145,7 +165,7 @@ function findDirectFallbackKeys(content: string): Set<string> {
   const keys = new Set<string>()
   const pattern = /render\s+["']t_with_fallback["'][^%]*key:\s*["']([^"']+)["']/g
 
-  const matches = content.matchAll(pattern)
+  const matches = [...content.matchAll(pattern)]
   for (const match of matches) {
     keys.add(match[1])
   }
@@ -157,7 +177,7 @@ function findVariableFallbackKeys(content: string, assignedTranslations: Map<str
   const keys = new Set<string>()
   const pattern = /render\s+["']t_with_fallback["'][^%]*t:\s*([^\s,}]+)/g
 
-  const matches = content.matchAll(pattern)
+  const matches = [...content.matchAll(pattern)]
   for (const match of matches) {
     const varName = match[1]
     const translationKey = assignedTranslations.get(varName)
@@ -198,6 +218,11 @@ export async function removeUnusedTranslations(
 export function cleanSchemaTranslations(themeDir: string, options?: LocaleOptions): void {
   const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
   const localesDir = path.join(themeDir, 'locales')
+
+  if (!fs.existsSync(localesDir)) {
+    throw new Error(`Locales directory does not exist: ${localesDir}`)
+  }
+
   const schemaFiles = fs.readdirSync(localesDir)
     .filter(file => file.endsWith('.schema.json'))
 
@@ -209,6 +234,11 @@ export function cleanSchemaTranslations(themeDir: string, options?: LocaleOption
 export function cleanStorefrontTranslations(themeDir: string, options?: LocaleOptions): void {
   const usedKeys = scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
   const localesDir = path.join(themeDir, 'locales')
+
+  if (!fs.existsSync(localesDir)) {
+    throw new Error(`Locales directory does not exist: ${localesDir}`)
+  }
+
   const localeFiles = fs.readdirSync(localesDir)
     .filter(file => file.endsWith('.json') && !file.endsWith('.schema.json'))
 
@@ -218,25 +248,23 @@ export function cleanStorefrontTranslations(themeDir: string, options?: LocaleOp
 }
 
 function removeUnusedKeysFromFile(filePath: string, usedKeys: Set<string>, options?: LocaleOptions): void {
-  try {
-    const content = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-    if (!content || typeof content !== 'object') return
+  if (!fs.existsSync(filePath)) return
 
-    const flattenedContent = flattenObject(content)
-    const cleanedContent: Record<string, unknown> = {}
+  const content = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+  if (!content || typeof content !== 'object') return
 
-    for (const [key, value] of Object.entries(flattenedContent)) {
-      const basePath = key.split('.').slice(0, -1).join('.')
-      if (usedKeys.has(key) || usedKeys.has(basePath)) {
-        cleanedContent[key] = value
-      }
+  const flattenedContent = flattenObject(content)
+  const cleanedContent: Record<string, unknown> = {}
+
+  for (const [key, value] of Object.entries(flattenedContent)) {
+    const basePath = key.split('.').slice(0, -1).join('.')
+    if (usedKeys.has(key) || usedKeys.has(basePath)) {
+      cleanedContent[key] = value
     }
-
-    const unflattened = unflattenObject(cleanedContent)
-    writeLocaleFile(filePath, unflattened, options)
-  } catch (error) {
-    throw new Error(`Error processing ${path.basename(filePath)}: ${error}`)
   }
+
+  const unflattened = unflattenObject(cleanedContent)
+  writeLocaleFile(filePath, unflattened, options)
 }
 
 export async function mergeLocaleFiles(
@@ -246,6 +274,10 @@ export async function mergeLocaleFiles(
 ): Promise<void> {
   const localesDir = path.join(themeDir, 'locales')
   const { format = false, mode = 'add-missing', target = 'all' } = options ?? {}
+
+  if (!fs.existsSync(localesDir)) {
+    fs.mkdirSync(localesDir, { recursive: true })
+  }
 
   const filesToSync = Object.entries(sourceLocales).filter(([file]) => {
     const isSchemaFile = file.endsWith('.schema.json')
