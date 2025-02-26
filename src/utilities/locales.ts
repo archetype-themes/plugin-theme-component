@@ -6,6 +6,9 @@ import { cloneTheme } from './git.js'
 import { flattenObject, sortObjectKeys, unflattenObject } from './objects.js'
 import { CleanOptions, LocaleContent, LocaleDiff, LocaleOptions, SyncOptions, ThemeTranslations } from './types.js'
 
+const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
+const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
+
 export async function fetchLocaleSource(source: string): Promise<LocaleContent> {
   if (isUrl(source)) {
     return fetchRemoteLocales(source)
@@ -41,112 +44,6 @@ function loadLocalLocales(dir: string): LocaleContent {
   return content
 }
 
-export async function syncLocales(
-  themeDir: string,
-  sourceLocales: Record<string, Record<string, unknown>>,
-  options?: SyncOptions
-): Promise<void> {
-  const localesDir = path.join(themeDir, 'locales')
-  const { format = false, mode = 'add-missing', target = 'all' } = options ?? {}
-
-  const filesToSync = Object.entries(sourceLocales).filter(([file]) => {
-    const isSchemaFile = file.endsWith('.schema.json')
-
-    if (target === 'schema') return isSchemaFile
-    if (target === 'storefront') return !isSchemaFile
-    return true
-  })
-
-  for (const [file, sourceContent] of filesToSync) {
-    const targetPath = path.join(localesDir, file)
-
-    if (!fs.existsSync(targetPath)) {
-      writeLocaleFile(targetPath, sourceContent, { format })
-      continue
-    }
-
-    const targetContent = JSON.parse(fs.readFileSync(targetPath, 'utf8'))
-    const diff = diffLocales(sourceContent, targetContent)
-
-    const mergedContent = mode === 'replace-existing'
-      ? replaceTranslations(sourceContent, targetContent)
-      : mode === 'add-missing'
-        ? addMissingTranslations(sourceContent, targetContent, diff)
-        : mergeTranslations(sourceContent, targetContent, diff)
-
-    writeLocaleFile(targetPath, mergedContent, { format })
-  }
-}
-
-export function diffLocales(source: Record<string, unknown>, target: Record<string, unknown>): LocaleDiff {
-  const flatSource = flattenObject(source)
-  const flatTarget = flattenObject(target)
-
-  return {
-    added: new Set(Object.keys(flatSource).filter(key => !(key in flatTarget))),
-    modified: new Set(Object.keys(flatSource).filter(key =>
-      key in flatTarget && flatSource[key] !== flatTarget[key]
-    )),
-    removed: new Set(Object.keys(flatTarget).filter(key => !(key in flatSource))),
-  }
-}
-
-function replaceTranslations(
-  source: Record<string, unknown>,
-  target: Record<string, unknown>
-): Record<string, unknown> {
-  const updateValues = (targetObj: Record<string, unknown>, sourceObj: Record<string, unknown>): Record<string, unknown> => {
-    const result: Record<string, unknown> = {}
-
-    for (const [key, value] of Object.entries(targetObj)) {
-      const isNestedObject = typeof value === 'object' && value !== null
-      const hasSourceValue = key in sourceObj
-
-      if (isNestedObject && hasSourceValue && typeof sourceObj[key] === 'object') {
-        result[key] = updateValues(value as Record<string, unknown>, sourceObj[key] as Record<string, unknown>)
-      } else {
-        result[key] = hasSourceValue ? sourceObj[key] : value
-      }
-    }
-
-    return result
-  }
-
-  return updateValues(target, source)
-}
-
-function addMissingTranslations(
-  source: Record<string, unknown>,
-  target: Record<string, unknown>,
-  diff: LocaleDiff
-): Record<string, unknown> {
-  const merged = { ...target }
-  const flatContent = flattenObject(source)
-  const flatMerged = flattenObject(merged)
-
-  for (const key of diff.added) {
-    flatMerged[key] = flatContent[key]
-  }
-
-  return unflattenObject(flatMerged)
-}
-
-function mergeTranslations(
-  source: Record<string, unknown>,
-  target: Record<string, unknown>,
-  diff: LocaleDiff
-): Record<string, unknown> {
-  const merged = { ...target }
-  const flatContent = flattenObject(source)
-  const flatMerged = flattenObject(merged)
-
-  for (const key of [...diff.added, ...diff.modified]) {
-    flatMerged[key] = flatContent[key]
-  }
-
-  return unflattenObject(flatMerged)
-}
-
 export function writeLocaleFile(
   filePath: string,
   content: Record<string, unknown>,
@@ -156,35 +53,10 @@ export function writeLocaleFile(
   fs.writeFileSync(filePath, JSON.stringify(formattedContent, null, 2) + '\n')
 }
 
-const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
-const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
-
 export function getThemeTranslations(themeDir: string): ThemeTranslations {
   return {
     schema: scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys),
     storefront: scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
-  }
-}
-
-export function cleanSchemaTranslations(themeDir: string, options?: LocaleOptions): void {
-  const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
-  const localesDir = path.join(themeDir, 'locales')
-  const schemaFiles = fs.readdirSync(localesDir)
-    .filter(file => file.endsWith('.schema.json'))
-
-  for (const file of schemaFiles) {
-    cleanLocaleFile(path.join(localesDir, file), usedKeys, options)
-  }
-}
-
-export function cleanStorefrontTranslations(themeDir: string, options?: LocaleOptions): void {
-  const usedKeys = scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
-  const localesDir = path.join(themeDir, 'locales')
-  const localeFiles = fs.readdirSync(localesDir)
-    .filter(file => file.endsWith('.json') && !file.endsWith('.schema.json'))
-
-  for (const file of localeFiles) {
-    cleanLocaleFile(path.join(localesDir, file), usedKeys, options)
   }
 }
 
@@ -297,6 +169,54 @@ function findVariableFallbackKeys(content: string, assignedTranslations: Map<str
   return keys
 }
 
+export async function cleanTranslations(
+  themeDir: string,
+  options: CleanOptions = {}
+): Promise<void> {
+  const { format, target = 'all' } = options;
+  const formatOptions: LocaleOptions = { format };
+
+  switch (target) {
+    case 'schema': {
+      await cleanSchemaTranslations(themeDir, formatOptions)
+      break
+    }
+
+    case 'storefront': {
+      await cleanStorefrontTranslations(themeDir, formatOptions)
+      break
+    }
+
+    case 'all': {
+      await cleanSchemaTranslations(themeDir, formatOptions)
+      await cleanStorefrontTranslations(themeDir, formatOptions)
+      break
+    }
+  }
+}
+
+export function cleanSchemaTranslations(themeDir: string, options?: LocaleOptions): void {
+  const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
+  const localesDir = path.join(themeDir, 'locales')
+  const schemaFiles = fs.readdirSync(localesDir)
+    .filter(file => file.endsWith('.schema.json'))
+
+  for (const file of schemaFiles) {
+    cleanLocaleFile(path.join(localesDir, file), usedKeys, options)
+  }
+}
+
+export function cleanStorefrontTranslations(themeDir: string, options?: LocaleOptions): void {
+  const usedKeys = scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
+  const localesDir = path.join(themeDir, 'locales')
+  const localeFiles = fs.readdirSync(localesDir)
+    .filter(file => file.endsWith('.json') && !file.endsWith('.schema.json'))
+
+  for (const file of localeFiles) {
+    cleanLocaleFile(path.join(localesDir, file), usedKeys, options)
+  }
+}
+
 function cleanLocaleFile(filePath: string, usedKeys: Set<string>, options?: LocaleOptions): void {
   try {
     const content = JSON.parse(fs.readFileSync(filePath, 'utf8'))
@@ -317,6 +237,112 @@ function cleanLocaleFile(filePath: string, usedKeys: Set<string>, options?: Loca
   } catch (error) {
     throw new Error(`Error processing ${path.basename(filePath)}: ${error}`)
   }
+}
+
+export async function syncLocales(
+  themeDir: string,
+  sourceLocales: Record<string, Record<string, unknown>>,
+  options?: SyncOptions
+): Promise<void> {
+  const localesDir = path.join(themeDir, 'locales')
+  const { format = false, mode = 'add-missing', target = 'all' } = options ?? {}
+
+  const filesToSync = Object.entries(sourceLocales).filter(([file]) => {
+    const isSchemaFile = file.endsWith('.schema.json')
+
+    if (target === 'schema') return isSchemaFile
+    if (target === 'storefront') return !isSchemaFile
+    return true
+  })
+
+  for (const [file, sourceContent] of filesToSync) {
+    const targetPath = path.join(localesDir, file)
+
+    if (!fs.existsSync(targetPath)) {
+      writeLocaleFile(targetPath, sourceContent, { format })
+      continue
+    }
+
+    const targetContent = JSON.parse(fs.readFileSync(targetPath, 'utf8'))
+    const diff = diffLocales(sourceContent, targetContent)
+
+    const mergedContent = mode === 'replace-existing'
+      ? replaceTranslations(sourceContent, targetContent)
+      : mode === 'add-missing'
+        ? addMissingTranslations(sourceContent, targetContent, diff)
+        : mergeTranslations(sourceContent, targetContent, diff)
+
+    writeLocaleFile(targetPath, mergedContent, { format })
+  }
+}
+
+export function diffLocales(source: Record<string, unknown>, target: Record<string, unknown>): LocaleDiff {
+  const flatSource = flattenObject(source)
+  const flatTarget = flattenObject(target)
+
+  return {
+    added: new Set(Object.keys(flatSource).filter(key => !(key in flatTarget))),
+    modified: new Set(Object.keys(flatSource).filter(key =>
+      key in flatTarget && flatSource[key] !== flatTarget[key]
+    )),
+    removed: new Set(Object.keys(flatTarget).filter(key => !(key in flatSource))),
+  }
+}
+
+function replaceTranslations(
+  source: Record<string, unknown>,
+  target: Record<string, unknown>
+): Record<string, unknown> {
+  const updateValues = (targetObj: Record<string, unknown>, sourceObj: Record<string, unknown>): Record<string, unknown> => {
+    const result: Record<string, unknown> = {}
+
+    for (const [key, value] of Object.entries(targetObj)) {
+      const isNestedObject = typeof value === 'object' && value !== null
+      const hasSourceValue = key in sourceObj
+
+      if (isNestedObject && hasSourceValue && typeof sourceObj[key] === 'object') {
+        result[key] = updateValues(value as Record<string, unknown>, sourceObj[key] as Record<string, unknown>)
+      } else {
+        result[key] = hasSourceValue ? sourceObj[key] : value
+      }
+    }
+
+    return result
+  }
+
+  return updateValues(target, source)
+}
+
+function addMissingTranslations(
+  source: Record<string, unknown>,
+  target: Record<string, unknown>,
+  diff: LocaleDiff
+): Record<string, unknown> {
+  const merged = { ...target }
+  const flatContent = flattenObject(source)
+  const flatMerged = flattenObject(merged)
+
+  for (const key of diff.added) {
+    flatMerged[key] = flatContent[key]
+  }
+
+  return unflattenObject(flatMerged)
+}
+
+function mergeTranslations(
+  source: Record<string, unknown>,
+  target: Record<string, unknown>,
+  diff: LocaleDiff
+): Record<string, unknown> {
+  const merged = { ...target }
+  const flatContent = flattenObject(source)
+  const flatMerged = flattenObject(merged)
+
+  for (const key of [...diff.added, ...diff.modified]) {
+    flatMerged[key] = flatContent[key]
+  }
+
+  return unflattenObject(flatMerged)
 }
 
 export function extractRequiredTranslations(
@@ -342,30 +368,4 @@ export function extractRequiredTranslations(
   }
 
   return result
-}
-
-export async function cleanTranslations(
-  themeDir: string,
-  options: CleanOptions = {}
-): Promise<void> {
-  const { format, target = 'all' } = options;
-  const formatOptions: LocaleOptions = { format };
-
-  switch (target) {
-    case 'schema': {
-      await cleanSchemaTranslations(themeDir, formatOptions)
-      break
-    }
-
-    case 'storefront': {
-      await cleanStorefrontTranslations(themeDir, formatOptions)
-      break
-    }
-
-    case 'all': {
-      await cleanSchemaTranslations(themeDir, formatOptions)
-      await cleanStorefrontTranslations(themeDir, formatOptions)
-      break
-    }
-  }
 }
