@@ -10,7 +10,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { cleanTranslations } from '../../../utilities/translations.js'
+import { cleanTranslations } from '../../../utilities/locales.js'
 import { CleanOptions, CleanTarget } from '../../../utilities/types.js'
 
 export default class Clean extends BaseCommand {

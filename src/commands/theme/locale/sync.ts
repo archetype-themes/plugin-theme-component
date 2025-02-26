@@ -11,8 +11,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
-import { cleanTranslations, extractRequiredTranslations, getThemeTranslations } from '../../../utilities/translations.js'
+import { cleanTranslations, extractRequiredTranslations, fetchLocaleSource, getThemeTranslations, syncLocales } from '../../../utilities/locales.js'
 import { CleanOptions, CleanTarget, SyncOptions, ThemeTranslations } from '../../../utilities/types.js'
 
 export default class Sync extends BaseCommand {
