@@ -70,12 +70,12 @@ export function writeLocaleFile(
 
 export function findTranslationKeysUsedInTheme(themeDir: string): TranslationKeysUsedInTheme {
   return {
-    schema: scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys),
-    storefront: scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
+    schema: findKeysInThemeFiles(themeDir, SCHEMA_DIRS, extractSchemaTranslationKeys),
+    storefront: findKeysInThemeFiles(themeDir, STOREFRONT_DIRS, extractStorefrontTranslationKeys)
   }
 }
 
-function scanFiles(themeDir: string, dirs: readonly string[], findKeys: (content: string) => Set<string>): Set<string> {
+function findKeysInThemeFiles(themeDir: string, dirs: readonly string[], findKeys: (content: string) => Set<string>): Set<string> {
   const usedKeys = new Set<string>()
 
   for (const dir of dirs) {
@@ -98,7 +98,7 @@ function scanFiles(themeDir: string, dirs: readonly string[], findKeys: (content
   return usedKeys
 }
 
-function findSchemaKeys(content: string): Set<string> {
+function extractSchemaTranslationKeys(content: string): Set<string> {
   const keys = new Set<string>()
   const matches = content.match(/"t:([^"]+)"/g) || []
 
@@ -112,7 +112,7 @@ function findSchemaKeys(content: string): Set<string> {
   return keys
 }
 
-function findStorefrontKeys(content: string): Set<string> {
+function extractStorefrontTranslationKeys(content: string): Set<string> {
   const keys = new Set<string>()
 
   // Standard Liquid translation patterns
@@ -134,21 +134,21 @@ function findStorefrontKeys(content: string): Set<string> {
   }
 
   // Combine with t_with_fallback translations
-  return new Set([...keys, ...findTWithFallbackKeys(content)])
+  return new Set([...keys, ...extractTWithFallbackTranslationKeys(content)])
 }
 
-function findTWithFallbackKeys(content: string): Set<string> {
+function extractTWithFallbackTranslationKeys(content: string): Set<string> {
   // Find translations assigned to variables first
-  const assignedTranslations = findAssignedTranslations(content)
+  const assignedTranslations = findTranslationVariables(content)
 
   // Find both direct keys and variable-based keys
-  const directKeys = findDirectFallbackKeys(content)
-  const variableKeys = findVariableFallbackKeys(content, assignedTranslations)
+  const directKeys = extractDirectTWithFallbackTranslationKeys(content)
+  const variableKeys = extractVariableTWithFallbackTranslationKeys(content, assignedTranslations)
 
   return new Set([...directKeys, ...variableKeys])
 }
 
-function findAssignedTranslations(content: string): Map<string, string> {
+function findTranslationVariables(content: string): Map<string, string> {
   const assignments = new Map<string, string>()
   const pattern = /{%-?\s*assign\s+([^\s=]+)\s*=\s*["']([^"']+)["']\s*\|\s*t[^%]*-?%}/g
 
@@ -161,7 +161,7 @@ function findAssignedTranslations(content: string): Map<string, string> {
   return assignments
 }
 
-function findDirectFallbackKeys(content: string): Set<string> {
+function extractDirectTWithFallbackTranslationKeys(content: string): Set<string> {
   const keys = new Set<string>()
   const pattern = /render\s+["']t_with_fallback["'][^%]*key:\s*["']([^"']+)["']/g
 
@@ -173,7 +173,7 @@ function findDirectFallbackKeys(content: string): Set<string> {
   return keys
 }
 
-function findVariableFallbackKeys(content: string, assignedTranslations: Map<string, string>): Set<string> {
+function extractVariableTWithFallbackTranslationKeys(content: string, assignedTranslations: Map<string, string>): Set<string> {
   const keys = new Set<string>()
   const pattern = /render\s+["']t_with_fallback["'][^%]*t:\s*([^\s,}]+)/g
 
@@ -198,25 +198,25 @@ export async function removeUnreferencedTranslationsFromTheme(
 
   switch (target) {
     case 'schema': {
-      await cleanSchemaTranslations(themeDir, formatOptions)
+      await removeUnreferencedSchemaTranslations(themeDir, formatOptions)
       break
     }
 
     case 'storefront': {
-      await cleanStorefrontTranslations(themeDir, formatOptions)
+      await removeUnreferencedStorefrontTranslations(themeDir, formatOptions)
       break
     }
 
     default: {
-      await cleanSchemaTranslations(themeDir, formatOptions)
-      await cleanStorefrontTranslations(themeDir, formatOptions)
+      await removeUnreferencedSchemaTranslations(themeDir, formatOptions)
+      await removeUnreferencedStorefrontTranslations(themeDir, formatOptions)
       break
     }
   }
 }
 
-export async function cleanSchemaTranslations(themeDir: string, options?: LocaleOptions): Promise<void> {
-  const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
+export async function removeUnreferencedSchemaTranslations(themeDir: string, options?: LocaleOptions): Promise<void> {
+  const usedKeys = findKeysInThemeFiles(themeDir, SCHEMA_DIRS, extractSchemaTranslationKeys)
   const localesDir = path.join(themeDir, 'locales')
 
   if (!fs.existsSync(localesDir)) {
@@ -231,8 +231,8 @@ export async function cleanSchemaTranslations(themeDir: string, options?: Locale
   }
 }
 
-export async function cleanStorefrontTranslations(themeDir: string, options?: LocaleOptions): Promise<void> {
-  const usedKeys = scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
+export async function removeUnreferencedStorefrontTranslations(themeDir: string, options?: LocaleOptions): Promise<void> {
+  const usedKeys = findKeysInThemeFiles(themeDir, STOREFRONT_DIRS, extractStorefrontTranslationKeys)
   const localesDir = path.join(themeDir, 'locales')
 
   if (!fs.existsSync(localesDir)) {
@@ -299,10 +299,10 @@ export async function mergeLocaleFiles(
     const diff = compareLocales(sourceContent, targetContent)
 
     const mergedContent = mode === 'replace-existing'
-      ? replaceTranslations(sourceContent, targetContent)
+      ? replaceExistingTranslationsWithSourceValues(sourceContent, targetContent)
       : mode === 'add-missing'
-        ? addMissingTranslations(sourceContent, targetContent, diff)
-        : mergeTranslations(sourceContent, targetContent, diff)
+        ? addMissingTranslationsFromSource(sourceContent, targetContent, diff)
+        : addAndOverrideTranslationsFromSource(sourceContent, targetContent, diff)
 
     writeLocaleFile(targetPath, mergedContent, { format })
   }
@@ -321,7 +321,7 @@ export function compareLocales(source: Record<string, unknown>, target: Record<s
   }
 }
 
-function replaceTranslations(
+function replaceExistingTranslationsWithSourceValues(
   source: Record<string, unknown>,
   target: Record<string, unknown>
 ): Record<string, unknown> {
@@ -345,7 +345,7 @@ function replaceTranslations(
   return updateValues(target, source)
 }
 
-function addMissingTranslations(
+function addMissingTranslationsFromSource(
   source: Record<string, unknown>,
   target: Record<string, unknown>,
   diff: LocaleDiff
@@ -361,7 +361,7 @@ function addMissingTranslations(
   return unflattenObject(flatMerged)
 }
 
-function mergeTranslations(
+function addAndOverrideTranslationsFromSource(
   source: Record<string, unknown>,
   target: Record<string, unknown>,
   diff: LocaleDiff
