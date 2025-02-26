@@ -6,6 +6,6 @@
     }
   },
   "additional": {
-    "new_setting": "This is a new schema setting from source"
+    "new_setting": "This is a new schema setting (source)"
   }
 }
