@@ -9,7 +9,7 @@ import { CleanOptions, LocaleContent, LocaleDiff, LocaleOptions, SyncOptions, Th
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
 
-export async function fetchLocaleSource(source: string): Promise<LocaleContent> {
+export async function getLocaleSource(source: string): Promise<LocaleContent> {
   if (isUrl(source)) {
     return fetchRemoteLocales(source)
   }
@@ -169,7 +169,7 @@ function findVariableFallbackKeys(content: string, assignedTranslations: Map<str
   return keys
 }
 
-export async function cleanTranslations(
+export async function removeUnusedTranslations(
   themeDir: string,
   options: CleanOptions = {}
 ): Promise<void> {
@@ -202,7 +202,7 @@ export function cleanSchemaTranslations(themeDir: string, options?: LocaleOption
     .filter(file => file.endsWith('.schema.json'))
 
   for (const file of schemaFiles) {
-    cleanLocaleFile(path.join(localesDir, file), usedKeys, options)
+    removeUnusedKeysFromFile(path.join(localesDir, file), usedKeys, options)
   }
 }
 
@@ -213,11 +213,11 @@ export function cleanStorefrontTranslations(themeDir: string, options?: LocaleOp
     .filter(file => file.endsWith('.json') && !file.endsWith('.schema.json'))
 
   for (const file of localeFiles) {
-    cleanLocaleFile(path.join(localesDir, file), usedKeys, options)
+    removeUnusedKeysFromFile(path.join(localesDir, file), usedKeys, options)
   }
 }
 
-function cleanLocaleFile(filePath: string, usedKeys: Set<string>, options?: LocaleOptions): void {
+function removeUnusedKeysFromFile(filePath: string, usedKeys: Set<string>, options?: LocaleOptions): void {
   try {
     const content = JSON.parse(fs.readFileSync(filePath, 'utf8'))
     if (!content || typeof content !== 'object') return
@@ -239,7 +239,7 @@ function cleanLocaleFile(filePath: string, usedKeys: Set<string>, options?: Loca
   }
 }
 
-export async function syncLocales(
+export async function mergeLocaleFiles(
   themeDir: string,
   sourceLocales: Record<string, Record<string, unknown>>,
   options?: SyncOptions
@@ -264,7 +264,7 @@ export async function syncLocales(
     }
 
     const targetContent = JSON.parse(fs.readFileSync(targetPath, 'utf8'))
-    const diff = diffLocales(sourceContent, targetContent)
+    const diff = compareLocales(sourceContent, targetContent)
 
     const mergedContent = mode === 'replace-existing'
       ? replaceTranslations(sourceContent, targetContent)
@@ -276,7 +276,7 @@ export async function syncLocales(
   }
 }
 
-export function diffLocales(source: Record<string, unknown>, target: Record<string, unknown>): LocaleDiff {
+export function compareLocales(source: Record<string, unknown>, target: Record<string, unknown>): LocaleDiff {
   const flatSource = flattenObject(source)
   const flatTarget = flattenObject(target)
 

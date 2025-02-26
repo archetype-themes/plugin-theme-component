@@ -10,7 +10,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { cleanTranslations } from '../../../utilities/locales.js'
+import { removeUnusedTranslations } from '../../../utilities/locales.js'
 import { CleanOptions, CleanTarget } from '../../../utilities/types.js'
 
 export default class Clean extends BaseCommand {
@@ -41,7 +41,7 @@ export default class Clean extends BaseCommand {
     const format = this.flags[Flags.FORMAT]
 
     const options: CleanOptions = { format, target }
-    await cleanTranslations(themeDir, options)
+    await removeUnusedTranslations(themeDir, options)
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully cleaned locale files')

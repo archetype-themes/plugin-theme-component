@@ -11,7 +11,7 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { cleanTranslations, extractRequiredTranslations, fetchLocaleSource, getThemeTranslations, syncLocales } from '../../../utilities/locales.js'
+import { extractRequiredTranslations, getLocaleSource, getThemeTranslations, mergeLocaleFiles, removeUnusedTranslations } from '../../../utilities/locales.js'
 import { CleanOptions, CleanTarget, SyncOptions, ThemeTranslations } from '../../../utilities/types.js'
 
 export default class Sync extends BaseCommand {
@@ -47,14 +47,14 @@ export default class Sync extends BaseCommand {
 
     if (this.flags[Flags.CLEAN]) {
       const options: CleanOptions = { format, target }
-      await cleanTranslations(themeDir, options)
+      await removeUnusedTranslations(themeDir, options)
     }
   }
 
   private async fetchAndAnalyzeSource(localesDir: string): Promise<{
     locales: Record<string, Record<string, unknown>>
   }> {
-    const sourceLocales = await fetchLocaleSource(localesDir)
+    const sourceLocales = await getLocaleSource(localesDir)
     return { locales: sourceLocales }
   }
 
@@ -75,7 +75,7 @@ export default class Sync extends BaseCommand {
       ? extractRequiredTranslations(sourceData.locales, translations)
       : sourceData.locales
 
-    await syncLocales(themeDir, locales, options)
+    await mergeLocaleFiles(themeDir, locales, options)
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully synced locale files')
