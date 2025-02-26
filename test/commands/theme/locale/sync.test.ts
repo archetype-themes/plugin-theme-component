@@ -166,15 +166,43 @@ describe('theme locale sync', () => {
     const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
     const schemaContent = JSON.parse(fs.readFileSync(schemaFilePath, 'utf8'))
 
-    // Verify that unreferenced translations from source are not added
     expect(storefrontContent).to.not.have.nested.property('additional.new_key')
     expect(schemaContent).to.not.have.nested.property('additional.new_setting')
 
-    // Verify that referenced translations are still present
     expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
     expect(storefrontContent).to.have.nested.property('t_with_fallback.direct_key')
     expect(storefrontContent).to.have.nested.property('t_with_fallback.variable_key')
     expect(schemaContent).to.have.nested.property('section.name')
     expect(schemaContent).to.have.nested.property('section.settings.logo_label')
+  })
+
+  it('syncs dynamic translation keys with prefixes', async () => {
+    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath])
+
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+
+    expect(storefrontContent).to.have.nested.property('tags.new')
+    expect(storefrontContent).to.have.nested.property('tags.sale')
+    expect(storefrontContent).to.have.nested.property('tags.featured')
+    expect(storefrontContent).to.have.nested.property('tags.custom')
+    expect(storefrontContent).to.have.nested.property('tags.special')
+
+    expect(storefrontContent.tags.new).to.equal(sourceEnDefault.tags.new)
+
+    const frStorefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'fr.json'), 'utf8'))
+    expect(frStorefrontContent).to.have.nested.property('tags.new')
+    expect(frStorefrontContent.tags.new).to.equal(sourceFr.tags.new)
+  })
+
+  it('cleans dynamic translation keys but keeps referenced prefixes', async () => {
+    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--clean'])
+
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+
+    expect(storefrontContent).to.have.nested.property('tags.new')
+
+    // These should also be kept because they share the same prefix
+    expect(storefrontContent).to.have.nested.property('tags.sale')
+    expect(storefrontContent).to.have.nested.property('tags.featured')
   })
 })

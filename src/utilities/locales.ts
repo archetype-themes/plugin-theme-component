@@ -112,6 +112,17 @@ function extractSchemaTranslationKeys(content: string): Set<string> {
   return keys
 }
 
+function extractDynamicTranslationPrefixes(keys: Set<string>): Set<string> {
+  const prefixKeys = new Set<string>()
+  for (const key of keys) {
+    if (key.endsWith('.')) {
+      prefixKeys.add(key)
+    }
+  }
+
+  return prefixKeys
+}
+
 function extractStorefrontTranslationKeys(content: string): Set<string> {
   const keys = new Set<string>()
 
@@ -133,22 +144,21 @@ function extractStorefrontTranslationKeys(content: string): Set<string> {
     }
   }
 
-  // Find dynamic translation keys (string literal followed by filters ending with t filter)
-  // This captures patterns like: 'prefix.' | append: x | replace: '-', '_' | t
-  const dynamicPatterns = [
-    // {% assign/capture var = 'prefix' | filters | t %}
-    /{%\s*(?:assign|capture)\s+\w+\s*=\s*["']([^"']+)["']\s*\|.*?\|\s*t[^%]*%}/g,
-    // {{ 'prefix' | filters | t }}
-    /{{\s*-?\s*["']([^"']+)["']\s*\|.*?\|\s*t[^}]*-?\s*}}/g,
-  ]
+  // Find dynamic translation keys (any string ending with a dot followed by t filter)
+  // This captures patterns like:
+  // - 'prefix.' | append: x | t
+  // - 'prefix.' | append: x | replace: '-', '_' | t
+  // - assign tag_text = 'tags.' | append: tag_id | t
+  // - {% assign tag_text = 'tags.' | append: tag_id | t %}
+  // - {{ 'prefix.' | append: x | t }}
+  const dynamicPattern = /["']([^"']*\.)["'](?:[^|]*\|)+(?:[^t|]*\|)?\s*t(?::[^%}]*)?[%}]?/g;
 
-  for (const pattern of dynamicPatterns) {
-    const matches = content.match(pattern) || []
-    for (const match of matches) {
-      const keyMatch = match.match(/["']([^"']+)["']/)
-      if (keyMatch && keyMatch[1]) {
-        keys.add(keyMatch[1])
-      }
+  const matches = content.match(dynamicPattern) || [];
+  for (const match of matches) {
+    const keyMatch = match.match(/["']([^"']*\.)["']/);
+    if (keyMatch && keyMatch[1]) {
+      const key = keyMatch[1];
+      keys.add(key);
     }
   }
 
@@ -275,9 +285,27 @@ function removeUnreferencedKeysFromFile(filePath: string, usedKeys: Set<string>,
   const flattenedContent = flattenObject(content)
   const cleanedContent: Record<string, unknown> = {}
 
+  // Extract prefix keys
+  const prefixKeys = extractDynamicTranslationPrefixes(usedKeys)
+
+  // Process exact key matches and base paths
   for (const [key, value] of Object.entries(flattenedContent)) {
     const basePath = key.split('.').slice(0, -1).join('.')
     if (usedKeys.has(key) || usedKeys.has(basePath)) {
+      cleanedContent[key] = value
+      continue
+    }
+
+    // Check if this key matches any of the prefix patterns
+    let matchesPrefix = false
+    for (const prefix of prefixKeys) {
+      if (key.startsWith(prefix)) {
+        matchesPrefix = true
+        break
+      }
+    }
+
+    if (matchesPrefix) {
       cleanedContent[key] = value
     }
   }
@@ -419,6 +447,9 @@ function filterContentByKeys(
 ): Record<string, unknown> {
   const filteredContent: Record<string, unknown> = {}
 
+  // Extract prefix keys
+  const prefixKeys = extractDynamicTranslationPrefixes(requiredKeys)
+
   // Process exact key matches
   for (const key of requiredKeys) {
     if (key in flatContent) {
@@ -427,23 +458,13 @@ function filterContentByKeys(
   }
 
   // Handle prefix matches for dynamic keys
-  for (const key of requiredKeys) {
-    if (key.endsWith('.')) {
-      addPrefixMatches(flatContent, filteredContent, key)
+  for (const prefix of prefixKeys) {
+    for (const sourceKey of Object.keys(flatContent)) {
+      if (sourceKey.startsWith(prefix) && !(sourceKey in filteredContent)) {
+        filteredContent[sourceKey] = flatContent[sourceKey]
+      }
     }
   }
 
   return filteredContent
-}
-
-function addPrefixMatches(
-  flatContent: Record<string, unknown>,
-  filteredContent: Record<string, unknown>,
-  prefix: string
-): void {
-  for (const sourceKey of Object.keys(flatContent)) {
-    if (sourceKey.startsWith(prefix) && !(sourceKey in filteredContent)) {
-      filteredContent[sourceKey] = flatContent[sourceKey]
-    }
-  }
 }

@@ -142,4 +142,18 @@ describe('theme locale clean', () => {
       }
     }
   })
+
+  it('preserves dynamic translation keys with prefixes', async () => {
+    await runCommand(['theme', 'locale', 'sync', '--locales-dir', path.join(fixturesPath, 'locales'), '--clean'])
+
+    const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
+
+    expect(storefrontContent).to.have.nested.property('tags.new')
+    expect(storefrontContent).to.have.nested.property('tags.sale')
+    expect(storefrontContent).to.have.nested.property('tags.featured')
+    expect(storefrontContent).to.have.nested.property('tags.custom')
+    expect(storefrontContent).to.have.nested.property('tags.special')
+
+    expect(storefrontContent).to.not.have.property('unused')
+  })
 })

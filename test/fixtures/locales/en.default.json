@@ -8,5 +8,12 @@
   "t_with_fallback": {
     "direct_key": "Direct key (source)",
     "variable_key": "Variable key (source)"
+  },
+  "tags": {
+    "new": "New",
+    "sale": "Sale",
+    "featured": "Featured",
+    "custom": "Custom Tag",
+    "special": "Special Tag"
   }
 }
