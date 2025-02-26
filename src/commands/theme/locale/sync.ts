@@ -11,15 +11,9 @@ import path from 'node:path'
 import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
-import { SyncOptions, fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
-import {
-  CleanTarget,
-  FormatOptions,
-  ThemeTranslations,
-  cleanTranslations,
-  extractRequiredTranslations,
-  getThemeTranslations
-} from '../../../utilities/translations.js'
+import { fetchLocaleSource, syncLocales } from '../../../utilities/locales.js'
+import { cleanTranslations, extractRequiredTranslations, getThemeTranslations } from '../../../utilities/translations.js'
+import { CleanOptions, CleanTarget, SyncOptions, ThemeTranslations } from '../../../utilities/types.js'
 
 export default class Sync extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -53,8 +47,8 @@ export default class Sync extends BaseCommand {
     await this.syncTranslations(themeDir, translations, sourceLocales)
 
     if (this.flags[Flags.CLEAN]) {
-      const options: FormatOptions = { format }
-      await cleanTranslations(themeDir, target, options)
+      const options: CleanOptions = { format, target }
+      await cleanTranslations(themeDir, options)
     }
   }
 

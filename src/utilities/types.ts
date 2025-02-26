@@ -17,7 +17,7 @@ export interface TomlConfig {
 
 export interface LiquidNode {
   assets: string[]
-  body: string 
+  body: string
   file: string
   name: string
   setup: string[]
@@ -44,4 +44,37 @@ export interface Manifest {
       [name: string]: string;
     };
   }
-} 
+}
+
+// Locale-related types
+export type CleanTarget = 'all' | 'schema' | 'storefront'
+
+export interface LocaleOptions {
+  format?: boolean
+}
+
+export interface CleanOptions extends LocaleOptions {
+  target?: CleanTarget
+}
+
+export type SyncMode = 'add-and-override' | 'add-missing' | 'replace-existing'
+
+export interface SyncOptions extends LocaleOptions {
+  mode?: SyncMode
+  target?: CleanTarget
+}
+
+export interface LocaleContent {
+  [key: string]: Record<string, unknown>
+}
+
+export interface LocaleDiff {
+  added: Set<string>
+  modified: Set<string>
+  removed: Set<string>
+}
+
+export interface ThemeTranslations {
+  schema: Set<string>
+  storefront: Set<string>
+}

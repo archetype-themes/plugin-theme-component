@@ -4,24 +4,8 @@ import path from 'node:path'
 
 import { cloneTheme } from './git.js'
 import { flattenObject, unflattenObject } from './objects.js'
-import { CleanTarget, FormatOptions, writeLocaleFile } from './translations.js'
-
-export interface LocaleContent {
-  [key: string]: Record<string, unknown>
-}
-
-export interface LocaleDiff {
-  added: Set<string>
-  modified: Set<string>
-  removed: Set<string>
-}
-
-export type SyncMode = 'add-and-override' | 'add-missing' | 'replace-existing'
-
-export interface SyncOptions extends FormatOptions {
-  mode?: SyncMode
-  target?: CleanTarget
-}
+import { writeLocaleFile } from './translations.js'
+import { LocaleContent, LocaleDiff, SyncOptions } from './types.js'
 
 export async function fetchLocaleSource(source: string): Promise<LocaleContent> {
   if (isUrl(source)) {

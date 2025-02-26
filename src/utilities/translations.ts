@@ -1,19 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { LocaleContent } from './locales.js'
 import { flattenObject, sortObjectKeys, unflattenObject } from './objects.js'
-
-export interface ThemeTranslations {
-  schema: Set<string>
-  storefront: Set<string>
-}
-
-export type CleanTarget = 'all' | 'schema' | 'storefront'
-
-export interface FormatOptions {
-  format?: boolean
-}
+import { CleanOptions, LocaleContent, LocaleOptions, ThemeTranslations } from './types.js'
 
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
@@ -21,7 +10,7 @@ const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'
 export function writeLocaleFile(
   filePath: string,
   content: Record<string, unknown>,
-  options?: FormatOptions
+  options?: LocaleOptions
 ): void {
   const formattedContent = options?.format ? sortObjectKeys(content) : content
   fs.writeFileSync(filePath, JSON.stringify(formattedContent, null, 2) + '\n')
@@ -34,7 +23,7 @@ export function getThemeTranslations(themeDir: string): ThemeTranslations {
   }
 }
 
-export function cleanSchemaTranslations(themeDir: string, options?: FormatOptions): void {
+export function cleanSchemaTranslations(themeDir: string, options?: LocaleOptions): void {
   const usedKeys = scanFiles(themeDir, SCHEMA_DIRS, findSchemaKeys)
   const localesDir = path.join(themeDir, 'locales')
   const schemaFiles = fs.readdirSync(localesDir)
@@ -45,7 +34,7 @@ export function cleanSchemaTranslations(themeDir: string, options?: FormatOption
   }
 }
 
-export function cleanStorefrontTranslations(themeDir: string, options?: FormatOptions): void {
+export function cleanStorefrontTranslations(themeDir: string, options?: LocaleOptions): void {
   const usedKeys = scanFiles(themeDir, STOREFRONT_DIRS, findStorefrontKeys)
   const localesDir = path.join(themeDir, 'locales')
   const localeFiles = fs.readdirSync(localesDir)
@@ -165,7 +154,7 @@ function findVariableFallbackKeys(content: string, assignedTranslations: Map<str
   return keys
 }
 
-function cleanLocaleFile(filePath: string, usedKeys: Set<string>, options?: FormatOptions): void {
+function cleanLocaleFile(filePath: string, usedKeys: Set<string>, options?: LocaleOptions): void {
   try {
     const content = JSON.parse(fs.readFileSync(filePath, 'utf8'))
     if (!content || typeof content !== 'object') return
@@ -214,23 +203,25 @@ export function extractRequiredTranslations(
 
 export async function cleanTranslations(
   themeDir: string,
-  target: CleanTarget = 'all',
-  options?: FormatOptions
+  options: CleanOptions = {}
 ): Promise<void> {
+  const { format, target = 'all' } = options;
+  const formatOptions: LocaleOptions = { format };
+
   switch (target) {
     case 'schema': {
-      await cleanSchemaTranslations(themeDir, options)
+      await cleanSchemaTranslations(themeDir, formatOptions)
       break
     }
 
     case 'storefront': {
-      await cleanStorefrontTranslations(themeDir, options)
+      await cleanStorefrontTranslations(themeDir, formatOptions)
       break
     }
 
     case 'all': {
-      await cleanSchemaTranslations(themeDir, options)
-      await cleanStorefrontTranslations(themeDir, options)
+      await cleanSchemaTranslations(themeDir, formatOptions)
+      await cleanStorefrontTranslations(themeDir, formatOptions)
       break
     }
   }
