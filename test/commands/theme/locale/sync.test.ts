@@ -25,7 +25,7 @@ describe('theme locale sync', () => {
   })
 
   it('syncs locale files from a local source', async () => {
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath])
 
     expect(fs.existsSync(path.join(testThemeLocalesPath, 'en.default.json'))).to.be.true
     expect(fs.existsSync(path.join(testThemeLocalesPath, 'en.default.schema.json'))).to.be.true
@@ -49,7 +49,7 @@ describe('theme locale sync', () => {
     const originalStorefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
     const originalSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
 
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--target', 'schema'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--target', 'schema'])
 
     const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
 
@@ -65,7 +65,7 @@ describe('theme locale sync', () => {
   it('syncs only storefront files when target is set to storefront', async () => {
     const originalSchemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
 
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--target', 'storefront'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--target', 'storefront'])
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
     expect(storefrontContent).to.have.nested.property('actions.add_to_cart')
@@ -79,7 +79,7 @@ describe('theme locale sync', () => {
     const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
     const originalAddToCartValue = storefrontContent.actions.add_to_cart
 
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--mode', 'add-missing'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--mode', 'add-missing'])
 
     const updatedStorefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
 
@@ -95,7 +95,7 @@ describe('theme locale sync', () => {
 
     expect(originalAddToCartValue).to.not.equal(sourceEnDefault.actions.add_to_cart)
 
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--mode', 'replace-existing'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--mode', 'replace-existing'])
 
     const updatedStorefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
 
@@ -110,7 +110,7 @@ describe('theme locale sync', () => {
 
     expect(originalAddToCartValue).to.not.equal(sourceEnDefault.actions.add_to_cart)
 
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--mode', 'add-and-override'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--mode', 'add-and-override'])
 
     const updatedStorefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
 
@@ -121,7 +121,7 @@ describe('theme locale sync', () => {
   })
 
   it('formats the output files when format flag is set', async () => {
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--format'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--format'])
 
     const storefrontFileContent = fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8')
     expect(storefrontFileContent).to.include('  "actions": {')
@@ -129,7 +129,7 @@ describe('theme locale sync', () => {
   })
 
   it('cleans locale files when clean flag is set', async () => {
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--clean'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--clean'])
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
 
@@ -146,7 +146,7 @@ describe('theme locale sync', () => {
 
     expect(originalSchemaContent.section.name).to.not.equal(sourceEnDefaultSchema.section.name)
 
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--target', 'schema', '--mode', 'add-and-override'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--target', 'schema', '--mode', 'add-and-override'])
 
     const schemaContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.schema.json'), 'utf8'))
 
@@ -161,7 +161,7 @@ describe('theme locale sync', () => {
     const storefrontFilePath = path.join(testThemeLocalesPath, 'en.default.json')
     const schemaFilePath = path.join(testThemeLocalesPath, 'en.default.schema.json')
 
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath])
 
     const storefrontContent = JSON.parse(fs.readFileSync(storefrontFilePath, 'utf8'))
     const schemaContent = JSON.parse(fs.readFileSync(schemaFilePath, 'utf8'))
@@ -177,7 +177,7 @@ describe('theme locale sync', () => {
   })
 
   it('syncs dynamic translation keys with prefixes', async () => {
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath])
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
 
@@ -195,7 +195,7 @@ describe('theme locale sync', () => {
   })
 
   it('cleans dynamic translation keys but keeps referenced prefixes', async () => {
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', localesPath, '--clean'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', localesPath, '--clean'])
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
 

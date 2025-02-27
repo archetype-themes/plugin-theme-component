@@ -144,7 +144,7 @@ describe('theme locale clean', () => {
   })
 
   it('preserves dynamic translation keys with prefixes', async () => {
-    await runCommand(['theme', 'locale', 'sync', '--locales-dir', path.join(fixturesPath, 'locales'), '--clean'])
+    await runCommand(['theme', 'locale', 'sync', '--locales-source', path.join(fixturesPath, 'locales'), '--clean'])
 
     const storefrontContent = JSON.parse(fs.readFileSync(path.join(testThemeLocalesPath, 'en.default.json'), 'utf8'))
 

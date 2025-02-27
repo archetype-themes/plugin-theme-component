@@ -10,7 +10,7 @@ import { CleanOptions, LocaleContent, LocaleDiff, LocaleOptions, SyncOptions, Tr
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
 const STOREFRONT_DIRS = ['blocks', 'layout', 'sections', 'snippets', 'templates'] as const
 
-export async function getLocaleSource(source: string): Promise<LocaleContent> {
+export async function getLocalesSource(source: string): Promise<LocaleContent> {
   if (isUrl(source)) {
     return fetchRemoteLocales(source)
   }
@@ -411,12 +411,12 @@ function addAndOverrideTranslationsFromSource(
 }
 
 export function filterSourceTranslationsToKeysUsedInTheme(
-  sourceLocales: Record<string, Record<string, unknown>>,
+  localesContent: Record<string, Record<string, unknown>>,
   required: TranslationKeysUsedInTheme
 ): LocaleContent {
   const result: LocaleContent = {}
 
-  for (const [file, content] of Object.entries(sourceLocales)) {
+  for (const [file, content] of Object.entries(localesContent)) {
     const isSchema = file.endsWith('.schema.json')
     const requiredKeys = isSchema ? required.schema : required.storefront
     const flatContent = flattenObject(content)

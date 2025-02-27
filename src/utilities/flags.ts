@@ -17,7 +17,7 @@ export default class Flags {
   static readonly IGNORE_CONFLICTS = 'ignore-conflicts';
   static readonly IGNORE_OVERRIDES = 'ignore-overrides';
   static readonly LIVE_RELOAD = 'live-reload';
-  static readonly LOCALES_DIR = 'locales-dir';
+  static readonly LOCALES_SOURCE = 'locales-source';
   static readonly MODE = 'mode';
   static readonly PASSWORD = 'password';
   static readonly PORT = 'port';
@@ -107,10 +107,10 @@ export const flagDefinitions: Record<string, any> = {
     description: 'Reload the browser when changes are made.',
   }),
 
-  [Flags.LOCALES_DIR]: OclifFlags.string({
+  [Flags.LOCALES_SOURCE]: OclifFlags.string({
     char: 'l',
     default: 'https://github.com/archetype-themes/locales',
-    description: 'Directory or repository containing locale files',
+    description: 'Directory that contains a "locales" folder with locale files',
   }),
 
   [Flags.MODE]: OclifFlags.string({
