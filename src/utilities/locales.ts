@@ -2,8 +2,9 @@ import fs, { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 
+import { writeJsonFile } from './files.js'
 import { cloneTheme } from './git.js'
-import { flattenObject, sortObjectKeys, unflattenObject } from './objects.js'
+import { flattenObject, unflattenObject } from './objects.js'
 import { CleanOptions, LocaleContent, LocaleDiff, LocaleOptions, SyncOptions, TranslationKeysUsedInTheme } from './types.js'
 
 const SCHEMA_DIRS = ['config', 'blocks', 'sections'] as const
@@ -51,21 +52,6 @@ function loadLocalLocales(dir: string): LocaleContent {
   }
 
   return content
-}
-
-export function writeLocaleFile(
-  filePath: string,
-  content: Record<string, unknown>,
-  options?: LocaleOptions
-): void {
-  const formattedContent = options?.format ? sortObjectKeys(content) : content
-  const dirPath = path.dirname(filePath)
-
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true })
-  }
-
-  fs.writeFileSync(filePath, JSON.stringify(formattedContent, null, 2) + '\n')
 }
 
 export function findTranslationKeysUsedInTheme(themeDir: string): TranslationKeysUsedInTheme {
@@ -311,7 +297,7 @@ function removeUnreferencedKeysFromFile(filePath: string, usedKeys: Set<string>,
   }
 
   const unflattened = unflattenObject(cleanedContent)
-  writeLocaleFile(filePath, unflattened, options)
+  writeJsonFile(filePath, unflattened, options)
 }
 
 export async function mergeLocaleFiles(
@@ -338,7 +324,7 @@ export async function mergeLocaleFiles(
     const targetPath = path.join(localesDir, file)
 
     if (!fs.existsSync(targetPath)) {
-      writeLocaleFile(targetPath, sourceContent, { format })
+      writeJsonFile(targetPath, sourceContent, { format })
       continue
     }
 
@@ -351,7 +337,7 @@ export async function mergeLocaleFiles(
         ? addMissingTranslationsFromSource(sourceContent, targetContent, diff)
         : addAndOverrideTranslationsFromSource(sourceContent, targetContent, diff)
 
-    writeLocaleFile(targetPath, mergedContent, { format })
+    writeJsonFile(targetPath, mergedContent, { format })
   }
 }
 
@@ -446,8 +432,6 @@ function filterContentByKeys(
   requiredKeys: Set<string>
 ): Record<string, unknown> {
   const filteredContent: Record<string, unknown> = {}
-
-  // Extract prefix keys
   const prefixKeys = extractDynamicTranslationPrefixes(requiredKeys)
 
   // Process exact key matches

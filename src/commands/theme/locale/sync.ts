@@ -42,8 +42,8 @@ export default class Sync extends BaseCommand {
     const format = this.flags[Flags.FORMAT]
 
     const translations = findTranslationKeysUsedInTheme(themeDir)
-    const sourceLocales = await this.fetchAndAnalyzeSource(localesDir)
-    await this.syncTranslations(themeDir, translations, sourceLocales)
+    const sourceLocales = await getLocaleSource(localesDir)
+    await this.mergeTranslationsWithTheme(themeDir, translations, sourceLocales)
 
     if (this.flags[Flags.CLEAN]) {
       const options: CleanOptions = { format, target }
@@ -51,17 +51,10 @@ export default class Sync extends BaseCommand {
     }
   }
 
-  private async fetchAndAnalyzeSource(localesDir: string): Promise<{
-    locales: Record<string, Record<string, unknown>>
-  }> {
-    const sourceLocales = await getLocaleSource(localesDir)
-    return { locales: sourceLocales }
-  }
-
-  private async syncTranslations(
+  private async mergeTranslationsWithTheme(
     themeDir: string,
     translations: TranslationKeysUsedInTheme,
-    sourceData: { locales: Record<string, Record<string, unknown>> }
+    sourceLocales: Record<string, Record<string, unknown>>
   ): Promise<void> {
     const options: SyncOptions = {
       format: this.flags[Flags.FORMAT],
@@ -69,8 +62,8 @@ export default class Sync extends BaseCommand {
       target: this.flags[Flags.TARGET] as CleanTarget
     }
 
-    const requiredTranslations = filterSourceTranslationsToKeysUsedInTheme(sourceData.locales, translations)
-    await mergeLocaleFiles(themeDir, requiredTranslations, options)
+    const filteredSourceTranslations = filterSourceTranslationsToKeysUsedInTheme(sourceLocales, translations)
+    await mergeLocaleFiles(themeDir, filteredSourceTranslations, options)
 
     if (!this.flags[Flags.QUIET]) {
       this.log('Successfully synced locale files')
