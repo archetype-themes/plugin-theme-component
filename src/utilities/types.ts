@@ -28,7 +28,6 @@ export interface LiquidNode {
 
 export interface PackageJSON {
   author?: { name: string } | string;
-  copyright?: CopyrightConfig;
   license?: string;
   name: string;
   repository: string;

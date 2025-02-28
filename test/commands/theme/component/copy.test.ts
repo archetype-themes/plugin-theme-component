@@ -64,10 +64,8 @@ describe('theme component copy', () => {
     const packageJsonPath = path.join(testCollectionPath, 'package.json')
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
 
-    packageJson.copyright = {
-      author: 'Test Author',
-      license: 'MIT'
-    }
+    packageJson.author = 'Test Author'
+    packageJson.license = 'MIT'
 
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 

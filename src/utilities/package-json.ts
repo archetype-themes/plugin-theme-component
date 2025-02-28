@@ -36,11 +36,6 @@ export function getCopyrightConfigFromPackageJson(dir: string): CopyrightConfig 
 
   try {
     const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8')) as PackageJSON;
-
-    if (packageJson.copyright) {
-      return packageJson.copyright;
-    }
-
     const config: CopyrightConfig = {};
 
     if (packageJson.author) {
