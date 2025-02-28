@@ -17,7 +17,7 @@ export interface TomlConfig {
 
 export interface LiquidNode {
   assets: string[]
-  body: string 
+  body: string
   file: string
   name: string
   setup: string[]
@@ -27,6 +27,9 @@ export interface LiquidNode {
 }
 
 export interface PackageJSON {
+  author?: { name: string } | string;
+  copyright?: CopyrightConfig;
+  license?: string;
   name: string;
   repository: string;
   version: string;
@@ -44,4 +47,15 @@ export interface Manifest {
       [name: string]: string;
     };
   }
-} 
+}
+
+export interface CopyrightConfig {
+  author?: string;
+  license?: string;
+}
+
+export interface CopyrightOptions {
+  collectionName?: string;
+  collectionVersion?: string;
+  copyright?: CopyrightConfig;
+}

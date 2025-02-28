@@ -7,8 +7,8 @@ import { DeepObject, deepMerge } from './objects.js'
 import { LiquidNode } from './types.js'
 
 export async function copySetupComponentFiles(
-  collectionDir: string, 
-  destination: string, 
+  collectionDir: string,
+  destination: string,
   componentSelector: string
 ): Promise<void> {
   const collectionNodes = await getCollectionNodes(collectionDir)
@@ -37,7 +37,7 @@ export async function copySetupComponentFiles(
 
   // Write combined settings schema
   writeFileIfChanged(
-    JSON.stringify(settingsSchema), 
+    JSON.stringify(settingsSchema),
     path.join(destination, 'config', 'settings_schema.json')
   )
 
@@ -49,7 +49,7 @@ export async function copySetupComponentFiles(
 }
 
 export async function processSettingsSchema(
-  setupFile: string, 
+  setupFile: string,
   node: LiquidNode
 ): Promise<object[]> {
   if (node?.name !== 'settings_schema.json') {

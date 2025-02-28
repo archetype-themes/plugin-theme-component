@@ -1,6 +1,6 @@
 /**
  * This command copies component files into a theme directory.
- * 
+ *
  * - Copies rendered component files (snippets and assets) into the theme directory
  * - Updates the theme CLI config (shopify.theme.json) with the component collection details
  */
@@ -8,13 +8,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import Args from '../../../utilities/args.js'    
+import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
-import { copyFileIfChanged } from '../../../utilities/files.js';
+import { copyFileIfChanged } from '../../../utilities/files.js'
 import Flags from '../../../utilities/flags.js'
 import { getManifest } from '../../../utilities/manifest.js'
 import { getCollectionNodes } from '../../../utilities/nodes.js'
-import { getNameFromPackageJson , getVersionFromPackageJson } from '../../../utilities/package-json.js'
+import { getCopyrightConfigFromPackageJson, getNameFromPackageJson, getVersionFromPackageJson } from '../../../utilities/package-json.js'
+import { CopyrightOptions } from '../../../utilities/types.js'
 
 export default class Copy extends BaseCommand {
   static override args = Args.getDefinitions([
@@ -49,16 +50,24 @@ export default class Copy extends BaseCommand {
     const collectionName = this.flags[Flags.COLLECTION_NAME] || getNameFromPackageJson(process.cwd())
     const collectionVersion = this.flags[Flags.COLLECTION_VERSION] || getVersionFromPackageJson(process.cwd())
 
+    const copyright = getCopyrightConfigFromPackageJson(process.cwd());
+
     if (!fs.existsSync(path.join(themeDir, 'component.manifest.json'))) {
       this.error('Error: component.manifest.json file not found in the theme directory. Run "shopify theme component map" to generate a component.manifest.json file.');
     }
-    
+
     const manifest = getManifest(path.join(themeDir, 'component.manifest.json'))
     const componentNodes = await getCollectionNodes(currentDir)
 
     if (manifest.collections[collectionName].version !== collectionVersion) {
       this.error(`Version mismatch: Expected ${collectionVersion} but found ${manifest.collections[collectionName].version}. Run "shopify theme component map" to update the component.manifest.json file.`);
     }
+
+    const copyOptions: CopyrightOptions = {
+      collectionName,
+      collectionVersion,
+      copyright
+    };
 
     const copyManifestFiles = (fileType: 'assets' | 'snippets') => {
       for (const [fileName, fileCollection] of Object.entries(manifest.files[fileType])) {
@@ -67,7 +76,7 @@ export default class Copy extends BaseCommand {
           if (node) {
             const src = node.file;
             const dest = path.join(themeDir, fileType, fileName);
-            copyFileIfChanged(src, dest);
+            copyFileIfChanged(src, dest, copyOptions);
           }
         }
       }

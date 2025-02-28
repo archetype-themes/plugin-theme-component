@@ -1,4 +1,4 @@
-import {Flags as OclifFlags} from '@oclif/core'
+import { Flags as OclifFlags } from '@oclif/core'
 import { FlagInput } from '@oclif/core/interfaces';
 
 import { ComponentConfig } from './types.js'
@@ -26,7 +26,7 @@ export default class Flags {
   static readonly THEME = 'theme';
   static readonly THEME_DIR = 'theme-dir';
   static readonly WATCH = 'watch';
-  
+
   private flagValues: Record<string, FlagInput<object>>;
   constructor(flags: Record<string, FlagInput<object>>) {
     this.flagValues = flags
