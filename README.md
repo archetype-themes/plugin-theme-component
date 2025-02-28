@@ -28,6 +28,14 @@ shopify plugins install plugin-theme-component
 ## List of commands
 
 <!-- commands -->
+* [`shopify theme component`](#shopify-theme-component)
+* [`shopify theme component clean [THEMEDIR]`](#shopify-theme-component-clean-themedir)
+* [`shopify theme component copy THEMEDIR`](#shopify-theme-component-copy-themedir)
+* [`shopify theme component dev [COMPONENTSELECTOR]`](#shopify-theme-component-dev-componentselector)
+* [`shopify theme component install THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-install-themedir-componentselector)
+* [`shopify theme component map THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-map-themedir-componentselector)
+* [`shopify theme generate import-map [THEMEDIR]`](#shopify-theme-generate-import-map-themedir)
+* [`shopify theme generate template-map [THEMEDIR]`](#shopify-theme-generate-template-map-themedir)
 
 ## `shopify theme component`
 
