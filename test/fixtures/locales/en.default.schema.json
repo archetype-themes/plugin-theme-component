@@ -1,0 +1,11 @@
+{
+  "section": {
+    "name": "Section schema (source)",
+    "settings": {
+      "logo_label": "Logo Setting (source)"
+    }
+  },
+  "additional": {
+    "new_setting": "This is a new schema setting (source)"
+  }
+}

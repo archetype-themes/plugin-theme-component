@@ -1,13 +1,13 @@
 /**
  * This command installs component files into a theme directory.
- * 
+ *
  * - Maps the components in the theme directory
  * - Copies rendered component files (snippets and assets) into the theme directory
  * - Cleans up unnecessary component files in the theme directory
  * - Generates an import-map.liquid snippet file based on JS assets
  */
 
-import Args from '../../../utilities/args.js'    
+import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import Flags from '../../../utilities/flags.js'
 import GenerateImportMap from '../generate/import-map.js'

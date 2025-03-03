@@ -1,6 +1,6 @@
 /**
  * This command cleans up component files in a theme directory.
- * 
+ *
  * - Removes component files (snippets and assets) that are not listed in the component map
  * - Ensures the theme directory only contains necessary component files
  */
@@ -8,7 +8,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import Args from '../../../utilities/args.js'    
+import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import { getManifest } from '../../../utilities/manifest.js'
 import { getThemeNodes } from '../../../utilities/nodes.js'
@@ -30,7 +30,7 @@ export default class Clean extends BaseCommand {
 
   public async run(): Promise<void> {
     const themeDir = path.resolve(process.cwd(), this.args[Args.THEME_DIR])
-    
+
     const manifest = getManifest(path.join(themeDir, 'component.manifest.json'))
     const themeNodes = await getThemeNodes(themeDir)
 

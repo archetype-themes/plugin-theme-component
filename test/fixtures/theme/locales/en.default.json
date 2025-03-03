@@ -1,0 +1,10 @@
+{
+  "actions": {
+    "add_to_cart": "Add to cart"
+  },
+  "t_with_fallback": {
+    "direct_key": "Direct key",
+    "variable_key": "Variable key"
+  },
+  "unused": "This is an unused translation"
+}

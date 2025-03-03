@@ -1,0 +1,18 @@
+{% # Basic dynamic translation with append %}
+{{ 'tags.' | append: 'new' | t }}
+
+{% # Dynamic translation in HTML element %}
+<span>{{ 'tags.' | append: 'sale' | t }}</span>
+
+{% # Dynamic translation with multiple filters %}
+{{ 'tags.' | append: 'featured' | replace: '-', '_' | t }}
+
+{% # Dynamic translation with liquid tag assign %}
+{% assign tag_id = 'custom' %}
+{% assign tag_text = 'tags.' | append: tag_id | t %}
+
+{% # Dynamic translation with liquid tag block %}
+{% liquid
+  assign special_tag = 'special'
+  assign special_tag_text = 'tags.' | append: special_tag | t
+%}

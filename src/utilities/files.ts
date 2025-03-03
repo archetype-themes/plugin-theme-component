@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'node:path'
 
 import logger from './logger.js'
+import { sortObjectKeys } from './objects.js'
 
 export function syncFiles(srcDir: string, destDir: string) {
   if (!fs.existsSync(srcDir)) {
@@ -32,7 +33,7 @@ export function syncFiles(srcDir: string, destDir: string) {
         }
       }
     }
-    
+
     // Copy each file/directory from source
     for (const file of srcFiles) {
       if (file.startsWith('.')) continue;
@@ -84,9 +85,24 @@ export function writeFileIfChanged(content: string, dest: string) {
   }
 }
 
+export function writeJsonFile(
+  filePath: string,
+  content: Record<string, unknown>,
+  options?: { format?: boolean }
+): void {
+  const formattedContent = options?.format ? sortObjectKeys(content) : content
+  const dirPath = path.dirname(filePath)
+
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true })
+  }
+
+  fs.writeFileSync(filePath, JSON.stringify(formattedContent, null, 2) + '\n')
+}
+
 export function cleanDir(dir: string) {
   if (fs.existsSync(dir)) {
-    fs.rmSync(dir, {recursive: true})
+    fs.rmSync(dir, { recursive: true })
   }
 
   fs.mkdirSync(dir)

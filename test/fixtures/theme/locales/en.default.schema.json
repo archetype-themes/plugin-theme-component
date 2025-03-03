@@ -1,0 +1,9 @@
+{
+  "section": {
+    "name": "Section schema",
+    "settings": {
+      "logo_label": "Logo Setting"
+    }
+  },
+  "unused": "This is an unused schema translation"
+}

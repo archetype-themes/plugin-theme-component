@@ -1,0 +1,11 @@
+{
+  "section": {
+    "name": "Schéma de section (source)",
+    "settings": {
+      "logo_label": "Paramètre de Logo (source)"
+    }
+  },
+  "additional": {
+    "new_setting": "Ceci est un nouveau paramètre de schéma (source)"
+  }
+}

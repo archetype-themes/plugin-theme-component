@@ -20,10 +20,10 @@ You'll need to ensure you have the following installed on your local development
 ### Installation
 
 Install the Shopify CLI plugin:
+
 ```bash
 shopify plugins install plugin-theme-component
 ```
-
 
 ## List of commands
 
@@ -36,6 +36,8 @@ shopify plugins install plugin-theme-component
 * [`shopify theme component map THEMEDIR [COMPONENTSELECTOR]`](#shopify-theme-component-map-themedir-componentselector)
 * [`shopify theme generate import-map [THEMEDIR]`](#shopify-theme-generate-import-map-themedir)
 * [`shopify theme generate template-map [THEMEDIR]`](#shopify-theme-generate-template-map-themedir)
+* [`shopify theme locale clean [THEMEDIR]`](#shopify-theme-locale-clean-themedir)
+* [`shopify theme locale sync [THEMEDIR]`](#shopify-theme-locale-sync-themedir)
 
 ## `shopify theme component`
 
@@ -66,7 +68,7 @@ ARGUMENTS
   THEMEDIR  [default: .] path to theme directory
 
 FLAGS
-  -q, --[no-]quiet  suppress non-essential output
+  -q, --[no-]quiet  Suppress non-essential output
 
 DESCRIPTION
   Remove unused component files in a theme
@@ -89,8 +91,8 @@ ARGUMENTS
   THEMEDIR  path to theme directory
 
 FLAGS
-  -n, --collection-name=<value>     name of the component collection
-  -v, --collection-version=<value>  version of the component collection
+  -n, --collection-name=<value>     Name of the component collection
+  -v, --collection-version=<value>  Version of the component collection
 
 DESCRIPTION
   Copy files from a component collection into a theme
@@ -115,15 +117,15 @@ ARGUMENTS
   COMPONENTSELECTOR  [default: *] component name or names (comma-separated) or "*" for all components
 
 FLAGS
-  -i, --generate-import-map         generate import map
-  -m, --generate-template-map       generate template map
-  -n, --collection-name=<value>     name of the component collection
-  -s, --[no-]setup-files            copy setup files to theme directory
-  -t, --theme-dir=<value>           [default: https://github.com/archetype-themes/explorer] directory that contains
+  -i, --generate-import-map         Generate import map
+  -m, --generate-template-map       Generate template map
+  -n, --collection-name=<value>     Name of the component collection
+  -s, --[no-]setup-files            Copy setup files to theme directory
+  -t, --theme-dir=<value>           [default: https://github.com/archetype-themes/explorer] Directory that contains
                                     theme files for development
-  -v, --collection-version=<value>  version of the component collection
-  -w, --[no-]watch                  watch for changes in theme and component directories
-  -y, --[no-]preview                sync changes to theme directory
+  -v, --collection-version=<value>  Version of the component collection
+  -w, --[no-]watch                  Watch for changes in theme and component directories
+  -y, --[no-]preview                Sync changes to theme directory
       --environment=<value>         The environment to apply to the current command.
       --host=<value>                Set which network interface the web server listens on. The default value is
                                     127.0.0.1.
@@ -160,8 +162,8 @@ ARGUMENTS
   COMPONENTSELECTOR  [default: *] component name or names (comma-separated) or "*" for all components
 
 FLAGS
-  -n, --collection-name=<value>     name of the component collection
-  -v, --collection-version=<value>  version of the component collection
+  -n, --collection-name=<value>     Name of the component collection
+  -v, --collection-version=<value>  Version of the component collection
 
 DESCRIPTION
   Runs the map, copy, clean, and generate import-map commands in sequence
@@ -189,10 +191,10 @@ ARGUMENTS
   COMPONENTSELECTOR  [default: *] component name or names (comma-separated) or "*" for all components
 
 FLAGS
-  -f, --ignore-conflicts            ignore conflicts when mapping components
-  -n, --collection-name=<value>     name of the component collection
-  -o, --ignore-overrides            ignore overrides when mapping components
-  -v, --collection-version=<value>  version of the component collection
+  -f, --ignore-conflicts            Ignore conflicts when mapping components
+  -n, --collection-name=<value>     Name of the component collection
+  -o, --ignore-overrides            Ignore overrides when mapping components
+  -v, --collection-version=<value>  Version of the component collection
 
 DESCRIPTION
   Generates or updates a component.manifest.json file with the component collection details and a file map
@@ -219,7 +221,7 @@ ARGUMENTS
   THEMEDIR  [default: .] path to theme directory
 
 FLAGS
-  -q, --[no-]quiet  suppress non-essential output
+  -q, --[no-]quiet  Suppress non-essential output
 
 DESCRIPTION
   Generate an import map for JavaScript files in the assets directory
@@ -239,13 +241,96 @@ ARGUMENTS
   THEMEDIR  [default: .] path to theme directory
 
 FLAGS
-  -q, --[no-]quiet  suppress non-essential output
+  -q, --[no-]quiet  Suppress non-essential output
 
 DESCRIPTION
   Generate a template map for component routes in the templates directory
 ```
 
 _See code: [src/commands/theme/generate/template-map.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.8/src/commands/theme/generate/template-map.ts)_
+
+## `shopify theme locale clean [THEMEDIR]`
+
+Remove unreferenced translations from theme locale files
+
+```
+USAGE
+  $ shopify theme locale clean [THEMEDIR] [--format] [--target all|schema|storefront]
+
+ARGUMENTS
+  THEMEDIR  [default: .] path to theme directory
+
+FLAGS
+  --format           Format locale files by sorting keys alphabetically
+  --target=<option>  [default: all] Target locale files to process:
+                     - all: Process all locale files
+                     - schema: Process only schema translations (*.schema.json)
+                     - storefront: Process only storefront translations
+                     <options: all|schema|storefront>
+
+DESCRIPTION
+  Remove unreferenced translations from theme locale files
+
+EXAMPLES
+  $ shopify theme locale clean theme-directory
+
+  $ shopify theme locale clean theme-directory --target=schema
+
+  $ shopify theme locale clean theme-directory --target=storefront
+```
+
+_See code: [src/commands/theme/locale/clean.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.8/src/commands/theme/locale/clean.ts)_
+
+## `shopify theme locale sync [THEMEDIR]`
+
+Sync theme locale files with source translations
+
+```
+USAGE
+  $ shopify theme locale sync [THEMEDIR] [-c] [--format] [-l <value>] [-m
+    add-missing|add-and-override|replace-existing] [--target all|schema|storefront]
+
+ARGUMENTS
+  THEMEDIR  [default: .] path to theme directory
+
+FLAGS
+  -c, --clean
+      Remove unreferenced translations from theme locale files
+
+  -l, --locales-source=<value>
+      [default: https://github.com/archetype-themes/locales] Directory that contains a "locales" folder with locale files
+
+  -m, --mode=<option>
+      [default: add-missing] Sync mode for locale files (only translations used in the theme will be processed):
+      - add-missing: Only add new translations that do not exist in theme locale files
+      - add-and-override: Add new translations and override existing ones with source values
+      - replace-existing: Replace values of existing translations with source values
+      <options: add-missing|add-and-override|replace-existing>
+
+  --format
+      Format locale files by sorting keys alphabetically
+
+  --target=<option>
+      [default: all] Target locale files to process:
+      - all: Process all locale files
+      - schema: Process only schema translations (*.schema.json)
+      - storefront: Process only storefront translations
+      <options: all|schema|storefront>
+
+DESCRIPTION
+  Sync theme locale files with source translations
+
+EXAMPLES
+  $ shopify theme locale sync theme-directory
+
+  $ shopify theme locale sync theme-directory --clean
+
+  $ shopify theme locale sync theme-directory --clean --target=schema
+
+  $ shopify theme locale sync theme-directory --locales-source=path/to/directory
+```
+
+_See code: [src/commands/theme/locale/sync.ts](https://github.com/archetype-themes/plugin-theme-component/blob/v5.0.8/src/commands/theme/locale/sync.ts)_
 <!-- commandsstop -->
 
 ## Contributing
@@ -259,6 +344,7 @@ If you notice a bug, or want to contribute to the codebase, feel free to do so i
 If you already have the plugin installed via npm, you'll need to [uninstall](#uninstalling-the-plugin) the plugin before being able to develop the plugin locally.
 
 Once this is done, follow these steps to ensure the Shopify CLI is running the local version of the plugin:
+
 - `git clone https://github.com/archetype-themes/plugin-theme-component.git`
 - `cd plugin-theme-component`
 - `npm i`

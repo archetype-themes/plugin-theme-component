@@ -1,18 +1,17 @@
 /**
  * This command sets up a sandboxed development environment for components.
- * 
+ *
  * - Removes any existing development directory
  * - Copies dev theme files and rendered component files into a temporary development directory
  * - Watches for changes to synchronize updates
  * - Runs 'shopify theme dev' on the temporary development directory to preview your work
  */
 
-
 import chokidar from 'chokidar'
 import path from 'node:path'
 import { URL } from 'node:url'
 
-import Args from '../../../utilities/args.js'    
+import Args from '../../../utilities/args.js'
 import BaseCommand from '../../../utilities/base-command.js'
 import { cleanDir, syncFiles } from '../../../utilities/files.js'
 import Flags from '../../../utilities/flags.js'
@@ -82,14 +81,14 @@ export default class Dev extends BaseCommand {
     const themeDir = await this.getThemeDirectory(devDir)
 
     this.log(`Building theme in ${devDir}...`)
-    
+
     const buildThemeParams: BuildThemeParams = {
       componentSelector,
       generateTemplateMap,
       setupFiles,
       themeDir
     }
-    
+
     await this.buildTheme(devDir, buildThemeParams)
 
     // Run shopify theme dev if preview is enabled
@@ -111,12 +110,12 @@ export default class Dev extends BaseCommand {
     // Copy the component setup files if needed
     if (params.setupFiles) {
       await copySetupComponentFiles(
-        process.cwd(), 
-        destination, 
+        process.cwd(),
+        destination,
         params.componentSelector
       )
     }
-    
+
     // Install the components
     await Install.run([destination])
 
@@ -154,24 +153,24 @@ export default class Dev extends BaseCommand {
   private async getThemeDirectory(devDir: string): Promise<string> {
     if (this.flags[Flags.THEME_DIR].startsWith('http')) {
       const url = new URL(this.flags[Flags.THEME_DIR])
-      const {host} = url
-      
+      const { host } = url
+
       if (host === 'github.com' || host.endsWith('.github.com')) {
         const themeDir = path.join(devDir, '.repo')
         this.log(`Cloning theme from ${this.flags[Flags.THEME_DIR]} into dev directory ${devDir}`)
         await cloneTheme(this.flags[Flags.THEME_DIR], themeDir)
         return themeDir
       }
-      
+
       throw new Error(`Unsupported theme URL: ${this.flags[Flags.THEME_DIR]}`)
     }
-    
+
     return path.resolve(process.cwd(), this.flags[Flags.THEME_DIR])
   }
 
   private setupWatcher(devDir: string, themeDir: string, componentsDir: string, buildThemeParams: BuildThemeParams): Promise<void> {
     const watchDir = path.join(devDir, '.watch')
-    
+
     // Need to access chokidar as a default import so it can be mocked in tests
     // eslint-disable-next-line import/no-named-as-default-member
     const themeWatcher = chokidar.watch([themeDir, componentsDir], {

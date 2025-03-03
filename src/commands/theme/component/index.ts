@@ -22,7 +22,7 @@ export default class Component extends Command {
     } else {
       this.log(
         '\nWelcome To The Theme Component Plugin by Archetype Themes.' +
-          '\n\nUse the "--help" or "-h" flag to list available commands'
+        '\n\nUse the "--help" or "-h" flag to list available commands'
       )
     }
   }

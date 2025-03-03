@@ -1,0 +1,19 @@
+{
+  "actions": {
+    "add_to_cart": "Ajouter au panier (source)"
+  },
+  "additional": {
+    "new_key": "Ceci est une nouvelle traduction (source)"
+  },
+  "t_with_fallback": {
+    "direct_key": "Clé directe (source)",
+    "variable_key": "Clé variable (source)"
+  },
+  "tags": {
+    "new": "Nouveau",
+    "sale": "En solde",
+    "featured": "En vedette",
+    "custom": "Personnalisée",
+    "special": "Spéciale"
+  }
+}

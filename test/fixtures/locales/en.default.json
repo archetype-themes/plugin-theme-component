@@ -1,0 +1,19 @@
+{
+  "actions": {
+    "add_to_cart": "Add to cart (source)"
+  },
+  "additional": {
+    "new_key": "This is a new translation (source)"
+  },
+  "t_with_fallback": {
+    "direct_key": "Direct key (source)",
+    "variable_key": "Variable key (source)"
+  },
+  "tags": {
+    "new": "New",
+    "sale": "Sale",
+    "featured": "Featured",
+    "custom": "Custom Tag",
+    "special": "Special Tag"
+  }
+}

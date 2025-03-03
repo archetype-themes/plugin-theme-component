@@ -1,4 +1,4 @@
-import {execSync} from 'node:child_process'
+import { execSync } from 'node:child_process'
 import path from 'node:path'
 
 export async function cloneTheme(repoUrl: string, targetDir: string): Promise<void> {
@@ -21,4 +21,4 @@ export function getLastCommitHash(directory: string): null | string {
   } catch {
     return null
   }
-} 
+}
