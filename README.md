@@ -1,3 +1,8 @@
+> [!WARNING]
+> The plugin has been completely rewritten and renamed to `plugin-devkit`. Please use `shopify plugins install plugin-devkit` to ensure compatibility with the new API and features. See [archetype-themes/plugin-devkit](https://github.com/archetype-themes/plugin-devkit) for the latest version.
+>
+>For historical context, this repository preserves changes up to version 5.1.0 and all future development will continue in the `plugin-devkit` repository.
+
 # Theme component plugin
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
